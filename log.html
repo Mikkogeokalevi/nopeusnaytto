@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ajohistoria</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Erityistyylit logi-sivulle */
+        .log-container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .log-card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .log-date {
+            font-size: 14px;
+            color: var(--subtext-color);
+            margin-bottom: 5px;
+        }
+        .log-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .log-stat-item {
+            text-align: center;
+        }
+        .log-label {
+            display: block;
+            font-size: 10px;
+            color: var(--subtext-color);
+            text-transform: uppercase;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            background: none;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .loading { text-align: center; color: var(--subtext-color); margin-top: 50px;}
+    </style>
+</head>
+<body>
+
+    <div class="log-container">
+        <a href="index.html" class="back-btn">← Takaisin mittaristoon</a>
+        
+        <h2>Ajohistoria</h2>
+        <div id="log-list">
+            <div class="loading">Ladataan ajoja...</div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script>
+        // 1. Firebase konfiguraatio (Sama kuin app.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZIupycr2puYrPK2KajAW7PcThW9Pjhb0",
+            authDomain: "perhekalenteri-projekti.firebaseapp.com",
+            databaseURL: "https://perhekalenteri-projekti-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "perhekalenteri-projekti",
+            storageBucket: "perhekalenteri-projekti.appspot.com",
+            messagingSenderId: "588536838615",
+            appId: "1:588536838615:web:148de0581bbd46c42c7392"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        const logList = document.getElementById('log-list');
+
+        // Haetaan data tietokannasta käänteisessä järjestyksessä (uusin ensin)
+        db.ref('ajopaivakirja').orderByChild('startTime').limitToLast(20).on('value', (snapshot) => {
+            logList.innerHTML = ""; // Tyhjennä lista
+            
+            const logs = [];
+            snapshot.forEach((childSnapshot) => {
+                logs.push(childSnapshot.val());
+            });
+            
+            // Käännetään järjestys, jotta uusin on ylhäällä
+            logs.reverse();
+
+            if (logs.length === 0) {
+                logList.innerHTML = "<p>Ei tallennettuja ajoja.</p>";
+                return;
+            }
+
+            logs.forEach(drive => {
+                // Muotoillaan päivämäärä
+                const start = new Date(drive.startTime);
+                const dateStr = start.toLocaleDateString('fi-FI') + ' klo ' + start.toLocaleTimeString('fi-FI', {hour: '2-digit', minute:'2-digit'});
+                
+                // Lasketaan kesto jos loppuaika on olemassa
+                let durationStr = "?";
+                if (drive.endTime) {
+                    const end = new Date(drive.endTime);
+                    const diffMs = end - start;
+                    const mins = Math.floor(diffMs / 60000);
+                    durationStr = mins + " min";
+                }
+
+                // Luodaan HTML-kortti
+                const card = document.createElement('div');
+                card.className = 'log-card';
+                card.innerHTML = `
+                    <div class="log-date">${dateStr}</div>
+                    <div class="log-stats">
+                        <div class="log-stat-item">
+                            <span class="log-label">Matka</span>
+                            ${drive.distanceKm} km
+                        </div>
+                        <div class="log-stat-item">
+                            <span class="log-label">Kesto</span>
+                            ${durationStr}
+                        </div>
+                        <div class="log-stat-item">
+                            <span class="log-label">Huippu</span>
+                            ${drive.maxSpeed} km/h
+                        </div>
+                    </div>
+                `;
+                logList.appendChild(card);
+            });
+        });
+
+        // Teema check
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.body.classList.add('light-theme');
+        }
+    </script>
+</body>
+</html>
