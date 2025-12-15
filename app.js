@@ -15,10 +15,23 @@ if (!firebase.apps.length) {
 }
 const db = firebase.database();
 
+// --- SPLASH SCREEN LOGIIKKA ---
+window.addEventListener('load', () => {
+    const splash = document.getElementById('splash-screen');
+    // Odotetaan 2.5 sekuntia, sitten häivytetään logo
+    setTimeout(() => {
+        splash.style.opacity = '0';
+        setTimeout(() => {
+            splash.style.display = 'none';
+        }, 500); // Odotetaan transition (0.5s) loppuvan
+    }, 2500);
+});
+
+
 // --- MUUTTUJAT ---
 let watchId = null;
 let isDriving = false;
-let wakeLock = null; // Näytön hereillä pito
+let wakeLock = null;
 
 const speedEl = document.getElementById('speed');
 const coordsEl = document.getElementById('coords');
@@ -29,7 +42,6 @@ const btnTheme = document.getElementById('btn-theme');
 
 // --- 2. KARTAN ALUSTUS JA TASOT ---
 
-// Määritellään eri karttapohjat
 const streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap'
@@ -39,15 +51,13 @@ const satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/se
     attribution: 'Tiles &copy; Esri'
 });
 
-// Luodaan kartta oletuksena katukartalla
 const map = L.map('map', {
     center: [64.0, 26.0],
     zoom: 5,
-    layers: [streetMap], // Oletuskerros
-    zoomControl: false // Siirretään zoom-napit jos halutaan, nyt pois tieltä
+    layers: [streetMap], 
+    zoomControl: false 
 });
 
-// Lisätään kerrosvalikko (oikea yläkulma)
 const baseMaps = {
     "Kartta": streetMap,
     "Satelliitti": satelliteMap
@@ -58,8 +68,6 @@ let marker = L.marker([64.0, 26.0]).addTo(map);
 
 // --- 3. TEEMA LOGIIKKA ---
 function initTheme() {
-    // Tarkistetaan onko käyttäjä jo valinnut teeman aiemmin?
-    // Tai noudatetaan järjestelmän asetusta
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
         document.body.classList.add('light-theme');
     }
@@ -71,13 +79,12 @@ btnTheme.addEventListener('click', () => {
 
 initTheme();
 
-// --- 4. WAKE LOCK (NÄYTÖN HEREILLÄ PITO) ---
+// --- 4. WAKE LOCK ---
 async function requestWakeLock() {
     try {
         if ('wakeLock' in navigator) {
             wakeLock = await navigator.wakeLock.request('screen');
             console.log('Näyttö pidetään päällä.');
-            statusEl.innerText = "Seuranta päällä (Näyttö lukittu auki)";
         }
     } catch (err) {
         console.error(`${err.name}, ${err.message}`);
@@ -89,7 +96,7 @@ function releaseWakeLock() {
         wakeLock.release()
             .then(() => {
                 wakeLock = null;
-                console.log('Näytön lukitus vapautettu.');
+                console.log('Lukitus vapautettu.');
             });
     }
 }
@@ -106,7 +113,6 @@ function startDrive() {
     btnStop.style.display = 'inline-block';
     statusEl.innerText = "Haetaan GPS...";
 
-    // Pyydetään näyttöä pysymään päällä
     requestWakeLock();
 
     if (navigator.geolocation) {
@@ -124,7 +130,6 @@ function stopDrive() {
     isDriving = false;
     navigator.geolocation.clearWatch(watchId);
     
-    // Vapautetaan näyttö
     releaseWakeLock();
     
     btnStart.style.display = 'inline-block';
@@ -138,7 +143,7 @@ function stopDrive() {
     });
 }
 
-// --- APUFUNKTIO: Geocaching format (DD MM.MMM) ---
+// --- APUFUNKTIO: Geocaching format ---
 function toGeocacheFormat(degrees, isLat) {
     const d = Math.floor(Math.abs(degrees));
     const m = (Math.abs(degrees) - d) * 60;
@@ -150,7 +155,6 @@ function toGeocacheFormat(degrees, isLat) {
         dir = degrees >= 0 ? "E" : "W";
     }
     
-    // Muotoillaan minuutit 3 desimaalin tarkkuudella, lisätään etunolla jos < 10
     let mStr = m.toFixed(3);
     if (m < 10) mStr = "0" + mStr;
     
@@ -163,23 +167,18 @@ function updatePosition(position) {
     const speedMs = position.coords.speed || 0; 
     const speedKmh = speedMs * 3.6;
 
-    // Päivitetään UI: Nopeus 2 desimaalilla
     speedEl.innerText = speedKmh.toFixed(2);
     
-    // Päivitetään UI: Koordinaatit
     const latStr = toGeocacheFormat(lat, true);
     const lngStr = toGeocacheFormat(lng, false);
     coordsEl.innerText = `${latStr} ${lngStr}`;
 
     statusEl.innerText = isDriving ? "Tallennetaan..." : "Valmiustila";
 
-    // Päivitetään kartta
     const newLatLng = new L.LatLng(lat, lng);
     marker.setLatLng(newLatLng);
-    map.setView(newLatLng, 17); // Zoom lähemmäs
+    map.setView(newLatLng, 17);
 
-    // Jos näyttö on sammunut hetkellisesti (esim. käyttäjä vaihtoi sovellusta),
-    // yritetään ottaa Wake Lock uudelleen, jos se on kadonnut
     if (isDriving && wakeLock === null) {
         requestWakeLock();
     }
@@ -195,7 +194,6 @@ function saveToFirebase(data) {
     newDriveRef.set(data);
 }
 
-// Kuunnellaan näkyvyyden muutoksia (jos käyttäjä käy kotivalikossa ja palaa)
 document.addEventListener('visibilitychange', async () => {
     if (wakeLock !== null && document.visibilityState === 'visible') {
         requestWakeLock();
