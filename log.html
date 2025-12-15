@@ -70,7 +70,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
-        // 1. Firebase konfiguraatio (Sama kuin app.js)
+        // 1. Firebase konfiguraatio
         const firebaseConfig = {
             apiKey: "AIzaSyCZIupycr2puYrPK2KajAW7PcThW9Pjhb0",
             authDomain: "perhekalenteri-projekti.firebaseapp.com",
@@ -88,17 +88,16 @@
 
         const logList = document.getElementById('log-list');
 
-        // Haetaan data tietokannasta käänteisessä järjestyksessä (uusin ensin)
+        // Haetaan data (viimeiset 20)
         db.ref('ajopaivakirja').orderByChild('startTime').limitToLast(20).on('value', (snapshot) => {
-            logList.innerHTML = ""; // Tyhjennä lista
+            logList.innerHTML = ""; 
             
             const logs = [];
             snapshot.forEach((childSnapshot) => {
                 logs.push(childSnapshot.val());
             });
             
-            // Käännetään järjestys, jotta uusin on ylhäällä
-            logs.reverse();
+            logs.reverse(); // Uusin ensin
 
             if (logs.length === 0) {
                 logList.innerHTML = "<p>Ei tallennettuja ajoja.</p>";
@@ -106,11 +105,9 @@
             }
 
             logs.forEach(drive => {
-                // Muotoillaan päivämäärä
                 const start = new Date(drive.startTime);
                 const dateStr = start.toLocaleDateString('fi-FI') + ' klo ' + start.toLocaleTimeString('fi-FI', {hour: '2-digit', minute:'2-digit'});
                 
-                // Lasketaan kesto jos loppuaika on olemassa
                 let durationStr = "?";
                 if (drive.endTime) {
                     const end = new Date(drive.endTime);
@@ -119,7 +116,6 @@
                     durationStr = mins + " min";
                 }
 
-                // Luodaan HTML-kortti
                 const card = document.createElement('div');
                 card.className = 'log-card';
                 card.innerHTML = `
