@@ -6,12 +6,7 @@
     <title>Ajohistoria</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Erityistyylit logi-sivulle */
-        .log-container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+        .log-container { padding: 20px; max-width: 600px; margin: 0 auto; }
         .log-card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -19,38 +14,41 @@
             padding: 15px;
             margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
         }
-        .log-date {
-            font-size: 14px;
-            color: var(--subtext-color);
-            margin-bottom: 5px;
+        .log-header {
+            display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;
         }
+        .log-date { font-size: 14px; color: var(--subtext-color); }
+        
+        /* Poisto-nappi */
+        .delete-btn {
+            background: none; border: none; color: #d32f2f; cursor: pointer; font-size: 18px; padding: 5px;
+        }
+        
         .log-stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 18px;
-            font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; margin-bottom: 15px;
         }
-        .log-stat-item {
-            text-align: center;
+        .log-stat-item { text-align: center; }
+        .log-label { display: block; font-size: 10px; color: var(--subtext-color); text-transform: uppercase; }
+        
+        /* Aihe kenttä */
+        .subject-input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 14px;
+            box-sizing: border-box; /* Tärkeä */
         }
-        .log-label {
-            display: block;
-            font-size: 10px;
-            color: var(--subtext-color);
-            text-transform: uppercase;
-        }
+        .subject-input:focus { outline: 2px solid var(--accent-color); border-color: transparent; }
+
         .back-btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            background: none;
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 10px 20px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-weight: bold;
+            display: inline-block; margin-bottom: 20px;
+            background: none; border: 1px solid var(--accent-color); color: var(--accent-color);
+            padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold;
         }
         .loading { text-align: center; color: var(--subtext-color); margin-top: 50px;}
     </style>
@@ -59,7 +57,6 @@
 
     <div class="log-container">
         <a href="index.html" class="back-btn">← Takaisin mittaristoon</a>
-        
         <h2>Ajohistoria</h2>
         <div id="log-list">
             <div class="loading">Ladataan ajoja...</div>
@@ -70,7 +67,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
-        // 1. Firebase konfiguraatio
         const firebaseConfig = {
             apiKey: "AIzaSyCZIupycr2puYrPK2KajAW7PcThW9Pjhb0",
             authDomain: "perhekalenteri-projekti.firebaseapp.com",
@@ -81,27 +77,26 @@
             appId: "1:588536838615:web:148de0581bbd46c42c7392"
         };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.database();
-
         const logList = document.getElementById('log-list');
 
-        // Haetaan data (viimeiset 20)
-        db.ref('ajopaivakirja').orderByChild('startTime').limitToLast(20).on('value', (snapshot) => {
+        // Kuunnellaan muutoksia
+        db.ref('ajopaivakirja').orderByChild('startTime').limitToLast(30).on('value', (snapshot) => {
             logList.innerHTML = ""; 
-            
             const logs = [];
+            
             snapshot.forEach((childSnapshot) => {
-                logs.push(childSnapshot.val());
+                logs.push({
+                    key: childSnapshot.key, // Tärkeä poistoa ja muokkausta varten
+                    ...childSnapshot.val()
+                });
             });
             
-            logs.reverse(); // Uusin ensin
+            logs.reverse();
 
             if (logs.length === 0) {
-                logList.innerHTML = "<p>Ei tallennettuja ajoja.</p>";
-                return;
+                logList.innerHTML = "<p>Ei tallennettuja ajoja.</p>"; return;
             }
 
             logs.forEach(drive => {
@@ -110,16 +105,17 @@
                 
                 let durationStr = "?";
                 if (drive.endTime) {
-                    const end = new Date(drive.endTime);
-                    const diffMs = end - start;
-                    const mins = Math.floor(diffMs / 60000);
-                    durationStr = mins + " min";
+                    const diffMs = new Date(drive.endTime) - start;
+                    durationStr = Math.floor(diffMs / 60000) + " min";
                 }
 
                 const card = document.createElement('div');
                 card.className = 'log-card';
                 card.innerHTML = `
-                    <div class="log-date">${dateStr}</div>
+                    <div class="log-header">
+                        <div class="log-date">${dateStr}</div>
+                        <button class="delete-btn" onclick="deleteDrive('${drive.key}')">🗑</button>
+                    </div>
                     <div class="log-stats">
                         <div class="log-stat-item">
                             <span class="log-label">Matka</span>
@@ -134,12 +130,27 @@
                             ${drive.maxSpeed} km/h
                         </div>
                     </div>
+                    <input type="text" class="subject-input" 
+                           placeholder="Kirjoita aihe (esim. Työmatka)..." 
+                           value="${drive.subject || ''}" 
+                           onchange="updateSubject('${drive.key}', this.value)">
                 `;
                 logList.appendChild(card);
             });
         });
 
-        // Teema check
+        // Tallennus kun kentän arvo muuttuu (onchange)
+        window.updateSubject = function(key, text) {
+            db.ref('ajopaivakirja/' + key).update({ subject: text });
+        };
+
+        // Poisto
+        window.deleteDrive = function(key) {
+            if (confirm("Haluatko varmasti poistaa tämän ajon?")) {
+                db.ref('ajopaivakirja/' + key).remove();
+            }
+        };
+
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
             document.body.classList.add('light-theme');
         }
