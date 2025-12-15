@@ -1,0 +1,54 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.dashboard {
+    padding: 20px;
+    text-align: center;
+    background-color: #1e1e1e;
+    border-bottom: 2px solid #333;
+    z-index: 1000;
+}
+
+.speed-container {
+    font-size: 80px;
+    font-weight: bold;
+    color: #03dac6; /* Neon turkoosi */
+    line-height: 1;
+}
+
+.unit {
+    font-size: 20px;
+    color: #888;
+}
+
+.controls button {
+    margin-top: 15px;
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    background-color: #bb86fc; /* Violetti */
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    width: 80%;
+}
+
+#status {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+#map {
+    flex-grow: 1; /* Täyttää loput ruudusta */
+    width: 100%;
+    background-color: #333;
+}
