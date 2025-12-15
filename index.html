@@ -6,12 +6,10 @@
     <title>Ajopäiväkirja Pro</title>
     
     <link rel="manifest" href="manifest.json">
-    
     <link rel="icon" type="image/png" href="ajopaivakirja_logo.png">
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,9 +26,7 @@
         <img src="ajopaivakirja_logo.png" class="header-logo" alt="Logo">
         <div class="top-buttons">
             <button id="btn-view-toggle" class="icon-btn">🗺</button>
-            
             <a href="log.html" class="icon-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">📋</a> 
-            
             <button id="btn-theme" class="icon-btn">☀/☾</button>
         </div>
     </div>
@@ -50,7 +46,7 @@
                     <span class="stat-unit">km/h</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-label">Matka</span>
+                    <span class="stat-label">Matka (Rec)</span>
                     <span class="stat-value" id="dash-dist">0.0</span>
                     <span class="stat-unit">km</span>
                 </div>
@@ -81,9 +77,14 @@
     </div>
 
     <div class="controls-container">
-        <div id="status">Valmiina ajoon</div>
-        <button id="btn-start">Aloita ajo</button>
-        <button id="btn-stop" style="display:none; background-color: #d32f2f;">Lopeta & Tallenna</button>
+        <div id="status">Odottaa toimenpidettä</div>
+        
+        <button id="btn-activate-gps" class="action-btn blue-btn">Aktivoi Nopeusnäyttö</button>
+        
+        <div id="rec-controls" style="display:none; width: 100%; justify-content: center;">
+            <button id="btn-start-rec" class="action-btn green-btn">🔴 ALOITA TALLENNUS</button>
+            <button id="btn-stop-rec" class="action-btn red-btn" style="display:none;">⬛ LOPETA & TALLENNA</button>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
