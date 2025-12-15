@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ajopäiväkirja</title>
+    <title>Ajopäiväkirja Pro</title>
     
     <link rel="manifest" href="manifest.json">
     
@@ -14,14 +14,21 @@
 <body>
 
     <div class="dashboard">
+        <div class="top-bar">
+            <button id="btn-theme" class="theme-btn">☀/☾</button>
+        </div>
+        
         <div class="speed-container">
-            <span id="speed">0</span>
+            <span id="speed">0.00</span>
             <span class="unit">km/h</span>
         </div>
+        
         <div class="controls">
             <button id="btn-start">Aloita ajo</button>
             <button id="btn-stop" style="display:none; background-color: #d32f2f;">Lopeta</button>
         </div>
+        
+        <div id="coords" class="coords-display">--° --.---' --° --.---'</div>
         <div id="status">Odotetaan GPS-signaalia...</div>
     </div>
 
