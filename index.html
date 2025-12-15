@@ -7,14 +7,26 @@
     
     <link rel="manifest" href="manifest.json">
     
+    <link rel="icon" type="image/png" href="ajopaivakirja_logo.png">
+    <link rel="apple-touch-icon" href="ajopaivakirja_logo.png">
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <div id="splash-screen">
+        <div class="splash-content">
+            <img src="ajopaivakirja_logo.png" alt="Logo" class="splash-logo">
+            <h1>Ajopäiväkirja</h1>
+            <p>Ladataan...</p>
+        </div>
+    </div>
+
     <div class="dashboard">
         <div class="top-bar">
+            <img src="ajopaivakirja_logo.png" class="header-logo" alt="Logo">
             <button id="btn-theme" class="theme-btn">☀/☾</button>
         </div>
         
@@ -29,7 +41,7 @@
         </div>
         
         <div id="coords" class="coords-display">--° --.---' --° --.---'</div>
-        <div id="status">Odotetaan GPS-signaalia...</div>
+        <div id="status">Valmiina ajoon</div>
     </div>
 
     <div id="map"></div>
