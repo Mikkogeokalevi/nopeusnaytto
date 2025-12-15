@@ -1,3 +1,4 @@
+// 1. Firebase konfiguraatio
 const firebaseConfig = {
     apiKey: "AIzaSyCZIupycr2puYrPK2KajAW7PcThW9Pjhb0",
     authDomain: "perhekalenteri-projekti.firebaseapp.com",
@@ -16,17 +17,19 @@ const db = firebase.database();
 // --- SPLASH SCREEN ---
 window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
-    setTimeout(() => {
-        splash.style.opacity = '0';
-        setTimeout(() => splash.style.display = 'none', 500);
-    }, 2000);
+    if (splash) {
+        setTimeout(() => {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 500);
+        }, 2000);
+    }
     setInterval(updateClock, 1000);
 });
 
 // --- MUUTTUJAT ---
 let watchId = null;
 let isGPSActive = false;
-let isRecording = false; // Tallennetaanko tietokantaan?
+let isRecording = false; 
 let wakeLock = null;
 let startTime = null;
 let timerInterval = null;
@@ -65,18 +68,25 @@ const mapCoordsEl = document.getElementById('map-coords');
 // --- KARTTA ALUSTUS ---
 const streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OSM' });
 const satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri' });
-const map = L.map('map', { center: [64.0, 26.0], zoom: 5, layers: [streetMap], zoomControl: false });
+const map = L.map('map', { center: [64.0, 26.0], zoom: 16, layers: [streetMap], zoomControl: false });
 L.control.layers({ "Kartta": streetMap, "Satelliitti": satelliteMap }).addTo(map);
-let marker = L.marker([64.0, 26.0]).addTo(map);
+
+// Käytetään ympyrää (circleMarker) auton sijaintina, se on selkeämpi
+let marker = L.circleMarker([64.0, 26.0], {
+    color: '#3388ff',
+    fillColor: '#3388ff',
+    fillOpacity: 0.8,
+    radius: 8
+}).addTo(map);
 
 // --- NAPPIEN TOIMINNOT ---
 
-// 1. AKTIVOI GPS (Pelkkä näyttö)
+// 1. AKTIVOI GPS
 btnActivateGPS.addEventListener('click', () => {
     if (!isGPSActive) {
         startGPS();
         btnActivateGPS.style.display = 'none';
-        recControls.style.display = 'flex'; // Näytä tallennusnapit
+        recControls.style.display = 'flex'; 
         statusEl.innerText = "GPS Päällä - Ei tallennusta";
     }
 });
@@ -85,12 +95,8 @@ btnActivateGPS.addEventListener('click', () => {
 btnStartRec.addEventListener('click', () => {
     isRecording = true;
     startTime = new Date();
-    
-    // Nollataan laskurit uutta tallennusta varten
     maxSpeed = 0;
     totalDistance = 0;
-    // HUOM: lastLatLng ei nollata, jotta matka ei hyppää nollasta nykyiseen sijaintiin
-    
     updateDashboardUI(0, 0, 0, 0, 0);
     
     btnStartRec.style.display = 'none';
@@ -104,14 +110,13 @@ btnStartRec.addEventListener('click', () => {
 // 3. LOPETA TALLENNUS
 btnStopRec.addEventListener('click', () => {
     if (isRecording) {
-        // Tallenna kantaan
         saveToFirebase({
             type: 'end_drive',
             startTime: startTime.toISOString(),
             endTime: new Date().toISOString(),
             distanceKm: totalDistance.toFixed(2),
             maxSpeed: maxSpeed.toFixed(1),
-            subject: "" // Tyhjä aihe aluksi
+            subject: "" 
         });
     }
 
@@ -144,30 +149,48 @@ function updatePosition(position) {
     let speedKmh = speedMs * 3.6;
     if (speedKmh < 1.0) speedKmh = 0;
 
-    // Päivitetään huippunopeus vain jos tallennus on päällä
-    if (isRecording && speedKmh > maxSpeed) maxSpeed = speedKmh;
-
-    // Matkan laskenta vain jos tallennus on päällä
-    if (isRecording && lastLatLng) {
-        const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
-        if ((speedKmh > 3 || dist > 0.02) && dist < 2.0) { 
-            totalDistance += dist;
+    // Päivitetään huippunopeus ja matka (vain jos REC päällä)
+    if (isRecording) {
+        if (speedKmh > maxSpeed) maxSpeed = speedKmh;
+        if (lastLatLng) {
+            const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
+            if ((speedKmh > 3 || dist > 0.02) && dist < 2.0) { 
+                totalDistance += dist;
+            }
         }
     }
     
-    // Päivitetään sijainti aina kartalle ja muistiin
+    // Sijainnin päivitys
     if (!lastLatLng || speedKmh > 0 || isGPSActive) {
         lastLatLng = { lat, lng };
         const newLatLng = new L.LatLng(lat, lng);
         marker.setLatLng(newLatLng);
+        
+        // --- KARTAN ÄLYKÄS ZOOM LOGIIKKA ---
         if (isMapMode) {
-            map.setView(newLatLng, 17);
+            let targetZoom = 17; // Oletus: Hidas vauhti / Kaupunki
+
+            if (speedKmh > 90) {
+                targetZoom = 13; // Moottoritie: Näe kauas
+            } else if (speedKmh > 50) {
+                targetZoom = 15; // Maantie: Perusnäkymä
+            }
+
+            // Asetetaan näkymä ja zoom. 
+            // Käytetään setView ilman animaatiota jos muutos on pieni, jotta kartta ei "hytky"
+            const currentZoom = map.getZoom();
+            if (currentZoom !== targetZoom) {
+                map.setView(newLatLng, targetZoom); 
+            } else {
+                map.panTo(newLatLng); // Pelkkä siirtyminen
+            }
+
             mapSpeedEl.innerText = Math.round(speedKmh);
             mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
         }
     }
 
-    // Päivitä UI
+    // UI päivitys
     dashSpeedEl.innerText = Math.round(speedKmh);
     dashMaxSpeedEl.innerText = maxSpeed.toFixed(1);
     dashDistEl.innerText = totalDistance.toFixed(2);
@@ -181,7 +204,7 @@ function updatePosition(position) {
     if (isGPSActive && wakeLock === null) requestWakeLock();
 }
 
-// --- MUUTOS NÄKYMÄÄN ---
+// --- APUFUNKTIOT ---
 btnView.addEventListener('click', () => {
     isMapMode = !isMapMode;
     if (isMapMode) {
@@ -198,7 +221,6 @@ btnView.addEventListener('click', () => {
 
 btnTheme.addEventListener('click', () => document.body.classList.toggle('light-theme'));
 
-// --- APUFUNKTIOT ---
 function updateClock() {
     const now = new Date();
     dashClockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
