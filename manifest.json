@@ -7,12 +7,12 @@
   "theme_color": "#1e1e1e",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192/03dac6/000000?text=AJO",
+      "src": "ajopaivakirja_logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://via.placeholder.com/512/03dac6/000000?text=AJO",
+      "src": "ajopaivakirja_logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
