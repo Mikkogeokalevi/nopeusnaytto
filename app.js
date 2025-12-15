@@ -21,7 +21,6 @@ window.addEventListener('load', () => {
         splash.style.opacity = '0';
         setTimeout(() => splash.style.display = 'none', 500);
     }, 2000);
-    // Käynnistetään kello
     setInterval(updateClock, 1000);
 });
 
@@ -35,7 +34,7 @@ let timerInterval = null;
 // Tilastomuuttujat
 let maxSpeed = 0;
 let totalDistance = 0;
-let lastLatLng = null; // Matkan mittausta varten
+let lastLatLng = null;
 
 // UI Elementit
 const btnStart = document.getElementById('btn-start');
@@ -47,7 +46,9 @@ const btnView = document.getElementById('btn-view-toggle');
 // Näkymät
 const dashboardView = document.getElementById('dashboard-view');
 const mapView = document.getElementById('map-view');
-let isMapMode = true; // Oletuksena kartta
+
+// *** MUUTOS: Oletuksena kartta on POIS päältä (false) ***
+let isMapMode = false; 
 
 // Mittariston elementit
 const dashSpeedEl = document.getElementById('dash-speed');
@@ -80,16 +81,20 @@ let marker = L.marker([64.0, 26.0]).addTo(map);
 // --- NÄKYMÄN VAIHTO ---
 btnView.addEventListener('click', () => {
     isMapMode = !isMapMode;
+    
     if (isMapMode) {
+        // Vaihdetaan KARTTAAN
         mapView.classList.remove('view-hidden');
         dashboardView.classList.add('view-hidden');
-        btnView.innerText = "⊞"; // Ikoniksi "Dashboard"
-        // Kartta tarvitsee usein resize-komennon kun se tulee piilosta
+        btnView.innerText = "⊞"; // Ikoniksi tulee "Dashboard" (paluu mittaristoon)
+        
+        // Tärkeä: Kartta pitää päivittää, kun se tulee näkyviin piilosta
         setTimeout(() => map.invalidateSize(), 100);
     } else {
+        // Vaihdetaan MITTARISTOON
         mapView.classList.add('view-hidden');
         dashboardView.classList.remove('view-hidden');
-        btnView.innerText = "🗺"; // Ikoniksi "Kartta"
+        btnView.innerText = "🗺"; // Ikoniksi tulee "Kartta" (paluu karttaan)
     }
 });
 
@@ -107,7 +112,6 @@ function startDrive() {
     totalDistance = 0;
     lastLatLng = null;
 
-    // UI Nollaukset
     updateDashboardUI(0, 0, 0, 0, 0);
     
     btnStart.style.display = 'none';
@@ -116,7 +120,6 @@ function startDrive() {
 
     requestWakeLock();
 
-    // Ajanotto
     timerInterval = setInterval(updateTimer, 1000);
 
     if (navigator.geolocation) {
@@ -161,25 +164,23 @@ function updatePosition(position) {
     // 2. Matkan laskenta
     if (isDriving && lastLatLng) {
         const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
-        // Suodatetaan GPS-"hyppely" (jos liike on epärealistisen pieni tai suuri lyhyessä ajassa, voidaan säätää)
-        if (dist > 0.005) { // Lasketaan vain jos liikkunut yli 5 metriä
+        if (dist > 0.005) { 
             totalDistance += dist;
         }
     }
     lastLatLng = { lat, lng };
 
-    // 3. Päivitä Kartta
+    // 3. Päivitä Kartta (Vain jos se on näkyvissä, säästää tehoja)
     const newLatLng = new L.LatLng(lat, lng);
     marker.setLatLng(newLatLng);
-    // Keskitä kartta vain jos ollaan karttatilassa (säästää resursseja)
     if (isMapMode) {
         map.setView(newLatLng, 17);
         mapSpeedEl.innerText = Math.round(speedKmh);
         mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
     }
 
-    // 4. Päivitä Dashboard
-    dashSpeedEl.innerText = Math.round(speedKmh); // Iso luku ilman desimaaleja on selkeämpi
+    // 4. Päivitä Dashboard (Aina taustalla)
+    dashSpeedEl.innerText = Math.round(speedKmh);
     dashMaxSpeedEl.innerText = maxSpeed.toFixed(1);
     dashDistEl.innerText = totalDistance.toFixed(2);
     dashAltEl.innerText = Math.round(alt);
@@ -192,14 +193,12 @@ function updatePosition(position) {
 
 // --- APUFUNKTIOT ---
 
-// Kello
 function updateClock() {
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     dashClockEl.innerText = timeStr;
 }
 
-// Ajanotto (Ajoaika)
 function updateTimer() {
     if (!startTime) return;
     const now = new Date();
@@ -220,16 +219,15 @@ function updateDashboardUI(spd, max, dist, time, alt) {
     dashAltEl.innerText = alt;
 }
 
-// Etäisyys (Haversine formula)
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-  var R = 6371; // Radius of the earth in km
+  var R = 6371; 
   var dLat = deg2rad(lat2-lat1);  
   var dLon = deg2rad(lon2-lon1); 
   var a = 
     Math.sin(dLat/2) * Math.sin(dLat/2) +
     Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  var d = R * c; // Distance in km
+  var d = R * c; 
   return d;
 }
 
