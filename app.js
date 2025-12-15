@@ -21,6 +21,7 @@ window.addEventListener('load', () => {
         splash.style.opacity = '0';
         setTimeout(() => splash.style.display = 'none', 500);
     }, 2000);
+    // Käynnistetään kello
     setInterval(updateClock, 1000);
 });
 
@@ -47,7 +48,7 @@ const btnView = document.getElementById('btn-view-toggle');
 const dashboardView = document.getElementById('dashboard-view');
 const mapView = document.getElementById('map-view');
 
-// *** MUUTOS: Oletuksena kartta on POIS päältä (false) ***
+// Oletuksena kartta on POIS päältä (Mittaristonäkymä ensin)
 let isMapMode = false; 
 
 // Mittariston elementit
@@ -86,15 +87,13 @@ btnView.addEventListener('click', () => {
         // Vaihdetaan KARTTAAN
         mapView.classList.remove('view-hidden');
         dashboardView.classList.add('view-hidden');
-        btnView.innerText = "⊞"; // Ikoniksi tulee "Dashboard" (paluu mittaristoon)
-        
-        // Tärkeä: Kartta pitää päivittää, kun se tulee näkyviin piilosta
+        btnView.innerText = "⊞"; // Ikoniksi tulee "Dashboard"
         setTimeout(() => map.invalidateSize(), 100);
     } else {
         // Vaihdetaan MITTARISTOON
         mapView.classList.add('view-hidden');
         dashboardView.classList.remove('view-hidden');
-        btnView.innerText = "🗺"; // Ikoniksi tulee "Kartta" (paluu karttaan)
+        btnView.innerText = "🗺"; // Ikoniksi tulee "Kartta"
     }
 });
 
@@ -156,27 +155,36 @@ function updatePosition(position) {
     const alt = position.coords.altitude || 0;
     const speedMs = position.coords.speed || 0; 
     let speedKmh = speedMs * 3.6;
-    if (speedKmh < 0) speedKmh = 0;
+    
+    // Suodatus: Jos nopeus on alle 1 km/h, näytetään nolla (kohinan poisto)
+    if (speedKmh < 1.0) speedKmh = 0;
 
     // 1. Huippunopeus
     if (speedKmh > maxSpeed) maxSpeed = speedKmh;
 
-    // 2. Matkan laskenta
+    // 2. Matkan laskenta (PARANNETTU)
     if (isDriving && lastLatLng) {
         const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
-        if (dist > 0.005) { 
+        
+        // Älykäs suodatus: Lisätään matkaa vain jos auto liikkuu selvästi (>3km/h) 
+        // tai jos sijainti hyppää merkittävästi (tunneli tms, >20m), mutta ei liikaa (<2km virheet)
+        if ((speedKmh > 3 || dist > 0.02) && dist < 2.0) { 
             totalDistance += dist;
         }
     }
-    lastLatLng = { lat, lng };
+    
+    // Päivitetään sijaintimuisti vain jos liikettä on
+    if (!lastLatLng || speedKmh > 0 || isDriving) {
+        lastLatLng = { lat, lng };
 
-    // 3. Päivitä Kartta (Vain jos se on näkyvissä, säästää tehoja)
-    const newLatLng = new L.LatLng(lat, lng);
-    marker.setLatLng(newLatLng);
-    if (isMapMode) {
-        map.setView(newLatLng, 17);
-        mapSpeedEl.innerText = Math.round(speedKmh);
-        mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
+        // 3. Päivitä Kartta (vain jos karttanäkymä on auki)
+        const newLatLng = new L.LatLng(lat, lng);
+        marker.setLatLng(newLatLng);
+        if (isMapMode) {
+            map.setView(newLatLng, 17);
+            mapSpeedEl.innerText = Math.round(speedKmh);
+            mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
+        }
     }
 
     // 4. Päivitä Dashboard (Aina taustalla)
@@ -219,6 +227,7 @@ function updateDashboardUI(spd, max, dist, time, alt) {
     dashAltEl.innerText = alt;
 }
 
+// Etäisyys (Haversine formula)
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   var R = 6371; 
   var dLat = deg2rad(lat2-lat1);  
