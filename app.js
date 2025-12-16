@@ -18,7 +18,7 @@ const splashScreen = document.getElementById('splash-screen');
 const loginView = document.getElementById('login-view');
 const appContainer = document.getElementById('app-container');
 
-// Menu elementit
+// Menu
 const menuBtn = document.getElementById('btn-menu-toggle');
 const mainMenu = document.getElementById('main-menu');
 const menuUserName = document.getElementById('user-name');
@@ -39,13 +39,17 @@ const navBtns = {
     help: document.getElementById('nav-help')
 };
 
-// Modal Elementit (Tallenna-ikkuna)
+// Modalit
 const saveModal = document.getElementById('save-modal');
 const modalDistEl = document.getElementById('modal-dist');
 const modalTimeEl = document.getElementById('modal-time');
 const modalSubjectEl = document.getElementById('modal-subject');
 const btnModalSave = document.getElementById('btn-modal-save');
 const btnModalCancel = document.getElementById('btn-modal-cancel');
+
+const deleteModal = document.getElementById('delete-modal');
+const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
+const btnDeleteCancel = document.getElementById('btn-delete-cancel');
 
 // --- MUUTTUJAT ---
 let currentUser = null; 
@@ -60,11 +64,14 @@ let pauseStartTime = null;
 let totalPauseTime = 0;    
 
 let timerInterval = null;
-let tempDriveData = null; // Väliaikainen tallennus modalille
+let tempDriveData = null; 
+let deleteKey = null; // Tallennettavan poistettavan ajon avain
 
 let maxSpeed = 0;
 let totalDistance = 0;
 let lastLatLng = null;
+
+let allHistoryData = []; // Tässä pidetään kaikki ladatut ajot muistissa
 
 // UI Elementit
 const dashSpeedEl = document.getElementById('dash-speed');
@@ -89,7 +96,7 @@ const btnResume = document.getElementById('btn-resume');
 const btnStopRec = document.getElementById('btn-stop-rec');
 
 
-// --- AUTH (KIRJAUTUMINEN) ---
+// --- AUTH ---
 auth.onAuthStateChanged((user) => {
     if (splashScreen) setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
 
@@ -98,7 +105,6 @@ auth.onAuthStateChanged((user) => {
         loginView.style.display = 'none';
         appContainer.style.display = 'flex';
         
-        // Päivitä Menu
         menuUserName.innerText = user.displayName || user.email;
         if (user.photoURL) {
             menuUserAvatar.src = user.photoURL;
@@ -122,14 +128,12 @@ document.getElementById('btn-logout').addEventListener('click', () => {
     if(confirm("Kirjaudu ulos?")) auth.signOut().then(() => location.reload());
 });
 
-// "Lue ohjeet" -nappi kirjautumissivulla
 document.getElementById('btn-login-help').addEventListener('click', () => {
     loginView.style.display = 'none';
     appContainer.style.display = 'flex';
     switchView('help');
     document.querySelector('.controls-container').style.display = 'none';
     
-    // Lisää takaisin-nappi dynaamisesti
     const backBtn = document.createElement('button');
     backBtn.innerText = "← Takaisin kirjautumiseen";
     backBtn.className = 'action-btn blue-btn';
@@ -143,7 +147,7 @@ document.getElementById('btn-login-help').addEventListener('click', () => {
 });
 
 
-// --- MENU LOGIIKKA ---
+// --- MENU ---
 menuBtn.addEventListener('click', () => {
     if (mainMenu.style.display === 'none') {
         mainMenu.style.display = 'flex';
@@ -152,7 +156,6 @@ menuBtn.addEventListener('click', () => {
     }
 });
 
-// --- NAVIGOINTI ---
 function switchView(viewName) {
     mainMenu.style.display = 'none';
     Object.values(views).forEach(el => el.style.display = 'none');
@@ -188,8 +191,7 @@ L.control.layers({ "Kartta": streetMap, "Satelliitti": satelliteMap }).addTo(map
 let marker = L.circleMarker([64.0, 26.0], { color: '#2979ff', fillColor: '#2979ff', fillOpacity: 0.8, radius: 8 }).addTo(map);
 
 
-// --- GPS, TALLENNUS JA TAUKO ---
-
+// --- GPS ---
 document.getElementById('btn-activate-gps').addEventListener('click', () => {
     if (!isGPSActive) {
         startGPS();
@@ -199,13 +201,11 @@ document.getElementById('btn-activate-gps').addEventListener('click', () => {
     }
 });
 
-// 1. ALOITA
 btnStartRec.addEventListener('click', () => {
     isRecording = true;
     isPaused = false;
     startTime = new Date();
     totalPauseTime = 0;
-    
     maxSpeed = 0;
     totalDistance = 0;
     updateDashboardUI(0, 0, 0, 0, 0, 0);
@@ -220,52 +220,40 @@ btnStartRec.addEventListener('click', () => {
     timerInterval = setInterval(updateTimer, 1000);
 });
 
-// 2. TAUKO
 btnPause.addEventListener('click', () => {
     isPaused = true;
     pauseStartTime = new Date();
     clearInterval(timerInterval);
-    
     btnPause.style.display = 'none';
     btnResume.style.display = 'inline-block';
     statusEl.innerText = "⏸ TAUKO";
     statusEl.style.color = "#fbc02d";
 });
 
-// 3. JATKA
 btnResume.addEventListener('click', () => {
     isPaused = false;
     const now = new Date();
     totalPauseTime += (now - pauseStartTime);
-    
     btnResume.style.display = 'none';
     btnPause.style.display = 'inline-block';
     statusEl.innerText = "🔴 TALLENNETAAN";
     statusEl.style.color = "#ff4444";
-    
     timerInterval = setInterval(updateTimer, 1000);
 });
 
-// 4. LOPETA (AVAA MODAL)
 btnStopRec.addEventListener('click', () => {
     if (!isRecording) return;
-
-    // Pysäytä heti mittaus
     clearInterval(timerInterval);
     
-    // Jos oltiin tauolla, laske viimeinen tauko mukaan
     if (isPaused && pauseStartTime) {
         totalPauseTime += (new Date() - pauseStartTime);
     }
 
     const endTime = new Date();
-    const fullDuration = endTime - startTime;
-    const activeDurationMs = fullDuration - totalPauseTime;
-    
+    const activeDurationMs = (endTime - startTime) - totalPauseTime;
     const durationHours = activeDurationMs / (1000 * 60 * 60);
     let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
 
-    // Tallenna tiedot väliaikaiseen muuttujaan
     tempDriveData = {
         type: 'end_drive',
         startTime: startTime.toISOString(),
@@ -277,21 +265,18 @@ btnStopRec.addEventListener('click', () => {
         subject: "" 
     };
 
-    // Päivitä Modalin tiedot
     const mins = Math.floor(activeDurationMs / 60000);
     modalDistEl.innerText = totalDistance.toFixed(2) + " km";
     modalTimeEl.innerText = mins + " min";
-    modalSubjectEl.value = ""; // Tyhjennä vanha teksti
+    modalSubjectEl.value = ""; 
 
-    // Näytä Modal
     saveModal.style.display = 'flex';
     modalSubjectEl.focus();
 });
 
-// MODAL NAPIT
 btnModalSave.addEventListener('click', () => {
     if (tempDriveData) {
-        tempDriveData.subject = modalSubjectEl.value; // Ota käyttäjän kirjoittama aihe
+        tempDriveData.subject = modalSubjectEl.value;
         saveToFirebase(tempDriveData);
     }
     saveModal.style.display = 'none';
@@ -305,6 +290,25 @@ btnModalCancel.addEventListener('click', () => {
     }
 });
 
+// UUSI: Poisto Modal Logiikka
+function openDeleteModal(key) {
+    deleteKey = key;
+    deleteModal.style.display = 'flex';
+}
+
+btnDeleteConfirm.addEventListener('click', () => {
+    if (deleteKey && currentUser) {
+        db.ref('ajopaivakirja/' + currentUser.uid + '/' + deleteKey).remove();
+        deleteModal.style.display = 'none';
+        deleteKey = null;
+    }
+});
+
+btnDeleteCancel.addEventListener('click', () => {
+    deleteModal.style.display = 'none';
+    deleteKey = null;
+});
+
 function resetRecordingUI() {
     isRecording = false;
     isPaused = false;
@@ -314,8 +318,6 @@ function resetRecordingUI() {
     activeRecBtns.style.display = 'none';
     statusEl.innerText = "GPS Päällä";
     statusEl.style.color = "var(--subtext-color)";
-    
-    // Nollaa mittaristo
     updateDashboardUI(0, 0, 0, 0, 0, 0);
     dashTimeEl.innerText = "00:00";
 }
@@ -356,7 +358,6 @@ function updatePosition(position) {
 
     let currentAvg = 0;
 
-    // Matka ja tilastot päivittyvät vain jos TALLENNETAAN EIKÄ OLLA TAUOLLA
     if (isRecording && !isPaused) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
@@ -388,111 +389,167 @@ function updatePosition(position) {
 
     updateDashboardUI(speedKmh, maxSpeed, totalDistance, null, alt, currentAvg);
     dashCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
-    
     if (isGPSActive && wakeLock === null) requestWakeLock();
 }
 
-// --- HISTORIA (POMMINVARMA VERSIO) ---
+// --- HISTORIA (SUODATUS + POISTO) ---
+const filterEl = document.getElementById('history-filter');
+
+filterEl.addEventListener('change', () => {
+    renderHistoryList(); // Piirretään lista uudelleen, kun valinta muuttuu
+});
+
 function loadHistory() {
     const logList = document.getElementById('log-list');
     
     if (!currentUser) {
-        logList.innerHTML = "<p>Kirjaudu sisään nähdäksesi historian.</p>";
+        logList.innerHTML = "<p>Kirjaudu sisään.</p>";
         return;
     }
     
     logList.innerHTML = "<div class='loading'>Haetaan tietoja...</div>";
     
     db.ref('ajopaivakirja/' + currentUser.uid).off();
-    const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).limitToLast(50);
+    const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).limitToLast(100);
 
     historyRef.on('value', (snapshot) => {
-        logList.innerHTML = ""; 
+        allHistoryData = []; // Nollataan muisti
         
         if (!snapshot.exists()) {
-            logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
+            renderHistoryList();
             return;
         }
 
-        const logs = [];
         snapshot.forEach(child => {
             const data = child.val();
             if (data && typeof data === 'object') {
-                logs.push({ key: child.key, ...data });
+                allHistoryData.push({ key: child.key, ...data });
             }
         });
 
-        // Järjestetään itse Javascriptissä (uusin ensin)
-        logs.sort((a, b) => {
+        // Järjestetään uusin ensin
+        allHistoryData.sort((a, b) => {
             const dateA = new Date(a.startTime || 0);
             const dateB = new Date(b.startTime || 0);
             return dateB - dateA; 
         });
 
-        let renderCount = 0;
-        
-        logs.forEach(drive => {
-            try {
-                let dateStr = "Aika puuttuu";
-                let start = null;
-
-                if (drive.startTime) {
-                    start = new Date(drive.startTime);
-                    if (!isNaN(start.getTime())) {
-                        dateStr = start.toLocaleDateString('fi-FI') + ' ' + start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
-                    }
-                }
-
-                let durationMinutes = 0;
-                if (drive.durationMs) {
-                    durationMinutes = Math.floor(drive.durationMs / 60000);
-                } else if (drive.endTime && start) {
-                    const end = new Date(drive.endTime);
-                    if (!isNaN(end.getTime())) {
-                        durationMinutes = Math.floor((end - start) / 60000);
-                    }
-                }
-                
-                const avgSpeedDisplay = (drive.avgSpeed !== undefined) ? drive.avgSpeed : "-";
-                const distanceDisplay = (drive.distanceKm !== undefined) ? drive.distanceKm : "0.00";
-                const maxSpeedDisplay = (drive.maxSpeed !== undefined) ? drive.maxSpeed : "0";
-                const subjectText = (drive.subject !== undefined) ? drive.subject : "";
-
-                const card = document.createElement('div');
-                card.className = 'log-card';
-                card.innerHTML = `
-                    <div class="log-header">
-                        <div class="log-date">${dateStr}</div>
-                        <button class="delete-btn" onclick="deleteDrive('${drive.key}')">🗑</button>
-                    </div>
-                    <div class="log-stats">
-                        <div><span class="stat-label">KM</span>${distanceDisplay}</div>
-                        <div><span class="stat-label">AIKA</span>${durationMinutes} min</div>
-                        <div><span class="stat-label">MAX</span>${maxSpeedDisplay}</div>
-                        <div><span class="stat-label">Ø KM/H</span>${avgSpeedDisplay}</div>
-                    </div>
-                    <input type="text" class="subject-input" placeholder="Kirjoita aihe..." value="${subjectText}" onchange="updateSubject('${drive.key}', this.value)">
-                `;
-                logList.appendChild(card);
-                renderCount++;
-
-            } catch (err) {
-                console.error("Virhe yhden rivin piirtämisessä (skipataan):", err);
-            }
-        });
-        
-        if (renderCount === 0) {
-            logList.innerHTML = "<p style='text-align:center; color:orange;'>Tietoja löytyi, mutta ne olivat virheellisiä.</p>";
-        }
+        populateFilter(); // Päivitä kuukausivalikko
+        renderHistoryList(); // Piirrä lista
 
     }, (error) => {
         console.error("Latausvirhe:", error);
-        logList.innerHTML = `<p style="color:red; text-align:center;">Latausvirhe: ${error.message}</p>`;
+        logList.innerHTML = `<p style="color:red; text-align:center;">Latausvirhe.</p>`;
     });
 }
 
+function populateFilter() {
+    // Tyhjennetään valikko (paitsi "Kaikki")
+    filterEl.innerHTML = '<option value="all">Kaikki ajot</option>';
+    
+    const months = new Set();
+    
+    allHistoryData.forEach(drive => {
+        if (drive.startTime) {
+            const d = new Date(drive.startTime);
+            if (!isNaN(d.getTime())) {
+                // Luodaan avain esim "2025-12" ja näkyvä teksti "Joulukuu 2025"
+                const key = d.getFullYear() + '-' + (d.getMonth() + 1);
+                const label = d.toLocaleString('fi-FI', { month: 'long', year: 'numeric' });
+                // Capitalize first letter
+                const finalLabel = label.charAt(0).toUpperCase() + label.slice(1);
+                
+                months.add(JSON.stringify({key, label: finalLabel}));
+            }
+        }
+    });
+
+    // Lisätään uniikit kuukaudet valikkoon
+    months.forEach(m => {
+        const obj = JSON.parse(m);
+        const option = document.createElement('option');
+        option.value = obj.key;
+        option.innerText = obj.label;
+        filterEl.appendChild(option);
+    });
+}
+
+function renderHistoryList() {
+    const logList = document.getElementById('log-list');
+    logList.innerHTML = "";
+    
+    if (allHistoryData.length === 0) {
+        logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
+        return;
+    }
+
+    const selectedMonth = filterEl.value; // "all" tai "2025-12"
+
+    let renderCount = 0;
+
+    allHistoryData.forEach(drive => {
+        try {
+            let start = null;
+            let dateStr = "Aika puuttuu";
+            
+            if (drive.startTime) {
+                start = new Date(drive.startTime);
+                if (!isNaN(start.getTime())) {
+                    dateStr = start.toLocaleDateString('fi-FI') + ' ' + start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+                    
+                    // SUODATUS LOGIIKKA
+                    if (selectedMonth !== 'all') {
+                        const driveKey = start.getFullYear() + '-' + (start.getMonth() + 1);
+                        if (driveKey !== selectedMonth) return; // Skipataan väärä kuukausi
+                    }
+                }
+            }
+
+            let durationMinutes = 0;
+            if (drive.durationMs) {
+                durationMinutes = Math.floor(drive.durationMs / 60000);
+            } else if (drive.endTime && start) {
+                const end = new Date(drive.endTime);
+                if (!isNaN(end.getTime())) {
+                    durationMinutes = Math.floor((end - start) / 60000);
+                }
+            }
+            
+            const avgSpeedDisplay = (drive.avgSpeed !== undefined) ? drive.avgSpeed : "-";
+            const distanceDisplay = (drive.distanceKm !== undefined) ? drive.distanceKm : "0.00";
+            const maxSpeedDisplay = (drive.maxSpeed !== undefined) ? drive.maxSpeed : "0";
+            const subjectText = (drive.subject !== undefined) ? drive.subject : "";
+
+            const card = document.createElement('div');
+            card.className = 'log-card';
+            card.innerHTML = `
+                <div class="log-header">
+                    <div class="log-date">${dateStr}</div>
+                    <button class="delete-btn" onclick="openDeleteModal('${drive.key}')">🗑</button>
+                </div>
+                <div class="log-stats">
+                    <div><span class="stat-label">KM</span>${distanceDisplay}</div>
+                    <div><span class="stat-label">AIKA</span>${durationMinutes} min</div>
+                    <div><span class="stat-label">MAX</span>${maxSpeedDisplay}</div>
+                    <div><span class="stat-label">Ø KM/H</span>${avgSpeedDisplay}</div>
+                </div>
+                <input type="text" class="subject-input" placeholder="Kirjoita aihe..." value="${subjectText}" onchange="updateSubject('${drive.key}', this.value)">
+            `;
+            logList.appendChild(card);
+            renderCount++;
+
+        } catch (err) { console.error(err); }
+    });
+
+    if (renderCount === 0) {
+        logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei ajoja valittuna ajanjaksona.</p>";
+    }
+}
+
+// Globaalit funktiot
 window.updateSubject = (key, text) => { if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text }); };
-window.deleteDrive = (key) => { if(confirm("Poista?")) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).remove(); };
+// Tämä funktio ohjaa nyt modaaliin (määritelty ylempänä app.js:ssä)
+window.openDeleteModal = openDeleteModal; 
 
 // --- APUFUNKTIOT ---
 document.getElementById('btn-theme').addEventListener('click', () => document.body.classList.toggle('light-theme'));
@@ -535,16 +592,11 @@ function toGeocacheFormat(deg, isLat) {
     return `${isLat?(deg>=0?"N":"S"):(deg>=0?"E":"W")} ${d}° ${m.toFixed(3)}`;
 }
 
-// PÄIVITETTY TALLENNUSFUNKTIO (Virheilmoitukset)
 function saveToFirebase(data) {
     if (currentUser) {
         db.ref('ajopaivakirja/' + currentUser.uid).push().set(data)
-            .then(() => {
-                console.log("Tallennus onnistui"); 
-            })
-            .catch((error) => {
-                alert("VIRHE TALLENNUKSESSA:\n" + error.message + "\n\nTarkista Firebasen Rules-asetukset.");
-            });
+            .then(() => { console.log("Tallennus onnistui"); })
+            .catch((error) => { alert("VIRHE: " + error.message); });
     } else {
         alert("Virhe: Et ole kirjautunut sisään!");
     }
