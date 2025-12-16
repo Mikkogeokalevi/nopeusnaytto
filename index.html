@@ -132,10 +132,27 @@
             <div id="history-view" class="view-section watermark-bg" style="display:none; overflow-y:auto; padding:20px;">
                 <h2 style="text-align:center; color:var(--accent-color);">Ajohistoria</h2>
                 
-                <div style="margin-bottom: 15px; text-align: center;">
-                    <select id="history-filter" class="subject-input" style="width: auto; padding: 8px;">
+                <div style="margin-bottom: 10px; text-align: center;">
+                    <select id="history-filter" class="subject-input" style="width: auto; padding: 8px; font-weight:bold;">
                         <option value="all">Kaikki ajot</option>
                     </select>
+                </div>
+
+                <div id="history-summary" class="summary-box" style="display:none;">
+                    <div class="summary-item">
+                        <span class="summary-val" id="sum-km">0</span>
+                        <span class="summary-label">km</span>
+                    </div>
+                    <div class="summary-sep">|</div>
+                    <div class="summary-item">
+                        <span class="summary-val" id="sum-count">0</span>
+                        <span class="summary-label">kpl</span>
+                    </div>
+                    <div class="summary-sep">|</div>
+                    <div class="summary-item">
+                        <span class="summary-val" id="sum-time">0h</span>
+                        <span class="summary-label">aika</span>
+                    </div>
                 </div>
 
                 <div id="log-list">
