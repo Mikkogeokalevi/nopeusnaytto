@@ -13,7 +13,7 @@ if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const db = firebase.database();
 const auth = firebase.auth(); 
 
-// DOM Elementit
+// Elementit
 const splashScreen = document.getElementById('splash-screen');
 const loginView = document.getElementById('login-view');
 const appContainer = document.getElementById('app-container');
@@ -39,19 +39,28 @@ const navBtns = {
     help: document.getElementById('nav-help')
 };
 
-// --- MUUTTUJAT ---
+// Modal Elementit
+const saveModal = document.getElementById('save-modal');
+const modalDistEl = document.getElementById('modal-dist');
+const modalTimeEl = document.getElementById('modal-time');
+const modalSubjectEl = document.getElementById('modal-subject');
+const btnModalSave = document.getElementById('btn-modal-save');
+const btnModalCancel = document.getElementById('btn-modal-cancel');
+
+// Muuttujat
 let currentUser = null; 
 let watchId = null;
 let isGPSActive = false;
 let isRecording = false; 
-let isPaused = false; // UUSI: Taukotila
+let isPaused = false; 
 
 let wakeLock = null;
 let startTime = null;
-let pauseStartTime = null; // UUSI: Milloin tauko alkoi
-let totalPauseTime = 0;    // UUSI: Paljonko taukoja yhteensä
+let pauseStartTime = null; 
+let totalPauseTime = 0;    
 
 let timerInterval = null;
+let tempDriveData = null; // Väliaikainen tallennus modalille
 
 let maxSpeed = 0;
 let totalDistance = 0;
@@ -197,9 +206,8 @@ btnStartRec.addEventListener('click', () => {
     totalDistance = 0;
     updateDashboardUI(0, 0, 0, 0, 0, 0);
     
-    // UI Muutokset
     btnStartRec.style.display = 'none';
-    activeRecBtns.style.display = 'flex'; // Näytä Tauko/Stop ryhmä
+    activeRecBtns.style.display = 'flex';
     btnPause.style.display = 'inline-block';
     btnResume.style.display = 'none';
     
@@ -212,19 +220,18 @@ btnStartRec.addEventListener('click', () => {
 btnPause.addEventListener('click', () => {
     isPaused = true;
     pauseStartTime = new Date();
-    clearInterval(timerInterval); // Pysäytä visuaalinen kello
+    clearInterval(timerInterval);
     
     btnPause.style.display = 'none';
     btnResume.style.display = 'inline-block';
     statusEl.innerText = "⏸ TAUKO";
-    statusEl.style.color = "#fbc02d"; // Keltainen
+    statusEl.style.color = "#fbc02d";
 });
 
 // 3. JATKA
 btnResume.addEventListener('click', () => {
     isPaused = false;
     const now = new Date();
-    // Lisää tauon kesto kokonaisvähennykseen
     totalPauseTime += (now - pauseStartTime);
     
     btnResume.style.display = 'none';
@@ -235,50 +242,84 @@ btnResume.addEventListener('click', () => {
     timerInterval = setInterval(updateTimer, 1000);
 });
 
-// 4. LOPETA
+// 4. LOPETA (AVAA MODAL)
 btnStopRec.addEventListener('click', () => {
-    if (isRecording) {
-        // Jos lopetetaan suoraan tauolta, lisätään viimeinen tauko aikoihin
-        if (isPaused) {
-            const now = new Date();
-            totalPauseTime += (now - pauseStartTime);
-        }
+    if (!isRecording) return;
 
-        const endTime = new Date();
-        const fullDuration = endTime - startTime;
-        const activeDurationMs = fullDuration - totalPauseTime; // Oikea ajoaika
-        
-        const durationHours = activeDurationMs / (1000 * 60 * 60);
-        let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
-
-        saveToFirebase({
-            type: 'end_drive',
-            startTime: startTime.toISOString(),
-            endTime: endTime.toISOString(),
-            distanceKm: totalDistance.toFixed(2),
-            maxSpeed: maxSpeed.toFixed(1),
-            avgSpeed: avgSpeed.toFixed(1),
-            durationMs: activeDurationMs, // Tallennetaan aktiivinen aika
-            subject: "" 
-        });
+    // Pysäytä heti mittaus, jotta luvut eivät juokse modalin aikana
+    clearInterval(timerInterval);
+    
+    // Jos oltiin tauolla, laske viimeinen tauko mukaan
+    if (isPaused && pauseStartTime) {
+        totalPauseTime += (new Date() - pauseStartTime);
     }
-    stopRecording();
+
+    const endTime = new Date();
+    const fullDuration = endTime - startTime;
+    const activeDurationMs = fullDuration - totalPauseTime;
+    
+    const durationHours = activeDurationMs / (1000 * 60 * 60);
+    let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
+
+    // Tallenna tiedot väliaikaiseen muuttujaan
+    tempDriveData = {
+        type: 'end_drive',
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        distanceKm: totalDistance.toFixed(2),
+        maxSpeed: maxSpeed.toFixed(1),
+        avgSpeed: avgSpeed.toFixed(1),
+        durationMs: activeDurationMs,
+        subject: "" 
+    };
+
+    // Päivitä Modalin tiedot
+    const mins = Math.floor(activeDurationMs / 60000);
+    modalDistEl.innerText = totalDistance.toFixed(2) + " km";
+    modalTimeEl.innerText = mins + " min";
+    modalSubjectEl.value = ""; // Tyhjennä vanha teksti
+
+    // Näytä Modal
+    saveModal.style.display = 'flex';
+    modalSubjectEl.focus(); // Fokusoi kirjoituskenttään
 });
 
-function stopRecording() {
+// MODAL NAPIT
+btnModalSave.addEventListener('click', () => {
+    if (tempDriveData) {
+        tempDriveData.subject = modalSubjectEl.value; // Ota käyttäjän kirjoittama aihe
+        saveToFirebase(tempDriveData);
+    }
+    saveModal.style.display = 'none';
+    resetRecordingUI();
+});
+
+btnModalCancel.addEventListener('click', () => {
+    if(confirm("Haluatko varmasti hylätä tämän ajon?")) {
+        saveModal.style.display = 'none';
+        resetRecordingUI();
+    }
+});
+
+function resetRecordingUI() {
     isRecording = false;
     isPaused = false;
-    clearInterval(timerInterval);
+    tempDriveData = null;
     
     btnStartRec.style.display = 'inline-block';
     activeRecBtns.style.display = 'none';
-    
     statusEl.innerText = "GPS Päällä";
     statusEl.style.color = "var(--subtext-color)";
+    
+    // Nollaa mittaristo
+    updateDashboardUI(0, 0, 0, 0, 0, 0);
+    dashTimeEl.innerText = "00:00";
 }
 
 function stopGPSAndRec() {
-    stopRecording();
+    isRecording = false;
+    isPaused = false;
+    clearInterval(timerInterval);
     isGPSActive = false;
     navigator.geolocation.clearWatch(watchId);
 }
@@ -320,7 +361,6 @@ function updatePosition(position) {
         }
         
         if (startTime) {
-            // Laske aktiivinen aika lennosta
             const now = new Date();
             const activeTimeMs = (now - startTime) - totalPauseTime;
             const durationHrs = activeTimeMs / (1000 * 60 * 60);
@@ -328,7 +368,6 @@ function updatePosition(position) {
         }
     }
     
-    // Kartta päivittyy aina kun GPS on päällä (myös tauolla, jotta näet missä olet)
     if (!lastLatLng || speedKmh > 0 || isGPSActive) {
         lastLatLng = { lat, lng };
         const newLatLng = new L.LatLng(lat, lng);
@@ -414,7 +453,6 @@ updateClockAndDate();
 function updateTimer() {
     if (!startTime) return;
     const now = new Date();
-    // Aika = Nyt - Aloitus - Tauot
     const diff = now - startTime - totalPauseTime;
     
     const mins = Math.floor((diff % 3600000) / 60000);
