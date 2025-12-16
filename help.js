@@ -1,18 +1,24 @@
+// Tässä muuttujassa on koko ohjesivun sisältö HTML-muodossa.
+// Voit muokata tekstejä tässä vapaasti.
+
 const helpContent = `
-    <h2 style="text-align:center; color:var(--accent-color);">Käyttöopas</h2>
+    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 20px;">Käyttöopas</h2>
     
     <div class="help-section">
-        <h3>📲 1. Asennus (Tärkeä!)</h3>
+        <h3>📲 1. Asennus ja Käyttöönotto</h3>
         <div class="help-step">
-            Tämä on PWA-sovellus. Parhaan käyttökokemuksen saat, kun asennat sen puhelimeesi.
+            Tämä on <strong>PWA-sovellus</strong> (Progressive Web App). Se on suunniteltu toimimaan kuin oikea sovellus, kun lisäät sen puhelimesi kotivalikkoon.
         </div>
         <div class="help-step">
             <strong>iPhone (iOS):</strong><br>
-            Paina selaimen alalaidan "Jaa"-painiketta (neliö ja nuoli) -> Valitse "Lisää Koti-valikkoon" (Add to Home Screen).
+            1. Paina selaimen alalaidan "Jaa"-painiketta (neliö, josta nuoli ylös).<br>
+            2. Selaa valikkoa alaspäin.<br>
+            3. Valitse <strong>"Lisää Koti-valikkoon"</strong> (Add to Home Screen).
         </div>
         <div class="help-step">
             <strong>Android (Chrome):</strong><br>
-            Paina oikean yläkulman valikkoa (kolme pistettä) -> Valitse "Asenna sovellus" tai "Lisää aloitusnäyttöön".
+            1. Paina selaimen oikean yläkulman valikkoa (kolme pistettä).<br>
+            2. Valitse <strong>"Asenna sovellus"</strong> tai "Lisää aloitusnäyttöön".
         </div>
     </div>
 
@@ -20,71 +26,91 @@ const helpContent = `
         <h3>🚀 2. Aloitus</h3>
         <div class="help-step">
             <strong>Kirjautuminen:</strong>
-            Sovellus vaatii Google-kirjautumisen. Tämä varmistaa, että ajosi tallentuvat vain sinun henkilökohtaiseen tietokantaasi.
+            Sovellus vaatii Google-kirjautumisen. Tämä on tietoturvaominaisuus: se varmistaa, että ajosi tallentuvat henkilökohtaiseen, suojattuun tietokantaan. Vain sinä näet omat ajosi.
         </div>
         <div class="help-step">
             <strong>GPS-lupa:</strong>
-            Kun käynnistät mittariston, vastaa <strong>Salli</strong> (Allow), kun selain kysyy sijaintia.
+            Kun käynnistät mittariston ensimmäistä kertaa, selain kysyy lupaa käyttää sijaintitietoja. Vastaa ehdottomasti <strong>Salli</strong> (Allow). Ilman tätä nopeusmittaus ei toimi.
         </div>
     </div>
 
     <div class="help-section">
-        <h3>🏎️ 3. Mittaristo ja Tallennus</h3>
+        <h3>🏎️ 3. Mittaristo ja Ajaminen</h3>
         <div class="help-step">
-            <strong>Vapaa ajo:</strong> 
-            Painamalla "Aktivoi Nopeusnäyttö" näet nopeuden ja sijainnin, mutta matka ei vielä tallennu muistiin.
+            <strong>Vapaa ajo (Ei tallennusta):</strong> 
+            Kun painat "Aktivoi Nopeusnäyttö", näet reaaliaikaisen nopeuden, huippunopeuden ja koordinaatit. Tässä tilassa matka ei tallennu historiaan.
         </div>
         <div class="help-step">
             <strong>🔴 Tallennus (REC):</strong><br>
-            1. Paina vihreää <strong>ALOITA TALLENNUS</strong> -nappia.<br>
-            2. Matkamittari nollautuu ja alkaa mitata.<br>
-            3. Ajon lopuksi paina punaista <strong>LOPETA & TALLENNA</strong> -nappia.
+            Kun haluat luoda virallisen merkinnän ajopäiväkirjaan:<br>
+            1. Paina vihreää <strong>ALOITA TALLENNUS</strong> -painiketta.<br>
+            2. Matkamittari nollautuu ja alkaa mitata matkaa.<br>
+            3. Näytön alalaidassa lukee "🔴 REC".<br>
+            4. Ajon lopuksi paina punaista <strong>LOPETA & TALLENNA</strong> -painiketta.
         </div>
         <div class="help-step">
-            <em>Huom: Sovellus suodattaa GPS-häiriöt (liikennevaloissa seisominen) pois matkakertymästä.</em>
+            <strong>Älykäs mittaus:</strong> 
+            Sovellus suodattaa GPS-häiriöt. Jos seisot liikennevaloissa ja GPS "hyppii" paikallaan, mittari ei kerrytä turhia metrejä.
         </div>
     </div>
 
     <div class="help-section">
         <h3>🗺️ 4. Kartta</h3>
         <div class="help-step">
-            Pääset karttaan yläpalkin ikonista tai painamalla mittariston reunoja.
+            <strong>Avaaminen:</strong> 
+            Pääset karttaan painamalla yläpalkin 🗺-ikonia TAI napauttamalla mittariston vasenta tai oikeaa reunaa ("< KARTTA >").
         </div>
         <div class="help-step">
-            <strong>Älykäs Zoom:</strong> Kartta zoomaa lähelle kaupunkivauhdissa ja kauemmas moottoritiellä.
+            <strong>Älykäs Zoom:</strong> 
+            Kartta elää vauhdin mukaan:<br>
+            • Hidas vauhti (< 50 km/h) = Zoom lähellä (kaupunkiajo).<br>
+            • Kova vauhti (> 90 km/h) = Zoom kaukana (moottoritie), jotta näet tulevat mutkat.
         </div>
         <div class="help-step">
-            <strong>Paluu:</strong> Alareunassa on iso nappi, jolla pääset takaisin mittaristoon.
+            <strong>Paluu mittaristoon:</strong> 
+            Kartan alareunassa on iso "🏎️ MITTARISTO" -nappi, josta pääset nopeasti takaisin nopeusnäyttöön.
+        </div>
+        <div class="help-step">
+            <strong>Satelliittikuva:</strong> 
+            Kartan oikeassa yläkulmassa on kerrosvalikko (pieni neliöpino), josta voit vaihtaa satelliittinäkymään.
         </div>
     </div>
 
     <div class="help-section">
-        <h3>📋 5. Historia</h3>
+        <h3>📋 5. Historia ja Muokkaus</h3>
         <div class="help-step">
-            Selaa vanhoja ajoja lehtiö-ikonista (📋).
+            Paina yläpalkin lehtiö-ikonia (📋) nähdäksesi ajohistorian. Uusin ajo on listalla ylimpänä.
         </div>
         <div class="help-step">
-            <strong>Muokkaus:</strong> Kirjoita "Aihe"-kenttään esim. "Työmatka". Tieto tallentuu automaattisesti, kun lopetat kirjoittamisen.
+            <strong>Aiheen lisääminen:</strong> 
+            Jokaisessa historiakortissa on tekstikenttä "Aihe...". Kirjoita siihen esimerkiksi "Työmatka" tai "Mökkireissu". Tieto tallentuu automaattisesti heti, kun lopetat kirjoittamisen (klikkaat muualle tai painat enter).
         </div>
         <div class="help-step">
-            <strong>Poisto:</strong> Roskakori-ikoni poistaa virheellisen ajon pysyvästi.
+            <strong>Poistaminen:</strong> 
+            Voit poistaa virheellisen tallennuksen painamalla roskakori-ikonia (🗑). Sovellus kysyy varmistuksen ennen poistoa.
         </div>
     </div>
 
     <div class="help-section">
         <h3>⚙️ 6. Ongelmatilanteet</h3>
         <div class="help-step">
-            <strong>Näyttö sammuu?</strong> Sovellus yrittää pitää näytön päällä (Wake Lock). Jos poistut sovelluksesta ja palaat, lukitus aktivoituu uudelleen.
+            <strong>Näyttö sammuu ajon aikana?</strong><br>
+            Sovellus yrittää pitää näytön päällä (Wake Lock -toiminto). Jos kuitenkin käytät puhelinta toisessa sovelluksessa (esim. luet sähköpostia) ja palaat, selain on saattanut katkaista lukituksen. Sovellus yrittää aktivoida sen uudelleen palatessasi, mutta varminta on pitää sovellus aktiivisena ruudulla ajon ajan.
         </div>
         <div class="help-step">
-            <strong>GPS pätkii?</strong> Toimii huonosti sisätiloissa tai tunneleissa.
+            <strong>GPS ei toimi tai pätkii?</strong><br>
+            Varmista puhelimen asetuksista, että selaimella on lupa käyttää tarkkaa sijaintia. Sisätiloissa, tunneleissa tai korkeiden rakennusten keskellä GPS-signaali voi heiketä.
         </div>
     </div>
     
-    <div style="text-align: center; margin-top: 40px; color: #666; font-size: 12px; padding-bottom: 20px;">
-        Ajopäiväkirja Pro v2.2 - Ohjeet päivitetty
+    <div style="text-align: center; margin-top: 40px; color: #888; font-size: 12px; padding-bottom: 20px;">
+        Ajopäiväkirja Pro v2.3 &copy; 2024
     </div>
 `;
 
-// Tämä sijoittaa yllä olevan tekstin HTML-sivulle
-document.getElementById('help-view').innerHTML = helpContent;
+// Tämä rivi etsii index.html-tiedostosta kohdan <div id="help-view"> ja
+// syöttää yllä olevan tekstin sinne automaattisesti.
+const helpContainer = document.getElementById('help-view');
+if (helpContainer) {
+    helpContainer.innerHTML = helpContent;
+}
