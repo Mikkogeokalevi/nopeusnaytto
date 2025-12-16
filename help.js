@@ -47,7 +47,7 @@ const helpContent = `
         </div>
         
         <div class="help-step" style="border-left-color: #fbc02d;">
-            <strong>2. ⏸ TAUKO (Uusi):</strong><br>
+            <strong>2. ⏸ TAUKO (Valinnainen):</strong><br>
             Jos käyt kaupassa tai tankkaamassa, paina keltaista <strong>⏸ TAUKO</strong> -painiketta.
             <ul>
                 <li>Matkan ja ajan mittaus pysähtyy.</li>
@@ -58,8 +58,19 @@ const helpContent = `
         </div>
 
         <div class="help-step">
-            3. Ajon päätteeksi paina punaista <strong>⬛ LOPETA</strong> -painiketta. Tiedot siirtyvät pilveen ja tallentuvat historiaan.
+            3. Ajon päätteeksi paina punaista <strong>⬛ LOPETA</strong> -painiketta.
         </div>
+        
+        <div class="help-step">
+            <strong>4. 💾 Tallenna ja Nimeä:</strong><br>
+            Ruudulle aukeaa ikkuna, jossa näet yhteenvedon (km ja aika).
+            <ul>
+                <li>Kirjoita aihe (esim. "Työmatka").</li>
+                <li>Paina <strong>✅ Tallenna</strong> viedäksesi tiedot historiaan.</li>
+                <li>Paina <strong>❌ Hylkää</strong>, jos ajo oli virheellinen tai testi.</li>
+            </ul>
+        </div>
+        
         <div class="help-step">
             <em>Huom: Sovellus suodattaa automaattisesti pienet GPS-häiriöt liikennevaloissa seistessä.</em>
         </div>
@@ -84,7 +95,7 @@ const helpContent = `
             Paina valikosta "Historia" nähdäksesi ajetut matkat.
         </div>
         <div class="help-step">
-            <strong>Aiheen lisääminen:</strong> Jokaisessa kortissa on tekstikenttä "Kirjoita aihe...". Voit kirjoittaa siihen esim. "Työmatka" tai "Mökkireissu". Tieto tallentuu automaattisesti, kun lopetat kirjoittamisen (klikkaat muualle).
+            <strong>Muokkaus:</strong> Voit muuttaa ajon aihetta myös jälkikäteen kirjoittamalla uuden tekstin kenttään.
         </div>
         <div class="help-step">
             <strong>Poistaminen:</strong> Voit poistaa virheelliset ajot roskakori-ikonista (🗑). Sovellus kysyy varmistuksen.
@@ -106,7 +117,7 @@ const helpContent = `
     </div>
 
     <div style="text-align: center; margin-top: 40px; color: #666; font-size: 12px; padding-bottom: 20px;">
-        Ajopäiväkirja Pro v2.4
+        Ajopäiväkirja Pro v2.5
     </div>
 `;
 
