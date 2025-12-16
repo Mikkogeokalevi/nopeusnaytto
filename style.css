@@ -55,7 +55,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     display: flex; justify-content: space-between; align-items: center;
     padding: 5px 10px; background-color: var(--panel-bg);
     border-bottom: 1px solid var(--border-color); z-index: 2000;
-    height: 60px; box-sizing: border-box; flex-shrink: 0; /* Estää palkin lytistymisen */
+    height: 60px; box-sizing: border-box; flex-shrink: 0;
 }
 .header-logo { height: 40px; width: 40px; border-radius: 50%; border: 2px solid var(--accent-color); margin-right: 10px; }
 .user-avatar { height: 35px; width: 35px; border-radius: 50%; border: 1px solid var(--subtext-color); margin-left: 10px; }
@@ -72,20 +72,20 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .main-content { flex-grow: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
 .view-section { flex-grow: 1; display: flex; flex-direction: column; width: 100%; height: 100%; }
 
-/* MITTARISTO - KORJATTU ASETTELU */
+/* MITTARISTO */
 #dashboard-view { 
     align-items: center; 
-    justify-content: flex-start; /* Sisältö alkaa ylhäältä */
+    justify-content: flex-start; 
     padding: 10px; 
     position: relative; 
     overflow-y: auto; 
 }
 
-/* SIVUNAPIT - SIJOITETTU TARKASTI ISON NOPEUDEN VIEREEN */
+/* SIVUNAPIT */
 .side-tap-zone {
     position: absolute; 
-    top: 20px; /* Laskettu yläreunasta */
-    height: 110px; /* Lyhyempi korkeus, loppuu ennen laatikoita */
+    top: 20px; 
+    height: 110px; 
     width: 40px;
     display: flex; align-items: center; justify-content: center;
     background-color: rgba(41, 121, 255, 0.1); 
@@ -101,7 +101,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .huge-speed {
     font-size: 100px; font-weight: bold; color: var(--speed-color); line-height: 1;
     font-variant-numeric: tabular-nums; 
-    margin-top: 15px; /* Lisää tilaa ylhäälle */
+    margin-top: 15px; 
     margin-bottom: 5px;
     text-shadow: 0 0 15px rgba(41, 121, 255, 0.3);
 }
@@ -112,9 +112,9 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     display: grid; grid-template-columns: 1fr 1fr; gap: 10px; 
     width: 100%; max-width: 400px; 
     margin-bottom: 15px; 
-    margin-top: 20px; /* Varmistetaan väli ylhäällä oleviin nappeihin */
+    margin-top: 20px; 
     position: relative;
-    z-index: 60; /* Varmistetaan että on nappien päällä varmuuden vuoksi */
+    z-index: 60; 
 }
 
 .stat-card {
@@ -204,30 +204,28 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0); }
 }
 
-/* --- ALAREUNAKUVA (UUSI) --- */
+/* --- ALAREUNAKUVA (KORJATTU LOGIIKKA) --- */
 .bottom-branding {
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: flex-end; /* Asemointi alareunaan */
-    margin-top: auto;      /* Tämä työntää kuvan niin alas kuin tilaa riittää */
-    padding-top: 20px;     /* Väliä kelloon */
-    padding-bottom: 5px;   /* Väliä alapalkkiin */
+    align-items: flex-end;
+    margin-top: auto; /* Työntää alas */
+    padding-top: 20px;
+    padding-bottom: 5px;
+    z-index: 10;
 }
 
 .footer-img {
-    max-width: 85%;  /* Kuvan leveys suhteessa ruutuun */
-    height: auto;    /* Pitää kuvasuhteen oikeana */
-    display: none;   /* Piilotetaan oletuksena */
+    max-width: 70%; /* Pienennetty vähän 85->70% */
+    height: auto;
     object-fit: contain;
 }
 
-/* OLETUS (TUMMA TEEMA): Näytä vain tumman teeman kuva */
-body:not(.light-theme) .dark-mode-img {
-    display: block;
-}
+/* OLETUS (TUMMA): Piilota vaalea kuva, näytä tumma */
+.light-mode-img { display: none; }
+.dark-mode-img { display: block; }
 
-/* VAALEA TEEMA: Näytä vain vaalean teeman kuva */
-body.light-theme .light-mode-img {
-    display: block;
-}
+/* VAALEA TEEMA: Piilota tumma kuva, näytä vaalea */
+body.light-theme .dark-mode-img { display: none; }
+body.light-theme .light-mode-img { display: block; }
