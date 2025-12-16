@@ -17,7 +17,12 @@ const auth = firebase.auth();
 const splashScreen = document.getElementById('splash-screen');
 const loginView = document.getElementById('login-view');
 const appContainer = document.getElementById('app-container');
-const userPhoto = document.getElementById('user-photo');
+
+// Menu elementit
+const menuBtn = document.getElementById('btn-menu-toggle');
+const mainMenu = document.getElementById('main-menu');
+const menuUserName = document.getElementById('user-name');
+const menuUserAvatar = document.getElementById('user-photo');
 
 const views = {
     dashboard: document.getElementById('dashboard-view'),
@@ -51,10 +56,10 @@ const dashMaxSpeedEl = document.getElementById('dash-max-speed');
 const dashDistEl = document.getElementById('dash-dist');
 const dashTimeEl = document.getElementById('dash-time');
 const dashAltEl = document.getElementById('dash-alt');
-const dashAvgEl = document.getElementById('dash-avg'); // UUSI
+const dashAvgEl = document.getElementById('dash-avg'); 
 const dashCoordsEl = document.getElementById('dash-coords');
 const dashClockEl = document.getElementById('dash-clock');
-const dashDateEl = document.getElementById('dash-date'); // UUSI
+const dashDateEl = document.getElementById('dash-date'); 
 
 const mapSpeedEl = document.getElementById('map-speed');
 const mapCoordsEl = document.getElementById('map-coords');
@@ -68,12 +73,13 @@ auth.onAuthStateChanged((user) => {
         currentUser = user;
         loginView.style.display = 'none';
         appContainer.style.display = 'flex';
+        
+        // Päivitä Menuun käyttäjätiedot
+        menuUserName.innerText = user.displayName || user.email;
         if (user.photoURL) {
-            userPhoto.src = user.photoURL;
-            userPhoto.style.display = 'block';
-        } else {
-            userPhoto.style.display = 'none';
+            menuUserAvatar.src = user.photoURL;
         }
+
         if (views.map.style.display !== 'none') setTimeout(() => map.invalidateSize(), 200);
     } else {
         currentUser = null;
@@ -90,10 +96,25 @@ document.getElementById('btn-logout').addEventListener('click', () => {
     if(confirm("Kirjaudu ulos?")) auth.signOut().then(() => location.reload());
 });
 
+// --- MENU LOGIIKKA (UUSI) ---
+menuBtn.addEventListener('click', () => {
+    // Toggle menu
+    if (mainMenu.style.display === 'none') {
+        mainMenu.style.display = 'flex';
+    } else {
+        mainMenu.style.display = 'none';
+    }
+});
+
 // --- NAVIGOINTI ---
 function switchView(viewName) {
+    // Piilota menu navigoidessa
+    mainMenu.style.display = 'none';
+
     Object.values(views).forEach(el => el.style.display = 'none');
-    Object.values(navBtns).forEach(btn => btn.classList.remove('active-nav'));
+    
+    // Poista aktiivinen luokka kaikista menu-napeista
+    Object.values(navBtns).forEach(btn => btn.classList.remove('active-menu'));
 
     if (viewName === 'dashboard' || viewName === 'map') {
         views[viewName].style.display = 'flex';
@@ -101,7 +122,8 @@ function switchView(viewName) {
         views[viewName].style.display = 'block';
     }
     
-    if(navBtns[viewName]) navBtns[viewName].classList.add('active-nav');
+    // Aktivoi menu-nappi
+    if(navBtns[viewName]) navBtns[viewName].classList.add('active-menu');
 
     if (viewName === 'map') setTimeout(() => map.invalidateSize(), 100);
     if (viewName === 'history') loadHistory();
@@ -219,7 +241,6 @@ function updatePosition(position) {
             if ((speedKmh > 3 || dist > 0.02) && dist < 2.0) totalDistance += dist;
         }
         
-        // Laske reaaliaikainen keskinopeus
         if (startTime) {
             const durationHrs = (new Date() - startTime) / (1000 * 60 * 60);
             if (durationHrs > 0) currentAvg = totalDistance / durationHrs;
@@ -307,7 +328,7 @@ function updateClockAndDate() {
     dashDateEl.innerText = now.toLocaleDateString('fi-FI', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 setInterval(updateClockAndDate, 1000);
-updateClockAndDate(); // Aja heti kerran
+updateClockAndDate(); 
 
 function updateTimer() {
     if (!startTime) return;
