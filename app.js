@@ -83,8 +83,11 @@ auth.onAuthStateChanged((user) => {
         if (views.map.style.display !== 'none') setTimeout(() => map.invalidateSize(), 200);
     } else {
         currentUser = null;
-        appContainer.style.display = 'none';
-        loginView.style.display = 'flex';
+        // Jos ollaan ohjesivulla, älä pakota login-näkymää heti päälle
+        if (appContainer.style.display !== 'flex') {
+            appContainer.style.display = 'none';
+            loginView.style.display = 'flex';
+        }
     }
 });
 
@@ -95,6 +98,31 @@ document.getElementById('btn-login').addEventListener('click', () => {
 document.getElementById('btn-logout').addEventListener('click', () => {
     if(confirm("Kirjaudu ulos?")) auth.signOut().then(() => location.reload());
 });
+
+// UUSI: OHJEET ILMAN KIRJAUTUMISTA
+document.getElementById('btn-login-help').addEventListener('click', () => {
+    loginView.style.display = 'none';
+    appContainer.style.display = 'flex';
+    // Pakotetaan ohjesivu auki ja piilotetaan muut (paitsi yläpalkki)
+    switchView('help');
+    
+    // Piilotetaan alapalkki (koska sitä ei tarvita ohjeissa)
+    document.querySelector('.controls-container').style.display = 'none';
+    
+    // Lisätään "Takaisin kirjautumiseen" -nappi ohjeisiin
+    const backBtn = document.createElement('button');
+    backBtn.innerText = "← Takaisin kirjautumiseen";
+    backBtn.className = 'action-btn blue-btn';
+    backBtn.style.marginTop = "20px";
+    backBtn.onclick = () => location.reload();
+    
+    const helpView = document.getElementById('help-view');
+    // Varmistetaan ettei nappi tule moneen kertaan
+    if (!helpView.querySelector('button')) {
+        helpView.prepend(backBtn);
+    }
+});
+
 
 // --- MENU LOGIIKKA ---
 menuBtn.addEventListener('click', () => {
@@ -128,7 +156,7 @@ navBtns.map.addEventListener('click', () => switchView('map'));
 navBtns.history.addEventListener('click', () => switchView('history'));
 navBtns.help.addEventListener('click', () => switchView('help'));
 
-// Sivunappi (Vain vasen)
+// Sivunappi
 document.getElementById('side-tap-left').addEventListener('click', () => switchView('map'));
 document.getElementById('map-return-btn').addEventListener('click', () => switchView('dashboard'));
 
