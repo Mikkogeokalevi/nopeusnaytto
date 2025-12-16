@@ -36,7 +36,9 @@
     <div id="app-container" style="display:none; height: 100%; flex-direction: column;">
         
         <div class="top-bar-container">
-            <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
+            <div style="display:flex; align-items:center;">
+                <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
+            </div>
             
             <div class="top-buttons">
                 <button id="nav-dashboard" class="icon-btn active-nav" title="Mittaristo">🏎️</button>
@@ -44,9 +46,7 @@
                 <button id="nav-history" class="icon-btn" title="Historia">📋</button>
                 <button id="nav-help" class="icon-btn" title="Ohjeet">❓</button>
                 <button id="btn-theme" class="icon-btn" title="Teema">☀/☾</button>
-                
                 <img id="user-photo" class="user-avatar" style="display:none;" alt="User">
-                
                 <button id="btn-logout" class="icon-btn" title="Kirjaudu ulos" style="border-color: #d32f2f; color:#d32f2f;">🚪</button>
             </div>
         </div>
@@ -54,6 +54,7 @@
         <div class="main-content">
             
             <div id="dashboard-view" class="view-section watermark-bg">
+                
                 <div id="side-tap-left" class="side-tap-zone">‹ KARTTA</div>
                 <div id="side-tap-right" class="side-tap-zone">KARTTA ›</div>
 
@@ -78,13 +79,23 @@
                         <span class="stat-value" id="dash-time">00:00</span>
                     </div>
                     <div class="stat-card">
+                        <span class="stat-label">Ø Nopeus</span>
+                        <span class="stat-value" id="dash-avg">0.0</span>
+                        <span class="stat-unit">km/h</span>
+                    </div>
+                    <div class="stat-card">
                         <span class="stat-label">Korkeus</span>
                         <span class="stat-value" id="dash-alt">0</span>
                         <span class="stat-unit">m</span>
                     </div>
                 </div>
+                
                  <div class="coords-box" id="dash-coords">--° --.---'</div>
-                 <div class="clock-box" id="dash-clock">--:--</div>
+                 
+                 <div class="time-container">
+                     <div class="clock-box" id="dash-clock">--:--</div>
+                     <div class="date-box" id="dash-date">--.--.----</div>
+                 </div>
             </div>
 
             <div id="map-view" class="view-section" style="display:none;">
@@ -94,9 +105,7 @@
                     </div>
                     <div id="map-coords" class="small-coords">--° --.---'</div>
                 </div>
-                
                 <button id="map-return-btn" class="map-return-btn">🏎️ MITTARISTO</button>
-
                 <div id="map"></div>
             </div>
 
@@ -108,7 +117,7 @@
             </div>
 
             <div id="help-view" class="view-section watermark-bg" style="display:none; overflow-y:auto; padding:20px;">
-            </div>
+                </div>
 
         </div>
 
@@ -130,7 +139,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
     <script src="app.js"></script>
-    
     <script src="help.js"></script>
 </body>
 </html>
