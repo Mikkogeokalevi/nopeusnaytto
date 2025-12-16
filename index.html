@@ -11,7 +11,7 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
-    </head>
+</head>
 <body>
 
     <div id="splash-screen">
@@ -36,7 +36,9 @@
     <div id="app-container" style="display:none; height: 100%; flex-direction: column;">
         
         <div class="top-bar-container">
-            <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
+            <div style="display:flex; align-items:center;">
+                <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
+            </div>
             
             <div class="top-buttons">
                 <button id="btn-theme" class="icon-btn" title="Teema">☀/☾</button>
@@ -64,7 +66,6 @@
             <div id="dashboard-view" class="view-section watermark-bg">
                 
                 <div id="side-tap-left" class="side-tap-zone">‹ KARTTA</div>
-                <div id="side-tap-right" class="side-tap-zone">KARTTA ›</div>
 
                 <div class="huge-speed">
                     <span id="dash-speed">0.0</span>
