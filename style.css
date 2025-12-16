@@ -2,18 +2,21 @@
     --bg-color: #121212;
     --panel-bg: #1e1e1e;
     --text-color: #ffffff;
-    --speed-color: #03dac6;
-    --accent-color: #bb86fc;
+    
+    /* VAIHDETTU VÄRI: Sähkönsininen */
+    --speed-color: #2979ff; 
+    --accent-color: #2979ff;
+    
     --border-color: #333;
     --subtext-color: #888;
 }
 
 body.light-theme {
-    --bg-color: #e0e0e0;
+    --bg-color: #f0f2f5;
     --panel-bg: #ffffff;
     --text-color: #121212;
-    --speed-color: #00695c;
-    --accent-color: #6200ee;
+    --speed-color: #0056d2;
+    --accent-color: #0056d2;
     --border-color: #ccc;
     --subtext-color: #555;
 }
@@ -25,18 +28,16 @@ body {
     overflow: hidden; transition: background-color 0.3s, color 0.3s;
 }
 
-/* --- TAUSTALOGO (VESILEIMA) --- */
+/* TAUSTALOGO */
 .watermark-bg { position: relative; z-index: 0; }
 .watermark-bg::before {
     content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     width: 80%; height: 80%;
-    /* Oletuksena tumma logo */
     background-image: url('ajopaivakirja_logo_mu.png');
     background-position: center; background-repeat: no-repeat; background-size: contain;
     opacity: 0.1; z-index: -1; pointer-events: none;
     transition: background-image 0.3s ease-in-out;
 }
-/* Vaalea teema käyttää vaaleaa logoa */
 body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_logo.png'); }
 
 /* KIRJAUTUMINEN */
@@ -52,12 +53,12 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 /* YLÄPALKKI */
 .top-bar-container {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 10px; background-color: var(--panel-bg);
+    padding: 5px 10px; background-color: var(--panel-bg);
     border-bottom: 1px solid var(--border-color); z-index: 2000;
     height: 60px; box-sizing: border-box;
 }
-.header-logo { height: 35px; width: 35px; border-radius: 50%; border: 2px solid var(--accent-color); margin-right: 10px; }
-.user-avatar { height: 32px; width: 32px; border-radius: 50%; border: 1px solid var(--subtext-color); margin-left: 10px; }
+.header-logo { height: 40px; width: 40px; border-radius: 50%; border: 2px solid var(--accent-color); margin-right: 10px; }
+.user-avatar { height: 35px; width: 35px; border-radius: 50%; border: 1px solid var(--subtext-color); margin-left: 10px; }
 
 .top-buttons { display: flex; align-items: center; gap: 5px; flex-wrap: nowrap; }
 .icon-btn {
@@ -72,27 +73,34 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .view-section { flex-grow: 1; display: flex; flex-direction: column; width: 100%; height: 100%; }
 
 /* MITTARISTO */
-#dashboard-view { align-items: center; justify-content: center; padding: 10px; position: relative; overflow-y: auto; }
+#dashboard-view { align-items: center; justify-content: flex-start; padding: 10px; position: relative; overflow-y: auto; }
 
+/* SIVUNAPIT - KORJATTU SIJAINTI */
 .side-tap-zone {
-    position: absolute; top: 20%; bottom: 20%; width: 50px;
+    position: absolute; 
+    top: 65px; /* Heti yläpalkin alla */
+    height: 140px; /* Ei ulotu tietojen päälle */
+    width: 40px;
     display: flex; align-items: center; justify-content: center;
-    background-color: rgba(187, 134, 252, 0.1);
-    color: var(--accent-color); font-weight: bold; font-size: 12px;
-    border-radius: 10px; cursor: pointer; writing-mode: vertical-rl; text-orientation: mixed;
-    z-index: 10;
+    background-color: rgba(41, 121, 255, 0.15); /* Accent color transparency */
+    color: var(--accent-color); font-weight: bold; font-size: 11px;
+    border-radius: 8px; cursor: pointer; writing-mode: vertical-rl; text-orientation: mixed;
+    z-index: 50;
+    transition: background-color 0.2s;
 }
+.side-tap-zone:active { background-color: rgba(41, 121, 255, 0.4); }
 #side-tap-left { left: 5px; border: 1px solid var(--accent-color); }
 #side-tap-right { right: 5px; border: 1px solid var(--accent-color); }
 
 .huge-speed {
-    font-size: 90px; font-weight: bold; color: var(--speed-color); line-height: 1;
-    font-variant-numeric: tabular-nums; margin-bottom: 10px;
-    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    font-size: 100px; font-weight: bold; color: var(--speed-color); line-height: 1;
+    font-variant-numeric: tabular-nums; margin-top: 10px; margin-bottom: 5px;
+    text-shadow: 0 0 15px rgba(41, 121, 255, 0.3);
 }
 .huge-unit { font-size: 20px; color: var(--subtext-color); font-weight: normal; display: block; text-align: center; }
 
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 15px; }
+/* 2 saraketta on paras mobiilissa, se on selkein */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 15px; margin-top: 10px;}
 .stat-card {
     background-color: rgba(30, 30, 30, 0.8); backdrop-filter: blur(5px);
     padding: 10px; border-radius: 12px; text-align: center;
@@ -100,9 +108,14 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .light-theme .stat-card { background-color: rgba(255, 255, 255, 0.8); }
 .stat-label { font-size: 11px; color: var(--subtext-color); text-transform: uppercase; }
 .stat-value { font-size: 20px; font-weight: bold; color: var(--text-color); }
+.stat-unit { font-size: 12px; color: var(--subtext-color); }
 
-.coords-box { font-family: monospace; color: var(--accent-color); margin-top: 10px; text-shadow: 0 0 5px black; font-size: 14px; }
-.clock-box { font-size: 28px; font-weight: bold; color: var(--text-color); margin-top: 10px; letter-spacing: 1px; }
+.coords-box { font-family: monospace; color: var(--accent-color); margin-top: 5px; text-shadow: 0 0 5px black; font-size: 14px; }
+
+/* KELLO JA PÄIVÄMÄÄRÄ */
+.time-container { margin-top: 10px; text-align: center; }
+.clock-box { font-size: 28px; font-weight: bold; color: var(--text-color); letter-spacing: 1px; line-height: 1; }
+.date-box { font-size: 14px; color: var(--subtext-color); margin-top: 2px; text-transform: capitalize; }
 
 /* KARTTA */
 #map { flex-grow: 1; width: 100%; z-index: 1; }
@@ -122,31 +135,19 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 1000; cursor: pointer;
 }
 
-/* HISTORIA & OHJEET TYYLIT - RAJOITETTU LEVEYS */
-#log-list {
-    width: 100%; max-width: 600px; margin: 0 auto;
-}
-
+/* HISTORIA & OHJEET */
+#log-list { width: 100%; max-width: 600px; margin: 0 auto; }
 .log-card {
     background-color: rgba(30, 30, 30, 0.9); border: 1px solid var(--border-color);
-    border-radius: 12px; padding: 15px; margin-bottom: 15px; position: relative; box-sizing: border-box;
+    border-radius: 12px; padding: 15px; margin-bottom: 15px; box-sizing: border-box;
 }
 .light-theme .log-card { background-color: rgba(255, 255, 255, 0.95); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-.log-header { 
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; 
-    border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;
-}
+.log-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
 .light-theme .log-header { border-bottom: 1px solid rgba(0,0,0,0.1); }
 .log-date { font-size: 14px; color: var(--subtext-color); font-weight: bold; }
-.delete-btn { background: none; border: none; color: #ff4444; font-size: 20px; padding: 5px; cursor: pointer; transition: transform 0.2s; }
-.delete-btn:hover { transform: scale(1.2); }
-.log-stats { display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 15px; font-size: 16px; }
-.log-stat-item { text-align: center; }
-.subject-input { 
-    width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); 
-    background-color: rgba(0,0,0,0.2); color: var(--text-color); box-sizing: border-box; font-size: 14px;
-}
-.subject-input:focus { outline: none; border-color: var(--accent-color); background-color: rgba(0,0,0,0.4); }
+.delete-btn { background: none; border: none; color: #ff4444; font-size: 20px; padding: 5px; cursor: pointer; }
+.log-stats { display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 15px; }
+.subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.2); color: var(--text-color); box-sizing: border-box; }
 
 .help-section {
     max-width: 600px; margin: 0 auto 20px auto;
@@ -164,12 +165,12 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     box-shadow: 0 4px 10px rgba(0,0,0,0.3); width: 100%; max-width: 350px; margin: 5px 0;
 }
 .blue-btn { background-color: var(--accent-color); }
-.green-btn { background-color: #2e7d32; }
-.red-btn { background-color: #d32f2f; }
+.green-btn { background-color: #00c853; } /* Kirkkaampi vihreä */
+.red-btn { background-color: #d50000; }
 #status { margin-bottom: 5px; font-size: 12px; color: var(--subtext-color); }
 .view-hidden { display: none !important; }
 
-/* SPLASH (UUSI KOKO JA KUVA) */
+/* SPLASH */
 #splash-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: var(--bg-color); display: flex;
@@ -178,11 +179,11 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .splash-logo {
     width: 100px; height: 100px; border-radius: 50%;
-    box-shadow: 0 0 20px rgba(3, 218, 198, 0.2);
+    box-shadow: 0 0 20px rgba(41, 121, 255, 0.3);
     margin-bottom: 20px; animation: pulse 2s infinite;
 }
 @keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(3, 218, 198, 0.4); }
-    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(3, 218, 198, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(3, 218, 198, 0); }
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0.4); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(41, 121, 255, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0); }
 }
