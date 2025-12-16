@@ -108,23 +108,97 @@
             </div>
 
             <div id="help-view" class="view-section watermark-bg" style="display:none; overflow-y:auto; padding:20px;">
-                <h2 style="text-align:center; color:var(--accent-color);">Käyttöohjeet</h2>
+                <h2 style="text-align:center; color:var(--accent-color);">Käyttöopas</h2>
                 
                 <div class="help-section">
-                    <h3>🚀 Aloitus</h3>
-                    <div class="help-step">1. Kirjautuminen vaaditaan tallennusta varten.</div>
-                    <div class="help-step">2. Salli GPS-paikannus kun kysytään.</div>
+                    <h3>📲 1. Asennus (Tärkeä!)</h3>
+                    <div class="help-step">
+                        Tämä on PWA-sovellus, joka toimii parhaiten, kun se on asennettu puhelimen aloitusnäyttöön. Näin se toimii koko ruudulla ilman osoitepalkkeja.
+                    </div>
+                    <div class="help-step">
+                        <strong>iPhone (iOS):</strong><br>
+                        1. Paina selaimen alalaidan "Jaa"-painiketta (neliö ja nuoli).<br>
+                        2. Selaa alaspäin ja valitse "Lisää Koti-valikkoon" (Add to Home Screen).
+                    </div>
+                    <div class="help-step">
+                        <strong>Android (Chrome):</strong><br>
+                        1. Paina selaimen oikean yläkulman valikkoa (kolme pistettä).<br>
+                        2. Valitse "Asenna sovellus" tai "Lisää aloitusnäyttöön".
+                    </div>
                 </div>
 
                 <div class="help-section">
-                    <h3>🔴 Tallennus</h3>
-                    <div class="help-step">Paina <strong>ALOITA TALLENNUS</strong>. Matka alkaa kertyä. Tallennus pysyy päällä vaikka selaisit historiaa.</div>
+                    <h3>🚀 2. Aloitus ja Kirjautuminen</h3>
+                    <div class="help-step">
+                        Sovellus vaatii Google-kirjautumisen. Tämä takaa sen, että:
+                        <ul>
+                            <li>Ajosi tallentuvat henkilökohtaiseen tietokantaan.</li>
+                            <li>Kukaan muu ei näe ajojasi.</li>
+                            <li>Voit vaihtaa puhelinta ja historiasi säilyy.</li>
+                        </ul>
+                    </div>
+                    <div class="help-step">
+                        <strong>GPS-lupa:</strong> Kun käynnistät mittariston ensimmäistä kertaa, selain kysyy lupaa sijaintitietoihin. Vastaa ehdottomasti <strong>Salli</strong> (Allow).
+                    </div>
                 </div>
 
                 <div class="help-section">
-                    <h3>🗺️ Kartta</h3>
-                    <div class="help-step">Pääset karttaan ylävalikosta tai painamalla mittariston reunoja.</div>
-                    <div class="help-step">Palaa mittaristoon painamalla isoa nappia alareunassa.</div>
+                    <h3>🏎️ 3. Mittaristo ja Ajo</h3>
+                    <div class="help-step">
+                        <strong>Vapaa ajo:</strong> Kun painat "Aktivoi Nopeusnäyttö", näet nopeuden, korkeuden ja koordinaatit, mutta mitään ei vielä tallenneta muistiin.
+                    </div>
+                    <div class="help-step">
+                        <strong>🔴 Tallennus (REC):</strong>
+                        Kun haluat luoda merkinnän ajopäiväkirjaan:
+                        <br>1. Paina vihreää <strong>ALOITA TALLENNUS</strong> -painiketta.
+                        <br>2. Matkamittari nollautuu ja alkaa mitata.
+                        <br>3. Ajon lopuksi paina punaista <strong>LOPETA & TALLENNA</strong> -painiketta.
+                    </div>
+                    <div class="help-step">
+                        <strong>Älykäs mittaus:</strong> Sovellus suodattaa GPS-häiriöt. Matkamittari ei kerrytä "haamumetrejä", jos seisot liikennevaloissa ja GPS-signaali heittelehtii paikallaan.
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3>🗺️ 4. Kartta</h3>
+                    <div class="help-step">
+                        Pääset karttaan painamalla yläpalkin 🗺-ikonia tai napauttamalla mittariston reunoja.
+                    </div>
+                    <div class="help-step">
+                        <strong>Älykäs Zoom:</strong> Kartta elää vauhdin mukaan.
+                        <br>• Hidas vauhti (< 50 km/h) = Zoom lähellä (kaupunkiajo).
+                        <br>• Kova vauhti (> 90 km/h) = Zoom kaukana (moottoritie).
+                    </div>
+                    <div class="help-step">
+                        <strong>Satelliitti:</strong> Kartan oikeassa yläkulmassa on kerrospainike, josta voit vaihtaa satelliittikuvaan.
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3>📋 5. Historia ja Muokkaus</h3>
+                    <div class="help-step">
+                        Paina lehtiö-ikonia (📋) nähdäksesi ajetut matkat. Uusin ajo on ylimpänä.
+                    </div>
+                    <div class="help-step">
+                        <strong>Aiheen lisääminen:</strong> Jokaisessa kortissa on tekstikenttä. Kirjoita siihen esimerkiksi "Työmatka" tai "Kauppareissu". Tieto tallentuu automaattisesti, kun lopetat kirjoittamisen.
+                    </div>
+                    <div class="help-step">
+                        <strong>Poistaminen:</strong> Voit poistaa virheellisen tallennuksen roskakori-ikonista (🗑).
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3>⚙️ 6. Ongelmatilanteet</h3>
+                    <div class="help-step">
+                        <strong>Näyttö sammuu?</strong> Sovellus yrittää pitää näytön päällä (Wake Lock). Jos käytät puhelinta toisessa sovelluksessa ja palaat, sovellus aktivoi lukituksen uudelleen.
+                    </div>
+                    <div class="help-step">
+                        <strong>GPS ei toimi?</strong> Varmista puhelimen asetuksista, että selaimella on oikeus käyttää tarkkaa sijaintia. Sisätiloissa GPS ei toimi.
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 40px; color: #666; font-size: 12px; padding-bottom: 20px;">
+                    Ajopäiväkirja Pro v2.0 - 2024
                 </div>
             </div>
 
