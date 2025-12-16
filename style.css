@@ -22,14 +22,22 @@ body {
     background-color: var(--bg-color); color: var(--text-color);
     font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
     margin: 0; display: flex; flex-direction: column; height: 100vh;
-    overflow: hidden; transition: background-color 0.3s, color 0.3s;
+    overflow: hidden; /* Estää pystysuuntaisen ylimääräisen scrollauksen */
+    width: 100%;
+    overflow-x: hidden; /* TÄRKEÄ: Estää sivuttaisen heilumisen ja nappien karkaamisen */
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* TAUSTALOGO */
+/* TAUSTALOGO (VESILEIMA) - KORJATTU SIJAINTI */
 .watermark-bg { position: relative; z-index: 0; }
 .watermark-bg::before {
-    content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 80%; height: 80%;
+    content: ""; position: absolute;
+    /* SIIRRETTY YLEMMÄS JA PIENENNETTY KORKEUTTA */
+    top: 35%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    width: 80%; 
+    height: 55%; /* Ei mene enää alas asti */
     background-image: url('ajopaivakirja_logo_mu.png');
     background-position: center; background-repeat: no-repeat; background-size: contain;
     opacity: 0.1; z-index: -1; pointer-events: none;
@@ -62,10 +70,9 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     border-radius: 8px; width: 40px; height: 40px; font-size: 20px;
     cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; flex-shrink: 0;
 }
-/* Menu nappi korostettuna */
 .menu-btn { font-size: 24px; border-color: var(--accent-color); color: var(--accent-color); }
 
-/* MENU DROPDOWN (UUSI) */
+/* MENU DROPDOWN */
 .menu-dropdown {
     position: absolute; top: 60px; right: 0; width: 250px;
     background-color: var(--panel-bg); border-left: 1px solid var(--border-color);
@@ -103,6 +110,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 #dashboard-view { 
     align-items: center; justify-content: flex-start; 
     padding: 10px; position: relative; overflow-y: auto; 
+    overflow-x: hidden; /* Varmistus */
 }
 
 /* SIVUNAPIT (KORJATTU REUNAAN KIINNI) */
@@ -115,8 +123,11 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     z-index: 50; border-radius: 8px;
     transition: width 0.2s;
 }
-#side-tap-left { left: 0; border-radius: 0 10px 10px 0; } /* Kiinni vasemmassa reunassa */
-#side-tap-right { right: 0; border-radius: 10px 0 0 10px; } /* Kiinni oikeassa reunassa */
+/* Kiinni vasemmassa reunassa */
+#side-tap-left { left: 0; border-radius: 0 10px 10px 0; } 
+/* Kiinni oikeassa reunassa */
+#side-tap-right { right: 0; border-radius: 10px 0 0 10px; } 
+
 .side-tap-zone:active { width: 45px; background-color: var(--accent-color); color: #fff; }
 
 .huge-speed {
@@ -226,7 +237,6 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .footer-img {
     max-width: 70%; height: auto; object-fit: contain;
-    /* TÄSSÄ ON PYÖRISTYS JA VARJO */
     border-radius: 20px; 
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
