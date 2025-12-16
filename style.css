@@ -75,8 +75,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 /* MITTARISTO - KORJATTU ASETTELU */
 #dashboard-view { 
     align-items: center; 
-    /* justify-content: center;  <-- Tämä keskittää sisällön pystysuunnassa ruudulle */
-    justify-content: flex-start; /* Tai käytä tätä jos haluat ne ylös, mutta lisää margin-top .huge-speediin */
+    justify-content: flex-start; /* Sisältö alkaa ylhäältä */
     padding: 10px; 
     position: relative; 
     overflow-y: auto; 
@@ -85,7 +84,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 /* SIVUNAPIT - SIJOITETTU TARKASTI ISON NOPEUDEN VIEREEN */
 .side-tap-zone {
     position: absolute; 
-    top: 20px; /* Laskettu yläreunasta (relative parent dashboard-view) */
+    top: 20px; /* Laskettu yläreunasta */
     height: 110px; /* Lyhyempi korkeus, loppuu ennen laatikoita */
     width: 40px;
     display: flex; align-items: center; justify-content: center;
@@ -130,7 +129,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .coords-box { font-family: monospace; color: var(--accent-color); margin-top: 5px; text-shadow: 0 0 5px black; font-size: 14px; }
 
 /* KELLO JA PÄIVÄMÄÄRÄ */
-.time-container { margin-top: 15px; text-align: center; padding-bottom: 20px; }
+.time-container { margin-top: 15px; text-align: center; }
 .clock-box { font-size: 32px; font-weight: bold; color: var(--text-color); letter-spacing: 1px; line-height: 1; }
 .date-box { font-size: 16px; color: var(--subtext-color); margin-top: 4px; text-transform: capitalize; font-weight: bold; }
 
@@ -203,4 +202,32 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0.4); }
     70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(41, 121, 255, 0); }
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0); }
+}
+
+/* --- ALAREUNAKUVA (UUSI) --- */
+.bottom-branding {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Asemointi alareunaan */
+    margin-top: auto;      /* Tämä työntää kuvan niin alas kuin tilaa riittää */
+    padding-top: 20px;     /* Väliä kelloon */
+    padding-bottom: 5px;   /* Väliä alapalkkiin */
+}
+
+.footer-img {
+    max-width: 85%;  /* Kuvan leveys suhteessa ruutuun */
+    height: auto;    /* Pitää kuvasuhteen oikeana */
+    display: none;   /* Piilotetaan oletuksena */
+    object-fit: contain;
+}
+
+/* OLETUS (TUMMA TEEMA): Näytä vain tumman teeman kuva */
+body:not(.light-theme) .dark-mode-img {
+    display: block;
+}
+
+/* VAALEA TEEMA: Näytä vain vaalean teeman kuva */
+body.light-theme .light-mode-img {
+    display: block;
 }
