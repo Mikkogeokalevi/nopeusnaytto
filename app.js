@@ -13,12 +13,12 @@ if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const db = firebase.database();
 const auth = firebase.auth(); 
 
-// Elementit
+// --- DOM ELEMENTIT ---
 const splashScreen = document.getElementById('splash-screen');
 const loginView = document.getElementById('login-view');
 const appContainer = document.getElementById('app-container');
 
-// Menu
+// Menu elementit
 const menuBtn = document.getElementById('btn-menu-toggle');
 const mainMenu = document.getElementById('main-menu');
 const menuUserName = document.getElementById('user-name');
@@ -39,7 +39,7 @@ const navBtns = {
     help: document.getElementById('nav-help')
 };
 
-// Modal Elementit
+// Modal Elementit (Tallenna-ikkuna)
 const saveModal = document.getElementById('save-modal');
 const modalDistEl = document.getElementById('modal-dist');
 const modalTimeEl = document.getElementById('modal-time');
@@ -47,7 +47,7 @@ const modalSubjectEl = document.getElementById('modal-subject');
 const btnModalSave = document.getElementById('btn-modal-save');
 const btnModalCancel = document.getElementById('btn-modal-cancel');
 
-// Muuttujat
+// --- MUUTTUJAT ---
 let currentUser = null; 
 let watchId = null;
 let isGPSActive = false;
@@ -89,7 +89,7 @@ const btnResume = document.getElementById('btn-resume');
 const btnStopRec = document.getElementById('btn-stop-rec');
 
 
-// --- AUTH ---
+// --- AUTH (KIRJAUTUMINEN) ---
 auth.onAuthStateChanged((user) => {
     if (splashScreen) setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
 
@@ -98,6 +98,7 @@ auth.onAuthStateChanged((user) => {
         loginView.style.display = 'none';
         appContainer.style.display = 'flex';
         
+        // Päivitä Menu
         menuUserName.innerText = user.displayName || user.email;
         if (user.photoURL) {
             menuUserAvatar.src = user.photoURL;
@@ -106,6 +107,7 @@ auth.onAuthStateChanged((user) => {
         if (views.map.style.display !== 'none') setTimeout(() => map.invalidateSize(), 200);
     } else {
         currentUser = null;
+        // Jos ollaan ohjesivulla (ilman kirjautumista), älä pakota login-näkymää heti päälle
         if (appContainer.style.display !== 'flex') {
             appContainer.style.display = 'none';
             loginView.style.display = 'flex';
@@ -121,12 +123,14 @@ document.getElementById('btn-logout').addEventListener('click', () => {
     if(confirm("Kirjaudu ulos?")) auth.signOut().then(() => location.reload());
 });
 
+// "Lue ohjeet" -nappi kirjautumissivulla
 document.getElementById('btn-login-help').addEventListener('click', () => {
     loginView.style.display = 'none';
     appContainer.style.display = 'flex';
     switchView('help');
     document.querySelector('.controls-container').style.display = 'none';
     
+    // Lisää takaisin-nappi dynaamisesti
     const backBtn = document.createElement('button');
     backBtn.innerText = "← Takaisin kirjautumiseen";
     backBtn.className = 'action-btn blue-btn';
@@ -140,7 +144,7 @@ document.getElementById('btn-login-help').addEventListener('click', () => {
 });
 
 
-// --- MENU ---
+// --- MENU LOGIIKKA ---
 menuBtn.addEventListener('click', () => {
     if (mainMenu.style.display === 'none') {
         mainMenu.style.display = 'flex';
@@ -149,6 +153,7 @@ menuBtn.addEventListener('click', () => {
     }
 });
 
+// --- NAVIGOINTI ---
 function switchView(viewName) {
     mainMenu.style.display = 'none';
     Object.values(views).forEach(el => el.style.display = 'none');
@@ -246,7 +251,7 @@ btnResume.addEventListener('click', () => {
 btnStopRec.addEventListener('click', () => {
     if (!isRecording) return;
 
-    // Pysäytä heti mittaus, jotta luvut eivät juokse modalin aikana
+    // Pysäytä heti mittaus
     clearInterval(timerInterval);
     
     // Jos oltiin tauolla, laske viimeinen tauko mukaan
@@ -281,7 +286,7 @@ btnStopRec.addEventListener('click', () => {
 
     // Näytä Modal
     saveModal.style.display = 'flex';
-    modalSubjectEl.focus(); // Fokusoi kirjoituskenttään
+    modalSubjectEl.focus();
 });
 
 // MODAL NAPIT
@@ -479,6 +484,18 @@ function toGeocacheFormat(deg, isLat) {
     const d = Math.floor(Math.abs(deg)); const m = (Math.abs(deg)-d)*60;
     return `${isLat?(deg>=0?"N":"S"):(deg>=0?"E":"W")} ${d}° ${m.toFixed(3)}`;
 }
+
+// PÄIVITETTY TALLENNUSFUNKTIO (Virheilmoitukset)
 function saveToFirebase(data) {
-    if (currentUser) db.ref('ajopaivakirja/' + currentUser.uid).push().set(data);
+    if (currentUser) {
+        db.ref('ajopaivakirja/' + currentUser.uid).push().set(data)
+            .then(() => {
+                console.log("Tallennus onnistui"); 
+            })
+            .catch((error) => {
+                alert("VIRHE TALLENNUKSESSA:\n" + error.message + "\n\nTarkista Firebasen Rules-asetukset.");
+            });
+    } else {
+        alert("Virhe: Et ole kirjautunut sisään!");
+    }
 }
