@@ -146,9 +146,14 @@
             
             <button id="btn-activate-gps" class="action-btn blue-btn">Aktivoi Nopeusnäyttö</button>
             
-            <div id="rec-controls" style="display:none; width: 100%; justify-content: center;">
+            <div id="rec-controls" style="display:none; flex-direction:column; align-items:center; gap:5px; width: 100%;">
                 <button id="btn-start-rec" class="action-btn green-btn">🔴 ALOITA TALLENNUS</button>
-                <button id="btn-stop-rec" class="action-btn red-btn" style="display:none;">⬛ LOPETA & TALLENNA</button>
+                
+                <div id="active-rec-btns" style="display:none; width:100%; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                    <button id="btn-pause" class="action-btn yellow-btn" style="flex:1; max-width:170px;">⏸ TAUKO</button>
+                    <button id="btn-resume" class="action-btn blue-btn" style="display:none; flex:1; max-width:170px;">▶ JATKA</button>
+                    <button id="btn-stop-rec" class="action-btn red-btn" style="flex:1; max-width:170px;">⬛ LOPETA</button>
+                </div>
             </div>
         </div>
     </div>
