@@ -1,115 +1,106 @@
-// Tässä muuttujassa on koko ohjesivun sisältö HTML-muodossa.
-// Voit muokata tekstejä tässä vapaasti.
-
 const helpContent = `
-    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 20px;">Käyttöopas</h2>
+    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 20px;">Käyttöohjeet</h2>
     
     <div class="help-section">
-        <h3>📲 1. Asennus ja Käyttöönotto</h3>
+        <h3>🚀 Aloitus</h3>
         <div class="help-step">
-            Tämä on <strong>PWA-sovellus</strong> (Progressive Web App). Se on suunniteltu toimimaan kuin oikea sovellus, kun lisäät sen puhelimesi kotivalikkoon.
+            <strong>1. Kirjautuminen:</strong>
+            Sovellus vaatii Google-kirjautumisen. Tämä varmistaa, että ajosi tallentuvat henkilökohtaiseen, suojattuun tietokantaan, eivätkä ne sekoitu muiden käyttäjien tietoihin.
         </div>
         <div class="help-step">
-            <strong>iPhone (iOS):</strong><br>
-            1. Paina selaimen alalaidan "Jaa"-painiketta (neliö, josta nuoli ylös).<br>
-            2. Selaa valikkoa alaspäin.<br>
-            3. Valitse <strong>"Lisää Koti-valikkoon"</strong> (Add to Home Screen).
+            <strong>2. GPS-lupa:</strong>
+            Kun painat "Aktivoi Nopeusnäyttö", selain kysyy lupaa sijaintitietoihin. Vastaa <strong>Salli</strong> (Allow). Ilman tätä sovellus ei voi mitata nopeutta tai matkaa.
         </div>
         <div class="help-step">
-            <strong>Android (Chrome):</strong><br>
-            1. Paina selaimen oikean yläkulman valikkoa (kolme pistettä).<br>
-            2. Valitse <strong>"Asenna sovellus"</strong> tai "Lisää aloitusnäyttöön".
-        </div>
-    </div>
-
-    <div class="help-section">
-        <h3>🚀 2. Aloitus</h3>
-        <div class="help-step">
-            <strong>Kirjautuminen:</strong>
-            Sovellus vaatii Google-kirjautumisen. Tämä on tietoturvaominaisuus: se varmistaa, että ajosi tallentuvat henkilökohtaiseen, suojattuun tietokantaan. Vain sinä näet omat ajosi.
-        </div>
-        <div class="help-step">
-            <strong>GPS-lupa:</strong>
-            Kun käynnistät mittariston ensimmäistä kertaa, selain kysyy lupaa käyttää sijaintitietoja. Vastaa ehdottomasti <strong>Salli</strong> (Allow). Ilman tätä nopeusmittaus ei toimi.
+            <strong>3. Asennus (PWA):</strong>
+            Parhaan kokemuksen saat lisäämällä sivun kotivalikkoon.
+            <br><em>iPhone (Safari):</em> Paina "Jaa" -kuvaketta ja valitse "Lisää Koti-valikkoon".
+            <br><em>Android (Chrome):</em> Paina valikosta (kolme pistettä) "Asenna sovellus" tai "Lisää aloitusnäyttöön".
         </div>
     </div>
 
     <div class="help-section">
-        <h3>🏎️ 3. Mittaristo ja Ajaminen</h3>
+        <h3>⏱️ Mittaristo ja Vapaa-ajo</h3>
         <div class="help-step">
-            <strong>Vapaa ajo (Ei tallennusta):</strong> 
-            Kun painat "Aktivoi Nopeusnäyttö", näet reaaliaikaisen nopeuden, huippunopeuden ja koordinaatit. Tässä tilassa matka ei tallennu historiaan.
+            Oletusnäkymä on digitaalinen mittaristo.
+            <br><strong>Aktivoi Nopeusnäyttö:</strong> Tämä käynnistää GPS:n, mutta <em>ei vielä tallenna</em> ajoa pysyvästi. Voit käyttää tätä pelkkänä nopeusmittarina.
         </div>
         <div class="help-step">
-            <strong>🔴 Tallennus (REC):</strong><br>
-            Kun haluat luoda virallisen merkinnän ajopäiväkirjaan:<br>
-            1. Paina vihreää <strong>ALOITA TALLENNUS</strong> -painiketta.<br>
-            2. Matkamittari nollautuu ja alkaa mitata matkaa.<br>
-            3. Näytön alalaidassa lukee "🔴 REC".<br>
-            4. Ajon lopuksi paina punaista <strong>LOPETA & TALLENNA</strong> -painiketta.
-        </div>
-        <div class="help-step">
-            <strong>Älykäs mittaus:</strong> 
-            Sovellus suodattaa GPS-häiriöt. Jos seisot liikennevaloissa ja GPS "hyppii" paikallaan, mittari ei kerrytä turhia metrejä.
+            <strong>Näytettävät tiedot:</strong>
+            <ul>
+                <li>Nopeus (km/h)</li>
+                <li>Huippunopeus (kyseisen session aikana)</li>
+                <li>Korkeus merenpinnasta</li>
+                <li>Tarkat koordinaatit (Geocaching-muoto)</li>
+                <li>Keskinopeus (Ø Nopeus)</li>
+            </ul>
         </div>
     </div>
 
     <div class="help-section">
-        <h3>🗺️ 4. Kartta</h3>
+        <h3>🔴 Ajon Tallennus (REC)</h3>
         <div class="help-step">
-            <strong>Avaaminen:</strong> 
-            Pääset karttaan painamalla yläpalkin 🗺-ikonia TAI napauttamalla mittariston vasenta tai oikeaa reunaa ("< KARTTA >").
+            Kun haluat tallentaa ajopäiväkirjamerkinnän:
         </div>
         <div class="help-step">
-            <strong>Älykäs Zoom:</strong> 
-            Kartta elää vauhdin mukaan:<br>
-            • Hidas vauhti (< 50 km/h) = Zoom lähellä (kaupunkiajo).<br>
-            • Kova vauhti (> 90 km/h) = Zoom kaukana (moottoritie), jotta näet tulevat mutkat.
+            1. Paina vihreää <strong>🔴 ALOITA TALLENNUS</strong> -painiketta.
         </div>
         <div class="help-step">
-            <strong>Paluu mittaristoon:</strong> 
-            Kartan alareunassa on iso "🏎️ MITTARISTO" -nappi, josta pääset nopeasti takaisin nopeusnäyttöön.
+            2. Matkamittari ja ajanotto nollautuvat ja alkavat juosta. Näytön alalaidassa lukee "REC".
         </div>
         <div class="help-step">
-            <strong>Satelliittikuva:</strong> 
-            Kartan oikeassa yläkulmassa on kerrosvalikko (pieni neliöpino), josta voit vaihtaa satelliittinäkymään.
+            3. Ajon päätteeksi paina punaista <strong>⬛ LOPETA & TALLENNA</strong> -painiketta. Tiedot siirtyvät pilveen.
+        </div>
+        <div class="help-step">
+            <em>Huom: Matkamittarissa on älykäs suodatus. Se ei kerrytä matkaa, jos auto seisoo liikennevaloissa ja GPS "hyppii" paikallaan.</em>
         </div>
     </div>
 
     <div class="help-section">
-        <h3>📋 5. Historia ja Muokkaus</h3>
+        <h3>🗺️ Karttanäkymä</h3>
         <div class="help-step">
-            Paina yläpalkin lehtiö-ikonia (📋) nähdäksesi ajohistorian. Uusin ajo on listalla ylimpänä.
+            Vaihda näkymää valikosta tai vasemman reunan "‹ KARTTA" -napista.
         </div>
         <div class="help-step">
-            <strong>Aiheen lisääminen:</strong> 
-            Jokaisessa historiakortissa on tekstikenttä "Aihe...". Kirjoita siihen esimerkiksi "Työmatka" tai "Mökkireissu". Tieto tallentuu automaattisesti heti, kun lopetat kirjoittamisen (klikkaat muualle tai painat enter).
+            <strong>Automaattinen Zoom:</strong> Kartta zoomaa lähemmäs, kun ajat hiljaa (kaupunki) ja loittonee, kun ajat kovaa (maantie), jotta näet mutkat ajoissa.
         </div>
         <div class="help-step">
-            <strong>Poistaminen:</strong> 
-            Voit poistaa virheellisen tallennuksen painamalla roskakori-ikonia (🗑). Sovellus kysyy varmistuksen ennen poistoa.
+            <strong>Satelliitti:</strong> Voit vaihtaa karttapohjan satelliittikuvaan kartan oikean yläkulman kerrosvalikosta.
         </div>
     </div>
 
     <div class="help-section">
-        <h3>⚙️ 6. Ongelmatilanteet</h3>
+        <h3>📋 Historia ja Muokkaus</h3>
         <div class="help-step">
-            <strong>Näyttö sammuu ajon aikana?</strong><br>
-            Sovellus yrittää pitää näytön päällä (Wake Lock -toiminto). Jos kuitenkin käytät puhelinta toisessa sovelluksessa (esim. luet sähköpostia) ja palaat, selain on saattanut katkaista lukituksen. Sovellus yrittää aktivoida sen uudelleen palatessasi, mutta varminta on pitää sovellus aktiivisena ruudulla ajon ajan.
+            Paina valikosta "Historia" nähdäksesi ajetut matkat.
         </div>
         <div class="help-step">
-            <strong>GPS ei toimi tai pätkii?</strong><br>
-            Varmista puhelimen asetuksista, että selaimella on lupa käyttää tarkkaa sijaintia. Sisätiloissa, tunneleissa tai korkeiden rakennusten keskellä GPS-signaali voi heiketä.
+            <strong>Aiheen lisääminen:</strong> Jokaisessa kortissa on tekstikenttä "Kirjoita aihe...". Voit kirjoittaa siihen esim. "Työmatka" tai "Mökkireissu". Tieto tallentuu automaattisesti, kun lopetat kirjoittamisen (klikkaat muualle).
+        </div>
+        <div class="help-step">
+            <strong>Poistaminen:</strong> Voit poistaa virheelliset ajot roskakori-ikonista (🗑). Sovellus kysyy varmistuksen.
         </div>
     </div>
-    
-    <div style="text-align: center; margin-top: 40px; color: #888; font-size: 12px; padding-bottom: 20px;">
-        Ajopäiväkirja Pro v2.3 &copy; 2024
+
+    <div class="help-section">
+        <h3>⚙️ Asetukset ja Vianmääritys</h3>
+        <div class="help-step">
+            <strong>Teema:</strong> Vaihda vaalean ja tumman teeman välillä yläpalkin napista (☀/☾). Tumma teema on suositeltu yökäyttöön.
+        </div>
+        <div class="help-step">
+            <strong>Näyttö ei sammu:</strong> Sovellus yrittää pitää näytön päällä ajon aikana (Wake Lock). Jos poistut sovelluksesta ja palaat, tämä pyritään aktivoimaan uudelleen.
+        </div>
+        <div class="help-step">
+            <strong>Ongelmia GPS:n kanssa?</strong>
+            Varmista, että puhelimen sijaintiasetukset ovat päällä ja selaimella on lupa käyttää niitä. Sisätiloissa tai tunneleissa signaali voi kadota.
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; color: #666; font-size: 12px; padding-bottom: 20px;">
+        Ajopäiväkirja Pro v2.3
     </div>
 `;
 
-// Tämä rivi etsii index.html-tiedostosta kohdan <div id="help-view"> ja
-// syöttää yllä olevan tekstin sinne automaattisesti.
 const helpContainer = document.getElementById('help-view');
 if (helpContainer) {
     helpContainer.innerHTML = helpContent;
