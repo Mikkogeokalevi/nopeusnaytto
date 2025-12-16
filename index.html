@@ -36,23 +36,29 @@
     <div id="app-container" style="display:none; height: 100%; flex-direction: column;">
         
         <div class="top-bar-container">
-            <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
+            <div style="display:flex; align-items:center;">
+                <img id="user-photo" class="user-avatar" style="display:none;" alt="User">
+                <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
+            </div>
             
             <div class="top-buttons">
-                <img id="user-photo" class="user-avatar" style="display:none;" alt="User">
-                
-                <button id="btn-view-toggle" class="icon-btn" title="Vaihda näkymää">🗺</button>
-                <a href="log.html" class="icon-btn" title="Historia" style="text-decoration:none;">📋</a> 
-                <a href="help.html" class="icon-btn" title="Ohjeet" style="text-decoration:none;">❓</a> <button id="btn-theme" class="icon-btn" title="Teema">☀/☾</button>
+                <button id="nav-dashboard" class="icon-btn active-nav" title="Mittaristo">🏎️</button>
+                <button id="nav-map" class="icon-btn" title="Kartta">🗺</button>
+                <button id="nav-history" class="icon-btn" title="Historia">📋</button>
+                <button id="nav-help" class="icon-btn" title="Ohjeet">❓</button>
+                <button id="btn-theme" class="icon-btn" title="Teema">☀/☾</button>
                 <button id="btn-logout" class="icon-btn" title="Kirjaudu ulos" style="border-color: #d32f2f; color:#d32f2f;">🚪</button>
             </div>
         </div>
 
         <div class="main-content">
             
-            <div id="dashboard-view" class="watermark-bg">
+            <div id="dashboard-view" class="view-section watermark-bg">
+                <div id="side-tap-left" class="side-tap-zone">‹ KARTTA</div>
+                <div id="side-tap-right" class="side-tap-zone">KARTTA ›</div>
+
                 <div class="huge-speed">
-                    <span id="dash-speed">0</span>
+                    <span id="dash-speed">0.0</span>
                     <span class="huge-unit">km/h</span>
                 </div>
                 
@@ -81,14 +87,43 @@
                  <div class="clock-box" id="dash-clock">--:--</div>
             </div>
 
-            <div id="map-view" class="view-hidden">
+            <div id="map-view" class="view-section" style="display:none;">
                 <div class="map-overlay">
                     <div class="speed-container">
-                        <span id="map-speed">0</span> <span class="unit">km/h</span>
+                        <span id="map-speed">0.0</span> <span class="unit">km/h</span>
                     </div>
                     <div id="map-coords" class="small-coords">--° --.---'</div>
                 </div>
                 <div id="map"></div>
+            </div>
+
+            <div id="history-view" class="view-section watermark-bg" style="display:none; overflow-y:auto; padding:20px;">
+                <h2 style="text-align:center; color:var(--accent-color);">Ajohistoria</h2>
+                <div id="log-list">
+                    <div class="loading">Ladataan...</div>
+                </div>
+            </div>
+
+            <div id="help-view" class="view-section watermark-bg" style="display:none; overflow-y:auto; padding:20px;">
+                <h2 style="text-align:center; color:var(--accent-color);">Käyttöohjeet</h2>
+                
+                <div class="help-section">
+                    <h3>🚀 Aloitus</h3>
+                    <div class="help-step">1. Kirjaudu sisään Google-tililläsi.</div>
+                    <div class="help-step">2. Paina "Aktivoi Nopeusnäyttö" ja salli GPS.</div>
+                </div>
+
+                <div class="help-section">
+                    <h3>🔴 Tallennus</h3>
+                    <div class="help-step">Paina <strong>ALOITA TALLENNUS</strong>. Matka alkaa kertyä. Tallennus pysyy päällä vaikka selaisit historiaa tai karttaa.</div>
+                    <div class="help-step">Älä sulje selainta kokonaan ajon aikana, mutta voit käyttää muita sovelluksia.</div>
+                </div>
+
+                <div class="help-section">
+                    <h3>🗺️ Kartta & Mittaristo</h3>
+                    <div class="help-step">Voit vaihtaa näkymää yläpalkin ikoneista tai painamalla mittariston reunoja.</div>
+                    <div class="help-step">Kartta zoomaa automaattisesti vauhdin mukaan.</div>
+                </div>
             </div>
 
         </div>
