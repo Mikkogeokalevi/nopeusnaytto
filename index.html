@@ -94,9 +94,7 @@
                     </div>
                     <div id="map-coords" class="small-coords">--° --.---'</div>
                 </div>
-                
                 <button id="map-return-btn" class="map-return-btn">🏎️ MITTARISTO</button>
-
                 <div id="map"></div>
             </div>
 
@@ -108,59 +106,7 @@
             </div>
 
             <div id="help-view" class="view-section watermark-bg" style="display:none; overflow-y:auto; padding:20px;">
-                <h2 style="text-align:center; color:var(--accent-color);">Käyttöopas</h2>
-                
-                <div class="help-section">
-                    <h3>📲 1. Asennus (Tärkeä!)</h3>
-                    <div class="help-step">
-                        Tämä on PWA-sovellus, joka toimii parhaiten, kun se on asennettu puhelimen aloitusnäyttöön.
-                    </div>
-                    <div class="help-step">
-                        <strong>iPhone (iOS):</strong> Paina "Jaa" -> "Lisää Koti-valikkoon".
-                    </div>
-                    <div class="help-step">
-                        <strong>Android (Chrome):</strong> Paina valikko (kolme pistettä) -> "Asenna sovellus".
-                    </div>
                 </div>
-
-                <div class="help-section">
-                    <h3>🚀 2. Aloitus</h3>
-                    <div class="help-step">
-                        Kirjaudu sisään Google-tilillä. Tämä varmistaa, että ajosi pysyvät tallessa ja yksityisinä.
-                    </div>
-                    <div class="help-step">
-                        Salli GPS-paikannus, kun sovellus sitä kysyy.
-                    </div>
-                </div>
-
-                <div class="help-section">
-                    <h3>🏎️ 3. Mittaristo ja Tallennus</h3>
-                    <div class="help-step">
-                        <strong>Vapaa ajo:</strong> "Aktivoi Nopeusnäyttö" näyttää nopeuden tallentamatta.
-                    </div>
-                    <div class="help-step">
-                        <strong>Tallennus:</strong> Paina <strong>ALOITA TALLENNUS</strong> (🔴). Matka alkaa kertyä. Lopuksi paina <strong>LOPETA & TALLENNA</strong>.
-                    </div>
-                </div>
-
-                <div class="help-section">
-                    <h3>🗺️ 4. Kartta</h3>
-                    <div class="help-step">
-                        Kartta zoomaa automaattisesti vauhdin mukaan. Pääset karttaan ylävalikosta tai painamalla mittariston reunoja.
-                    </div>
-                </div>
-
-                <div class="help-section">
-                    <h3>📋 5. Historia</h3>
-                    <div class="help-step">
-                        Voit selata vanhoja ajoja, lisätä niihin aiheita (esim. "Työmatka") tai poistaa virheellisiä tallennuksia roskakorista.
-                    </div>
-                </div>
-                
-                <div style="text-align: center; margin-top: 40px; color: #666; font-size: 12px; padding-bottom: 20px;">
-                    Ajopäiväkirja Pro v2.1
-                </div>
-            </div>
 
         </div>
 
@@ -180,6 +126,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
     <script src="app.js"></script>
+    
+    <script src="help.js"></script>
 </body>
 </html>
