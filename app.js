@@ -71,6 +71,12 @@ let maxSpeed = 0;
 let totalDistance = 0;
 let lastLatLng = null;
 
+// UUSI: Sää ja Ajotapa muuttujat
+let currentDriveWeather = ""; 
+let aggressiveEvents = 0;
+let lastAcceleration = { x: 0, y: 0, z: 0 };
+let lastMotionTime = 0;
+
 let allHistoryData = []; 
 
 // UI Elementit
@@ -213,12 +219,30 @@ document.getElementById('btn-activate-gps').addEventListener('click', () => {
 });
 
 btnStartRec.addEventListener('click', () => {
+    // Kysy lupaa kiihtyvyysanturille (iOS vaatimus)
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+            .then(response => {
+                if (response === 'granted') {
+                    window.addEventListener('devicemotion', handleMotion);
+                }
+            })
+            .catch(console.error);
+    } else {
+        window.addEventListener('devicemotion', handleMotion);
+    }
+
     isRecording = true;
     isPaused = false;
     startTime = new Date();
     totalPauseTime = 0;
     maxSpeed = 0;
     totalDistance = 0;
+    
+    // Nollaa uudet mittarit
+    currentDriveWeather = "";
+    aggressiveEvents = 0;
+    
     updateDashboardUI(0, 0, 0, 0, 0, 0);
     
     btnStartRec.style.display = 'none';
@@ -256,6 +280,9 @@ btnStopRec.addEventListener('click', () => {
     if (!isRecording) return;
     clearInterval(timerInterval);
     
+    // Poista kiihtyvyysanturin kuuntelu
+    window.removeEventListener('devicemotion', handleMotion);
+    
     if (isPaused && pauseStartTime) {
         totalPauseTime += (new Date() - pauseStartTime);
     }
@@ -265,6 +292,11 @@ btnStopRec.addEventListener('click', () => {
     const durationHours = activeDurationMs / (1000 * 60 * 60);
     let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
 
+    // Määritä ajotapa
+    let styleLabel = "Tasainen";
+    if (aggressiveEvents > 5) styleLabel = "Reipas";
+    if (aggressiveEvents > 15) styleLabel = "Aggressiivinen";
+
     tempDriveData = {
         type: 'end_drive',
         startTime: startTime.toISOString(),
@@ -273,7 +305,9 @@ btnStopRec.addEventListener('click', () => {
         maxSpeed: maxSpeed.toFixed(1),
         avgSpeed: avgSpeed.toFixed(1),
         durationMs: activeDurationMs,
-        subject: "" 
+        subject: "",
+        weather: currentDriveWeather, // Uusi: Sää
+        drivingStyle: styleLabel      // Uusi: Ajotapa
     };
 
     const mins = Math.floor(activeDurationMs / 60000);
@@ -339,6 +373,7 @@ function stopGPSAndRec() {
     clearInterval(timerInterval);
     isGPSActive = false;
     navigator.geolocation.clearWatch(watchId);
+    window.removeEventListener('devicemotion', handleMotion);
 }
 
 function startGPS() {
@@ -370,6 +405,11 @@ function updatePosition(position) {
     let currentAvg = 0;
 
     if (isRecording && !isPaused) {
+        // HAE SÄÄ KERRAN (kun meillä on sijainti)
+        if (currentDriveWeather === "") {
+            fetchWeather(lat, lng);
+        }
+
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
             const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
@@ -402,6 +442,62 @@ function updatePosition(position) {
     dashCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
     if (isGPSActive && wakeLock === null) requestWakeLock();
 }
+
+// --- UUSI: SÄÄN HAKU ---
+function fetchWeather(lat, lon) {
+    currentDriveWeather = "Ladataan...";
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&wind_speed_unit=ms`;
+    
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            if (data.current) {
+                const temp = Math.round(data.current.temperature_2m);
+                const code = data.current.weather_code;
+                let emoji = "☁️";
+                // WMO sääkoodit
+                if (code === 0) emoji = "☀️";
+                else if (code <= 3) emoji = "⛅";
+                else if (code <= 48) emoji = "🌫";
+                else if (code <= 67) emoji = "🌧";
+                else if (code <= 77) emoji = "❄️";
+                else if (code <= 82) emoji = "🌧";
+                else if (code <= 86) emoji = "❄️";
+                else emoji = "⛈";
+                
+                currentDriveWeather = `${emoji} ${temp}°C`;
+            } else {
+                currentDriveWeather = "Ei säätietoa";
+            }
+        })
+        .catch(e => {
+            console.error("Säävirhe", e);
+            currentDriveWeather = "";
+        });
+}
+
+// --- UUSI: KIIHTYVYYSANTURI (AJOTAPA) ---
+function handleMotion(event) {
+    if (!isRecording || isPaused) return;
+
+    // Debounce: älä lue liian usein
+    const now = Date.now();
+    if (now - lastMotionTime < 500) return; 
+    lastMotionTime = now;
+
+    const acc = event.acceleration; // Ilman painovoimaa
+    if (!acc) return;
+
+    // Lasketaan voimakkuusvektori
+    const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
+    
+    // Kynnysarvo "kovalle" tapahtumalle (m/s2)
+    // 3.5 on kohtalainen jarrutus/kiihdytys
+    if (magnitude > 3.5) {
+        aggressiveEvents++;
+    }
+}
+
 
 // --- HISTORIA (SUODATUS, YHTEENVETO, POISTO) ---
 
@@ -569,6 +665,11 @@ function renderHistoryList() {
             const distanceDisplay = (drive.distanceKm !== undefined) ? drive.distanceKm : "0.00";
             const maxSpeedDisplay = (drive.maxSpeed !== undefined) ? drive.maxSpeed : "0";
             const subjectText = (drive.subject !== undefined) ? drive.subject : "";
+            
+            // Uudet tiedot: Sää ja Ajotapa
+            let tagsHtml = "";
+            if (drive.weather) tagsHtml += `<span class="tag">🌡️ ${drive.weather}</span>`;
+            if (drive.drivingStyle) tagsHtml += `<span class="tag">🏎️ ${drive.drivingStyle}</span>`;
 
             const card = document.createElement('div');
             card.className = 'log-card';
@@ -577,6 +678,8 @@ function renderHistoryList() {
                     <div class="log-date">${dateStr}</div>
                     <button class="delete-btn" onclick="openDeleteModal('${drive.key}')">🗑</button>
                 </div>
+                <div class="log-tags">${tagsHtml}</div>
+                
                 <div class="log-stats">
                     <div><span class="stat-label">KM</span>${distanceDisplay}</div>
                     <div><span class="stat-label">AIKA</span>${durationMinutes} min</div>
