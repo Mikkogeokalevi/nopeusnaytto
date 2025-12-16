@@ -65,13 +65,13 @@ let totalPauseTime = 0;
 
 let timerInterval = null;
 let tempDriveData = null; 
-let deleteKey = null; // Tallennettavan poistettavan ajon avain
+let deleteKey = null;
 
 let maxSpeed = 0;
 let totalDistance = 0;
 let lastLatLng = null;
 
-let allHistoryData = []; // Tässä pidetään kaikki ladatut ajot muistissa
+let allHistoryData = []; // Kaikki ajot muistissa
 
 // UI Elementit
 const dashSpeedEl = document.getElementById('dash-speed');
@@ -87,6 +87,12 @@ const dashDateEl = document.getElementById('dash-date');
 const mapSpeedEl = document.getElementById('map-speed');
 const mapCoordsEl = document.getElementById('map-coords');
 const statusEl = document.getElementById('status');
+
+// Yhteenveto elementit
+const historySummaryEl = document.getElementById('history-summary');
+const sumKmEl = document.getElementById('sum-km');
+const sumCountEl = document.getElementById('sum-count');
+const sumTimeEl = document.getElementById('sum-time');
 
 // Kontrollit
 const btnStartRec = document.getElementById('btn-start-rec');
@@ -290,7 +296,7 @@ btnModalCancel.addEventListener('click', () => {
     }
 });
 
-// UUSI: Poisto Modal Logiikka
+// Poisto Modal
 function openDeleteModal(key) {
     deleteKey = key;
     deleteModal.style.display = 'flex';
@@ -392,11 +398,11 @@ function updatePosition(position) {
     if (isGPSActive && wakeLock === null) requestWakeLock();
 }
 
-// --- HISTORIA (SUODATUS + POISTO) ---
+// --- HISTORIA (SUODATUS, YHTEENVETO, POISTO) ---
 const filterEl = document.getElementById('history-filter');
 
 filterEl.addEventListener('change', () => {
-    renderHistoryList(); // Piirretään lista uudelleen, kun valinta muuttuu
+    renderHistoryList();
 });
 
 function loadHistory() {
@@ -410,10 +416,10 @@ function loadHistory() {
     logList.innerHTML = "<div class='loading'>Haetaan tietoja...</div>";
     
     db.ref('ajopaivakirja/' + currentUser.uid).off();
-    const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).limitToLast(100);
+    const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).limitToLast(200);
 
     historyRef.on('value', (snapshot) => {
-        allHistoryData = []; // Nollataan muisti
+        allHistoryData = [];
         
         if (!snapshot.exists()) {
             renderHistoryList();
@@ -427,15 +433,15 @@ function loadHistory() {
             }
         });
 
-        // Järjestetään uusin ensin
+        // Uusin ensin
         allHistoryData.sort((a, b) => {
             const dateA = new Date(a.startTime || 0);
             const dateB = new Date(b.startTime || 0);
             return dateB - dateA; 
         });
 
-        populateFilter(); // Päivitä kuukausivalikko
-        renderHistoryList(); // Piirrä lista
+        populateFilter();
+        renderHistoryList();
 
     }, (error) => {
         console.error("Latausvirhe:", error);
@@ -444,34 +450,45 @@ function loadHistory() {
 }
 
 function populateFilter() {
-    // Tyhjennetään valikko (paitsi "Kaikki")
+    // Säilytetään nykyinen valinta jos mahdollista
+    const currentVal = filterEl.value;
     filterEl.innerHTML = '<option value="all">Kaikki ajot</option>';
     
-    const months = new Set();
+    const periods = new Set();
     
     allHistoryData.forEach(drive => {
         if (drive.startTime) {
             const d = new Date(drive.startTime);
             if (!isNaN(d.getTime())) {
-                // Luodaan avain esim "2025-12" ja näkyvä teksti "Joulukuu 2025"
-                const key = d.getFullYear() + '-' + (d.getMonth() + 1);
-                const label = d.toLocaleString('fi-FI', { month: 'long', year: 'numeric' });
-                // Capitalize first letter
-                const finalLabel = label.charAt(0).toUpperCase() + label.slice(1);
-                
-                months.add(JSON.stringify({key, label: finalLabel}));
+                // 1. Lisätään Vuosi (esim "2025")
+                const yearKey = "YEAR-" + d.getFullYear();
+                const yearLabel = "Vuosi " + d.getFullYear();
+                periods.add(JSON.stringify({key: yearKey, label: yearLabel, sort: d.getFullYear() * 100}));
+
+                // 2. Lisätään Kuukausi (esim "2025-12")
+                const monthKey = d.getFullYear() + '-' + (d.getMonth() + 1);
+                const monthLabel = d.toLocaleString('fi-FI', { month: 'long', year: 'numeric' });
+                const finalMonthLabel = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
+                // Sorttausavain: 202512
+                periods.add(JSON.stringify({key: monthKey, label: finalMonthLabel, sort: d.getFullYear() * 100 + (d.getMonth() + 1)}));
             }
         }
     });
 
-    // Lisätään uniikit kuukaudet valikkoon
-    months.forEach(m => {
-        const obj = JSON.parse(m);
+    // Muutetaan Set arrayksi ja järjestetään (Uusin ensin)
+    const sortedPeriods = Array.from(periods).map(p => JSON.parse(p)).sort((a, b) => b.sort - a.sort);
+
+    sortedPeriods.forEach(p => {
         const option = document.createElement('option');
-        option.value = obj.key;
-        option.innerText = obj.label;
+        option.value = p.key;
+        option.innerText = p.label;
         filterEl.appendChild(option);
     });
+
+    // Palautetaan valinta jos se on yhä olemassa
+    if (currentVal && Array.from(filterEl.options).some(o => o.value === currentVal)) {
+        filterEl.value = currentVal;
+    }
 }
 
 function renderHistoryList() {
@@ -480,12 +497,16 @@ function renderHistoryList() {
     
     if (allHistoryData.length === 0) {
         logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
+        historySummaryEl.style.display = 'none';
         return;
     }
 
-    const selectedMonth = filterEl.value; // "all" tai "2025-12"
-
+    const selectedFilter = filterEl.value; // "all", "2025-12" tai "YEAR-2025"
     let renderCount = 0;
+    
+    // Yhteenveto muuttujat
+    let totalKm = 0;
+    let totalMs = 0;
 
     allHistoryData.forEach(drive => {
         try {
@@ -498,23 +519,39 @@ function renderHistoryList() {
                     dateStr = start.toLocaleDateString('fi-FI') + ' ' + start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
                     
                     // SUODATUS LOGIIKKA
-                    if (selectedMonth !== 'all') {
-                        const driveKey = start.getFullYear() + '-' + (start.getMonth() + 1);
-                        if (driveKey !== selectedMonth) return; // Skipataan väärä kuukausi
+                    if (selectedFilter !== 'all') {
+                        if (selectedFilter.startsWith("YEAR-")) {
+                            // Vuosisuodatus
+                            const year = selectedFilter.split("-")[1];
+                            if (start.getFullYear().toString() !== year) return;
+                        } else {
+                            // Kuukausisuodatus
+                            const monthKey = start.getFullYear() + '-' + (start.getMonth() + 1);
+                            if (monthKey !== selectedFilter) return;
+                        }
                     }
                 }
             }
 
+            // Laske kesto
             let durationMinutes = 0;
+            let durationMs = 0;
             if (drive.durationMs) {
+                durationMs = drive.durationMs;
                 durationMinutes = Math.floor(drive.durationMs / 60000);
             } else if (drive.endTime && start) {
                 const end = new Date(drive.endTime);
                 if (!isNaN(end.getTime())) {
-                    durationMinutes = Math.floor((end - start) / 60000);
+                    durationMs = (end - start);
+                    durationMinutes = Math.floor(durationMs / 60000);
                 }
             }
             
+            // Laske yhteenvetoon
+            const dist = parseFloat(drive.distanceKm) || 0;
+            totalKm += dist;
+            totalMs += durationMs;
+
             const avgSpeedDisplay = (drive.avgSpeed !== undefined) ? drive.avgSpeed : "-";
             const distanceDisplay = (drive.distanceKm !== undefined) ? drive.distanceKm : "0.00";
             const maxSpeedDisplay = (drive.maxSpeed !== undefined) ? drive.maxSpeed : "0";
@@ -543,12 +580,22 @@ function renderHistoryList() {
 
     if (renderCount === 0) {
         logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei ajoja valittuna ajanjaksona.</p>";
+        historySummaryEl.style.display = 'none';
+    } else {
+        // Päivitä yhteenveto ja näytä se
+        sumKmEl.innerText = totalKm.toFixed(1);
+        sumCountEl.innerText = renderCount;
+        
+        const h = Math.floor(totalMs / 3600000);
+        const m = Math.floor((totalMs % 3600000) / 60000);
+        sumTimeEl.innerText = `${h}h ${m}min`;
+        
+        historySummaryEl.style.display = 'flex';
     }
 }
 
 // Globaalit funktiot
 window.updateSubject = (key, text) => { if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text }); };
-// Tämä funktio ohjaa nyt modaaliin (määritelty ylempänä app.js:ssä)
 window.openDeleteModal = openDeleteModal; 
 
 // --- APUFUNKTIOT ---
