@@ -107,7 +107,6 @@ auth.onAuthStateChanged((user) => {
         if (views.map.style.display !== 'none') setTimeout(() => map.invalidateSize(), 200);
     } else {
         currentUser = null;
-        // Jos ollaan ohjesivulla (ilman kirjautumista), älä pakota login-näkymää heti päälle
         if (appContainer.style.display !== 'flex') {
             appContainer.style.display = 'none';
             loginView.style.display = 'flex';
@@ -393,7 +392,7 @@ function updatePosition(position) {
     if (isGPSActive && wakeLock === null) requestWakeLock();
 }
 
-// --- HISTORIA (KORJATTU LATAUS) ---
+// --- HISTORIA (POMMINVARMA VERSIO) ---
 function loadHistory() {
     const logList = document.getElementById('log-list');
     
@@ -404,14 +403,11 @@ function loadHistory() {
     
     logList.innerHTML = "<div class='loading'>Haetaan tietoja...</div>";
     
-    // Katkaistaan vanha kuuntelija
     db.ref('ajopaivakirja/' + currentUser.uid).off();
-
-    // Haetaan 50 viimeisintä
-    const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).orderByChild('startTime').limitToLast(50);
+    const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).limitToLast(50);
 
     historyRef.on('value', (snapshot) => {
-        logList.innerHTML = ""; // Tyhjennetään lista
+        logList.innerHTML = ""; 
         
         if (!snapshot.exists()) {
             logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
@@ -420,31 +416,47 @@ function loadHistory() {
 
         const logs = [];
         snapshot.forEach(child => {
-            logs.push({ key: child.key, ...child.val() });
+            const data = child.val();
+            if (data && typeof data === 'object') {
+                logs.push({ key: child.key, ...data });
+            }
         });
+
+        // Järjestetään itse Javascriptissä (uusin ensin)
+        logs.sort((a, b) => {
+            const dateA = new Date(a.startTime || 0);
+            const dateB = new Date(b.startTime || 0);
+            return dateB - dateA; 
+        });
+
+        let renderCount = 0;
         
-        // Käännetään järjestys: Uusin ensin
-        logs.reverse();
-
         logs.forEach(drive => {
-            // VIKASIETOISUUS: Hypätään yli vialliset rivit
             try {
-                if (!drive.startTime) return;
+                let dateStr = "Aika puuttuu";
+                let start = null;
 
-                const start = new Date(drive.startTime);
-                const dateStr = start.toLocaleDateString('fi-FI') + ' ' + start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
-                
+                if (drive.startTime) {
+                    start = new Date(drive.startTime);
+                    if (!isNaN(start.getTime())) {
+                        dateStr = start.toLocaleDateString('fi-FI') + ' ' + start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+                    }
+                }
+
                 let durationMinutes = 0;
                 if (drive.durationMs) {
                     durationMinutes = Math.floor(drive.durationMs / 60000);
-                } else if (drive.endTime) {
-                    const diffMs = new Date(drive.endTime) - start;
-                    durationMinutes = Math.floor(diffMs / 60000);
+                } else if (drive.endTime && start) {
+                    const end = new Date(drive.endTime);
+                    if (!isNaN(end.getTime())) {
+                        durationMinutes = Math.floor((end - start) / 60000);
+                    }
                 }
                 
-                const avgSpeedDisplay = drive.avgSpeed ? drive.avgSpeed : "-";
-                const distanceDisplay = drive.distanceKm ? drive.distanceKm : "0.00";
-                const maxSpeedDisplay = drive.maxSpeed ? drive.maxSpeed : "0";
+                const avgSpeedDisplay = (drive.avgSpeed !== undefined) ? drive.avgSpeed : "-";
+                const distanceDisplay = (drive.distanceKm !== undefined) ? drive.distanceKm : "0.00";
+                const maxSpeedDisplay = (drive.maxSpeed !== undefined) ? drive.maxSpeed : "0";
+                const subjectText = (drive.subject !== undefined) ? drive.subject : "";
 
                 const card = document.createElement('div');
                 card.className = 'log-card';
@@ -459,18 +471,23 @@ function loadHistory() {
                         <div><span class="stat-label">MAX</span>${maxSpeedDisplay}</div>
                         <div><span class="stat-label">Ø KM/H</span>${avgSpeedDisplay}</div>
                     </div>
-                    <input type="text" class="subject-input" placeholder="Kirjoita aihe..." value="${drive.subject || ''}" onchange="updateSubject('${drive.key}', this.value)">
+                    <input type="text" class="subject-input" placeholder="Kirjoita aihe..." value="${subjectText}" onchange="updateSubject('${drive.key}', this.value)">
                 `;
                 logList.appendChild(card);
+                renderCount++;
 
             } catch (err) {
-                console.error("Virhe yhden rivin piirtämisessä:", err, drive);
+                console.error("Virhe yhden rivin piirtämisessä (skipataan):", err);
             }
         });
+        
+        if (renderCount === 0) {
+            logList.innerHTML = "<p style='text-align:center; color:orange;'>Tietoja löytyi, mutta ne olivat virheellisiä.</p>";
+        }
 
     }, (error) => {
         console.error("Latausvirhe:", error);
-        logList.innerHTML = `<p style="color:red; text-align:center;">Virhe tietojen latauksessa:<br>${error.message}<br><br>Varmista Firebasen säännöt (.indexOn).</p>`;
+        logList.innerHTML = `<p style="color:red; text-align:center;">Latausvirhe: ${error.message}</p>`;
     });
 }
 
