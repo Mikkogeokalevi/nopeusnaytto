@@ -1,151 +1,103 @@
-:root {
-    --bg-color: #121212;
-    --panel-bg: #1e1e1e;
-    --text-color: #ffffff;
-    --speed-color: #03dac6;
-    --accent-color: #bb86fc;
-    --border-color: #333;
-    --subtext-color: #888;
+/* --- HISTORIA & OHJEET TYYLIT --- */
+
+/* TÄMÄ ON UUSI KORJAUS: */
+#log-list {
+    width: 100%;
+    max-width: 600px; /* Estää listan leviämisen koko ruudulle PC:llä */
+    margin: 0 auto;   /* Keskittää listan ruudun keskelle */
 }
 
-body.light-theme {
-    --bg-color: #e0e0e0;
-    --panel-bg: #ffffff;
-    --text-color: #121212;
-    --speed-color: #00695c;
-    --accent-color: #6200ee;
-    --border-color: #ccc;
-    --subtext-color: #555;
-}
-
-body {
-    background-color: var(--bg-color); color: var(--text-color);
-    font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-    margin: 0; display: flex; flex-direction: column; height: 100vh;
-    overflow: hidden; transition: background-color 0.3s, color 0.3s;
-}
-
-/* TAUSTALOGO */
-.watermark-bg { position: relative; z-index: 0; }
-.watermark-bg::before {
-    content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 80%; height: 80%;
-    background-image: url('ajopaivakirja_logo_mu.png');
-    background-position: center; background-repeat: no-repeat; background-size: contain;
-    opacity: 0.1; z-index: -1; pointer-events: none;
-    transition: background-image 0.3s ease-in-out;
-}
-body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_logo.png'); }
-
-/* KIRJAUTUMINEN */
-#login-view {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: var(--bg-color);
-    display: flex; justify-content: center; align-items: center; z-index: 5000;
-}
-.login-content { text-align: center; padding: 20px; }
-.login-logo { width: 100px; height: 100px; margin-bottom: 20px; border-radius: 50%; border: 2px solid var(--accent-color); }
-.google-btn { background-color: #4285F4; margin-top: 20px; }
-
-/* YLÄPALKKI */
-.top-bar-container {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 10px; background-color: var(--panel-bg);
-    border-bottom: 1px solid var(--border-color); z-index: 2000;
-    height: 60px; box-sizing: border-box;
-}
-.header-logo { height: 35px; width: 35px; border-radius: 50%; border: 2px solid var(--accent-color); margin-right: 10px; }
-.user-avatar { height: 32px; width: 32px; border-radius: 50%; border: 1px solid var(--subtext-color); margin-left: 10px; }
-
-.top-buttons { display: flex; align-items: center; gap: 5px; flex-wrap: nowrap; }
-.icon-btn {
-    background: none; border: 1px solid var(--border-color); color: var(--text-color);
-    border-radius: 8px; width: 38px; height: 38px; font-size: 18px;
-    cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; flex-shrink: 0;
-}
-.active-nav { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
-
-/* PÄÄSISÄLTÖ */
-.main-content { flex-grow: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-.view-section { flex-grow: 1; display: flex; flex-direction: column; width: 100%; height: 100%; }
-
-/* MITTARISTO */
-#dashboard-view { align-items: center; justify-content: center; padding: 10px; position: relative; overflow-y: auto; }
-
-.side-tap-zone {
-    position: absolute; top: 20%; bottom: 20%; width: 50px;
-    display: flex; align-items: center; justify-content: center;
-    background-color: rgba(187, 134, 252, 0.1);
-    color: var(--accent-color); font-weight: bold; font-size: 12px;
-    border-radius: 10px; cursor: pointer; writing-mode: vertical-rl; text-orientation: mixed;
-    z-index: 10;
-}
-#side-tap-left { left: 5px; border: 1px solid var(--accent-color); }
-#side-tap-right { right: 5px; border: 1px solid var(--accent-color); }
-
-.huge-speed {
-    font-size: 90px; font-weight: bold; color: var(--speed-color); line-height: 1;
-    font-variant-numeric: tabular-nums; margin-bottom: 10px;
-    text-shadow: 0 0 10px rgba(0,0,0,0.5);
-}
-.huge-unit { font-size: 20px; color: var(--subtext-color); font-weight: normal; display: block; text-align: center; }
-
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 15px; }
-.stat-card {
-    background-color: rgba(30, 30, 30, 0.8); backdrop-filter: blur(5px);
-    padding: 10px; border-radius: 12px; text-align: center;
-}
-.light-theme .stat-card { background-color: rgba(255, 255, 255, 0.8); }
-.stat-label { font-size: 11px; color: var(--subtext-color); text-transform: uppercase; }
-.stat-value { font-size: 20px; font-weight: bold; color: var(--text-color); }
-
-.coords-box { font-family: monospace; color: var(--accent-color); margin-top: 10px; text-shadow: 0 0 5px black; font-size: 14px; }
-.clock-box { font-size: 28px; font-weight: bold; color: var(--text-color); margin-top: 10px; letter-spacing: 1px; }
-
-/* KARTTA */
-#map { flex-grow: 1; width: 100%; z-index: 1; }
-.map-overlay {
-    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7); padding: 5px 15px;
-    border-radius: 20px; z-index: 1000; text-align: center;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-.speed-container { font-size: 30px; font-weight: bold; color: var(--speed-color); }
-.small-coords { font-family: monospace; font-size: 11px; color: #fff; }
-
-/* PALUU NAPPI KARTASSA */
-.map-return-btn {
-    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-    background-color: var(--accent-color); color: #fff;
-    padding: 15px 30px; border-radius: 30px; border: none; font-weight: bold;
-    font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 1000; cursor: pointer;
-}
-
-/* HISTORIA & OHJEET */
 .log-card {
-    background-color: rgba(30, 30, 30, 0.9); border: 1px solid var(--border-color);
-    border-radius: 12px; padding: 15px; margin-bottom: 15px;
+    background-color: rgba(30, 30, 30, 0.9);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    position: relative;
+    box-sizing: border-box; /* Varmistaa että padding ei riko leveyttä */
 }
-.light-theme .log-card { background-color: rgba(255, 255, 255, 0.9); }
-.log-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-.delete-btn { background: none; border: none; color: #d32f2f; font-size: 18px; padding: 5px; }
-.log-stats { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; }
-.subject-input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); box-sizing: border-box; }
 
-.help-section { margin-bottom: 20px; background-color: rgba(30, 30, 30, 0.6); padding: 15px; border-radius: 8px; }
+.light-theme .log-card {
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 8px;
+}
+.light-theme .log-header { border-bottom: 1px solid rgba(0,0,0,0.1); }
+
+.log-date {
+    font-size: 14px;
+    color: var(--subtext-color);
+    font-weight: bold;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ff4444;
+    font-size: 20px;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.delete-btn:hover { transform: scale(1.2); }
+
+.log-stats {
+    display: flex;
+    justify-content: space-around; /* Tasainen väli elementeille */
+    align-items: center;
+    font-weight: bold;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.log-stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 10px;
+    color: var(--subtext-color);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.subject-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: rgba(0,0,0,0.2);
+    color: var(--text-color);
+    box-sizing: border-box;
+    font-size: 14px;
+}
+.subject-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background-color: rgba(0,0,0,0.4);
+}
+
+/* Ohjeet-osion rajaus myös samalla tavalla */
+.help-section {
+    max-width: 600px; /* Sama leveysrajoitus ohjeisiin */
+    margin: 0 auto 20px auto;
+    background-color: rgba(30, 30, 30, 0.6);
+    padding: 15px;
+    border-radius: 8px;
+}
 .light-theme .help-section { background-color: rgba(255, 255, 255, 0.6); }
-.help-step { margin-bottom: 10px; padding-left: 10px; border-left: 2px solid var(--accent-color); }
 
-/* ALAPALKKI */
-.controls-container {
-    background-color: var(--panel-bg); padding: 15px; text-align: center; border-top: 1px solid var(--border-color); z-index: 2000;
+.help-step {
+    margin-bottom: 10px;
+    padding-left: 10px;
+    border-left: 3px solid var(--accent-color);
 }
-.action-btn {
-    padding: 12px 20px; font-size: 16px; border: none; border-radius: 50px; color: #fff; font-weight: bold; cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3); width: 100%; max-width: 350px; margin: 5px 0;
-}
-.blue-btn { background-color: var(--accent-color); }
-.green-btn { background-color: #2e7d32; }
-.red-btn { background-color: #d32f2f; }
-#status { margin-bottom: 5px; font-size: 12px; color: var(--subtext-color); }
-.view-hidden { display: none !important; }
