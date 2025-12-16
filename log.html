@@ -6,9 +6,14 @@
     <title>Ajohistoria</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .log-container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .log-container { 
+            padding: 20px; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            min-height: 100vh; /* Varmistaa että tausta kattaa koko ruudun */
+        }
         .log-card {
-            background-color: var(--panel-bg);
+            background-color: rgba(30, 30, 30, 0.9); /* Vähän läpinäkyvyyttä */
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 15px;
@@ -16,6 +21,8 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             position: relative;
         }
+        .light-theme .log-card { background-color: rgba(255, 255, 255, 0.9); }
+        
         .log-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
         .log-date { font-size: 14px; color: var(--subtext-color); }
         .delete-btn { background: none; border: none; color: #d32f2f; cursor: pointer; font-size: 18px; padding: 5px; }
@@ -35,7 +42,7 @@
 </head>
 <body>
 
-    <div class="log-container">
+    <div class="log-container watermark-bg">
         <a href="index.html" class="back-btn">← Takaisin mittaristoon</a>
         <h2>Ajohistoria</h2>
         <div id="log-list">
@@ -64,7 +71,6 @@
         const logList = document.getElementById('log-list');
         let currentUser = null;
 
-        // ODOTETAAN KÄYTTÄJÄTIETOJA
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
@@ -76,32 +82,24 @@
 
         function loadData() {
             logList.innerHTML = "<div class='loading'>Ladataan omia ajoja...</div>";
-            
-            // HUOM: Haetaan vain käyttäjän OMAT ajot
             db.ref('ajopaivakirja/' + currentUser.uid).orderByChild('startTime').limitToLast(30).on('value', (snapshot) => {
                 logList.innerHTML = ""; 
                 const logs = [];
-                
                 snapshot.forEach((childSnapshot) => {
                     logs.push({ key: childSnapshot.key, ...childSnapshot.val() });
                 });
-                
                 logs.reverse();
-
                 if (logs.length === 0) {
                     logList.innerHTML = "<p>Ei tallennettuja ajoja.</p>"; return;
                 }
-
                 logs.forEach(drive => {
                     const start = new Date(drive.startTime);
                     const dateStr = start.toLocaleDateString('fi-FI') + ' klo ' + start.toLocaleTimeString('fi-FI', {hour: '2-digit', minute:'2-digit'});
-                    
                     let durationStr = "?";
                     if (drive.endTime) {
                         const diffMs = new Date(drive.endTime) - start;
                         durationStr = Math.floor(diffMs / 60000) + " min";
                     }
-
                     const card = document.createElement('div');
                     card.className = 'log-card';
                     card.innerHTML = `
