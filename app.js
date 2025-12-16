@@ -13,7 +13,7 @@ if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const db = firebase.database();
 const auth = firebase.auth(); 
 
-// --- DOM ELEMENTIT ---
+// Elementit
 const splashScreen = document.getElementById('splash-screen');
 const loginView = document.getElementById('login-view');
 const appContainer = document.getElementById('app-container');
@@ -33,7 +33,7 @@ const navBtns = {
     help: document.getElementById('nav-help')
 };
 
-// --- MUUTTUJAT ---
+// Muuttujat
 let currentUser = null; 
 let watchId = null;
 let isGPSActive = false;
@@ -51,14 +51,16 @@ const dashMaxSpeedEl = document.getElementById('dash-max-speed');
 const dashDistEl = document.getElementById('dash-dist');
 const dashTimeEl = document.getElementById('dash-time');
 const dashAltEl = document.getElementById('dash-alt');
+const dashAvgEl = document.getElementById('dash-avg'); // UUSI
 const dashCoordsEl = document.getElementById('dash-coords');
 const dashClockEl = document.getElementById('dash-clock');
+const dashDateEl = document.getElementById('dash-date'); // UUSI
 
 const mapSpeedEl = document.getElementById('map-speed');
 const mapCoordsEl = document.getElementById('map-coords');
 const statusEl = document.getElementById('status');
 
-// --- AUTHENTICATION ---
+// --- AUTH ---
 auth.onAuthStateChanged((user) => {
     if (splashScreen) setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
 
@@ -85,12 +87,7 @@ document.getElementById('btn-login').addEventListener('click', () => {
 });
 
 document.getElementById('btn-logout').addEventListener('click', () => {
-    if (confirm("Haluatko varmasti kirjautua ulos?")) {
-        auth.signOut().then(() => {
-            stopGPSAndRec();
-            location.reload(); 
-        });
-    }
+    if(confirm("Kirjaudu ulos?")) auth.signOut().then(() => location.reload());
 });
 
 // --- NAVIGOINTI ---
@@ -125,7 +122,7 @@ const satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/se
 
 const map = L.map('map', { center: [64.0, 26.0], zoom: 16, layers: [streetMap], zoomControl: false });
 L.control.layers({ "Kartta": streetMap, "Satelliitti": satelliteMap }).addTo(map);
-let marker = L.circleMarker([64.0, 26.0], { color: '#3388ff', fillColor: '#3388ff', fillOpacity: 0.8, radius: 8 }).addTo(map);
+let marker = L.circleMarker([64.0, 26.0], { color: '#2979ff', fillColor: '#2979ff', fillOpacity: 0.8, radius: 8 }).addTo(map);
 
 // --- GPS & TALLENNUS ---
 document.getElementById('btn-activate-gps').addEventListener('click', () => {
@@ -142,7 +139,7 @@ document.getElementById('btn-start-rec').addEventListener('click', () => {
     startTime = new Date();
     maxSpeed = 0;
     totalDistance = 0;
-    updateDashboardUI(0, 0, 0, 0, 0);
+    updateDashboardUI(0, 0, 0, 0, 0, 0);
     
     document.getElementById('btn-start-rec').style.display = 'none';
     document.getElementById('btn-stop-rec').style.display = 'inline-block';
@@ -153,17 +150,10 @@ document.getElementById('btn-start-rec').addEventListener('click', () => {
 
 document.getElementById('btn-stop-rec').addEventListener('click', () => {
     if (isRecording) {
-        // Lasketaan lopulliset tiedot
         const endTime = new Date();
         const durationMs = endTime - startTime;
         const durationHours = durationMs / (1000 * 60 * 60);
-        
-        // Lasketaan keskinopeus (km / h)
-        // Varmistetaan nollalla jako (jos aika on 0)
-        let avgSpeed = 0;
-        if (durationHours > 0) {
-            avgSpeed = totalDistance / durationHours;
-        }
+        let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
 
         saveToFirebase({
             type: 'end_drive',
@@ -171,8 +161,8 @@ document.getElementById('btn-stop-rec').addEventListener('click', () => {
             endTime: endTime.toISOString(),
             distanceKm: totalDistance.toFixed(2),
             maxSpeed: maxSpeed.toFixed(1),
-            avgSpeed: avgSpeed.toFixed(1), // UUSI: Keskinopeus
-            durationMs: durationMs,        // UUSI: Tarkka kesto millisekunteina
+            avgSpeed: avgSpeed.toFixed(1),
+            durationMs: durationMs,
             subject: "" 
         });
     }
@@ -220,11 +210,19 @@ function updatePosition(position) {
     let speedKmh = speedMs * 3.6;
     if (speedKmh < 1.0) speedKmh = 0;
 
+    let currentAvg = 0;
+
     if (isRecording) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
             const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
             if ((speedKmh > 3 || dist > 0.02) && dist < 2.0) totalDistance += dist;
+        }
+        
+        // Laske reaaliaikainen keskinopeus
+        if (startTime) {
+            const durationHrs = (new Date() - startTime) / (1000 * 60 * 60);
+            if (durationHrs > 0) currentAvg = totalDistance / durationHrs;
         }
     }
     
@@ -242,24 +240,16 @@ function updatePosition(position) {
         }
     }
 
-    dashSpeedEl.innerText = speedKmh.toFixed(1);
-    dashMaxSpeedEl.innerText = maxSpeed.toFixed(1);
-    dashDistEl.innerText = totalDistance.toFixed(2);
-    dashAltEl.innerText = Math.round(alt);
+    updateDashboardUI(speedKmh, maxSpeed, totalDistance, null, alt, currentAvg);
     dashCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
     
-    if (isActive() && wakeLock === null) requestWakeLock();
+    if (isGPSActive && wakeLock === null) requestWakeLock();
 }
 
 // --- HISTORIA ---
 function loadHistory() {
     const logList = document.getElementById('log-list');
-    
-    if (!currentUser) {
-        logList.innerHTML = "<p>Kirjaudu sisään nähdäksesi historian.</p>";
-        return;
-    }
-    
+    if (!currentUser) { logList.innerHTML = "<p>Kirjaudu sisään.</p>"; return; }
     logList.innerHTML = "<div class='loading'>Haetaan tietoja...</div>";
     
     db.ref('ajopaivakirja/' + currentUser.uid).off();
@@ -267,11 +257,7 @@ function loadHistory() {
 
     historyRef.on('value', (snapshot) => {
         logList.innerHTML = "";
-        
-        if (!snapshot.exists()) {
-            logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
-            return;
-        }
+        if (!snapshot.exists()) { logList.innerHTML = "<p style='text-align:center;'>Ei ajoja.</p>"; return; }
 
         const logs = [];
         snapshot.forEach(child => logs.push({ key: child.key, ...child.val() }));
@@ -280,17 +266,10 @@ function loadHistory() {
         logs.forEach(drive => {
             const start = new Date(drive.startTime);
             const dateStr = start.toLocaleDateString('fi-FI') + ' ' + start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
-            
-            // Keston laskenta (joko tallennetusta durationMs tai lasketaan lennosta vanhoille ajoille)
             let durationMinutes = 0;
-            if (drive.durationMs) {
-                durationMinutes = Math.floor(drive.durationMs / 60000);
-            } else if (drive.endTime) {
-                const diffMs = new Date(drive.endTime) - start;
-                durationMinutes = Math.floor(diffMs / 60000);
-            }
+            if (drive.durationMs) durationMinutes = Math.floor(drive.durationMs / 60000);
+            else if (drive.endTime) durationMinutes = Math.floor((new Date(drive.endTime) - start) / 60000);
             
-            // Keskinopeus (jos tallennettu, muuten näytetään -)
             const avgSpeedDisplay = drive.avgSpeed ? drive.avgSpeed : "-";
 
             const card = document.createElement('div');
@@ -306,33 +285,29 @@ function loadHistory() {
                     <div><span class="stat-label">MAX</span>${drive.maxSpeed}</div>
                     <div><span class="stat-label">Ø KM/H</span>${avgSpeedDisplay}</div>
                 </div>
-                <input type="text" class="subject-input" placeholder="Kirjoita aihe..." value="${drive.subject || ''}" onchange="updateSubject('${drive.key}', this.value)">
+                <input type="text" class="subject-input" placeholder="Aihe..." value="${drive.subject || ''}" onchange="updateSubject('${drive.key}', this.value)">
             `;
             logList.appendChild(card);
         });
-
     }, (error) => {
-        console.error("Latausvirhe:", error);
-        logList.innerHTML = `<p style="color:red; text-align:center;">Virhe tietojen latauksessa:<br>${error.message}<br><br>Tarkista tietokannan säännöt.</p>`;
+        logList.innerHTML = `<p style="color:red; text-align:center;">Latausvirhe: ${error.message}</p>`;
     });
 }
 
-window.updateSubject = (key, text) => {
-    if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text });
-};
-
-window.deleteDrive = (key) => {
-    if(confirm("Haluatko varmasti poistaa tämän ajon?")) {
-        db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).remove();
-    }
-};
+window.updateSubject = (key, text) => { if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text }); };
+window.deleteDrive = (key) => { if(confirm("Poista?")) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).remove(); };
 
 // --- APUFUNKTIOT ---
 document.getElementById('btn-theme').addEventListener('click', () => document.body.classList.toggle('light-theme'));
-setInterval(() => {
+
+// Kello ja Päivämäärä
+function updateClockAndDate() {
     const now = new Date();
-    document.getElementById('dash-clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}, 1000);
+    dashClockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    dashDateEl.innerText = now.toLocaleDateString('fi-FI', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+setInterval(updateClockAndDate, 1000);
+updateClockAndDate(); // Aja heti kerran
 
 function updateTimer() {
     if (!startTime) return;
@@ -343,9 +318,12 @@ function updateTimer() {
     dashTimeEl.innerText = (hrs>0?hrs+":":"") + (mins<10?"0":"")+mins + ":" + (secs<10?"0":"")+secs;
 }
 
-function updateDashboardUI(spd, max, dist, time, alt) {
-    dashSpeedEl.innerText = spd.toFixed(1); dashMaxSpeedEl.innerText = max;
-    dashDistEl.innerText = dist; dashAltEl.innerText = alt;
+function updateDashboardUI(spd, max, dist, time, alt, avg) {
+    dashSpeedEl.innerText = spd.toFixed(1); 
+    dashMaxSpeedEl.innerText = max.toFixed(1);
+    dashDistEl.innerText = dist.toFixed(2); 
+    dashAltEl.innerText = Math.round(alt);
+    if(avg !== undefined) dashAvgEl.innerText = avg.toFixed(1);
 }
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
@@ -361,5 +339,3 @@ function toGeocacheFormat(deg, isLat) {
 function saveToFirebase(data) {
     if (currentUser) db.ref('ajopaivakirja/' + currentUser.uid).push().set(data);
 }
-// Apufunktio tarkistamaan onko aktiivinen (käytetään updatePositionissa)
-function isActive() { return isGPSActive; }
