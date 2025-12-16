@@ -393,51 +393,84 @@ function updatePosition(position) {
     if (isGPSActive && wakeLock === null) requestWakeLock();
 }
 
-// --- HISTORIA ---
+// --- HISTORIA (KORJATTU LATAUS) ---
 function loadHistory() {
     const logList = document.getElementById('log-list');
-    if (!currentUser) { logList.innerHTML = "<p>Kirjaudu sisään.</p>"; return; }
+    
+    if (!currentUser) {
+        logList.innerHTML = "<p>Kirjaudu sisään nähdäksesi historian.</p>";
+        return;
+    }
+    
     logList.innerHTML = "<div class='loading'>Haetaan tietoja...</div>";
     
+    // Katkaistaan vanha kuuntelija
     db.ref('ajopaivakirja/' + currentUser.uid).off();
+
+    // Haetaan 50 viimeisintä
     const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).orderByChild('startTime').limitToLast(50);
 
     historyRef.on('value', (snapshot) => {
-        logList.innerHTML = "";
-        if (!snapshot.exists()) { logList.innerHTML = "<p style='text-align:center;'>Ei ajoja.</p>"; return; }
+        logList.innerHTML = ""; // Tyhjennetään lista
+        
+        if (!snapshot.exists()) {
+            logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
+            return;
+        }
 
         const logs = [];
-        snapshot.forEach(child => logs.push({ key: child.key, ...child.val() }));
+        snapshot.forEach(child => {
+            logs.push({ key: child.key, ...child.val() });
+        });
+        
+        // Käännetään järjestys: Uusin ensin
         logs.reverse();
 
         logs.forEach(drive => {
-            const start = new Date(drive.startTime);
-            const dateStr = start.toLocaleDateString('fi-FI') + ' ' + start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
-            let durationMinutes = 0;
-            if (drive.durationMs) durationMinutes = Math.floor(drive.durationMs / 60000);
-            else if (drive.endTime) durationMinutes = Math.floor((new Date(drive.endTime) - start) / 60000);
-            
-            const avgSpeedDisplay = drive.avgSpeed ? drive.avgSpeed : "-";
+            // VIKASIETOISUUS: Hypätään yli vialliset rivit
+            try {
+                if (!drive.startTime) return;
 
-            const card = document.createElement('div');
-            card.className = 'log-card';
-            card.innerHTML = `
-                <div class="log-header">
-                    <div class="log-date">${dateStr}</div>
-                    <button class="delete-btn" onclick="deleteDrive('${drive.key}')">🗑</button>
-                </div>
-                <div class="log-stats">
-                    <div><span class="stat-label">KM</span>${drive.distanceKm}</div>
-                    <div><span class="stat-label">AIKA</span>${durationMinutes} min</div>
-                    <div><span class="stat-label">MAX</span>${drive.maxSpeed}</div>
-                    <div><span class="stat-label">Ø KM/H</span>${avgSpeedDisplay}</div>
-                </div>
-                <input type="text" class="subject-input" placeholder="Aihe..." value="${drive.subject || ''}" onchange="updateSubject('${drive.key}', this.value)">
-            `;
-            logList.appendChild(card);
+                const start = new Date(drive.startTime);
+                const dateStr = start.toLocaleDateString('fi-FI') + ' ' + start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+                
+                let durationMinutes = 0;
+                if (drive.durationMs) {
+                    durationMinutes = Math.floor(drive.durationMs / 60000);
+                } else if (drive.endTime) {
+                    const diffMs = new Date(drive.endTime) - start;
+                    durationMinutes = Math.floor(diffMs / 60000);
+                }
+                
+                const avgSpeedDisplay = drive.avgSpeed ? drive.avgSpeed : "-";
+                const distanceDisplay = drive.distanceKm ? drive.distanceKm : "0.00";
+                const maxSpeedDisplay = drive.maxSpeed ? drive.maxSpeed : "0";
+
+                const card = document.createElement('div');
+                card.className = 'log-card';
+                card.innerHTML = `
+                    <div class="log-header">
+                        <div class="log-date">${dateStr}</div>
+                        <button class="delete-btn" onclick="deleteDrive('${drive.key}')">🗑</button>
+                    </div>
+                    <div class="log-stats">
+                        <div><span class="stat-label">KM</span>${distanceDisplay}</div>
+                        <div><span class="stat-label">AIKA</span>${durationMinutes} min</div>
+                        <div><span class="stat-label">MAX</span>${maxSpeedDisplay}</div>
+                        <div><span class="stat-label">Ø KM/H</span>${avgSpeedDisplay}</div>
+                    </div>
+                    <input type="text" class="subject-input" placeholder="Kirjoita aihe..." value="${drive.subject || ''}" onchange="updateSubject('${drive.key}', this.value)">
+                `;
+                logList.appendChild(card);
+
+            } catch (err) {
+                console.error("Virhe yhden rivin piirtämisessä:", err, drive);
+            }
         });
+
     }, (error) => {
-        logList.innerHTML = `<p style="color:red; text-align:center;">Latausvirhe: ${error.message}</p>`;
+        console.error("Latausvirhe:", error);
+        logList.innerHTML = `<p style="color:red; text-align:center;">Virhe tietojen latauksessa:<br>${error.message}<br><br>Varmista Firebasen säännöt (.indexOn).</p>`;
     });
 }
 
