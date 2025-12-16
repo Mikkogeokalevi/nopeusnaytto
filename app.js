@@ -67,7 +67,7 @@ const statusEl = document.getElementById('status');
 
 // --- AUTHENTICATION (KIRJAUTUMINEN) ---
 auth.onAuthStateChanged((user) => {
-    // Piilotetaan splash screen
+    // Piilotetaan splash screen viiveellä
     if (splashScreen) {
         setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
     }
@@ -125,6 +125,7 @@ function switchView(viewName) {
     Object.values(navBtns).forEach(btn => btn.classList.remove('active-nav'));
 
     // Näytä valittu
+    // Dashboard ja Map käyttävät flexiä, muut blockia (sisällön vuoksi)
     if (viewName === 'dashboard' || viewName === 'map') {
         views[viewName].style.display = 'flex';
     } else {
@@ -337,7 +338,7 @@ function loadHistory() {
     
     logList.innerHTML = "<div class='loading'>Haetaan tietoja...</div>";
     
-    // Katkaistaan vanha kuuntelija varmuuden vuoksi
+    // Katkaistaan vanha kuuntelija varmuuden vuoksi, jotta lista ei "monistu"
     db.ref('ajopaivakirja/' + currentUser.uid).off();
 
     const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).orderByChild('startTime').limitToLast(50);
@@ -390,7 +391,7 @@ function loadHistory() {
     });
 }
 
-// Globaalit funktiot (jotta ne toimivat HTML-stringin sisältä)
+// Globaalit funktiot (jotta ne toimivat HTML-stringin onclick-tapahtumissa)
 window.updateSubject = (key, text) => {
     if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text });
 };
