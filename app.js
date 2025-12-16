@@ -71,11 +71,11 @@ let maxSpeed = 0;
 let totalDistance = 0;
 let lastLatLng = null;
 
-// UUSI: Sää ja Ajotapa muuttujat
+// Sää ja Ajotapa
 let currentDriveWeather = ""; 
 let aggressiveEvents = 0;
-let lastAcceleration = { x: 0, y: 0, z: 0 };
 let lastMotionTime = 0;
+let styleResetTimer = null; // Ajastin vihreäksi palautumiseen
 
 let allHistoryData = []; 
 
@@ -89,6 +89,11 @@ const dashAvgEl = document.getElementById('dash-avg');
 const dashCoordsEl = document.getElementById('dash-coords');
 const dashClockEl = document.getElementById('dash-clock');
 const dashDateEl = document.getElementById('dash-date'); 
+
+// UUSI: Live Status Bar
+const liveStatusBar = document.getElementById('live-status-bar');
+const liveWeatherEl = document.getElementById('live-weather');
+const liveStyleEl = document.getElementById('live-style-indicator');
 
 const mapSpeedEl = document.getElementById('map-speed');
 const mapCoordsEl = document.getElementById('map-coords');
@@ -219,7 +224,6 @@ document.getElementById('btn-activate-gps').addEventListener('click', () => {
 });
 
 btnStartRec.addEventListener('click', () => {
-    // Kysy lupaa kiihtyvyysanturille (iOS vaatimus)
     if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
         DeviceMotionEvent.requestPermission()
             .then(response => {
@@ -239,11 +243,15 @@ btnStartRec.addEventListener('click', () => {
     maxSpeed = 0;
     totalDistance = 0;
     
-    // Nollaa uudet mittarit
+    // Nollaa
     currentDriveWeather = "";
     aggressiveEvents = 0;
     
+    // Nollaa Live UI
     updateDashboardUI(0, 0, 0, 0, 0, 0);
+    liveStatusBar.style.opacity = '1'; // Näytä paneeli
+    liveStyleEl.innerText = "Taloudellinen";
+    liveStyleEl.className = "style-badge style-green";
     
     btnStartRec.style.display = 'none';
     activeRecBtns.style.display = 'flex';
@@ -280,7 +288,6 @@ btnStopRec.addEventListener('click', () => {
     if (!isRecording) return;
     clearInterval(timerInterval);
     
-    // Poista kiihtyvyysanturin kuuntelu
     window.removeEventListener('devicemotion', handleMotion);
     
     if (isPaused && pauseStartTime) {
@@ -292,7 +299,6 @@ btnStopRec.addEventListener('click', () => {
     const durationHours = activeDurationMs / (1000 * 60 * 60);
     let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
 
-    // Määritä ajotapa
     let styleLabel = "Tasainen";
     if (aggressiveEvents > 5) styleLabel = "Reipas";
     if (aggressiveEvents > 15) styleLabel = "Aggressiivinen";
@@ -306,8 +312,8 @@ btnStopRec.addEventListener('click', () => {
         avgSpeed: avgSpeed.toFixed(1),
         durationMs: activeDurationMs,
         subject: "",
-        weather: currentDriveWeather, // Uusi: Sää
-        drivingStyle: styleLabel      // Uusi: Ajotapa
+        weather: currentDriveWeather,
+        drivingStyle: styleLabel
     };
 
     const mins = Math.floor(activeDurationMs / 60000);
@@ -317,6 +323,9 @@ btnStopRec.addEventListener('click', () => {
 
     saveModal.style.display = 'flex';
     modalSubjectEl.focus();
+    
+    // Piilota live paneeli
+    liveStatusBar.style.opacity = '0';
 });
 
 btnModalSave.addEventListener('click', () => {
@@ -365,6 +374,7 @@ function resetRecordingUI() {
     statusEl.style.color = "var(--subtext-color)";
     updateDashboardUI(0, 0, 0, 0, 0, 0);
     dashTimeEl.innerText = "00:00";
+    liveStatusBar.style.opacity = '0'; // Varmista piilotus
 }
 
 function stopGPSAndRec() {
@@ -405,7 +415,7 @@ function updatePosition(position) {
     let currentAvg = 0;
 
     if (isRecording && !isPaused) {
-        // HAE SÄÄ KERRAN (kun meillä on sijainti)
+        // HAE SÄÄ KERRAN
         if (currentDriveWeather === "") {
             fetchWeather(lat, lng);
         }
@@ -443,9 +453,8 @@ function updatePosition(position) {
     if (isGPSActive && wakeLock === null) requestWakeLock();
 }
 
-// --- UUSI: SÄÄN HAKU ---
+// --- SÄÄ ---
 function fetchWeather(lat, lon) {
-    currentDriveWeather = "Ladataan...";
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&wind_speed_unit=ms`;
     
     fetch(url)
@@ -455,7 +464,6 @@ function fetchWeather(lat, lon) {
                 const temp = Math.round(data.current.temperature_2m);
                 const code = data.current.weather_code;
                 let emoji = "☁️";
-                // WMO sääkoodit
                 if (code === 0) emoji = "☀️";
                 else if (code <= 3) emoji = "⛅";
                 else if (code <= 48) emoji = "🌫";
@@ -466,41 +474,44 @@ function fetchWeather(lat, lon) {
                 else emoji = "⛈";
                 
                 currentDriveWeather = `${emoji} ${temp}°C`;
-            } else {
-                currentDriveWeather = "Ei säätietoa";
+                liveWeatherEl.innerText = currentDriveWeather; // Päivitä live-näyttö
             }
         })
-        .catch(e => {
-            console.error("Säävirhe", e);
-            currentDriveWeather = "";
-        });
+        .catch(e => console.error(e));
 }
 
-// --- UUSI: KIIHTYVYYSANTURI (AJOTAPA) ---
+// --- LIVE AJOTAPA (VÄRIEN VAIHTO) ---
 function handleMotion(event) {
     if (!isRecording || isPaused) return;
 
-    // Debounce: älä lue liian usein
     const now = Date.now();
     if (now - lastMotionTime < 500) return; 
     lastMotionTime = now;
 
-    const acc = event.acceleration; // Ilman painovoimaa
+    const acc = event.acceleration; 
     if (!acc) return;
 
-    // Lasketaan voimakkuusvektori
     const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
     
-    // Kynnysarvo "kovalle" tapahtumalle (m/s2)
-    // 3.5 on kohtalainen jarrutus/kiihdytys
+    // Jos kiihdytys on voimakas
     if (magnitude > 3.5) {
         aggressiveEvents++;
+        
+        // VAIHDA LIVE-NÄYTTÖ PUNAISEKSI
+        liveStyleEl.innerText = "Kiihdytys!";
+        liveStyleEl.className = "style-badge style-red";
+
+        // Palauta vihreäksi 3 sekunnin päästä
+        if (styleResetTimer) clearTimeout(styleResetTimer);
+        styleResetTimer = setTimeout(() => {
+            liveStyleEl.innerText = "Taloudellinen";
+            liveStyleEl.className = "style-badge style-green";
+        }, 3000);
     }
 }
 
 
-// --- HISTORIA (SUODATUS, YHTEENVETO, POISTO) ---
-
+// --- HISTORIA ---
 filterEl.addEventListener('change', () => {
     if (filterEl.value === 'custom') {
         customFilterContainer.style.display = 'block';
@@ -541,7 +552,6 @@ function loadHistory() {
             }
         });
 
-        // Uusin ensin
         allHistoryData.sort((a, b) => {
             const dateA = new Date(a.startTime || 0);
             const dateB = new Date(b.startTime || 0);
@@ -622,7 +632,6 @@ function renderHistoryList() {
                 if (!isNaN(start.getTime())) {
                     dateStr = start.toLocaleDateString('fi-FI') + ' ' + start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
                     
-                    // SUODATUS
                     if (selectedFilter !== 'all') {
                         if (selectedFilter === 'custom') {
                             const startInput = filterStart.value;
@@ -666,7 +675,6 @@ function renderHistoryList() {
             const maxSpeedDisplay = (drive.maxSpeed !== undefined) ? drive.maxSpeed : "0";
             const subjectText = (drive.subject !== undefined) ? drive.subject : "";
             
-            // Uudet tiedot: Sää ja Ajotapa
             let tagsHtml = "";
             if (drive.weather) tagsHtml += `<span class="tag">🌡️ ${drive.weather}</span>`;
             if (drive.drivingStyle) tagsHtml += `<span class="tag">🏎️ ${drive.drivingStyle}</span>`;
