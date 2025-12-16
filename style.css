@@ -186,6 +186,17 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .log-stats { display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 15px; }
 .subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.2); color: var(--text-color); box-sizing: border-box; }
 
+/* UUSI: TAGIT (SÄÄ JA AJOTAPA) */
+.log-tags { 
+    display: flex; gap: 8px; margin-bottom: 15px; justify-content: center;
+}
+.tag {
+    font-size: 11px; padding: 3px 8px; border-radius: 12px;
+    background-color: rgba(255,255,255,0.1); color: var(--subtext-color);
+    border: 1px solid var(--border-color); display: flex; align-items: center; gap: 4px;
+}
+.light-theme .tag { background-color: rgba(0,0,0,0.05); }
+
 .help-section {
     max-width: 600px; margin: 0 auto 20px auto;
     background-color: rgba(30, 30, 30, 0.6); padding: 15px; border-radius: 8px;
@@ -193,7 +204,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .light-theme .help-section { background-color: rgba(255, 255, 255, 0.6); }
 .help-step { margin-bottom: 10px; padding-left: 10px; border-left: 3px solid var(--accent-color); }
 
-/* UUSI: YHTEENVETO LAATIKKO */
+/* YHTEENVETO LAATIKKO */
 .summary-box {
     display: flex; justify-content: space-around; align-items: center;
     background-color: rgba(41, 121, 255, 0.1);
@@ -206,7 +217,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .summary-label { font-size: 12px; color: var(--subtext-color); text-transform: uppercase; }
 .summary-sep { color: var(--border-color); font-size: 20px; font-weight: 100; }
 
-/* UUSI: PÄIVÄMÄÄRÄ INPUT */
+/* PÄIVÄMÄÄRÄ INPUT */
 .date-input {
     background-color: var(--panel-bg); color: var(--text-color);
     border: 1px solid var(--border-color); border-radius: 8px;
