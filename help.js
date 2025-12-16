@@ -43,16 +43,25 @@ const helpContent = `
             Kun haluat tallentaa ajopäiväkirjamerkinnän:
         </div>
         <div class="help-step">
-            1. Paina vihreää <strong>🔴 ALOITA TALLENNUS</strong> -painiketta.
+            1. Paina vihreää <strong>🔴 ALOITA TALLENNUS</strong> -painiketta. Matkamittari nollautuu ja "REC"-tila alkaa.
+        </div>
+        
+        <div class="help-step" style="border-left-color: #fbc02d;">
+            <strong>2. ⏸ TAUKO (Uusi):</strong><br>
+            Jos käyt kaupassa tai tankkaamassa, paina keltaista <strong>⏸ TAUKO</strong> -painiketta.
+            <ul>
+                <li>Matkan ja ajan mittaus pysähtyy.</li>
+                <li>Keskinopeus ei putoa nollaan tauon aikana.</li>
+                <li>GPS-sijainti näkyy yhä kartalla.</li>
+            </ul>
+            Kun jatkat matkaa, paina <strong>▶ JATKA</strong>.
+        </div>
+
+        <div class="help-step">
+            3. Ajon päätteeksi paina punaista <strong>⬛ LOPETA</strong> -painiketta. Tiedot siirtyvät pilveen ja tallentuvat historiaan.
         </div>
         <div class="help-step">
-            2. Matkamittari ja ajanotto nollautuvat ja alkavat juosta. Näytön alalaidassa lukee "REC".
-        </div>
-        <div class="help-step">
-            3. Ajon päätteeksi paina punaista <strong>⬛ LOPETA & TALLENNA</strong> -painiketta. Tiedot siirtyvät pilveen.
-        </div>
-        <div class="help-step">
-            <em>Huom: Matkamittarissa on älykäs suodatus. Se ei kerrytä matkaa, jos auto seisoo liikennevaloissa ja GPS "hyppii" paikallaan.</em>
+            <em>Huom: Sovellus suodattaa automaattisesti pienet GPS-häiriöt liikennevaloissa seistessä.</em>
         </div>
     </div>
 
@@ -97,7 +106,7 @@ const helpContent = `
     </div>
 
     <div style="text-align: center; margin-top: 40px; color: #666; font-size: 12px; padding-bottom: 20px;">
-        Ajopäiväkirja Pro v2.3
+        Ajopäiväkirja Pro v2.4
     </div>
 `;
 
