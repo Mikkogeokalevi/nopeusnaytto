@@ -36,10 +36,7 @@
     <div id="app-container" style="display:none; height: 100%; flex-direction: column;">
         
         <div class="top-bar-container">
-            <div style="display:flex; align-items:center;">
-                <img id="user-photo" class="user-avatar" style="display:none;" alt="User">
-                <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
-            </div>
+            <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
             
             <div class="top-buttons">
                 <button id="nav-dashboard" class="icon-btn active-nav" title="Mittaristo">🏎️</button>
@@ -47,6 +44,9 @@
                 <button id="nav-history" class="icon-btn" title="Historia">📋</button>
                 <button id="nav-help" class="icon-btn" title="Ohjeet">❓</button>
                 <button id="btn-theme" class="icon-btn" title="Teema">☀/☾</button>
+                
+                <img id="user-photo" class="user-avatar" style="display:none;" alt="User">
+                
                 <button id="btn-logout" class="icon-btn" title="Kirjaudu ulos" style="border-color: #d32f2f; color:#d32f2f;">🚪</button>
             </div>
         </div>
@@ -94,6 +94,9 @@
                     </div>
                     <div id="map-coords" class="small-coords">--° --.---'</div>
                 </div>
+                
+                <button id="map-return-btn" class="map-return-btn">🏎️ MITTARISTO</button>
+
                 <div id="map"></div>
             </div>
 
@@ -109,20 +112,19 @@
                 
                 <div class="help-section">
                     <h3>🚀 Aloitus</h3>
-                    <div class="help-step">1. Kirjaudu sisään Google-tililläsi.</div>
-                    <div class="help-step">2. Paina "Aktivoi Nopeusnäyttö" ja salli GPS.</div>
+                    <div class="help-step">1. Kirjautuminen vaaditaan tallennusta varten.</div>
+                    <div class="help-step">2. Salli GPS-paikannus kun kysytään.</div>
                 </div>
 
                 <div class="help-section">
                     <h3>🔴 Tallennus</h3>
-                    <div class="help-step">Paina <strong>ALOITA TALLENNUS</strong>. Matka alkaa kertyä. Tallennus pysyy päällä vaikka selaisit historiaa tai karttaa.</div>
-                    <div class="help-step">Älä sulje selainta kokonaan ajon aikana, mutta voit käyttää muita sovelluksia.</div>
+                    <div class="help-step">Paina <strong>ALOITA TALLENNUS</strong>. Matka alkaa kertyä. Tallennus pysyy päällä vaikka selaisit historiaa.</div>
                 </div>
 
                 <div class="help-section">
-                    <h3>🗺️ Kartta & Mittaristo</h3>
-                    <div class="help-step">Voit vaihtaa näkymää yläpalkin ikoneista tai painamalla mittariston reunoja.</div>
-                    <div class="help-step">Kartta zoomaa automaattisesti vauhdin mukaan.</div>
+                    <h3>🗺️ Kartta</h3>
+                    <div class="help-step">Pääset karttaan ylävalikosta tai painamalla mittariston reunoja.</div>
+                    <div class="help-step">Palaa mittaristoon painamalla isoa nappia alareunassa.</div>
                 </div>
             </div>
 
