@@ -18,78 +18,95 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo.png" alt="Logo" class="splash-logo">
             <h1>Ajopäiväkirja</h1>
-            <p>Käynnistetään...</p>
+            <p>Ladataan...</p>
         </div>
     </div>
 
-    <div class="top-bar-container">
-        <img src="ajopaivakirja_logo.png" class="header-logo" alt="Logo">
-        <div class="top-buttons">
-            <button id="btn-view-toggle" class="icon-btn">🗺</button>
-            <a href="log.html" class="icon-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">📋</a> 
-            <button id="btn-theme" class="icon-btn">☀/☾</button>
+    <div id="login-view" style="display:none;">
+        <div class="login-content">
+            <img src="ajopaivakirja_logo.png" alt="Logo" class="login-logo">
+            <h2>Tervetuloa</h2>
+            <p>Kirjaudu sisään tallentaaksesi omat ajosi.</p>
+            <button id="btn-login" class="action-btn google-btn">
+                Kirjaudu Googlella
+            </button>
         </div>
     </div>
 
-    <div class="main-content">
+    <div id="app-container" style="display:none; height: 100%; flex-direction: column;">
         
-        <div id="dashboard-view">
-            <div class="huge-speed">
-                <span id="dash-speed">0</span>
-                <span class="huge-unit">km/h</span>
+        <div class="top-bar-container">
+            <img id="user-photo" src="ajopaivakirja_logo.png" class="header-logo" alt="User">
+            <div class="top-buttons">
+                <button id="btn-view-toggle" class="icon-btn">🗺</button>
+                <a href="log.html" class="icon-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">📋</a> 
+                <button id="btn-theme" class="icon-btn">☀/☾</button>
+                <button id="btn-logout" class="icon-btn" style="border-color: #d32f2f; color:#d32f2f;">🚪</button>
             </div>
+        </div>
+
+        <div class="main-content">
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-label">Huippu</span>
-                    <span class="stat-value" id="dash-max-speed">0</span>
-                    <span class="stat-unit">km/h</span>
+            <div id="dashboard-view">
+                <div class="huge-speed">
+                    <span id="dash-speed">0</span>
+                    <span class="huge-unit">km/h</span>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-label">Matka (Rec)</span>
-                    <span class="stat-value" id="dash-dist">0.0</span>
-                    <span class="stat-unit">km</span>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Huippu</span>
+                        <span class="stat-value" id="dash-max-speed">0</span>
+                        <span class="stat-unit">km/h</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Matka (Rec)</span>
+                        <span class="stat-value" id="dash-dist">0.0</span>
+                        <span class="stat-unit">km</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Aika</span>
+                        <span class="stat-value" id="dash-time">00:00</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Korkeus</span>
+                        <span class="stat-value" id="dash-alt">0</span>
+                        <span class="stat-unit">m</span>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-label">Aika</span>
-                    <span class="stat-value" id="dash-time">00:00</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Korkeus</span>
-                    <span class="stat-value" id="dash-alt">0</span>
-                    <span class="stat-unit">m</span>
-                </div>
+                 <div class="coords-box" id="dash-coords">--° --.---'</div>
+                 <div class="clock-box" id="dash-clock">--:--</div>
             </div>
-             <div class="coords-box" id="dash-coords">--° --.---'</div>
-             <div class="clock-box" id="dash-clock">--:--</div>
+
+            <div id="map-view" class="view-hidden">
+                <div class="map-overlay">
+                    <div class="speed-container">
+                        <span id="map-speed">0</span> <span class="unit">km/h</span>
+                    </div>
+                    <div id="map-coords" class="small-coords">--° --.---'</div>
+                </div>
+                <div id="map"></div>
+            </div>
+
         </div>
 
-        <div id="map-view" class="view-hidden">
-            <div class="map-overlay">
-                <div class="speed-container">
-                    <span id="map-speed">0</span> <span class="unit">km/h</span>
-                </div>
-                <div id="map-coords" class="small-coords">--° --.---'</div>
+        <div class="controls-container">
+            <div id="status">Odottaa toimenpidettä</div>
+            
+            <button id="btn-activate-gps" class="action-btn blue-btn">Aktivoi Nopeusnäyttö</button>
+            
+            <div id="rec-controls" style="display:none; width: 100%; justify-content: center;">
+                <button id="btn-start-rec" class="action-btn green-btn">🔴 ALOITA TALLENNUS</button>
+                <button id="btn-stop-rec" class="action-btn red-btn" style="display:none;">⬛ LOPETA & TALLENNA</button>
             </div>
-            <div id="map"></div>
-        </div>
-
-    </div>
-
-    <div class="controls-container">
-        <div id="status">Odottaa toimenpidettä</div>
-        
-        <button id="btn-activate-gps" class="action-btn blue-btn">Aktivoi Nopeusnäyttö</button>
-        
-        <div id="rec-controls" style="display:none; width: 100%; justify-content: center;">
-            <button id="btn-start-rec" class="action-btn green-btn">🔴 ALOITA TALLENNUS</button>
-            <button id="btn-stop-rec" class="action-btn red-btn" style="display:none;">⬛ LOPETA & TALLENNA</button>
         </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
     <script src="app.js"></script>
 </body>
 </html>
