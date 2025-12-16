@@ -74,7 +74,7 @@ auth.onAuthStateChanged((user) => {
         loginView.style.display = 'none';
         appContainer.style.display = 'flex';
         
-        // Päivitä Menuun käyttäjätiedot
+        // Päivitä Menu
         menuUserName.innerText = user.displayName || user.email;
         if (user.photoURL) {
             menuUserAvatar.src = user.photoURL;
@@ -96,9 +96,8 @@ document.getElementById('btn-logout').addEventListener('click', () => {
     if(confirm("Kirjaudu ulos?")) auth.signOut().then(() => location.reload());
 });
 
-// --- MENU LOGIIKKA (UUSI) ---
+// --- MENU LOGIIKKA ---
 menuBtn.addEventListener('click', () => {
-    // Toggle menu
     if (mainMenu.style.display === 'none') {
         mainMenu.style.display = 'flex';
     } else {
@@ -108,12 +107,8 @@ menuBtn.addEventListener('click', () => {
 
 // --- NAVIGOINTI ---
 function switchView(viewName) {
-    // Piilota menu navigoidessa
     mainMenu.style.display = 'none';
-
     Object.values(views).forEach(el => el.style.display = 'none');
-    
-    // Poista aktiivinen luokka kaikista menu-napeista
     Object.values(navBtns).forEach(btn => btn.classList.remove('active-menu'));
 
     if (viewName === 'dashboard' || viewName === 'map') {
@@ -122,7 +117,6 @@ function switchView(viewName) {
         views[viewName].style.display = 'block';
     }
     
-    // Aktivoi menu-nappi
     if(navBtns[viewName]) navBtns[viewName].classList.add('active-menu');
 
     if (viewName === 'map') setTimeout(() => map.invalidateSize(), 100);
@@ -134,8 +128,8 @@ navBtns.map.addEventListener('click', () => switchView('map'));
 navBtns.history.addEventListener('click', () => switchView('history'));
 navBtns.help.addEventListener('click', () => switchView('help'));
 
+// Sivunappi (Vain vasen)
 document.getElementById('side-tap-left').addEventListener('click', () => switchView('map'));
-document.getElementById('side-tap-right').addEventListener('click', () => switchView('map'));
 document.getElementById('map-return-btn').addEventListener('click', () => switchView('dashboard'));
 
 // --- KARTTA ---
@@ -321,7 +315,6 @@ window.deleteDrive = (key) => { if(confirm("Poista?")) db.ref('ajopaivakirja/' +
 // --- APUFUNKTIOT ---
 document.getElementById('btn-theme').addEventListener('click', () => document.body.classList.toggle('light-theme'));
 
-// Kello ja Päivämäärä
 function updateClockAndDate() {
     const now = new Date();
     dashClockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
