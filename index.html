@@ -11,7 +11,7 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
-</head>
+    </head>
 <body>
 
     <div id="splash-screen">
@@ -36,18 +36,26 @@
     <div id="app-container" style="display:none; height: 100%; flex-direction: column;">
         
         <div class="top-bar-container">
-            <div style="display:flex; align-items:center;">
-                <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
-            </div>
+            <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
             
             <div class="top-buttons">
-                <button id="nav-dashboard" class="icon-btn active-nav" title="Mittaristo">🏎️</button>
-                <button id="nav-map" class="icon-btn" title="Kartta">🗺</button>
-                <button id="nav-history" class="icon-btn" title="Historia">📋</button>
-                <button id="nav-help" class="icon-btn" title="Ohjeet">❓</button>
                 <button id="btn-theme" class="icon-btn" title="Teema">☀/☾</button>
-                <img id="user-photo" class="user-avatar" style="display:none;" alt="User">
-                <button id="btn-logout" class="icon-btn" title="Kirjaudu ulos" style="border-color: #d32f2f; color:#d32f2f;">🚪</button>
+                <button id="btn-menu-toggle" class="icon-btn menu-btn">☰</button>
+            </div>
+        </div>
+
+        <div id="main-menu" class="menu-dropdown" style="display: none;">
+            <div class="menu-header">
+                <img id="user-photo" class="menu-user-avatar" src="ajopaivakirja_logo.png" alt="User">
+                <span id="user-name" class="menu-user-name">Käyttäjä</span>
+            </div>
+            <div class="menu-items">
+                <button id="nav-dashboard" class="menu-item active-menu">🏎️ Mittaristo</button>
+                <button id="nav-map" class="menu-item">🗺 Kartta</button>
+                <button id="nav-history" class="menu-item">📋 Historia</button>
+                <button id="nav-help" class="menu-item">❓ Ohjeet</button>
+                <hr class="menu-divider">
+                <button id="btn-logout" class="menu-item logout-item">🚪 Kirjaudu ulos</button>
             </div>
         </div>
 
