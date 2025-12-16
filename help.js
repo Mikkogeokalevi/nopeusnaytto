@@ -10,7 +10,7 @@ const helpContent = `
         <div class="help-step">
             <strong>2. Luvat (GPS ja Liike):</strong>
             <br><em>Sijainti:</em> Pakollinen nopeuden ja matkan mittaukseen.
-            <br><em>Liikeanturit:</em> Sovellus saattaa kysyä lupaa käyttää puhelimen liikeantureita. Salli tämä, jos haluat että sovellus analysoi ajotapaasi (kiihtyvyys/jarrutukset).
+            <br><em>Liikeanturit:</em> Salli nämä, jotta sovellus voi toimia "Eco-mittarina" ja analysoida ajotapaasi (kiihtyvyys/jarrutukset).
         </div>
         <div class="help-step">
             <strong>3. Asennus (PWA):</strong>
@@ -21,12 +21,18 @@ const helpContent = `
     </div>
 
     <div class="help-section">
-        <h3>⏱️ Mittaristo</h3>
+        <h3>⏱️ Mittaristo ja Eco-näyttö</h3>
         <div class="help-step">
-            <strong>Aktivoi Nopeusnäyttö:</strong> Käynnistää GPS:n, mutta ei vielä tallenna. Voit käyttää tätä pelkkänä mittarina.
+            Kun aloitat tallennuksen, mittaristo herää eloon:
         </div>
         <div class="help-step">
-            Näytöllä näkyy nopeus, huippunopeus, kuljettu matka (rec), korkeus ja tarkka kello.
+            <strong>🌡️ Sää:</strong> Sovellus hakee automaattisesti paikallisen sään (esim. 🌧 +3°C) ja näyttää sen yläreunassa.
+        </div>
+        <div class="help-step">
+            <strong>🏎️ Ajotapa (Eco-mittari):</strong>
+            Seuraa yläreunan värillistä palkkia:
+            <br><span style="color:#00c853; font-weight:bold;">🟢 Taloudellinen:</span> Ajat tasaisesti ja nätisti.
+            <br><span style="color:#ff1744; font-weight:bold;">🔴 Kiihdytys/Jarrutus:</span> Voimakkaat liikkeet muuttavat mittarin punaiseksi. Yritä pitää se vihreänä!
         </div>
     </div>
 
@@ -34,9 +40,6 @@ const helpContent = `
         <h3>🔴 Ajon Tallennus (REC)</h3>
         <div class="help-step">
             1. Paina <strong>🔴 ALOITA TALLENNUS</strong>. Matkamittari nollautuu.
-        </div>
-        <div class="help-step">
-            <strong>Automaattiset tiedot:</strong> Tallennuksen alkaessa sovellus hakee paikallisen <strong>sään</strong> (esim. 🌧 +3°C) ja alkaa seurata <strong>ajotapaa</strong> kiihtyvyysanturilla.
         </div>
         
         <div class="help-step" style="border-left-color: #fbc02d;">
@@ -77,7 +80,7 @@ const helpContent = `
         </div>
         <div class="help-step">
             <strong>Merkinnät kortissa:</strong>
-            Jokaisessa historiakortissa näkyy nyt myös ikonit säästä (🌡️) ja ajotavasta (🏎️ Tasainen/Reipas).
+            Historiassa näet myös, millainen sää oli (🌡️) ja oliko ajotapa "Tasainen" vai "Reipas" (🏎️).
         </div>
         <div class="help-step">
             <strong>Muokkaus:</strong> Voit kirjoittaa aiheen ("Työmatka") jälkikäteen tai poistaa ajon roskakorista.
@@ -87,7 +90,7 @@ const helpContent = `
     <div class="help-section">
         <h3>🗺️ Karttanäkymä</h3>
         <div class="help-step">
-            Kartta keskittää sijaintiisi ja zoomaa automaattisesti nopeutesi mukaan (kaupungissa lähelle, maantiellä kauas).
+            Kartta keskittää sijaintiisi ja zoomaa automaattisesti nopeutesi mukaan.
         </div>
         <div class="help-step">
             Oikean yläkulman kerros-ikonista voit vaihtaa satelliittikuvaan.
@@ -99,13 +102,10 @@ const helpContent = `
         <div class="help-step">
             <strong>Näyttö sammuu?</strong> Sovellus yrittää pitää näytön päällä (Wake Lock). Varmista, ettei puhelimen virransäästötila ole päällä.
         </div>
-        <div class="help-step">
-            <strong>GPS pätkii?</strong> Sisätiloissa ja tunneleissa signaali voi kadota. Sovellus suodattaa pienet "GPS-hyppelyt" liikennevaloissa.
-        </div>
     </div>
 
     <div style="text-align: center; margin-top: 40px; color: #666; font-size: 12px; padding-bottom: 20px;">
-        Ajopäiväkirja Pro v2.6
+        Ajopäiväkirja Pro v2.7
     </div>
 `;
 
