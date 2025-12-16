@@ -36,8 +36,11 @@
     <div id="app-container" style="display:none; height: 100%; flex-direction: column;">
         
         <div class="top-bar-container">
-            <img id="user-photo" src="ajopaivakirja_logo.png" class="header-logo" alt="User">
+            <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
+            
             <div class="top-buttons">
+                <img id="user-photo" class="user-avatar" style="display:none;" alt="User">
+                
                 <button id="btn-view-toggle" class="icon-btn">🗺</button>
                 <a href="log.html" class="icon-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">📋</a> 
                 <button id="btn-theme" class="icon-btn">☀/☾</button>
@@ -47,7 +50,7 @@
 
         <div class="main-content">
             
-            <div id="dashboard-view">
+            <div id="dashboard-view" class="watermark-bg">
                 <div class="huge-speed">
                     <span id="dash-speed">0</span>
                     <span class="huge-unit">km/h</span>
@@ -103,10 +106,9 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
