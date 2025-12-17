@@ -9,7 +9,10 @@ const firebaseConfig = {
     appId: "1:588536838615:web:148de0581bbd46c42c7392"
 };
 
-if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+// Alustetaan Firebase vain kerran
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.database();
 const auth = firebase.auth(); 
 
@@ -29,7 +32,7 @@ const views = {
     dashboard: document.getElementById('dashboard-view'),
     map: document.getElementById('map-view'),
     history: document.getElementById('history-view'),
-    stats: document.getElementById('stats-view'), // UUSI
+    stats: document.getElementById('stats-view'),
     settings: document.getElementById('settings-view'),
     help: document.getElementById('help-view')
 };
@@ -38,12 +41,12 @@ const navBtns = {
     dashboard: document.getElementById('nav-dashboard'),
     map: document.getElementById('nav-map'),
     history: document.getElementById('nav-history'),
-    stats: document.getElementById('nav-stats'), // UUSI
+    stats: document.getElementById('nav-stats'),
     settings: document.getElementById('nav-settings'),
     help: document.getElementById('nav-help')
 };
 
-// Modalit
+// Modalit (Tallennus, Muokkaus, Poisto)
 const saveModal = document.getElementById('save-modal');
 const modalDistEl = document.getElementById('modal-dist');
 const modalTimeEl = document.getElementById('modal-time');
@@ -52,7 +55,6 @@ const modalCarNameEl = document.getElementById('modal-car-name');
 const btnModalSave = document.getElementById('btn-modal-save');
 const btnModalCancel = document.getElementById('btn-modal-cancel');
 
-// Muokkaus Modal
 const editModal = document.getElementById('edit-modal');
 const editKeyEl = document.getElementById('edit-key');
 const editSubjectEl = document.getElementById('edit-subject');
@@ -84,9 +86,10 @@ let maxSpeed = 0;
 let totalDistance = 0;
 let lastLatLng = null;
 
-// REITTIVIIVA (UUSI)
+// Reittiviiva
 let routePath = [];
 let realTimePolyline = null;
+let savedRouteLayer = null; // Vanhan reitin näyttämiseen historiasta
 
 // Sää ja Ajotapa
 let currentDriveWeather = ""; 
@@ -96,13 +99,13 @@ let styleResetTimer = null;
 
 let allHistoryData = []; 
 
-// AUTOT & PYÖRÄT
+// Autotalli
 let userCars = [];
 let currentCarId = "all"; 
 let currentCarType = "car"; 
 const carSelectEl = document.getElementById('car-select');
 
-// UI Elementit
+// UI Elementit (Mittaristo)
 const dashSpeedEl = document.getElementById('dash-speed');
 const dashMaxSpeedEl = document.getElementById('dash-max-speed');
 const dashDistEl = document.getElementById('dash-dist');
@@ -133,7 +136,7 @@ const customFilterContainer = document.getElementById('custom-filter-container')
 const filterStart = document.getElementById('filter-start');
 const filterEnd = document.getElementById('filter-end');
 
-// Kontrollit
+// Kontrollit (Start, Stop, Pause)
 const btnStartRec = document.getElementById('btn-start-rec');
 const activeRecBtns = document.getElementById('active-rec-btns');
 const btnPause = document.getElementById('btn-pause');
@@ -141,7 +144,7 @@ const btnResume = document.getElementById('btn-resume');
 const btnStopRec = document.getElementById('btn-stop-rec');
 
 
-// --- AUTH ---
+// --- AUTHENTICATION (KIRJAUTUMINEN) ---
 auth.onAuthStateChanged((user) => {
     if (splashScreen) setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
 
@@ -179,7 +182,9 @@ document.getElementById('btn-email-login').addEventListener('click', () => {
     const email = document.getElementById('email-input').value;
     const pass = document.getElementById('password-input').value;
     if(!email || !pass) { alert("Syötä sähköposti ja salasana."); return; }
-    auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Virhe kirjautumisessa: " + e.message));
+    
+    auth.signInWithEmailAndPassword(email, pass)
+        .catch(e => alert("Virhe kirjautumisessa: " + e.message));
 });
 
 // Email Register
@@ -187,7 +192,9 @@ document.getElementById('btn-email-register').addEventListener('click', () => {
     const email = document.getElementById('email-input').value;
     const pass = document.getElementById('password-input').value;
     if(!email || !pass) { alert("Syötä sähköposti ja salasana."); return; }
-    auth.createUserWithEmailAndPassword(email, pass).catch(e => alert("Virhe rekisteröinnissä: " + e.message));
+    
+    auth.createUserWithEmailAndPassword(email, pass)
+        .catch(e => alert("Virhe rekisteröinnissä: " + e.message));
 });
 
 document.getElementById('btn-logout').addEventListener('click', () => {
@@ -213,7 +220,7 @@ document.getElementById('btn-login-help').addEventListener('click', () => {
 });
 
 
-// --- MENU ---
+// --- MENU & NAVIGAATIO ---
 menuBtn.addEventListener('click', () => {
     if (mainMenu.style.display === 'none') {
         mainMenu.style.display = 'flex';
@@ -237,16 +244,22 @@ function switchView(viewName) {
     
     if(navBtns[viewName]) navBtns[viewName].classList.add('active-menu');
 
+    // Jos poistutaan kartalta, piilotetaan vanha reitti ettei se jää kummittelemaan
+    if (viewName !== 'map' && savedRouteLayer) {
+        map.removeLayer(savedRouteLayer);
+        savedRouteLayer = null;
+    }
+
     if (viewName === 'map') setTimeout(() => map.invalidateSize(), 100);
     if (viewName === 'history') loadHistory();
     if (viewName === 'settings') renderCarList();
-    if (viewName === 'stats') renderStats(); // UUSI
+    if (viewName === 'stats') renderStats();
 }
 
 navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
 navBtns.map.addEventListener('click', () => switchView('map'));
 navBtns.history.addEventListener('click', () => switchView('history'));
-navBtns.stats.addEventListener('click', () => switchView('stats')); // UUSI
+navBtns.stats.addEventListener('click', () => switchView('stats'));
 navBtns.settings.addEventListener('click', () => switchView('settings'));
 navBtns.help.addEventListener('click', () => switchView('help'));
 
@@ -257,16 +270,18 @@ document.getElementById('map-return-btn').addEventListener('click', () => switch
 // --- KARTTA ---
 const streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OSM' });
 const satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri' });
+const terrainMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17, attribution: '© OpenTopoMap' });
 
 const map = L.map('map', { center: [64.0, 26.0], zoom: 16, layers: [streetMap], zoomControl: false });
-L.control.layers({ "Kartta": streetMap, "Satelliitti": satelliteMap }).addTo(map);
+L.control.layers({ "Peruskartta": streetMap, "Satelliitti": satelliteMap, "Maastokartta": terrainMap }).addTo(map);
+
 let marker = L.circleMarker([64.0, 26.0], { color: '#2979ff', fillColor: '#2979ff', fillOpacity: 0.8, radius: 8 }).addTo(map);
 
-// ALUSTA REITTIVIIVA
+// Alustetaan live-reittiviiva
 realTimePolyline = L.polyline([], {color: '#2979ff', weight: 5, opacity: 0.7}).addTo(map);
 
 
-// --- GPS ---
+// --- GPS & SEURANTA ---
 document.getElementById('btn-activate-gps').addEventListener('click', () => {
     if (!isGPSActive) {
         startGPS();
@@ -277,6 +292,7 @@ document.getElementById('btn-activate-gps').addEventListener('click', () => {
 });
 
 btnStartRec.addEventListener('click', () => {
+    // Pyydä lupaa kiihtyvyysanturille (iOS)
     if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
         DeviceMotionEvent.requestPermission().then(response => {
             if (response === 'granted') window.addEventListener('devicemotion', handleMotion);
@@ -292,15 +308,17 @@ btnStartRec.addEventListener('click', () => {
     maxSpeed = 0;
     totalDistance = 0;
     
-    // Tyhjennä vanha reitti
+    // Nollaa reitti
     routePath = [];
     realTimePolyline.setLatLngs([]);
+    if(savedRouteLayer) { map.removeLayer(savedRouteLayer); savedRouteLayer = null; }
     
     currentDriveWeather = "";
     aggressiveEvents = 0;
     
     updateDashboardUI(0, 0, 0, 0, 0, 0);
     
+    // Eco-mittari pois pyörältä
     if (currentCarType === 'bike') {
         liveStatusBar.style.opacity = '0';
     } else {
@@ -343,6 +361,7 @@ btnResume.addEventListener('click', () => {
 btnStopRec.addEventListener('click', () => {
     if (!isRecording) return;
     clearInterval(timerInterval);
+    
     window.removeEventListener('devicemotion', handleMotion);
     
     if (isPaused && pauseStartTime) {
@@ -380,7 +399,8 @@ btnStopRec.addEventListener('click', () => {
         drivingStyle: styleLabel,
         carName: selectedCarName, 
         carId: currentCarId,
-        carType: currentCarType
+        carType: currentCarType,
+        route: routePath // TÄRKEÄ: Tallenna kerätty reitti
     };
 
     const mins = Math.floor(activeDurationMs / 60000);
@@ -428,62 +448,12 @@ btnDeleteCancel.addEventListener('click', () => {
     deleteKey = null;
 });
 
-// MUOKKAUS MODAL LOGIIKKA
-function openEditModal(key) {
-    const drive = allHistoryData.find(d => d.key === key);
-    if (!drive) return;
-
-    editKeyEl.value = key;
-    editSubjectEl.value = drive.subject || "";
-    
-    editCarSelectEl.innerHTML = "";
-    userCars.forEach(car => {
-        const opt = document.createElement('option');
-        opt.value = car.id;
-        const icon = (car.type === 'bike') ? "🚲 " : "🚗 ";
-        opt.text = icon + car.name;
-        if (drive.carId === car.id) opt.selected = true;
-        editCarSelectEl.appendChild(opt);
-    });
-
-    editModal.style.display = 'flex';
-}
-
-btnEditCancel.addEventListener('click', () => {
-    editModal.style.display = 'none';
-});
-
-btnEditSave.addEventListener('click', () => {
-    const key = editKeyEl.value;
-    const newSubject = editSubjectEl.value;
-    const newCarId = editCarSelectEl.value;
-    
-    const carObj = userCars.find(c => c.id === newCarId);
-    
-    if (key && currentUser && carObj) {
-        const updateData = {
-            subject: newSubject,
-            carId: carObj.id,
-            carName: carObj.name,
-            carType: carObj.type
-        };
-        
-        db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update(updateData)
-            .then(() => {
-                editModal.style.display = 'none';
-            })
-            .catch(err => alert("Virhe tallennuksessa: " + err.message));
-    }
-});
-
-window.openEditModal = openEditModal;
-
 function resetRecordingUI() {
     isRecording = false;
     isPaused = false;
     tempDriveData = null;
     
-    // Tyhjennä reitti kartalta
+    // Tyhjennä kartta
     routePath = [];
     realTimePolyline.setLatLngs([]);
 
@@ -542,10 +512,11 @@ function updatePosition(position) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
             const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
+            // Sallitaan isompi hyppy (50km) jos GPS on katkennut (esim. WhatsApp)
             if ((speedKmh > 3 || dist > 0.02) && dist < 50.0) totalDistance += dist;
         }
         
-        // --- UUSI: REITTIVIIVAN PÄIVITYS ---
+        // Lisää piste reittiin
         if (speedKmh > 3 || (lastLatLng && getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng) > 0.02)) {
             routePath.push([lat, lng]);
             realTimePolyline.setLatLngs(routePath);
@@ -565,16 +536,19 @@ function updatePosition(position) {
         marker.setLatLng(newLatLng);
         
         if (views.map.style.display !== 'none') {
+            // ZOOM LOGIIKKA
             let targetZoom = 18; 
             
             if (currentCarType === 'bike') {
-                if (speedKmh > 15) targetZoom = 17; else targetZoom = 19;
+                if (speedKmh > 15) targetZoom = 17; 
+                else targetZoom = 19; 
             } else {
                 if (speedKmh > 100) targetZoom = 14; 
                 else if (speedKmh > 70) targetZoom = 16;
                 else if (speedKmh > 40) targetZoom = 17;
                 else targetZoom = 18;
             }
+            
             if (map.getZoom() !== targetZoom) map.setView(newLatLng, targetZoom); else map.panTo(newLatLng);
             mapSpeedEl.innerText = speedKmh.toFixed(1);
             mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
@@ -615,6 +589,7 @@ function fetchWeather(lat, lon) {
                 else if (code <= 82) emoji = "🌧";
                 else if (code <= 86) emoji = "❄️";
                 else emoji = "⛈";
+                
                 currentDriveWeather = `${emoji} ${temp}°C`;
                 dashWeatherEl.innerText = currentDriveWeather;
             }
@@ -638,6 +613,7 @@ function handleMotion(event) {
         liveStyleEl.innerText = "Kiihdytys!";
         liveStyleEl.className = "style-badge style-red";
         
+        // Väläytä nopeus punaiseksi
         dashSpeedEl.style.color = "#ff1744";
         
         if (styleResetTimer) clearTimeout(styleResetTimer);
@@ -649,14 +625,13 @@ function handleMotion(event) {
     }
 }
 
-// --- TILASTOT (UUSI) ---
+// --- TILASTOT (GRAAFIT) ---
 let chartInstanceMonthly = null;
 let chartInstanceVehicles = null;
 
 function renderStats() {
     if (!allHistoryData || allHistoryData.length === 0) return;
 
-    // 1. Data per kuukausi (viimeiset 6kk)
     const monthlyData = {};
     const vehicleData = {};
 
@@ -675,15 +650,13 @@ function renderStats() {
         vehicleData[carName] += dist;
     });
 
+    // Pylväsdiagrammi (Kuukausi)
     const monthLabels = Object.keys(monthlyData).reverse().slice(0, 6).reverse(); // Viim. 6kk
     const monthValues = monthLabels.map(k => monthlyData[k].toFixed(1));
 
-    const vehicleLabels = Object.keys(vehicleData);
-    const vehicleValues = Object.values(vehicleData).map(v => v.toFixed(1));
-
-    // Chart: Kuukausi
     const ctxMonthly = document.getElementById('chart-monthly').getContext('2d');
     if (chartInstanceMonthly) chartInstanceMonthly.destroy();
+    
     chartInstanceMonthly = new Chart(ctxMonthly, {
         type: 'bar',
         data: {
@@ -697,14 +670,19 @@ function renderStats() {
             }]
         },
         options: {
+            responsive: true,
             scales: { y: { beginAtZero: true } },
             plugins: { legend: { display: false } }
         }
     });
 
-    // Chart: Ajoneuvot
+    // Piirakkakuvio (Ajoneuvot)
+    const vehicleLabels = Object.keys(vehicleData);
+    const vehicleValues = Object.values(vehicleData).map(v => v.toFixed(1));
+
     const ctxVehicles = document.getElementById('chart-vehicles').getContext('2d');
     if (chartInstanceVehicles) chartInstanceVehicles.destroy();
+    
     chartInstanceVehicles = new Chart(ctxVehicles, {
         type: 'doughnut',
         data: {
@@ -715,7 +693,8 @@ function renderStats() {
                     'rgba(255, 99, 132, 0.7)',
                     'rgba(54, 162, 235, 0.7)',
                     'rgba(255, 206, 86, 0.7)',
-                    'rgba(75, 192, 192, 0.7)'
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)'
                 ],
                 borderWidth: 1
             }]
@@ -779,7 +758,9 @@ carSelectEl.addEventListener('change', () => {
     localStorage.setItem('selectedCarId', currentCarId);
     updateCarTypeVariable();
     
-    if (views.history.style.display !== 'none') loadHistory();
+    if (views.history.style.display !== 'none') {
+        loadHistory();
+    }
 });
 
 function renderCarList() {
@@ -808,6 +789,51 @@ function renderCarList() {
     });
 }
 
+// Muokkaus modaali
+function openEditModal(key) {
+    const drive = allHistoryData.find(d => d.key === key);
+    if (!drive) return;
+
+    editKeyEl.value = key;
+    editSubjectEl.value = drive.subject || "";
+    
+    editCarSelectEl.innerHTML = "";
+    userCars.forEach(car => {
+        const opt = document.createElement('option');
+        opt.value = car.id;
+        const icon = (car.type === 'bike') ? "🚲 " : "🚗 ";
+        opt.text = icon + car.name;
+        if (drive.carId === car.id) opt.selected = true;
+        editCarSelectEl.appendChild(opt);
+    });
+
+    editModal.style.display = 'flex';
+}
+
+btnEditCancel.addEventListener('click', () => {
+    editModal.style.display = 'none';
+});
+
+btnEditSave.addEventListener('click', () => {
+    const key = editKeyEl.value;
+    const newSubject = editSubjectEl.value;
+    const newCarId = editCarSelectEl.value;
+    const carObj = userCars.find(c => c.id === newCarId);
+    
+    if (key && currentUser && carObj) {
+        const updateData = {
+            subject: newSubject,
+            carId: carObj.id,
+            carName: carObj.name,
+            carType: carObj.type
+        };
+        db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update(updateData)
+            .then(() => { editModal.style.display = 'none'; })
+            .catch(err => alert("Virhe: " + err.message));
+    }
+});
+
+// Lisäyslomake
 const addCarForm = document.getElementById('add-car-form');
 const btnAddCar = document.getElementById('btn-add-car');
 const btnCancelCar = document.getElementById('btn-cancel-car');
@@ -1051,12 +1077,19 @@ function renderHistoryList() {
             if (drive.weather) tagsHtml += `<span class="tag">🌡️ ${drive.weather}</span>`;
             if (drive.drivingStyle) tagsHtml += `<span class="tag">🏎️ ${drive.drivingStyle}</span>`;
 
+            // REITTI-IKONI
+            let mapBtn = "";
+            if (drive.route && drive.route.length > 0) {
+                mapBtn = `<button class="map-btn" onclick="showRouteOnMap('${drive.key}')" title="Näytä reitti">🗺️</button>`;
+            }
+
             const card = document.createElement('div');
             card.className = 'log-card';
             card.innerHTML = `
                 <div class="log-header">
                     <div class="log-date">${dateStr}</div>
-                    <div style="display:flex;">
+                    <div style="display:flex; align-items:center;">
+                        ${mapBtn}
                         <button class="edit-btn" onclick="openEditModal('${drive.key}')">✏️</button>
                         <button class="delete-btn" onclick="openDeleteModal('${drive.key}')">🗑</button>
                     </div>
@@ -1091,6 +1124,24 @@ function renderHistoryList() {
         historySummaryEl.style.display = 'flex';
     }
 }
+
+// UUSI: Näytä tallennettu reitti kartalla
+window.showRouteOnMap = (key) => {
+    const drive = allHistoryData.find(d => d.key === key);
+    if (drive && drive.route && drive.route.length > 0) {
+        // Poista vanha kerros jos on
+        if(savedRouteLayer) map.removeLayer(savedRouteLayer);
+        
+        // Piirrä uusi reitti oranssilla
+        savedRouteLayer = L.polyline(drive.route, {color: '#ff9100', weight: 5, opacity: 0.8}).addTo(map);
+        
+        // Vaihda karttanäkymään ja zoomaa reittiin
+        switchView('map');
+        map.fitBounds(savedRouteLayer.getBounds(), {padding: [50, 50]});
+    } else {
+        alert("Tälle ajolle ei ole tallennettua reittiä.");
+    }
+};
 
 window.updateSubject = (key, text) => { if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text }); };
 window.openDeleteModal = openDeleteModal; 
