@@ -229,6 +229,11 @@ menuBtn.addEventListener('click', () => {
     }
 });
 
+// LOGO CLICK -> DASHBOARD (UUSI)
+document.getElementById('app-logo').addEventListener('click', () => {
+    switchView('dashboard');
+});
+
 function switchView(viewName) {
     mainMenu.style.display = 'none';
     Object.values(views).forEach(el => el.style.display = 'none');
@@ -512,7 +517,6 @@ function updatePosition(position) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
             const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
-            // Sallitaan isompi hyppy (50km) jos GPS on katkennut (esim. WhatsApp)
             if ((speedKmh > 3 || dist > 0.02) && dist < 50.0) totalDistance += dist;
         }
         
