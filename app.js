@@ -50,7 +50,7 @@ const modalCarNameEl = document.getElementById('modal-car-name');
 const btnModalSave = document.getElementById('btn-modal-save');
 const btnModalCancel = document.getElementById('btn-modal-cancel');
 
-// Muokkaus Modal (UUSI)
+// Muokkaus Modal
 const editModal = document.getElementById('edit-modal');
 const editKeyEl = document.getElementById('edit-key');
 const editSubjectEl = document.getElementById('edit-subject');
@@ -395,7 +395,7 @@ btnDeleteCancel.addEventListener('click', () => {
     deleteKey = null;
 });
 
-// UUSI: MUOKKAUS MODAL LOGIIKKA
+// MUOKKAUS MODAL LOGIIKKA
 function openEditModal(key) {
     const drive = allHistoryData.find(d => d.key === key);
     if (!drive) return;
@@ -403,14 +403,12 @@ function openEditModal(key) {
     editKeyEl.value = key;
     editSubjectEl.value = drive.subject || "";
     
-    // Täytä autovalikko
     editCarSelectEl.innerHTML = "";
     userCars.forEach(car => {
         const opt = document.createElement('option');
         opt.value = car.id;
         const icon = (car.type === 'bike') ? "🚲 " : "🚗 ";
         opt.text = icon + car.name;
-        // Valitse oikea auto (tai oletus jos vanha ajo)
         if (drive.carId === car.id) opt.selected = true;
         editCarSelectEl.appendChild(opt);
     });
@@ -427,7 +425,6 @@ btnEditSave.addEventListener('click', () => {
     const newSubject = editSubjectEl.value;
     const newCarId = editCarSelectEl.value;
     
-    // Etsi valitun auton tiedot (nimi ja tyyppi)
     const carObj = userCars.find(c => c.id === newCarId);
     
     if (key && currentUser && carObj) {
@@ -446,7 +443,7 @@ btnEditSave.addEventListener('click', () => {
     }
 });
 
-window.openEditModal = openEditModal; // Tee globaaliksi
+window.openEditModal = openEditModal;
 
 function resetRecordingUI() {
     isRecording = false;
@@ -508,7 +505,10 @@ function updatePosition(position) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
             const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
-            if ((speedKmh > 3 || dist > 0.02) && dist < 2.0) totalDistance += dist;
+            // KORJAUS WHATSAPP-ONGELMAAN:
+            // Hyväksytään iso hyppäys (alle 50km), jos ollaan oltu "poissa".
+            // Poistettu tiukka 2.0 km rajoitus tai kasvatettu sitä reilusti.
+            if ((speedKmh > 3 || dist > 0.02) && dist < 50.0) totalDistance += dist;
         }
         
         if (startTime) {
@@ -873,10 +873,17 @@ function renderHistoryList() {
             let start = null;
             let dateStr = "Aika puuttuu";
             
+            // AIKAKORJAUS: Näytetään nyt "14:00 - 14:45"
             if (drive.startTime) {
                 start = new Date(drive.startTime);
                 if (!isNaN(start.getTime())) {
-                    dateStr = start.toLocaleDateString('fi-FI') + ' ' + start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+                    const startH = start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+                    let endH = "";
+                    if (drive.endTime) {
+                        const end = new Date(drive.endTime);
+                        endH = " - " + end.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+                    }
+                    dateStr = start.toLocaleDateString('fi-FI') + ' ' + startH + endH;
                     
                     if (selectedFilter !== 'all') {
                         if (selectedFilter === 'custom') {
