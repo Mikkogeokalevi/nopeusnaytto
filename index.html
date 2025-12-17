@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=3.1">
+    <link rel="stylesheet" href="style.css?v=3.2">
 </head>
 <body>
 
@@ -37,7 +37,6 @@
         <div class="top-bar-container">
             <div style="display:flex; align-items:center; gap:10px;">
                 <img src="ajopaivakirja_logo.png" class="header-logo" alt="App Logo">
-                
                 <select id="car-select" class="top-car-select">
                     <option value="all">Kaikki ajoneuvot</option>
                 </select>
@@ -268,6 +267,29 @@
         </div>
     </div>
 
+    <div id="edit-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:var(--accent-color);">✏️ Muokkaa tietoja</h3>
+            <input type="hidden" id="edit-key">
+            
+            <div style="margin-bottom:15px; text-align:left;">
+                <label>Aihe:</label>
+                <input type="text" id="edit-subject" class="subject-input">
+            </div>
+            
+            <div style="margin-bottom:20px; text-align:left;">
+                <label>Ajoneuvo:</label>
+                <select id="edit-car-select" class="subject-input">
+                    </select>
+            </div>
+
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button id="btn-edit-cancel" class="action-btn" style="background-color:#555; width:auto;">Peruuta</button>
+                <button id="btn-edit-save" class="action-btn blue-btn" style="width:auto;">Tallenna</button>
+            </div>
+        </div>
+    </div>
+
     <div id="delete-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
             <h3 style="margin-top:0; color:#ff4444;">🗑 Poista merkintä?</h3>
@@ -284,7 +306,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
-    <script src="app.js?v=3.1"></script>
+    <script src="app.js?v=3.2"></script>
     <script src="help.js"></script>
 </body>
 </html>
