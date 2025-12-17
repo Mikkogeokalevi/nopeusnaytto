@@ -1,5 +1,5 @@
 const helpContent = `
-    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Mikkokalevin Ajopäiväkirja Pro – Käyttöopas v3.8</h2>
+    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Mikkokalevin Ajopäiväkirja Pro – Käyttöopas v3.9</h2>
     
     <div class="help-section">
         <h3>🚀 1. Käyttöönotto ja Tili</h3>
@@ -81,16 +81,11 @@ const helpContent = `
         </div>
 
         <div class="help-step">
-            <strong>💫 Nopeuskehä (Speed Ring):</strong>
-            Numeron ympärillä oleva hehkuva rengas elää nopeuden mukaan. Se täyttyy kierroslukumittarin tavoin mitä kovempaa ajat.
-        </div>
-
-        <div class="help-step">
             <strong>🏎️ Eco-mittari (Vain autoille):</strong>
-            Yläreunan värillinen palkki ja hehkuva rengas reagoivat ajotapaasi:
+            Itse nopeuslukema toimii nyt visuaalisena indikaattorina:
             <ul>
-                <li><span style="color:#00c853; font-weight:bold;">🟢 Vihreä (Taloudellinen):</span> Ajat tasaisesti ja ennakoivasti.</li>
-                <li><span style="color:#ff1744; font-weight:bold;">🔴 Punainen (Kiihdytys/Jarrutus):</span> Anturi havaitsi voimakkaan G-voiman (yli 3.5 m/s²). Tämä voi johtua rajusta kiihdytyksestä, äkkijarrutuksesta tai tiukasta kaarteesta. Tavoitteena on pitää mittari vihreänä.</li>
+                <li><span style="color:var(--speed-color); font-weight:bold;">🔵 Sininen (Normaali/Taloudellinen):</span> Ajat tasaisesti ja rauhallisesti.</li>
+                <li><span style="color:#ff1744; font-weight:bold;">🔴 Punainen (Kiihdytys/Jarrutus):</span> Anturi havaitsi voimakkaan G-voiman (yli 3.5 m/s²). Tämä voi johtua rajusta kiihdytyksestä, äkkijarrutuksesta tai tiukasta kaarteesta. Tavoitteena on pitää numerot sinisenä.</li>
             </ul>
         </div>
     </div>
@@ -193,7 +188,7 @@ const helpContent = `
     </div>
 
     <div style="text-align: center; margin-top: 50px; color: #888; font-size: 11px; padding-bottom: 30px;">
-        Mikkokalevin Ajopäiväkirja Pro v3.8 &copy; 2025<br>
+        Mikkokalevin Ajopäiväkirja Pro v3.9 &copy; 2025<br>
         Täyden palvelun ajoseuranta.
     </div>
 `;
