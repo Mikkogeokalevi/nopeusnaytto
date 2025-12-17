@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.8">
 </head>
 <body>
 
@@ -73,7 +73,6 @@
                 <div id="side-tap-left" class="side-tap-zone">‹ KARTTA</div>
 
                 <div id="live-status-bar" class="status-bar" style="opacity: 0;">
-                    <span id="live-weather">--</span>
                     <span id="live-style-indicator" class="style-badge style-green">Taloudellinen</span>
                 </div>
 
@@ -103,6 +102,10 @@
                         <span class="stat-unit">km/h</span>
                     </div>
                     <div class="stat-card">
+                        <span class="stat-label">Suunta</span>
+                        <span class="stat-value" id="dash-heading">--</span>
+                    </div>
+                    <div class="stat-card">
                         <span class="stat-label">Korkeus</span>
                         <span class="stat-value" id="dash-alt">0</span>
                         <span class="stat-unit">m</span>
@@ -111,9 +114,13 @@
                 
                  <div class="coords-box" id="dash-coords">--° --.---'</div>
                  
-                 <div class="time-container">
-                     <div class="clock-box" id="dash-clock">--:--</div>
-                     <div class="date-box" id="dash-date">--.--.----</div>
+                 <div class="time-weather-wrapper">
+                     <div class="weather-huge" id="dash-weather">--</div>
+                     
+                     <div class="time-right-col">
+                         <div class="clock-box" id="dash-clock">--:--</div>
+                         <div class="date-box" id="dash-date">--.--.----</div>
+                     </div>
                  </div>
 
                  <div class="bottom-branding">
@@ -223,7 +230,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
-    <script src="app.js"></script>
+    <script src="app.js?v=2.8"></script>
     <script src="help.js"></script>
 </body>
 </html>
