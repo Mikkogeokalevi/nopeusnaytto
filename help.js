@@ -1,5 +1,5 @@
 const helpContent = `
-    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Mikkokalevin Ajopäiväkirja Pro – Käyttöopas v3.9</h2>
+    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Mikkokalevin Ajopäiväkirja Pro – Käyttöopas v4.0</h2>
     
     <div class="help-section">
         <h3>🚀 1. Käyttöönotto ja Tili</h3>
@@ -82,10 +82,10 @@ const helpContent = `
 
         <div class="help-step">
             <strong>🏎️ Eco-mittari (Vain autoille):</strong>
-            Itse nopeuslukema toimii nyt visuaalisena indikaattorina:
+            Yläreunan värillinen palkki ja hehkuva rengas reagoivat ajotapaasi:
             <ul>
-                <li><span style="color:var(--speed-color); font-weight:bold;">🔵 Sininen (Normaali/Taloudellinen):</span> Ajat tasaisesti ja rauhallisesti.</li>
-                <li><span style="color:#ff1744; font-weight:bold;">🔴 Punainen (Kiihdytys/Jarrutus):</span> Anturi havaitsi voimakkaan G-voiman (yli 3.5 m/s²). Tämä voi johtua rajusta kiihdytyksestä, äkkijarrutuksesta tai tiukasta kaarteesta. Tavoitteena on pitää numerot sinisenä.</li>
+                <li><span style="color:#00c853; font-weight:bold;">🟢 Vihreä (Taloudellinen):</span> Ajat tasaisesti ja ennakoivasti.</li>
+                <li><span style="color:#ff1744; font-weight:bold;">🔴 Punainen (Kiihdytys/Jarrutus):</span> Anturi havaitsi voimakkaan G-voiman (yli 3.5 m/s²). Tämä voi johtua rajusta kiihdytyksestä, äkkijarrutuksesta tai tiukasta kaarteesta. Tavoitteena on pitää mittari vihreänä.</li>
             </ul>
         </div>
     </div>
@@ -153,9 +153,14 @@ const helpContent = `
     </div>
 
     <div class="help-section">
-        <h3>🗺️ 6. Kartta ja Älykäs Zoom</h3>
+        <h3>🗺️ 6. Kartta ja Reittiviiva</h3>
         <p>Kartta elää tilanteen mukaan, jotta sinun ei tarvitse näpytellä sitä ajon aikana.</p>
         
+        <div class="help-step">
+            <strong>📍 Live-Reittiviiva:</strong>
+            Ajon aikana kartalle piirtyy <strong>sininen viiva</strong>, joka näyttää kuljetun reitin. Tämä auttaa hahmottamaan lenkin muodon reaaliajassa. (Huom: Reitti nollautuu, kun tallennus lopetetaan).
+        </div>
+
         <div class="help-step">
             <strong>🚗 Autolla ajettaessa:</strong>
             <ul>
@@ -176,6 +181,18 @@ const helpContent = `
     </div>
 
     <div class="help-section">
+        <h3>📊 7. Tilastot (UUSI)</h3>
+        <p>Visuaalinen katsaus ajohistoriaasi.</p>
+        <div class="help-step">
+            Valitse valikosta <strong>📊 Tilastot</strong> nähdäksesi:
+            <ul>
+                <li><strong>Pylväsdiagrammi:</strong> Ajetut kilometrit kuukausitasolla (viimeiset 6kk).</li>
+                <li><strong>Piirakkakuvio:</strong> Millä ajoneuvolla on ajettu eniten.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="help-section">
         <h3>❓ Vianmääritys</h3>
         <div class="help-step">
             <strong>K: Näyttö sammuu itsestään?</strong>
@@ -188,7 +205,7 @@ const helpContent = `
     </div>
 
     <div style="text-align: center; margin-top: 50px; color: #888; font-size: 11px; padding-bottom: 30px;">
-        Mikkokalevin Ajopäiväkirja Pro v3.9 &copy; 2025<br>
+        Mikkokalevin Ajopäiväkirja Pro v4.0 &copy; 2025<br>
         Täyden palvelun ajoseuranta.
     </div>
 `;
