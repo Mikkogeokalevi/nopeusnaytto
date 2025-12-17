@@ -1,5 +1,5 @@
 const helpContent = `
-    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 25px; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px;">Käyttöopas 3.0</h2>
+    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 25px; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px;">Käyttöopas 3.5</h2>
     
     <div class="help-section">
         <h3>🚀 1. Käyttöönotto ja Yksityisyys</h3>
@@ -10,37 +10,30 @@ const helpContent = `
         </div>
         <div class="help-step">
             <strong>Vaaditut Luvat:</strong>
-            Jotta kaikki ominaisuudet toimivat, selaimesi kysyy lupia:
+            Jotta sovellus toimii täydellä teholla, se tarvitsee seuraavat oikeudet:
             <ul>
                 <li>📍 <strong>Sijainti (GPS):</strong> Pakollinen. Valitse "Salli käytön aikana" ja varmista, että "Tarkka sijainti" on päällä. Ilman tätä nopeus ja matka eivät toimi.</li>
-                <li>📱 <strong>Liikeanturit (Motion):</strong> Sovellus käyttää puhelimen kiihtyvyysanturia "Eco-mittarin" toimintaan (kiihtyvyyden ja jarrutuksen tunnistus).
-                <br><em>iPhone-käyttäjät:</em> Tämä lupa on kuitattava erikseen kysyttäessä, muuten Eco-palkki ei toimi.</li>
+                <li>📱 <strong>Liikeanturit (Motion):</strong> Sovellus käyttää puhelimen kiihtyvyysanturia "Eco-mittarin" toimintaan. iPhone-käyttäjien tulee erikseen sallia tämä kysyttäessä.</li>
             </ul>
         </div>
         <div class="help-step">
             <strong>Asennus (PWA):</strong>
-            Tämä on verkkosovellus, joka toimii kuten natiivi sovellus. Lisää se kotivalikkoon saadaksesi koko näytön tilan ja paremman suorituskyvyn:
-            <br><em>iPhone (Safari):</em> Paina "Jaa"-painiketta (neliö ja nuoli) -> Valitse listasta "Lisää Koti-valikkoon".
-            <br><em>Android (Chrome):</em> Paina valikkoa (kolme pistettä) -> Valitse "Asenna sovellus" tai "Lisää aloitusnäyttöön".
+            Lisää sovellus kotivalikkoon saadaksesi parhaan käyttökokemuksen (koko näyttö, ei osoitepalkkeja).
         </div>
     </div>
 
     <div class="help-section">
         <h3>⚙️ 2. Autotalli ja Ajoneuvot</h3>
         <div class="help-step">
-            Ennen ajoa, käy valikon kohdassa <strong>Asetukset (Tallit)</strong>. Täällä voit luoda profiilin jokaiselle kulkuneuvollesi.
+            Käy valikon kohdassa <strong>Asetukset (Tallit)</strong> luodaksesi profiilin kulkuneuvoillesi.
         </div>
         <div class="help-step">
             <strong>Autot vs. Polkupyörät:</strong>
-            Kun lisäät ajoneuvon, valitse sen tyyppi. Tämä vaikuttaa sovelluksen toimintaan:
+            Valitse ajoneuvon tyyppi lisätessäsi sitä.
             <ul>
-                <li>🚗 <strong>Auto:</strong> Voit tallentaa rekisterinumeron ja polttoaineen. Ajon aikana "Eco-mittari" on päällä ja analysoi ajotapaasi. Kartta käyttää laajempaa zoomausta.</li>
-                <li>🚲 <strong>Polkupyörä:</strong> Eco-mittari kytketään <strong>pois päältä</strong> (koska pyörän tangon tärinä aiheuttaisi jatkuvia vääriä "aggressiivinen ajo" -hälytyksiä). Kartta zoomaa automaattisesti lähemmäs, jotta näet polut tarkemmin.</li>
+                <li>🚗 <strong>Auto:</strong> Eco-mittari on päällä ja analysoi ajotapaasi (jarrutukset/kiihdytykset). Kartta käyttää laajempaa zoomausta.</li>
+                <li>🚲 <strong>Polkupyörä:</strong> Eco-mittari on pois päältä. Kartta zoomaa lähelle (Zoom 19), paitsi jos vauhti nousee yli 15 km/h, jolloin se loitontaa hieman (Zoom 17).</li>
             </ul>
-        </div>
-        <div class="help-step">
-            <strong>Ajoneuvon valinta:</strong>
-            Etusivun yläpalkissa on valikko (esim. "Mazda"). Varmista ennen liikkeellelähtöä, että oikea ajoneuvo on valittuna. Valinta pysyy muistissa seuraavaan kertaan.
         </div>
     </div>
 
@@ -51,109 +44,75 @@ const helpContent = `
             <ul>
                 <li><strong>Nopeus:</strong> Reaaliaikainen GPS-nopeus.</li>
                 <li><strong>Huippu:</strong> Kyseisen tallennuksen suurin nopeus.</li>
-                <li><strong>Suunta:</strong> Kompassisuunta (esim. NE 45°) liikkeessä ollessa.</li>
+                <li><strong>Suunta:</strong> Kompassisuunta (esim. NE 45°).</li>
                 <li><strong>Korkeus:</strong> Korkeus merenpinnasta (m).</li>
-                <li><strong>Sää:</strong> Sovellus hakee automaattisesti lähimmän sääaseman tiedot (Lämpötila + Ikoni) heti, kun GPS-yhteys on muodostettu.</li>
+                <li><strong>Sää:</strong> Lähin säähavainto haetaan automaattisesti.</li>
             </ul>
         </div>
         <div class="help-step">
             <strong>🏎️ Eco-mittari (Vain autoille):</strong>
-            Yläreunassa näkyy värillinen palkki, joka reagoi ajotapaasi:
-            <br><span style="color:#00c853; font-weight:bold;">🟢 Taloudellinen:</span> Palkki on vihreä, kun ajat tasaisesti.
-            <br><span style="color:#ff1744; font-weight:bold;">🔴 Kiihdytys/Jarrutus:</span> Jos anturi havaitsee voimakkaan G-voiman (yli 3.5 m/s² kiihtyvyys, jarrutus tai raju kaarre), palkki välähtää punaisena ja tekstiksi tulee "Kiihdytys!".
-            <br><em>Tavoite: Pidä palkki vihreänä koko matkan ajan.</em>
+            Vihreä palkki = Taloudellinen ajo.
+            <br>Punainen palkki = Voimakas kiihdytys/jarrutus.
         </div>
     </div>
 
     <div class="help-section">
         <h3>🔴 4. Ajon Tallennus</h3>
         <div class="help-step">
-            1. Paina <strong>🔴 ALOITA TALLENNUS</strong>. Matkamittari nollautuu ja ajanotto alkaa.
+            1. Valitse yläpalkista oikea ajoneuvo.
+            <br>2. Paina <strong>🔴 ALOITA TALLENNUS</strong>.
         </div>
-        
-        <div class="help-step" style="border-left-color: #fbc02d;">
-            <strong>⏸ TAUKO-toiminto:</strong><br>
-            Käytä tätä, jos pysähdyt kauppaan tai tankkaamaan.
-            <ul>
-                <li>Ajanotto ja matkan kertyminen pysähtyvät.</li>
-                <li>Keskinopeuslaskuri "jäätyy" (tauko ei laske keskinopeutta).</li>
-                <li>Eco-seuranta keskeytyy.</li>
-            </ul>
-            Jatka matkaa painamalla <strong>▶ JATKA</strong>.
-        </div>
-
         <div class="help-step">
-            <strong>Lopetus ja Tallennus:</strong>
-            Kun olet perillä, paina <strong>⬛ LOPETA</strong>. Ruudulle aukeaa yhteenvetoikkuna.
-            <ul>
-                <li>Näet yhteenvedon matkasta.</li>
-                <li>Kirjoita ajolle kuvaava aihe (esim. "Työmatka Hki-Tre").</li>
-                <li>Tarkista, että ajoneuvo on oikein.</li>
-                <li>Paina "Tallenna".</li>
-            </ul>
+            <strong>Ongelmia tausta-ajossa?</strong>
+            Jos poistut sovelluksesta (esim. WhatsAppiin) kesken ajon, jotkut puhelimet saattavat katkaista GPS:n virransäästön vuoksi.
+            <br><em>Vinkki:</em> Sovellus yrittää nyt paikata katkokset vetämällä suoran viivan, mutta tarkin reitti saadaan pitämällä sovellus auki.
+        </div>
+        <div class="help-step">
+            <strong>Lopetus:</strong>
+            Paina <strong>⬛ LOPETA</strong>. Täytä ajon tiedot ja tallenna.
         </div>
     </div>
 
     <div class="help-section">
-        <h3>📋 5. Historia ja Muokkaus</h3>
+        <h3>📋 5. Historia</h3>
         <div class="help-step">
-            Historia-sivu on ajopäiväkirjasi arkisto.
+            Historia-sivulla näet kaikki ajot. Listassa näkyy nyt myös tarkka <strong>aloitus- ja lopetusaika</strong> (esim. 14:00 - 14:45).
         </div>
         <div class="help-step">
-            <strong>🔍 Monipuolinen Suodatus:</strong>
-            Voit rajata näkymää kahdella tasolla:
-            <ol>
-                <li><strong>Yläpalkin ajoneuvo:</strong> Jos valitset yläpalkista "Mazda", historia näyttää VAIN Mazdan ajot. Jos valitset "Kaikki ajoneuvot", näet koko historian.</li>
-                <li><strong>Aikaväli:</strong> Listan yläpuolelta voit valita "Kaikki ajot", tietyn Vuoden, Kuukauden tai täysin itse valitun aikavälin (kalenteri).</li>
-            </ol>
+            <strong>Suodatus:</strong>
+            Voit rajata listaa ajoneuvon (yläpalkki) tai aikavälin (listan yläpuoli) mukaan.
         </div>
         <div class="help-step">
-            <strong>✏️ Tietojen Korjaus (Jälkikäteen):</strong>
-            Valitsitko vahingossa väärän auton?
-            <br>1. Etsi ajo historiasta.
-            <br>2. Paina kortin yläkulmassa olevaa <strong>kynä-ikonia (✏️)</strong>.
-            <br>3. Vaihda ajoneuvo oikeaksi avautuvasta listasta ja tallenna. Ajo siirtyy oikean auton tilastoihin.
-        </div>
-        <div class="help-step">
-            <strong>Symbolit:</strong>
-            <ul>
-                <li>🌡️ = Ajon aikainen sää.</li>
-                <li>🏎️ = Ajotapa-arvio (Tasainen/Reipas/Aggressiivinen).</li>
-                <li>🚗/🚲 = Millä välineellä ajettu.</li>
-            </ul>
+            <strong>Muokkaus (✏️):</strong>
+            Voit jälkikäteen vaihtaa ajon toiselle ajoneuvolle tai muokata sen aihetta painamalla kynä-ikonia.
         </div>
     </div>
 
     <div class="help-section">
-        <h3>🗺️ 6. Kartta</h3>
+        <h3>🗺️ 6. Kartta ja Zoom-tasot</h3>
         <div class="help-step">
-            Kartta keskittää sijaintiisi automaattisesti.
+            Kartta elää nopeutesi mukaan:
         </div>
         <div class="help-step">
-            <strong>Älykäs Zoom:</strong>
-            Sovellus säätää zoom-tasoa nopeutesi ja ajoneuvosi mukaan:
+            <strong>🚗 Autolla:</strong>
             <ul>
-                <li><strong>Autolla (yli 100km/h):</strong> Kartta loitontaa, jotta näet kauemmas (Zoom 14).</li>
-                <li><strong>Autolla (kaupunki):</strong> Perusnäkymä (Zoom 16).</li>
-                <li><strong>Polkupyörällä:</strong> Kartta pysyy tiukasti lähikuvassa (Zoom 19), jotta erotat polut ja risteykset.</li>
+                <li>0-40 km/h: <strong>Zoom 18</strong> (Lähikuva)</li>
+                <li>40-70 km/h: <strong>Zoom 17</strong></li>
+                <li>70-100 km/h: <strong>Zoom 16</strong></li>
+                <li>Yli 100 km/h: <strong>Zoom 14</strong> (Yleiskuva)</li>
             </ul>
         </div>
-    </div>
-
-    <div class="help-section">
-        <h3>❓ Vianmääritys</h3>
         <div class="help-step">
-            <strong>Näyttö sammuu ajon aikana?</strong>
-            Sovellus käyttää "Wake Lock" -tekniikkaa pitääkseen näytön päällä. Jotkut puhelimet (esim. Samsung, Huawei) voivat silti sammuttaa näytön, jos "Virransäästötila" on päällä. Kytke virransäästö pois tai lataa puhelinta ajon aikana.
-        </div>
-        <div class="help-step">
-            <strong>GPS pätkii / Nopeus on 0?</strong>
-            Varmista, että olet ulkona. Sisätiloissa, tunneleissa tai korkeiden talojen välissä GPS-signaali voi katketa.
+            <strong>🚲 Polkupyörällä:</strong>
+            <ul>
+                <li>0-15 km/h: <strong>Zoom 19</strong> (Tarkka polku-näkymä)</li>
+                <li>Yli 15 km/h: <strong>Zoom 17</strong> (Hieman loitompi)</li>
+            </ul>
         </div>
     </div>
 
     <div style="text-align: center; margin-top: 40px; color: #666; font-size: 12px; padding-bottom: 30px;">
-        Ajopäiväkirja Pro v3.4 &copy; 2025
+        Ajopäiväkirja Pro v3.5 &copy; 2025
     </div>
 `;
 
