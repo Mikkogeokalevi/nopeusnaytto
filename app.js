@@ -29,6 +29,7 @@ const views = {
     dashboard: document.getElementById('dashboard-view'),
     map: document.getElementById('map-view'),
     history: document.getElementById('history-view'),
+    settings: document.getElementById('settings-view'), // UUSI
     help: document.getElementById('help-view')
 };
 
@@ -36,6 +37,7 @@ const navBtns = {
     dashboard: document.getElementById('nav-dashboard'),
     map: document.getElementById('nav-map'),
     history: document.getElementById('nav-history'),
+    settings: document.getElementById('nav-settings'), // UUSI
     help: document.getElementById('nav-help')
 };
 
@@ -44,6 +46,7 @@ const saveModal = document.getElementById('save-modal');
 const modalDistEl = document.getElementById('modal-dist');
 const modalTimeEl = document.getElementById('modal-time');
 const modalSubjectEl = document.getElementById('modal-subject');
+const modalCarNameEl = document.getElementById('modal-car-name'); // UUSI
 const btnModalSave = document.getElementById('btn-modal-save');
 const btnModalCancel = document.getElementById('btn-modal-cancel');
 
@@ -79,6 +82,11 @@ let styleResetTimer = null;
 
 let allHistoryData = []; 
 
+// AUTOT (UUSI)
+let userCars = [];
+let currentCarId = "default";
+const carSelectEl = document.getElementById('car-select');
+
 // UI Elementit
 const dashSpeedEl = document.getElementById('dash-speed');
 const dashMaxSpeedEl = document.getElementById('dash-max-speed');
@@ -89,10 +97,10 @@ const dashAvgEl = document.getElementById('dash-avg');
 const dashCoordsEl = document.getElementById('dash-coords');
 const dashClockEl = document.getElementById('dash-clock');
 const dashDateEl = document.getElementById('dash-date'); 
-const dashHeadingEl = document.getElementById('dash-heading'); // UUSI
-const dashWeatherEl = document.getElementById('dash-weather'); // UUSI PAIKKA
+const dashHeadingEl = document.getElementById('dash-heading'); 
+const dashWeatherEl = document.getElementById('dash-weather');
 
-// Live Status Bar (Vain Eco)
+// Live Status Bar
 const liveStatusBar = document.getElementById('live-status-bar');
 const liveStyleEl = document.getElementById('live-style-indicator');
 
@@ -132,6 +140,9 @@ auth.onAuthStateChanged((user) => {
         if (user.photoURL) {
             menuUserAvatar.src = user.photoURL;
         }
+
+        // LATAA AUTOT KUN KÄYTTÄJÄ KIRJAUTUU
+        loadCars();
 
         if (views.map.style.display !== 'none') setTimeout(() => map.invalidateSize(), 200);
     } else {
@@ -182,7 +193,9 @@ menuBtn.addEventListener('click', () => {
 function switchView(viewName) {
     mainMenu.style.display = 'none';
     Object.values(views).forEach(el => el.style.display = 'none');
-    Object.values(navBtns).forEach(btn => btn.classList.remove('active-menu'));
+    Object.values(navBtns).forEach(btn => {
+        if(btn) btn.classList.remove('active-menu');
+    });
 
     if (viewName === 'dashboard' || viewName === 'map') {
         views[viewName].style.display = 'flex';
@@ -194,11 +207,14 @@ function switchView(viewName) {
 
     if (viewName === 'map') setTimeout(() => map.invalidateSize(), 100);
     if (viewName === 'history') loadHistory();
+    // Jos avataan asetukset, varmista että lista on ajan tasalla
+    if (viewName === 'settings') renderCarList();
 }
 
 navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
 navBtns.map.addEventListener('click', () => switchView('map'));
 navBtns.history.addEventListener('click', () => switchView('history'));
+navBtns.settings.addEventListener('click', () => switchView('settings')); // UUSI
 navBtns.help.addEventListener('click', () => switchView('help'));
 
 document.getElementById('side-tap-left').addEventListener('click', () => switchView('map'));
@@ -226,13 +242,9 @@ document.getElementById('btn-activate-gps').addEventListener('click', () => {
 
 btnStartRec.addEventListener('click', () => {
     if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-        DeviceMotionEvent.requestPermission()
-            .then(response => {
-                if (response === 'granted') {
-                    window.addEventListener('devicemotion', handleMotion);
-                }
-            })
-            .catch(console.error);
+        DeviceMotionEvent.requestPermission().then(response => {
+            if (response === 'granted') window.addEventListener('devicemotion', handleMotion);
+        }).catch(console.error);
     } else {
         window.addEventListener('devicemotion', handleMotion);
     }
@@ -244,10 +256,9 @@ btnStartRec.addEventListener('click', () => {
     maxSpeed = 0;
     totalDistance = 0;
     
-    // Nollaa
+    currentDriveWeather = "";
     aggressiveEvents = 0;
     
-    // Nollaa Live UI
     updateDashboardUI(0, 0, 0, 0, 0, 0);
     liveStatusBar.style.opacity = '1'; 
     liveStyleEl.innerText = "Taloudellinen";
@@ -303,6 +314,9 @@ btnStopRec.addEventListener('click', () => {
     if (aggressiveEvents > 5) styleLabel = "Reipas";
     if (aggressiveEvents > 15) styleLabel = "Aggressiivinen";
 
+    // Hae valitun auton nimi
+    const selectedCarName = carSelectEl.options[carSelectEl.selectedIndex].text;
+
     tempDriveData = {
         type: 'end_drive',
         startTime: startTime.toISOString(),
@@ -313,13 +327,16 @@ btnStopRec.addEventListener('click', () => {
         durationMs: activeDurationMs,
         subject: "",
         weather: currentDriveWeather,
-        drivingStyle: styleLabel
+        drivingStyle: styleLabel,
+        carName: selectedCarName, // TALLENNETAAN AUTO
+        carId: currentCarId
     };
 
     const mins = Math.floor(activeDurationMs / 60000);
     modalDistEl.innerText = totalDistance.toFixed(2) + " km";
     modalTimeEl.innerText = mins + " min";
     modalSubjectEl.value = ""; 
+    modalCarNameEl.innerText = selectedCarName; // Näytä modalissa
 
     saveModal.style.display = 'flex';
     modalSubjectEl.focus();
@@ -405,14 +422,13 @@ function updatePosition(position) {
     const lat = position.coords.latitude;
     const lng = position.coords.longitude;
     const alt = position.coords.altitude || 0;
-    const heading = position.coords.heading; // Suunta
+    const heading = position.coords.heading; 
     const speedMs = position.coords.speed || 0; 
     let speedKmh = speedMs * 3.6;
     if (speedKmh < 1.0) speedKmh = 0;
 
     let currentAvg = 0;
 
-    // HAE SÄÄ HETI (kerran)
     if (currentDriveWeather === "") {
         fetchWeather(lat, lng);
     }
@@ -438,8 +454,7 @@ function updatePosition(position) {
         marker.setLatLng(newLatLng);
         
         if (views.map.style.display !== 'none') {
-            // TIUKEMPI ZOOM LOGIIKKA
-            let targetZoom = 18; // Oletus: Lähikuva
+            let targetZoom = 18; 
             if (speedKmh > 100) targetZoom = 14; 
             else if (speedKmh > 60) targetZoom = 16;
             
@@ -449,11 +464,9 @@ function updatePosition(position) {
         }
     }
 
-    // PÄIVITÄ UI
     updateDashboardUI(speedKmh, maxSpeed, totalDistance, null, alt, currentAvg);
     dashCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
     
-    // SUUNTA LOGIIKKA
     if (heading !== null && !isNaN(heading) && speedKmh > 3) {
         dashHeadingEl.innerText = `${getCardinalDirection(heading)} ${Math.round(heading)}°`;
     } else if (dashHeadingEl.innerText === "--") {
@@ -468,10 +481,8 @@ function getCardinalDirection(angle) {
     return directions[Math.round(angle / 45) % 8];
 }
 
-// --- SÄÄ ---
 function fetchWeather(lat, lon) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&wind_speed_unit=ms`;
-    
     fetch(url)
         .then(res => res.json())
         .then(data => {
@@ -489,30 +500,25 @@ function fetchWeather(lat, lon) {
                 else emoji = "⛈";
                 
                 currentDriveWeather = `${emoji} ${temp}°C`;
-                dashWeatherEl.innerText = currentDriveWeather; // Näytä mittaristossa
+                dashWeatherEl.innerText = currentDriveWeather;
             }
         })
         .catch(e => console.error(e));
 }
 
-// --- LIVE AJOTAPA ---
 function handleMotion(event) {
     if (!isRecording || isPaused) return;
-
     const now = Date.now();
     if (now - lastMotionTime < 500) return; 
     lastMotionTime = now;
-
     const acc = event.acceleration; 
     if (!acc) return;
-
     const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
     
     if (magnitude > 3.5) {
         aggressiveEvents++;
         liveStyleEl.innerText = "Kiihdytys!";
         liveStyleEl.className = "style-badge style-red";
-
         if (styleResetTimer) clearTimeout(styleResetTimer);
         styleResetTimer = setTimeout(() => {
             liveStyleEl.innerText = "Taloudellinen";
@@ -520,6 +526,117 @@ function handleMotion(event) {
         }, 3000);
     }
 }
+
+// --- AUTOTALLI LOGIIKKA (UUSI) ---
+function loadCars() {
+    if(!currentUser) return;
+    
+    const carsRef = db.ref('users/' + currentUser.uid + '/cars');
+    carsRef.on('value', (snapshot) => {
+        userCars = [];
+        if (snapshot.exists()) {
+            snapshot.forEach(child => {
+                userCars.push({ id: child.key, ...child.val() });
+            });
+        }
+        updateCarSelect(); // Päivitä yläpalkin valikko
+        renderCarList(); // Päivitä asetuslistaus
+    });
+    
+    // Lataa valittu auto localStoragesta
+    const stored = localStorage.getItem('selectedCarId');
+    if (stored) currentCarId = stored;
+}
+
+function updateCarSelect() {
+    carSelectEl.innerHTML = "";
+    
+    if (userCars.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = 'default';
+        opt.text = "Oma Auto";
+        carSelectEl.appendChild(opt);
+    } else {
+        userCars.forEach(car => {
+            const opt = document.createElement('option');
+            opt.value = car.id;
+            opt.text = car.name;
+            if(car.id === currentCarId) opt.selected = true;
+            carSelectEl.appendChild(opt);
+        });
+    }
+}
+
+carSelectEl.addEventListener('change', () => {
+    currentCarId = carSelectEl.value;
+    localStorage.setItem('selectedCarId', currentCarId);
+});
+
+function renderCarList() {
+    const list = document.getElementById('cars-list');
+    list.innerHTML = "";
+    
+    if (userCars.length === 0) {
+        list.innerHTML = "<p>Ei autoja. Lisää ensimmäinen auto!</p>";
+        return;
+    }
+    
+    userCars.forEach(car => {
+        const div = document.createElement('div');
+        div.className = 'car-item';
+        div.innerHTML = `
+            <div>
+                <div class="car-title">${car.name}</div>
+                <div class="car-details">${car.plate || ''} • ${car.fuel || ''}</div>
+            </div>
+            <div class="car-actions">
+                <button class="delete-btn" onclick="deleteCar('${car.id}')">🗑</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+// Lisäyslomake
+const addCarForm = document.getElementById('add-car-form');
+const btnAddCar = document.getElementById('btn-add-car');
+const btnCancelCar = document.getElementById('btn-cancel-car');
+const btnSaveCar = document.getElementById('btn-save-car');
+
+btnAddCar.addEventListener('click', () => {
+    addCarForm.style.display = 'block';
+    btnAddCar.style.display = 'none';
+    document.getElementById('car-id').value = '';
+    document.getElementById('car-name').value = '';
+    document.getElementById('car-plate').value = '';
+    document.getElementById('car-tank').value = '';
+});
+
+btnCancelCar.addEventListener('click', () => {
+    addCarForm.style.display = 'none';
+    btnAddCar.style.display = 'block';
+});
+
+btnSaveCar.addEventListener('click', () => {
+    const name = document.getElementById('car-name').value;
+    if (!name) { alert("Anna autolle nimi!"); return; }
+    
+    const carData = {
+        name: name,
+        plate: document.getElementById('car-plate').value,
+        fuel: document.getElementById('car-fuel').value,
+        tank: document.getElementById('car-tank').value
+    };
+    
+    db.ref('users/' + currentUser.uid + '/cars').push().set(carData);
+    
+    addCarForm.style.display = 'none';
+    btnAddCar.style.display = 'block';
+});
+
+window.deleteCar = (id) => {
+    if(confirm("Poista auto?")) db.ref('users/' + currentUser.uid + '/cars/' + id).remove();
+};
 
 
 // --- HISTORIA ---
@@ -687,6 +804,8 @@ function renderHistoryList() {
             const subjectText = (drive.subject !== undefined) ? drive.subject : "";
             
             let tagsHtml = "";
+            // NÄYTÄ AUTO LISTASSA
+            if (drive.carName) tagsHtml += `<span class="tag">🚗 ${drive.carName}</span>`;
             if (drive.weather) tagsHtml += `<span class="tag">🌡️ ${drive.weather}</span>`;
             if (drive.drivingStyle) tagsHtml += `<span class="tag">🏎️ ${drive.drivingStyle}</span>`;
 
