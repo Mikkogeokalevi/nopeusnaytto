@@ -109,6 +109,9 @@ const dashDateEl = document.getElementById('dash-date');
 const dashHeadingEl = document.getElementById('dash-heading'); 
 const dashWeatherEl = document.getElementById('dash-weather');
 
+// VISUAALINEN KEHÄ
+const speedRingFill = document.getElementById('speed-ring-fill');
+
 const liveStatusBar = document.getElementById('live-status-bar');
 const liveStyleEl = document.getElementById('live-style-indicator');
 
@@ -135,7 +138,7 @@ const btnResume = document.getElementById('btn-resume');
 const btnStopRec = document.getElementById('btn-stop-rec');
 
 
-// --- AUTH (SÄHKÖPOSTI + GOOGLE) ---
+// --- AUTH ---
 auth.onAuthStateChanged((user) => {
     if (splashScreen) setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
 
@@ -148,7 +151,6 @@ auth.onAuthStateChanged((user) => {
         if (user.photoURL) {
             menuUserAvatar.src = user.photoURL;
         } else {
-            // Oletuskuva jos sähköpostikirjautuminen
             menuUserAvatar.src = "ajopaivakirja_logo.png";
         }
 
@@ -169,24 +171,20 @@ document.getElementById('btn-login').addEventListener('click', () => {
     auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert(e.message));
 });
 
-// Email Login (UUSI)
+// Email Login
 document.getElementById('btn-email-login').addEventListener('click', () => {
     const email = document.getElementById('email-input').value;
     const pass = document.getElementById('password-input').value;
     if(!email || !pass) { alert("Syötä sähköposti ja salasana."); return; }
-    
-    auth.signInWithEmailAndPassword(email, pass)
-        .catch(e => alert("Virhe kirjautumisessa: " + e.message));
+    auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Virhe kirjautumisessa: " + e.message));
 });
 
-// Email Register (UUSI)
+// Email Register
 document.getElementById('btn-email-register').addEventListener('click', () => {
     const email = document.getElementById('email-input').value;
     const pass = document.getElementById('password-input').value;
     if(!email || !pass) { alert("Syötä sähköposti ja salasana."); return; }
-    
-    auth.createUserWithEmailAndPassword(email, pass)
-        .catch(e => alert("Virhe rekisteröinnissä: " + e.message));
+    auth.createUserWithEmailAndPassword(email, pass).catch(e => alert("Virhe rekisteröinnissä: " + e.message));
 });
 
 document.getElementById('btn-logout').addEventListener('click', () => {
@@ -333,7 +331,6 @@ btnResume.addEventListener('click', () => {
 btnStopRec.addEventListener('click', () => {
     if (!isRecording) return;
     clearInterval(timerInterval);
-    
     window.removeEventListener('devicemotion', handleMotion);
     
     if (isPaused && pauseStartTime) {
@@ -419,7 +416,6 @@ btnDeleteCancel.addEventListener('click', () => {
     deleteKey = null;
 });
 
-// MUOKKAUS MODAL LOGIIKKA
 function openEditModal(key) {
     const drive = allHistoryData.find(d => d.key === key);
     if (!drive) return;
@@ -458,11 +454,8 @@ btnEditSave.addEventListener('click', () => {
             carName: carObj.name,
             carType: carObj.type
         };
-        
         db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update(updateData)
-            .then(() => {
-                editModal.style.display = 'none';
-            })
+            .then(() => { editModal.style.display = 'none'; })
             .catch(err => alert("Virhe tallennuksessa: " + err.message));
     }
 });
@@ -521,9 +514,7 @@ function updatePosition(position) {
 
     let currentAvg = 0;
 
-    if (currentDriveWeather === "") {
-        fetchWeather(lat, lng);
-    }
+    if (currentDriveWeather === "") fetchWeather(lat, lng);
 
     if (isRecording && !isPaused) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
@@ -547,14 +538,14 @@ function updatePosition(position) {
         
         if (views.map.style.display !== 'none') {
             let targetZoom = 18; 
-            
             if (currentCarType === 'bike') {
-                targetZoom = 19; 
+                if (speedKmh > 15) targetZoom = 17; else targetZoom = 19;
             } else {
                 if (speedKmh > 100) targetZoom = 14; 
-                else if (speedKmh > 60) targetZoom = 16;
+                else if (speedKmh > 70) targetZoom = 16;
+                else if (speedKmh > 40) targetZoom = 17;
+                else targetZoom = 18;
             }
-            
             if (map.getZoom() !== targetZoom) map.setView(newLatLng, targetZoom); else map.panTo(newLatLng);
             mapSpeedEl.innerText = speedKmh.toFixed(1);
             mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
@@ -595,7 +586,6 @@ function fetchWeather(lat, lon) {
                 else if (code <= 82) emoji = "🌧";
                 else if (code <= 86) emoji = "❄️";
                 else emoji = "⛈";
-                
                 currentDriveWeather = `${emoji} ${temp}°C`;
                 dashWeatherEl.innerText = currentDriveWeather;
             }
@@ -614,14 +604,22 @@ function handleMotion(event) {
     if (!acc) return;
     const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
     
+    // VISUAALISEN RENKAAN VÄRI
     if (magnitude > 3.5) {
         aggressiveEvents++;
         liveStyleEl.innerText = "Kiihdytys!";
         liveStyleEl.className = "style-badge style-red";
+        // Muuta rengas punaiseksi
+        speedRingFill.style.stroke = "#ff1744";
+        speedRingFill.style.filter = "drop-shadow(0 0 10px #ff1744)";
+        
         if (styleResetTimer) clearTimeout(styleResetTimer);
         styleResetTimer = setTimeout(() => {
             liveStyleEl.innerText = "Taloudellinen";
             liveStyleEl.className = "style-badge style-green";
+            // Palauta rengas siniseksi (tai teeman mukaiseksi)
+            speedRingFill.style.stroke = "var(--speed-color)";
+            speedRingFill.style.filter = "drop-shadow(0 0 5px var(--speed-color))";
         }, 3000);
     }
 }
@@ -712,7 +710,6 @@ function renderCarList() {
     });
 }
 
-// Lisäyslomake
 const addCarForm = document.getElementById('add-car-form');
 const btnAddCar = document.getElementById('btn-add-car');
 const btnCancelCar = document.getElementById('btn-cancel-car');
@@ -1028,6 +1025,21 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     dashDistEl.innerText = dist.toFixed(2); 
     dashAltEl.innerText = Math.round(alt);
     if(avg !== undefined) dashAvgEl.innerText = avg.toFixed(1);
+
+    // Päivitä visuaalinen rengas
+    updateSpeedRing(spd);
+}
+
+function updateSpeedRing(speed) {
+    // 0-140 km/h skaala
+    const maxScale = 140; 
+    let percent = speed / maxScale;
+    if(percent > 1) percent = 1;
+    
+    const circumference = 2 * Math.PI * 45; // r=45
+    const offset = circumference * (1 - percent);
+    
+    speedRingFill.style.strokeDashoffset = offset;
 }
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
