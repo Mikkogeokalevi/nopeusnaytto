@@ -1,4 +1,4 @@
-/* TÄMÄ ON SE TAIKASÄÄNTÖ, JOKA KORJAA LEVEYSONGELMAT */
+/* BOX-SIZING FIX */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -52,7 +52,15 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .login-content { text-align: center; padding: 20px; width: 100%; max-width: 400px; }
 .login-logo { width: 100px; height: 100px; margin-bottom: 20px; border-radius: 50%; border: 2px solid var(--accent-color); }
-.google-btn { background-color: #4285F4; margin-top: 20px; }
+.google-btn { background-color: #4285F4; margin-top: 5px; }
+
+/* UUSI: Login input tyyli */
+.login-input {
+    width: 100%; padding: 10px; margin-bottom: 10px;
+    border-radius: 8px; border: 1px solid var(--border-color);
+    background-color: rgba(255,255,255,0.1); color: var(--text-color);
+}
+.light-theme .login-input { background-color: #fff; color: #000; border: 1px solid #ccc; }
 
 .text-btn {
     background: none; border: none; color: var(--subtext-color);
@@ -123,7 +131,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 /* MITTARISTO */
 #dashboard-view { 
     align-items: center; justify-content: flex-start; 
-    padding: 10px 15px; /* Lisätty sivupaddingia */
+    padding: 10px 15px; 
     position: relative; overflow-y: auto; 
     overflow-x: hidden;
     width: 100%;
@@ -172,7 +180,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .stat-card {
     background-color: rgba(30, 30, 30, 0.8); backdrop-filter: blur(5px);
     padding: 10px; border-radius: 12px; text-align: center;
-    width: 100%; /* Varmistaa että kortti pysyy ruudussa */
+    width: 100%;
 }
 .light-theme .stat-card { background-color: rgba(255, 255, 255, 0.8); }
 .stat-label { font-size: 11px; color: var(--subtext-color); text-transform: uppercase; }
@@ -210,13 +218,13 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 1000; cursor: pointer;
 }
 
-/* HISTORIA & OHJEET - KORJATTU LEVEYS */
+/* HISTORIA & OHJEET */
 #log-list { width: 100%; max-width: 600px; margin: 0 auto; }
 
 .log-card {
     background-color: rgba(30, 30, 30, 0.9); border: 1px solid var(--border-color);
     border-radius: 12px; padding: 15px; margin-bottom: 15px;
-    width: 100%; /* Tärkeä */
+    width: 100%;
 }
 .light-theme .log-card { background-color: rgba(255, 255, 255, 0.95); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 .log-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
@@ -225,7 +233,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .delete-btn { background: none; border: none; color: #ff4444; font-size: 20px; padding: 5px; cursor: pointer; }
 .edit-btn { background: none; border: none; color: var(--accent-color); font-size: 20px; padding: 5px; cursor: pointer; margin-right:10px; }
 .log-stats { display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 15px; flex-wrap: wrap; }
-.subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.2); color: var(--text-color); }
+.subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.2); color: var(--text-color); box-sizing: border-box; }
 
 /* AUTO KORTTI */
 .car-item {
@@ -267,7 +275,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .light-theme .date-input { background-color: #fff; color: #000; }
 
-/* OHJE-OSIO (Korjattu leveys) */
+/* OHJE-OSIO */
 .help-section {
     max-width: 600px; margin: 0 auto 20px auto;
     background-color: rgba(30, 30, 30, 0.6); padding: 15px; border-radius: 8px;
