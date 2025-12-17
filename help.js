@@ -1,38 +1,38 @@
 const helpContent = `
-    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 25px; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px;">Käyttöopas 3.5</h2>
+    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 25px; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px;">Käyttöopas 3.6</h2>
     
     <div class="help-section">
         <h3>🚀 1. Käyttöönotto ja Yksityisyys</h3>
         <div class="help-step">
             <strong>Kirjautuminen:</strong>
-            Sovellus vaatii Google-kirjautumisen. Tämä luo sinulle henkilökohtaisen, salatun tilan pilvipalveluun.
-            <br><em>Miksi?</em> Jotta ajohistoriasi, autotallisi ja asetuksesi säilyvät, vaikka puhelin katoaisi tai vaihtuisit laitetta. Kukaan muu ei näe ajojasi.
+            Voit kirjautua sisään kahdella tavalla:
+            <br>1. <strong>Google-tili:</strong> Helppo ja nopea kirjautuminen.
+            <br>2. <strong>Sähköposti:</strong> Jos käytät Perhekalenteria tai haluat luoda erillisen tunnuksen, käytä sähköpostia ja salasanaa.
+            <br><em>Huom:</em> Kaikki tiedot tallentuvat turvallisesti pilveen omaan profiiliisi.
         </div>
         <div class="help-step">
             <strong>Vaaditut Luvat:</strong>
-            Jotta sovellus toimii täydellä teholla, se tarvitsee seuraavat oikeudet:
             <ul>
-                <li>📍 <strong>Sijainti (GPS):</strong> Pakollinen. Valitse "Salli käytön aikana" ja varmista, että "Tarkka sijainti" on päällä. Ilman tätä nopeus ja matka eivät toimi.</li>
-                <li>📱 <strong>Liikeanturit (Motion):</strong> Sovellus käyttää puhelimen kiihtyvyysanturia "Eco-mittarin" toimintaan. iPhone-käyttäjien tulee erikseen sallia tämä kysyttäessä.</li>
+                <li>📍 <strong>Sijainti (GPS):</strong> Pakollinen nopeuden ja matkan mittaukseen.</li>
+                <li>📱 <strong>Liikeanturit (Motion):</strong> Tarvitaan "Eco-mittarin" toimintaan autoillessa. Salli tämä kysyttäessä.</li>
             </ul>
         </div>
         <div class="help-step">
             <strong>Asennus (PWA):</strong>
-            Lisää sovellus kotivalikkoon saadaksesi parhaan käyttökokemuksen (koko näyttö, ei osoitepalkkeja).
+            Lisää sovellus kotivalikkoon (Add to Home Screen) saadaksesi parhaan käyttökokemuksen.
         </div>
     </div>
 
     <div class="help-section">
         <h3>⚙️ 2. Autotalli ja Ajoneuvot</h3>
         <div class="help-step">
-            Käy valikon kohdassa <strong>Asetukset (Tallit)</strong> luodaksesi profiilin kulkuneuvoillesi.
+            Käy valikon kohdassa <strong>Asetukset (Tallit)</strong> ja luo profiili kulkuneuvoillesi.
         </div>
         <div class="help-step">
             <strong>Autot vs. Polkupyörät:</strong>
-            Valitse ajoneuvon tyyppi lisätessäsi sitä.
             <ul>
-                <li>🚗 <strong>Auto:</strong> Eco-mittari on päällä ja analysoi ajotapaasi (jarrutukset/kiihdytykset). Kartta käyttää laajempaa zoomausta.</li>
-                <li>🚲 <strong>Polkupyörä:</strong> Eco-mittari on pois päältä. Kartta zoomaa lähelle (Zoom 19), paitsi jos vauhti nousee yli 15 km/h, jolloin se loitontaa hieman (Zoom 17).</li>
+                <li>🚗 <strong>Auto:</strong> Eco-mittari on päällä ja analysoi ajotapaasi (vihreä/punainen palkki). Kartta käyttää laajempaa zoomausta.</li>
+                <li>🚲 <strong>Polkupyörä:</strong> Eco-mittari on pois päältä. Kartta zoomaa hyvin lähelle (Zoom 19), jotta näet polut tarkasti.</li>
             </ul>
         </div>
     </div>
@@ -41,13 +41,7 @@ const helpContent = `
         <h3>⏱️ 3. Mittaristo ja Live-tiedot</h3>
         <div class="help-step">
             <strong>Datanäyttö:</strong>
-            <ul>
-                <li><strong>Nopeus:</strong> Reaaliaikainen GPS-nopeus.</li>
-                <li><strong>Huippu:</strong> Kyseisen tallennuksen suurin nopeus.</li>
-                <li><strong>Suunta:</strong> Kompassisuunta (esim. NE 45°).</li>
-                <li><strong>Korkeus:</strong> Korkeus merenpinnasta (m).</li>
-                <li><strong>Sää:</strong> Lähin säähavainto haetaan automaattisesti.</li>
-            </ul>
+            Näet reaaliajassa nopeuden, huippunopeuden, suunnan, korkeuden ja sään.
         </div>
         <div class="help-step">
             <strong>🏎️ Eco-mittari (Vain autoille):</strong>
@@ -64,8 +58,8 @@ const helpContent = `
         </div>
         <div class="help-step">
             <strong>Ongelmia tausta-ajossa?</strong>
-            Jos poistut sovelluksesta (esim. WhatsAppiin) kesken ajon, jotkut puhelimet saattavat katkaista GPS:n virransäästön vuoksi.
-            <br><em>Vinkki:</em> Sovellus yrittää nyt paikata katkokset vetämällä suoran viivan, mutta tarkin reitti saadaan pitämällä sovellus auki.
+            Jos poistut sovelluksesta (esim. WhatsAppiin) kesken ajon, jotkut puhelimet katkaisevat GPS:n virransäästön vuoksi.
+            <br><em>Vinkki:</em> Sovellus yrittää paikata katkokset, mutta tarkin reitti saadaan pitämällä sovellus auki.
         </div>
         <div class="help-step">
             <strong>Lopetus:</strong>
@@ -88,31 +82,8 @@ const helpContent = `
         </div>
     </div>
 
-    <div class="help-section">
-        <h3>🗺️ 6. Kartta ja Zoom-tasot</h3>
-        <div class="help-step">
-            Kartta elää nopeutesi mukaan:
-        </div>
-        <div class="help-step">
-            <strong>🚗 Autolla:</strong>
-            <ul>
-                <li>0-40 km/h: <strong>Zoom 18</strong> (Lähikuva)</li>
-                <li>40-70 km/h: <strong>Zoom 17</strong></li>
-                <li>70-100 km/h: <strong>Zoom 16</strong></li>
-                <li>Yli 100 km/h: <strong>Zoom 14</strong> (Yleiskuva)</li>
-            </ul>
-        </div>
-        <div class="help-step">
-            <strong>🚲 Polkupyörällä:</strong>
-            <ul>
-                <li>0-15 km/h: <strong>Zoom 19</strong> (Tarkka polku-näkymä)</li>
-                <li>Yli 15 km/h: <strong>Zoom 17</strong> (Hieman loitompi)</li>
-            </ul>
-        </div>
-    </div>
-
     <div style="text-align: center; margin-top: 40px; color: #666; font-size: 12px; padding-bottom: 30px;">
-        Ajopäiväkirja Pro v3.5 &copy; 2025
+        Ajopäiväkirja Pro v3.6 &copy; 2025
     </div>
 `;
 
