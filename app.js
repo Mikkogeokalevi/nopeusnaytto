@@ -505,9 +505,7 @@ function updatePosition(position) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
             const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
-            // KORJAUS WHATSAPP-ONGELMAAN:
-            // Hyväksytään iso hyppäys (alle 50km), jos ollaan oltu "poissa".
-            // Poistettu tiukka 2.0 km rajoitus tai kasvatettu sitä reilusti.
+            // KORJAUS: Hyväksy jopa 50km hyppy (WhatsApp-katkojen varalta)
             if ((speedKmh > 3 || dist > 0.02) && dist < 50.0) totalDistance += dist;
         }
         
@@ -525,13 +523,20 @@ function updatePosition(position) {
         marker.setLatLng(newLatLng);
         
         if (views.map.style.display !== 'none') {
+            
+            // --- UUSI ZOOM LOGIIKKA (Pyydetyt arvot) ---
             let targetZoom = 18; 
             
             if (currentCarType === 'bike') {
-                targetZoom = 19; 
+                // PYÖRÄ
+                if (speedKmh > 15) targetZoom = 17; // Vauhdikas pyöräily
+                else targetZoom = 19;               // Hidas pyöräily / pysähdys
             } else {
-                if (speedKmh > 100) targetZoom = 14; 
-                else if (speedKmh > 60) targetZoom = 16;
+                // AUTO
+                if (speedKmh > 100) targetZoom = 14;      // Yli 100
+                else if (speedKmh > 70) targetZoom = 16;  // 70-100
+                else if (speedKmh > 40) targetZoom = 17;  // 40-70
+                else targetZoom = 18;                     // 0-40 (Lähikuva)
             }
             
             if (map.getZoom() !== targetZoom) map.setView(newLatLng, targetZoom); else map.panTo(newLatLng);
@@ -873,7 +878,7 @@ function renderHistoryList() {
             let start = null;
             let dateStr = "Aika puuttuu";
             
-            // AIKAKORJAUS: Näytetään nyt "14:00 - 14:45"
+            // --- UUSI AIKA-NÄYTTÖ (14:00 - 14:45) ---
             if (drive.startTime) {
                 start = new Date(drive.startTime);
                 if (!isNaN(start.getTime())) {
