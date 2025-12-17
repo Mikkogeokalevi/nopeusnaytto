@@ -3,29 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ajopäiväkirja Pro</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v3.8</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="ajopaivakirja_logo.png">
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=3.3">
+    <link rel="stylesheet" href="style.css?v=3.8">
 </head>
 <body>
 
     <div id="splash-screen">
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png" alt="Logo" class="splash-logo">
-            <h1>Ajopäiväkirja</h1>
-            <p>Ladataan...</p>
+            <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
+            <p style="opacity:0.7; font-size:12px;">Versio 3.8</p>
+            <p>Ladataan moottoreita...</p>
         </div>
     </div>
 
     <div id="login-view" style="display:none;">
         <div class="login-content">
             <img src="ajopaivakirja_logo.png" alt="Logo" class="login-logo">
-            <h2>Tervetuloa</h2>
+            <h2>Tervetuloa Mikkokalevin<br>Ajopäiväkirjaan</h2>
             <p>Kirjaudu sisään tallentaaksesi ajot.</p>
             
             <div style="margin-top: 20px;">
@@ -69,7 +70,10 @@
         <div id="main-menu" class="menu-dropdown" style="display: none;">
             <div class="menu-header">
                 <img id="user-photo" class="menu-user-avatar" src="ajopaivakirja_logo.png" alt="User">
-                <span id="user-name" class="menu-user-name">Käyttäjä</span>
+                <div>
+                    <span id="user-name" class="menu-user-name">Käyttäjä</span>
+                    <div style="font-size:10px; opacity:0.7;">Mikkokalevin Ajopäiväkirja Pro</div>
+                </div>
             </div>
             <div class="menu-items">
                 <button id="nav-dashboard" class="menu-item active-menu">🏎️ Mittaristo</button>
@@ -91,9 +95,16 @@
                     <span id="live-style-indicator" class="style-badge style-green">Taloudellinen</span>
                 </div>
 
-                <div class="huge-speed">
-                    <span id="dash-speed">0.0</span>
-                    <span class="huge-unit">km/h</span>
+                <div class="speed-ring-wrapper">
+                    <svg class="speed-ring-svg" viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="45" />
+                        <circle id="speed-ring-fill" class="ring-fill" cx="50" cy="50" r="45" />
+                    </svg>
+                    
+                    <div class="huge-speed-container">
+                        <span id="dash-speed">0.0</span>
+                        <span class="huge-unit">km/h</span>
+                    </div>
                 </div>
                 
                 <div class="stats-grid">
@@ -324,7 +335,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
-    <script src="app.js?v=3.3"></script>
+    <script src="app.js?v=3.8"></script>
     <script src="help.js"></script>
 </body>
 </html>
