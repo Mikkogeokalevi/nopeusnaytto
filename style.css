@@ -163,58 +163,22 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 #side-tap-left { left: 0; border-radius: 0 10px 10px 0; } 
 .side-tap-zone:active { width: 45px; background-color: var(--accent-color); color: #fff; }
 
-/* UUSI: VISUAALINEN NOPEUSKEHÄ (SPEED RING) */
-.speed-ring-wrapper {
-    position: relative;
-    width: 250px;
-    height: 250px;
-    margin: 10px auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.speed-ring-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    transform: rotate(-90deg); /* Aloita ylhäältä */
-    overflow: visible;
-}
-
-.ring-bg {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.1);
-    stroke-width: 6;
-}
-.light-theme .ring-bg { stroke: rgba(0, 0, 0, 0.1); }
-
-.ring-fill {
-    fill: none;
-    stroke: var(--speed-color);
-    stroke-width: 6;
-    stroke-linecap: round;
-    stroke-dasharray: 283; /* 2 * PI * r (45) */
-    stroke-dashoffset: 283; /* Täysi = piilossa */
-    transition: stroke-dashoffset 0.5s ease-out, stroke 0.3s;
-    filter: drop-shadow(0 0 5px var(--speed-color)); /* Hehku */
-}
-
-/* NOPEUS LUKEMA KESKELLÄ */
+/* ISO NOPEUS (PALAUTETTU) */
 .huge-speed-container {
     text-align: center;
-    z-index: 10;
+    margin: 20px 0;
 }
 
 .huge-speed {
-    font-size: 80px; font-weight: bold; color: var(--speed-color); line-height: 1;
+    font-size: 110px; /* JÄTTIMÄINEN */
+    font-weight: bold; 
+    color: var(--speed-color); 
+    line-height: 1;
     font-variant-numeric: tabular-nums;
     text-shadow: 0 0 15px rgba(41, 121, 255, 0.3);
-    margin: 0;
+    transition: color 0.3s; /* Pehmeä värinvaihto */
 }
-.huge-unit { font-size: 18px; color: var(--subtext-color); font-weight: normal; display: block; text-align: center; margin-top:-5px; }
+.huge-unit { font-size: 24px; color: var(--subtext-color); font-weight: normal; display: block; text-align: center; margin-top:-10px; }
 
 /* GRIDI */
 .stats-grid { 
