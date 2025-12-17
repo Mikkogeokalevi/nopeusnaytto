@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=3.2">
+    <link rel="stylesheet" href="style.css?v=3.3">
 </head>
 <body>
 
@@ -26,9 +26,27 @@
         <div class="login-content">
             <img src="ajopaivakirja_logo.png" alt="Logo" class="login-logo">
             <h2>Tervetuloa</h2>
-            <p>Kirjaudu sisään hallitaksesi autojasi ja ajojasi.</p>
-            <button id="btn-login" class="action-btn google-btn">Kirjaudu Googlella</button>
-            <button id="btn-login-help" class="text-btn" style="margin-top: 20px;">❓ Lue käyttöohjeet</button>
+            <p>Kirjaudu sisään tallentaaksesi ajot.</p>
+            
+            <div style="margin-top: 20px;">
+                <input type="email" id="email-input" class="login-input" placeholder="Sähköposti">
+                <input type="password" id="password-input" class="login-input" placeholder="Salasana">
+                
+                <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+                    <button id="btn-email-login" class="action-btn blue-btn" style="width:auto; flex:1;">Kirjaudu</button>
+                    <button id="btn-email-register" class="action-btn" style="background-color:#555; width:auto; flex:1;">Luo tunnus</button>
+                </div>
+            </div>
+
+            <div style="margin: 20px 0; color:var(--subtext-color); font-size:14px;">— TAI —</div>
+
+            <button id="btn-login" class="action-btn google-btn">
+                Kirjaudu Googlella
+            </button>
+            
+            <button id="btn-login-help" class="text-btn" style="margin-top: 20px;">
+                ❓ Lue käyttöohjeet
+            </button>
         </div>
     </div>
 
@@ -280,7 +298,7 @@
             <div style="margin-bottom:20px; text-align:left;">
                 <label>Ajoneuvo:</label>
                 <select id="edit-car-select" class="subject-input">
-                    </select>
+                </select>
             </div>
 
             <div style="display:flex; gap:10px; justify-content:center;">
@@ -306,7 +324,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
-    <script src="app.js?v=3.2"></script>
+    <script src="app.js?v=3.3"></script>
     <script src="help.js"></script>
 </body>
 </html>
