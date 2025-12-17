@@ -1,7 +1,5 @@
 /* BOX-SIZING FIX */
-*, *::before, *::after {
-    box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 :root {
     --bg-color: #121212;
@@ -164,19 +162,10 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .side-tap-zone:active { width: 45px; background-color: var(--accent-color); color: #fff; }
 
 /* ISO NOPEUS */
-.huge-speed-container {
-    text-align: center;
-    margin: 20px 0;
-}
-
+.huge-speed-container { text-align: center; margin: 20px 0; }
 .huge-speed {
-    font-size: 110px;
-    font-weight: bold; 
-    color: var(--speed-color); 
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 0 15px rgba(41, 121, 255, 0.3);
-    transition: color 0.3s;
+    font-size: 110px; font-weight: bold; color: var(--speed-color); line-height: 1;
+    font-variant-numeric: tabular-nums; text-shadow: 0 0 15px rgba(41, 121, 255, 0.3); transition: color 0.3s;
 }
 .huge-unit { font-size: 24px; color: var(--subtext-color); font-weight: normal; display: block; text-align: center; margin-top:-10px; }
 
@@ -241,15 +230,16 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .log-date { font-size: 14px; color: var(--subtext-color); font-weight: bold; }
 .delete-btn { background: none; border: none; color: #ff4444; font-size: 20px; padding: 5px; cursor: pointer; }
 .edit-btn { background: none; border: none; color: var(--accent-color); font-size: 20px; padding: 5px; cursor: pointer; margin-right:10px; }
+/* UUSI: MAP BUTTON */
+.map-btn { background: none; border: none; color: #fbc02d; font-size: 20px; padding: 5px; cursor: pointer; margin-right: 10px; }
+
 .log-stats { display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 15px; flex-wrap: wrap; }
 .subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.2); color: var(--text-color); box-sizing: border-box; }
 
-/* TILASTOT & GRAAFIT */
+/* TILASTOT */
 .chart-container {
-    background-color: rgba(30, 30, 30, 0.8);
-    border-radius: 12px; padding: 15px;
-    border: 1px solid var(--border-color);
-    width: 100%; max-width: 600px; margin: 0 auto;
+    background-color: rgba(30, 30, 30, 0.8); border-radius: 12px; padding: 15px;
+    border: 1px solid var(--border-color); width: 100%; max-width: 600px; margin: 0 auto;
 }
 .light-theme .chart-container { background-color: rgba(255, 255, 255, 0.9); }
 .chart-container h3 { text-align: center; color: var(--accent-color); margin-top: 0; }
