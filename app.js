@@ -29,7 +29,7 @@ const views = {
     dashboard: document.getElementById('dashboard-view'),
     map: document.getElementById('map-view'),
     history: document.getElementById('history-view'),
-    settings: document.getElementById('settings-view'), // UUSI
+    settings: document.getElementById('settings-view'),
     help: document.getElementById('help-view')
 };
 
@@ -37,7 +37,7 @@ const navBtns = {
     dashboard: document.getElementById('nav-dashboard'),
     map: document.getElementById('nav-map'),
     history: document.getElementById('nav-history'),
-    settings: document.getElementById('nav-settings'), // UUSI
+    settings: document.getElementById('nav-settings'),
     help: document.getElementById('nav-help')
 };
 
@@ -46,7 +46,7 @@ const saveModal = document.getElementById('save-modal');
 const modalDistEl = document.getElementById('modal-dist');
 const modalTimeEl = document.getElementById('modal-time');
 const modalSubjectEl = document.getElementById('modal-subject');
-const modalCarNameEl = document.getElementById('modal-car-name'); // UUSI
+const modalCarNameEl = document.getElementById('modal-car-name');
 const btnModalSave = document.getElementById('btn-modal-save');
 const btnModalCancel = document.getElementById('btn-modal-cancel');
 
@@ -82,9 +82,10 @@ let styleResetTimer = null;
 
 let allHistoryData = []; 
 
-// AUTOT (UUSI)
+// AUTOT & PYÖRÄT
 let userCars = [];
-let currentCarId = "default";
+let currentCarId = "all"; // Oletus: näytä kaikki (historiassa), tallennuksessa vaaditaan valinta
+let currentCarType = "car"; // Oletus
 const carSelectEl = document.getElementById('car-select');
 
 // UI Elementit
@@ -100,7 +101,6 @@ const dashDateEl = document.getElementById('dash-date');
 const dashHeadingEl = document.getElementById('dash-heading'); 
 const dashWeatherEl = document.getElementById('dash-weather');
 
-// Live Status Bar
 const liveStatusBar = document.getElementById('live-status-bar');
 const liveStyleEl = document.getElementById('live-style-indicator');
 
@@ -119,7 +119,6 @@ const customFilterContainer = document.getElementById('custom-filter-container')
 const filterStart = document.getElementById('filter-start');
 const filterEnd = document.getElementById('filter-end');
 
-// Kontrollit
 const btnStartRec = document.getElementById('btn-start-rec');
 const activeRecBtns = document.getElementById('active-rec-btns');
 const btnPause = document.getElementById('btn-pause');
@@ -141,7 +140,6 @@ auth.onAuthStateChanged((user) => {
             menuUserAvatar.src = user.photoURL;
         }
 
-        // LATAA AUTOT KUN KÄYTTÄJÄ KIRJAUTUU
         loadCars();
 
         if (views.map.style.display !== 'none') setTimeout(() => map.invalidateSize(), 200);
@@ -207,14 +205,13 @@ function switchView(viewName) {
 
     if (viewName === 'map') setTimeout(() => map.invalidateSize(), 100);
     if (viewName === 'history') loadHistory();
-    // Jos avataan asetukset, varmista että lista on ajan tasalla
     if (viewName === 'settings') renderCarList();
 }
 
 navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
 navBtns.map.addEventListener('click', () => switchView('map'));
 navBtns.history.addEventListener('click', () => switchView('history'));
-navBtns.settings.addEventListener('click', () => switchView('settings')); // UUSI
+navBtns.settings.addEventListener('click', () => switchView('settings'));
 navBtns.help.addEventListener('click', () => switchView('help'));
 
 document.getElementById('side-tap-left').addEventListener('click', () => switchView('map'));
@@ -260,9 +257,15 @@ btnStartRec.addEventListener('click', () => {
     aggressiveEvents = 0;
     
     updateDashboardUI(0, 0, 0, 0, 0, 0);
-    liveStatusBar.style.opacity = '1'; 
-    liveStyleEl.innerText = "Taloudellinen";
-    liveStyleEl.className = "style-badge style-green";
+    
+    // ECO-MITTARI LOGIIKKA: Jos pyörä, älä näytä
+    if (currentCarType === 'bike') {
+        liveStatusBar.style.opacity = '0';
+    } else {
+        liveStatusBar.style.opacity = '1'; 
+        liveStyleEl.innerText = "Taloudellinen";
+        liveStyleEl.className = "style-badge style-green";
+    }
     
     btnStartRec.style.display = 'none';
     activeRecBtns.style.display = 'flex';
@@ -310,12 +313,20 @@ btnStopRec.addEventListener('click', () => {
     const durationHours = activeDurationMs / (1000 * 60 * 60);
     let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
 
-    let styleLabel = "Tasainen";
-    if (aggressiveEvents > 5) styleLabel = "Reipas";
-    if (aggressiveEvents > 15) styleLabel = "Aggressiivinen";
+    let styleLabel = "";
+    // Vain autoille lasketaan ajotapa
+    if (currentCarType !== 'bike') {
+        styleLabel = "Tasainen";
+        if (aggressiveEvents > 5) styleLabel = "Reipas";
+        if (aggressiveEvents > 15) styleLabel = "Aggressiivinen";
+    }
 
-    // Hae valitun auton nimi
-    const selectedCarName = carSelectEl.options[carSelectEl.selectedIndex].text;
+    // Hae valitun auton nimi (jos "Kaikki" valittu, tallennetaan silti "Ei määritelty" tai oletus)
+    let selectedCarName = "Muu ajoneuvo";
+    if (currentCarId !== 'all') {
+        const c = userCars.find(x => x.id === currentCarId);
+        if(c) selectedCarName = c.name;
+    }
 
     tempDriveData = {
         type: 'end_drive',
@@ -328,15 +339,16 @@ btnStopRec.addEventListener('click', () => {
         subject: "",
         weather: currentDriveWeather,
         drivingStyle: styleLabel,
-        carName: selectedCarName, // TALLENNETAAN AUTO
-        carId: currentCarId
+        carName: selectedCarName, 
+        carId: currentCarId,
+        carType: currentCarType // Tallenna myös tyyppi (auto/bike)
     };
 
     const mins = Math.floor(activeDurationMs / 60000);
     modalDistEl.innerText = totalDistance.toFixed(2) + " km";
     modalTimeEl.innerText = mins + " min";
     modalSubjectEl.value = ""; 
-    modalCarNameEl.innerText = selectedCarName; // Näytä modalissa
+    modalCarNameEl.innerText = selectedCarName; 
 
     saveModal.style.display = 'flex';
     modalSubjectEl.focus();
@@ -454,9 +466,15 @@ function updatePosition(position) {
         marker.setLatLng(newLatLng);
         
         if (views.map.style.display !== 'none') {
+            // RÄÄTÄLÖITY ZOOM PYÖRÄLLE
             let targetZoom = 18; 
-            if (speedKmh > 100) targetZoom = 14; 
-            else if (speedKmh > 60) targetZoom = 16;
+            
+            if (currentCarType === 'bike') {
+                targetZoom = 19; // Lähempi zoom pyörälle
+            } else {
+                if (speedKmh > 100) targetZoom = 14; 
+                else if (speedKmh > 60) targetZoom = 16;
+            }
             
             if (map.getZoom() !== targetZoom) map.setView(newLatLng, targetZoom); else map.panTo(newLatLng);
             mapSpeedEl.innerText = speedKmh.toFixed(1);
@@ -508,6 +526,9 @@ function fetchWeather(lat, lon) {
 
 function handleMotion(event) {
     if (!isRecording || isPaused) return;
+    // Jos on pyörä, ei mitata G-voimia (koska tärisee liikaa)
+    if (currentCarType === 'bike') return;
+
     const now = Date.now();
     if (now - lastMotionTime < 500) return; 
     lastMotionTime = now;
@@ -527,7 +548,7 @@ function handleMotion(event) {
     }
 }
 
-// --- AUTOTALLI LOGIIKKA (UUSI) ---
+// --- AUTOTALLI LOGIIKKA ---
 function loadCars() {
     if(!currentUser) return;
     
@@ -539,37 +560,55 @@ function loadCars() {
                 userCars.push({ id: child.key, ...child.val() });
             });
         }
-        updateCarSelect(); // Päivitä yläpalkin valikko
-        renderCarList(); // Päivitä asetuslistaus
+        updateCarSelect(); 
+        renderCarList(); 
     });
     
-    // Lataa valittu auto localStoragesta
+    // Lataa valittu auto
     const stored = localStorage.getItem('selectedCarId');
-    if (stored) currentCarId = stored;
+    if (stored) {
+        currentCarId = stored;
+        updateCarTypeVariable();
+    }
+}
+
+function updateCarTypeVariable() {
+    const c = userCars.find(x => x.id === currentCarId);
+    if (c) {
+        currentCarType = c.type || "car";
+    } else {
+        currentCarType = "car";
+    }
 }
 
 function updateCarSelect() {
     carSelectEl.innerHTML = "";
     
-    if (userCars.length === 0) {
+    const allOpt = document.createElement('option');
+    allOpt.value = 'all';
+    allOpt.text = "Kaikki ajoneuvot";
+    carSelectEl.appendChild(allOpt);
+
+    userCars.forEach(car => {
         const opt = document.createElement('option');
-        opt.value = 'default';
-        opt.text = "Oma Auto";
+        opt.value = car.id;
+        // Lisää emoji nimeen
+        const prefix = (car.type === 'bike') ? "🚲 " : "🚗 ";
+        opt.text = prefix + car.name;
+        if(car.id === currentCarId) opt.selected = true;
         carSelectEl.appendChild(opt);
-    } else {
-        userCars.forEach(car => {
-            const opt = document.createElement('option');
-            opt.value = car.id;
-            opt.text = car.name;
-            if(car.id === currentCarId) opt.selected = true;
-            carSelectEl.appendChild(opt);
-        });
-    }
+    });
 }
 
 carSelectEl.addEventListener('change', () => {
     currentCarId = carSelectEl.value;
     localStorage.setItem('selectedCarId', currentCarId);
+    updateCarTypeVariable();
+    
+    // Jos ollaan historiassa, päivitä lista heti
+    if (views.history.style.display !== 'none') {
+        loadHistory();
+    }
 });
 
 function renderCarList() {
@@ -577,17 +616,18 @@ function renderCarList() {
     list.innerHTML = "";
     
     if (userCars.length === 0) {
-        list.innerHTML = "<p>Ei autoja. Lisää ensimmäinen auto!</p>";
+        list.innerHTML = "<p>Ei ajoneuvoja. Lisää ensimmäinen!</p>";
         return;
     }
     
     userCars.forEach(car => {
+        const icon = (car.type === 'bike') ? "🚲" : "🚗";
         const div = document.createElement('div');
         div.className = 'car-item';
         div.innerHTML = `
             <div>
-                <div class="car-title">${car.name}</div>
-                <div class="car-details">${car.plate || ''} • ${car.fuel || ''}</div>
+                <div class="car-title">${icon} ${car.name}</div>
+                <div class="car-details">${car.plate || ''} ${car.fuel || ''}</div>
             </div>
             <div class="car-actions">
                 <button class="delete-btn" onclick="deleteCar('${car.id}')">🗑</button>
@@ -602,6 +642,17 @@ const addCarForm = document.getElementById('add-car-form');
 const btnAddCar = document.getElementById('btn-add-car');
 const btnCancelCar = document.getElementById('btn-cancel-car');
 const btnSaveCar = document.getElementById('btn-save-car');
+const carTypeSelect = document.getElementById('car-type');
+const carSpecificFields = document.getElementById('car-specific-fields');
+
+// Piilota/Näytä autokentät tyypin mukaan
+window.toggleCarFields = () => {
+    if (carTypeSelect.value === 'bike') {
+        carSpecificFields.style.display = 'none';
+    } else {
+        carSpecificFields.style.display = 'block';
+    }
+};
 
 btnAddCar.addEventListener('click', () => {
     addCarForm.style.display = 'block';
@@ -610,6 +661,8 @@ btnAddCar.addEventListener('click', () => {
     document.getElementById('car-name').value = '';
     document.getElementById('car-plate').value = '';
     document.getElementById('car-tank').value = '';
+    carTypeSelect.value = 'car';
+    toggleCarFields();
 });
 
 btnCancelCar.addEventListener('click', () => {
@@ -619,13 +672,16 @@ btnCancelCar.addEventListener('click', () => {
 
 btnSaveCar.addEventListener('click', () => {
     const name = document.getElementById('car-name').value;
-    if (!name) { alert("Anna autolle nimi!"); return; }
+    if (!name) { alert("Anna ajoneuvolle nimi!"); return; }
+    
+    const type = carTypeSelect.value;
     
     const carData = {
         name: name,
-        plate: document.getElementById('car-plate').value,
-        fuel: document.getElementById('car-fuel').value,
-        tank: document.getElementById('car-tank').value
+        type: type,
+        plate: (type === 'car') ? document.getElementById('car-plate').value : "",
+        fuel: (type === 'car') ? document.getElementById('car-fuel').value : "",
+        tank: (type === 'car') ? document.getElementById('car-tank').value : ""
     };
     
     db.ref('users/' + currentUser.uid + '/cars').push().set(carData);
@@ -635,7 +691,7 @@ btnSaveCar.addEventListener('click', () => {
 });
 
 window.deleteCar = (id) => {
-    if(confirm("Poista auto?")) db.ref('users/' + currentUser.uid + '/cars/' + id).remove();
+    if(confirm("Poista ajoneuvo?")) db.ref('users/' + currentUser.uid + '/cars/' + id).remove();
 };
 
 
@@ -752,6 +808,14 @@ function renderHistoryList() {
 
     allHistoryData.forEach(drive => {
         try {
+            // TARKISTA AJONEUVO-SUODATUS (Yläpalkin valinta)
+            if (currentCarId !== 'all') {
+                // Jos ajossa on carId, verrataan sitä
+                if (drive.carId && drive.carId !== currentCarId) return;
+                // Vanhat ajot ilman carId:tä näkyvät vain "Kaikki"-näkymässä tai oletuksessa
+                if (!drive.carId) return;
+            }
+
             let start = null;
             let dateStr = "Aika puuttuu";
             
@@ -804,8 +868,12 @@ function renderHistoryList() {
             const subjectText = (drive.subject !== undefined) ? drive.subject : "";
             
             let tagsHtml = "";
-            // NÄYTÄ AUTO LISTASSA
-            if (drive.carName) tagsHtml += `<span class="tag">🚗 ${drive.carName}</span>`;
+            
+            // Näytä ikoni tyypin mukaan
+            if (drive.carName) {
+                const icon = (drive.carType === 'bike') ? "🚲" : "🚗";
+                tagsHtml += `<span class="tag">${icon} ${drive.carName}</span>`;
+            }
             if (drive.weather) tagsHtml += `<span class="tag">🌡️ ${drive.weather}</span>`;
             if (drive.drivingStyle) tagsHtml += `<span class="tag">🏎️ ${drive.drivingStyle}</span>`;
 
@@ -833,7 +901,7 @@ function renderHistoryList() {
     });
 
     if (renderCount === 0) {
-        logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei ajoja valittuna ajanjaksona.</p>";
+        logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei ajoja valittuna ajanjaksona / ajoneuvolla.</p>";
         historySummaryEl.style.display = 'none';
     } else {
         sumKmEl.innerText = totalKm.toFixed(1);
