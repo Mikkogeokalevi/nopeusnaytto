@@ -75,7 +75,7 @@ let lastLatLng = null;
 let currentDriveWeather = ""; 
 let aggressiveEvents = 0;
 let lastMotionTime = 0;
-let styleResetTimer = null; // Ajastin vihreäksi palautumiseen
+let styleResetTimer = null; 
 
 let allHistoryData = []; 
 
@@ -89,10 +89,11 @@ const dashAvgEl = document.getElementById('dash-avg');
 const dashCoordsEl = document.getElementById('dash-coords');
 const dashClockEl = document.getElementById('dash-clock');
 const dashDateEl = document.getElementById('dash-date'); 
+const dashHeadingEl = document.getElementById('dash-heading'); // UUSI
+const dashWeatherEl = document.getElementById('dash-weather'); // UUSI PAIKKA
 
-// UUSI: Live Status Bar
+// Live Status Bar (Vain Eco)
 const liveStatusBar = document.getElementById('live-status-bar');
-const liveWeatherEl = document.getElementById('live-weather');
 const liveStyleEl = document.getElementById('live-style-indicator');
 
 const mapSpeedEl = document.getElementById('map-speed');
@@ -244,12 +245,11 @@ btnStartRec.addEventListener('click', () => {
     totalDistance = 0;
     
     // Nollaa
-    currentDriveWeather = "";
     aggressiveEvents = 0;
     
     // Nollaa Live UI
     updateDashboardUI(0, 0, 0, 0, 0, 0);
-    liveStatusBar.style.opacity = '1'; // Näytä paneeli
+    liveStatusBar.style.opacity = '1'; 
     liveStyleEl.innerText = "Taloudellinen";
     liveStyleEl.className = "style-badge style-green";
     
@@ -323,8 +323,6 @@ btnStopRec.addEventListener('click', () => {
 
     saveModal.style.display = 'flex';
     modalSubjectEl.focus();
-    
-    // Piilota live paneeli
     liveStatusBar.style.opacity = '0';
 });
 
@@ -344,7 +342,6 @@ btnModalCancel.addEventListener('click', () => {
     }
 });
 
-// Poisto Modal
 function openDeleteModal(key) {
     deleteKey = key;
     deleteModal.style.display = 'flex';
@@ -374,7 +371,7 @@ function resetRecordingUI() {
     statusEl.style.color = "var(--subtext-color)";
     updateDashboardUI(0, 0, 0, 0, 0, 0);
     dashTimeEl.innerText = "00:00";
-    liveStatusBar.style.opacity = '0'; // Varmista piilotus
+    liveStatusBar.style.opacity = '0'; 
 }
 
 function stopGPSAndRec() {
@@ -408,18 +405,19 @@ function updatePosition(position) {
     const lat = position.coords.latitude;
     const lng = position.coords.longitude;
     const alt = position.coords.altitude || 0;
+    const heading = position.coords.heading; // Suunta
     const speedMs = position.coords.speed || 0; 
     let speedKmh = speedMs * 3.6;
     if (speedKmh < 1.0) speedKmh = 0;
 
     let currentAvg = 0;
 
-    if (isRecording && !isPaused) {
-        // HAE SÄÄ KERRAN
-        if (currentDriveWeather === "") {
-            fetchWeather(lat, lng);
-        }
+    // HAE SÄÄ HETI (kerran)
+    if (currentDriveWeather === "") {
+        fetchWeather(lat, lng);
+    }
 
+    if (isRecording && !isPaused) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
             const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
@@ -440,17 +438,34 @@ function updatePosition(position) {
         marker.setLatLng(newLatLng);
         
         if (views.map.style.display !== 'none') {
-            let targetZoom = 17; 
-            if (speedKmh > 90) targetZoom = 13; else if (speedKmh > 50) targetZoom = 15;
+            // TIUKEMPI ZOOM LOGIIKKA
+            let targetZoom = 18; // Oletus: Lähikuva
+            if (speedKmh > 100) targetZoom = 14; 
+            else if (speedKmh > 60) targetZoom = 16;
+            
             if (map.getZoom() !== targetZoom) map.setView(newLatLng, targetZoom); else map.panTo(newLatLng);
             mapSpeedEl.innerText = speedKmh.toFixed(1);
             mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
         }
     }
 
+    // PÄIVITÄ UI
     updateDashboardUI(speedKmh, maxSpeed, totalDistance, null, alt, currentAvg);
     dashCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
+    
+    // SUUNTA LOGIIKKA
+    if (heading !== null && !isNaN(heading) && speedKmh > 3) {
+        dashHeadingEl.innerText = `${getCardinalDirection(heading)} ${Math.round(heading)}°`;
+    } else if (dashHeadingEl.innerText === "--") {
+        dashHeadingEl.innerText = "--";
+    }
+
     if (isGPSActive && wakeLock === null) requestWakeLock();
+}
+
+function getCardinalDirection(angle) {
+    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    return directions[Math.round(angle / 45) % 8];
 }
 
 // --- SÄÄ ---
@@ -474,13 +489,13 @@ function fetchWeather(lat, lon) {
                 else emoji = "⛈";
                 
                 currentDriveWeather = `${emoji} ${temp}°C`;
-                liveWeatherEl.innerText = currentDriveWeather; // Päivitä live-näyttö
+                dashWeatherEl.innerText = currentDriveWeather; // Näytä mittaristossa
             }
         })
         .catch(e => console.error(e));
 }
 
-// --- LIVE AJOTAPA (VÄRIEN VAIHTO) ---
+// --- LIVE AJOTAPA ---
 function handleMotion(event) {
     if (!isRecording || isPaused) return;
 
@@ -493,15 +508,11 @@ function handleMotion(event) {
 
     const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
     
-    // Jos kiihdytys on voimakas
     if (magnitude > 3.5) {
         aggressiveEvents++;
-        
-        // VAIHDA LIVE-NÄYTTÖ PUNAISEKSI
         liveStyleEl.innerText = "Kiihdytys!";
         liveStyleEl.className = "style-badge style-red";
 
-        // Palauta vihreäksi 3 sekunnin päästä
         if (styleResetTimer) clearTimeout(styleResetTimer);
         styleResetTimer = setTimeout(() => {
             liveStyleEl.innerText = "Taloudellinen";
