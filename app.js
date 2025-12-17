@@ -135,7 +135,7 @@ const btnResume = document.getElementById('btn-resume');
 const btnStopRec = document.getElementById('btn-stop-rec');
 
 
-// --- AUTH ---
+// --- AUTH (SÄHKÖPOSTI + GOOGLE) ---
 auth.onAuthStateChanged((user) => {
     if (splashScreen) setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
 
@@ -147,6 +147,9 @@ auth.onAuthStateChanged((user) => {
         menuUserName.innerText = user.displayName || user.email;
         if (user.photoURL) {
             menuUserAvatar.src = user.photoURL;
+        } else {
+            // Oletuskuva jos sähköpostikirjautuminen
+            menuUserAvatar.src = "ajopaivakirja_logo.png";
         }
 
         loadCars(); 
@@ -161,8 +164,29 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
+// Google Login
 document.getElementById('btn-login').addEventListener('click', () => {
     auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert(e.message));
+});
+
+// Email Login (UUSI)
+document.getElementById('btn-email-login').addEventListener('click', () => {
+    const email = document.getElementById('email-input').value;
+    const pass = document.getElementById('password-input').value;
+    if(!email || !pass) { alert("Syötä sähköposti ja salasana."); return; }
+    
+    auth.signInWithEmailAndPassword(email, pass)
+        .catch(e => alert("Virhe kirjautumisessa: " + e.message));
+});
+
+// Email Register (UUSI)
+document.getElementById('btn-email-register').addEventListener('click', () => {
+    const email = document.getElementById('email-input').value;
+    const pass = document.getElementById('password-input').value;
+    if(!email || !pass) { alert("Syötä sähköposti ja salasana."); return; }
+    
+    auth.createUserWithEmailAndPassword(email, pass)
+        .catch(e => alert("Virhe rekisteröinnissä: " + e.message));
 });
 
 document.getElementById('btn-logout').addEventListener('click', () => {
@@ -505,7 +529,6 @@ function updatePosition(position) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
             const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
-            // KORJAUS: Hyväksy jopa 50km hyppy (WhatsApp-katkojen varalta)
             if ((speedKmh > 3 || dist > 0.02) && dist < 50.0) totalDistance += dist;
         }
         
@@ -523,20 +546,13 @@ function updatePosition(position) {
         marker.setLatLng(newLatLng);
         
         if (views.map.style.display !== 'none') {
-            
-            // --- UUSI ZOOM LOGIIKKA (Pyydetyt arvot) ---
             let targetZoom = 18; 
             
             if (currentCarType === 'bike') {
-                // PYÖRÄ
-                if (speedKmh > 15) targetZoom = 17; // Vauhdikas pyöräily
-                else targetZoom = 19;               // Hidas pyöräily / pysähdys
+                targetZoom = 19; 
             } else {
-                // AUTO
-                if (speedKmh > 100) targetZoom = 14;      // Yli 100
-                else if (speedKmh > 70) targetZoom = 16;  // 70-100
-                else if (speedKmh > 40) targetZoom = 17;  // 40-70
-                else targetZoom = 18;                     // 0-40 (Lähikuva)
+                if (speedKmh > 100) targetZoom = 14; 
+                else if (speedKmh > 60) targetZoom = 16;
             }
             
             if (map.getZoom() !== targetZoom) map.setView(newLatLng, targetZoom); else map.panTo(newLatLng);
@@ -878,7 +894,6 @@ function renderHistoryList() {
             let start = null;
             let dateStr = "Aika puuttuu";
             
-            // --- UUSI AIKA-NÄYTTÖ (14:00 - 14:45) ---
             if (drive.startTime) {
                 start = new Date(drive.startTime);
                 if (!isNaN(start.getTime())) {
