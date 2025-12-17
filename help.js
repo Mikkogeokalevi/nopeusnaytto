@@ -1,26 +1,26 @@
 const helpContent = `
-    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Mikkokalevin Ajopäiväkirja Pro – Käyttöopas v4.1</h2>
+    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Mikkokalevin Ajopäiväkirja Pro – Käyttöopas v4.2</h2>
     
     <div class="help-section">
         <h3>🚀 1. Käyttöönotto ja Tili</h3>
-        <p>Tervetuloa käyttämään Ajopäiväkirja Pro -sovellusta. Tämä osio varmistaa, että saat sovelluksen toimimaan oikein heti alusta alkaen ja ymmärrät, miten tietojasi käsitellään.</p>
+        <p>Tämä osio varmistaa, että saat sovelluksen toimimaan oikein heti alusta alkaen ja ymmärrät, miten tietojasi käsitellään.</p>
         
         <div class="help-step">
             <strong>Kirjautuminen (Kaksi tapaa):</strong>
-            Sovellus vaatii kirjautumisen, jotta tietosi pysyvät turvassa henkilökohtaisessa pilvitietokannassa. Näin ajohistoria, autotalli ja asetukset siirtyvät mukanasi, vaikka vaihtaisit puhelinta.
+            Sovellus vaatii kirjautumisen, jotta tietosi pysyvät turvassa henkilökohtaisessa pilvitietokannassa. Näin ajohistoria, autotalli ja asetukset siirtyvät mukanasi, vaikka vaihtaisit puhelinta tai käyttäisit sovellusta tietokoneella.
             <br><br>
-            <strong>A) Google-tili (Nopein):</strong>
-            <br>Paina "Kirjaudu Googlella". Sovellus käyttää tiliäsi vain tunnistautumiseen. Emme pääse käsiksi sähköposteihisi tai yhteystietoihisi.
+            <strong>A) Google-tili (Suositeltu):</strong>
+            <br>Nopein ja helpoin tapa. Klikkaa "Kirjaudu Googlella". Sovellus käyttää tiliäsi vain tunnistautumiseen.
             <br><br>
             <strong>B) Sähköposti ja Salasana:</strong>
-            <br>Tämä on kätevä, jos haluat pitää ajopäiväkirjan erillään Google-tilistäsi tai käytät jo Perhekalenteri-sovellusta samoilla tunnuksilla.
+            <br>Tämä on kätevä vaihtoehto, jos haluat pitää ajopäiväkirjan erillään Google-tilistäsi tai käytät jo Perhekalenteri-sovellusta samoilla tunnuksilla.
             <br><em>Uusi käyttäjä?</em> Syötä sähköposti ja haluamasi salasana -> Paina "Luo tunnus".
             <br><em>Vanha käyttäjä?</em> Syötä tunnukset -> Paina "Kirjaudu".
         </div>
 
         <div class="help-step">
             <strong>Vaaditut Käyttöoikeudet (Luvat):</strong>
-            Ensimmäisellä käynnistyksellä selain kysyy lupia. On kriittistä vastata näihin <strong>"Salli"</strong>.
+            Ensimmäisellä käynnistyksellä selain kysyy lupia. On kriittistä vastata näihin <strong>"Salli"</strong>, jotta sovellus toimii.
             <ul>
                 <li>📍 <strong>Sijainti (GPS):</strong> Sovelluksen sydän. Ilman tätä nopeus, matka ja reitti eivät toimi. Varmista puhelimen asetuksista, että selaimella (Chrome/Safari) on oikeus käyttää "Tarkkaa sijaintia" (Precise Location).</li>
                 <li>📱 <strong>Liikeanturit (Motion & Orientation):</strong> Tätä käytetään "Eco-mittarin" toimintaan (kiihtyvyyden ja jarrutuksen tunnistus).
@@ -66,7 +66,7 @@ const helpContent = `
     </div>
 
     <div class="help-section">
-        <h3>⏱️ 3. Mittaristo ja Visuaalinen Seuranta</h3>
+        <h3>⏱️ 3. Mittaristo ja Navigointi</h3>
         <p>Mittaristo on suunniteltu näyttäväksi ja selkeäksi, jotta tieto on luettavissa yhdellä silmäyksellä.</p>
 
         <div class="help-step">
@@ -79,6 +79,11 @@ const helpContent = `
                 <li><strong>Korkeus (m):</strong> Korkeus merenpinnasta. Tarkkuus riippuu puhelimen GPS-sirusta (yleensä +/- 10m).</li>
                 <li><strong>Sää:</strong> Sovellus hakee automaattisesti sijaintisi perusteella lähimmän säähavaintoaseman tiedot (Lämpötila + Sääikoni).</li>
             </ul>
+        </div>
+
+        <div class="help-step">
+            <strong>🏠 Koti-painike (Logo):</strong>
+            Voit palata miltä tahansa sivulta (Historia, Kartta, Asetukset) takaisin mittaristoon painamalla vasemmassa yläkulmassa olevaa <strong>pyöreää logoa</strong>.
         </div>
 
         <div class="help-step">
@@ -120,7 +125,7 @@ const helpContent = `
             <ul>
                 <li>Tarkista ajoneuvo.</li>
                 <li>Kirjoita aihe (esim. "Työmatka").</li>
-                <li>Paina "Tallenna". Tällöin ajotiedot ja reitti siirtyvät pilveen.</li>
+                <li>Paina "Tallenna". <strong>Huom:</strong> Nyt myös ajettu reitti tallentuu pilveen!</li>
             </ul>
         </div>
         
@@ -150,9 +155,11 @@ const helpContent = `
         </div>
 
         <div class="help-step">
-            <strong>🗺️ Reitin katselu (UUSI):</strong>
-            Jos ajolla on tallennettu reitti, kortin yläreunassa näkyy pieni karttaikoni 🗺️.
-            <br>Painamalla sitä siirryt karttanäkymään, jossa kyseinen reitti piirretään <strong>oranssilla viivalla</strong>.
+            <strong>🗺️ Reitin katselu kartalla:</strong>
+            Kun tallennat ajon tällä versiolla (4.1+), myös GPS-jälki tallentuu.
+            <br>Historia-listassa näkyy tällöin pieni <strong>karttaikoni (🗺️)</strong>.
+            <br>Painamalla sitä siirryt karttanäkymään, jossa kyseinen reitti piirretään <strong>oranssilla viivalla</strong>. Voit zoomata ja tarkastella missä ajoit.
+            <br><em>Huom: Vanhoissa ajoissa (ennen v4.1) ei ole reittidataa, joten niissä ikonia ei näy.</em>
         </div>
 
         <div class="help-step">
@@ -162,12 +169,13 @@ const helpContent = `
     </div>
 
     <div class="help-section">
-        <h3>📊 6. Tilastot (Graafit)</h3>
+        <h3>📊 6. Tilastot (UUSI)</h3>
         <p>Visuaalinen katsaus ajohistoriaan (löytyy valikosta "Tilastot").</p>
         <div class="help-step">
+            Tämä sivu laskee automaattisesti yhteen kaiken tallennetun datasi:
             <ul>
-                <li><strong>Pylväsdiagrammi:</strong> Näyttää ajetut kilometrit kuukausitasolla (viimeiset 6kk). Auttaa hahmottamaan ajomäärien kehitystä.</li>
-                <li><strong>Piirakkakuvio (Donitsi):</strong> Näyttää miten kilometrit jakautuvat eri ajoneuvojen kesken.</li>
+                <li><strong>Pylväsdiagrammi:</strong> Näyttää ajetut kilometrit kuukausitasolla (viimeiset 6kk). Auttaa hahmottamaan ajomäärien kehitystä ja vuodenaikojen vaihtelua.</li>
+                <li><strong>Piirakkakuvio (Donitsi):</strong> Näyttää miten kilometrit jakautuvat eri ajoneuvojen kesken. Näet heti, millä autolla tai pyörällä on ajettu eniten.</li>
             </ul>
         </div>
     </div>
@@ -187,7 +195,7 @@ const helpContent = `
             <ul>
                 <li><strong>Peruskartta:</strong> Selkeä tiekartta (OpenStreetMap).</li>
                 <li><strong>Satelliitti:</strong> Ilmakuva (Esri).</li>
-                <li><strong>Maastokartta (UUSI):</strong> Näyttää korkeuskäyrät ja maastonmuodot (OpenTopoMap). Erinomainen maastopyöräilyyn.</li>
+                <li><strong>Maastokartta (UUSI):</strong> Näyttää korkeuskäyrät ja maastonmuodot (OpenTopoMap). Erinomainen maastopyöräilyyn ja retkeilyyn.</li>
             </ul>
         </div>
     </div>
@@ -197,7 +205,7 @@ const helpContent = `
         
         <div class="help-step">
             <strong>K: Näyttö sammuu itsestään ajon aikana?</strong>
-            <br>V: Sovellus käyttää "Wake Lock" -tekniikkaa pitääkseen näytön päällä. Kuitenkin, jos puhelimesi akku on vähissä ja "Virransäästötila" on päällä, puhelimen käyttöjärjestelmä voi jyrätä tämän ja pakottaa näytön kiinni.
+            <br>V: Sovellus käyttää "Wake Lock" -tekniikkaa pitääkseen näytön päällä. Kuitenkin, jos puhelimesi akku on vähissä ja "Virransäästötila" on päällä, puhelin voi silti pakottaa näytön kiinni.
             <br><em>Ratkaisu:</em> Kytke virransäästö pois tai lataa puhelinta ajon aikana.
         </div>
 
@@ -231,7 +239,7 @@ const helpContent = `
     </div>
 
     <div style="text-align: center; margin-top: 50px; color: #888; font-size: 11px; padding-bottom: 30px;">
-        Mikkokalevin Ajopäiväkirja Pro v4.1 &copy; 2025<br>
+        Mikkokalevin Ajopäiväkirja Pro v4.2 &copy; 2025<br>
         Täyden palvelun ajoseuranta.
     </div>
 `;
