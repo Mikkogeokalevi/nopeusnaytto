@@ -29,6 +29,7 @@ const views = {
     dashboard: document.getElementById('dashboard-view'),
     map: document.getElementById('map-view'),
     history: document.getElementById('history-view'),
+    stats: document.getElementById('stats-view'), // UUSI
     settings: document.getElementById('settings-view'),
     help: document.getElementById('help-view')
 };
@@ -37,6 +38,7 @@ const navBtns = {
     dashboard: document.getElementById('nav-dashboard'),
     map: document.getElementById('nav-map'),
     history: document.getElementById('nav-history'),
+    stats: document.getElementById('nav-stats'), // UUSI
     settings: document.getElementById('nav-settings'),
     help: document.getElementById('nav-help')
 };
@@ -81,6 +83,10 @@ let deleteKey = null;
 let maxSpeed = 0;
 let totalDistance = 0;
 let lastLatLng = null;
+
+// REITTIVIIVA (UUSI)
+let routePath = [];
+let realTimePolyline = null;
 
 // Sää ja Ajotapa
 let currentDriveWeather = ""; 
@@ -234,11 +240,13 @@ function switchView(viewName) {
     if (viewName === 'map') setTimeout(() => map.invalidateSize(), 100);
     if (viewName === 'history') loadHistory();
     if (viewName === 'settings') renderCarList();
+    if (viewName === 'stats') renderStats(); // UUSI
 }
 
 navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
 navBtns.map.addEventListener('click', () => switchView('map'));
 navBtns.history.addEventListener('click', () => switchView('history'));
+navBtns.stats.addEventListener('click', () => switchView('stats')); // UUSI
 navBtns.settings.addEventListener('click', () => switchView('settings'));
 navBtns.help.addEventListener('click', () => switchView('help'));
 
@@ -253,6 +261,9 @@ const satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/se
 const map = L.map('map', { center: [64.0, 26.0], zoom: 16, layers: [streetMap], zoomControl: false });
 L.control.layers({ "Kartta": streetMap, "Satelliitti": satelliteMap }).addTo(map);
 let marker = L.circleMarker([64.0, 26.0], { color: '#2979ff', fillColor: '#2979ff', fillOpacity: 0.8, radius: 8 }).addTo(map);
+
+// ALUSTA REITTIVIIVA
+realTimePolyline = L.polyline([], {color: '#2979ff', weight: 5, opacity: 0.7}).addTo(map);
 
 
 // --- GPS ---
@@ -280,6 +291,10 @@ btnStartRec.addEventListener('click', () => {
     totalPauseTime = 0;
     maxSpeed = 0;
     totalDistance = 0;
+    
+    // Tyhjennä vanha reitti
+    routePath = [];
+    realTimePolyline.setLatLngs([]);
     
     currentDriveWeather = "";
     aggressiveEvents = 0;
@@ -328,7 +343,6 @@ btnResume.addEventListener('click', () => {
 btnStopRec.addEventListener('click', () => {
     if (!isRecording) return;
     clearInterval(timerInterval);
-    
     window.removeEventListener('devicemotion', handleMotion);
     
     if (isPaused && pauseStartTime) {
@@ -469,6 +483,10 @@ function resetRecordingUI() {
     isPaused = false;
     tempDriveData = null;
     
+    // Tyhjennä reitti kartalta
+    routePath = [];
+    realTimePolyline.setLatLngs([]);
+
     btnStartRec.style.display = 'inline-block';
     activeRecBtns.style.display = 'none';
     statusEl.innerText = "GPS Päällä";
@@ -527,6 +545,12 @@ function updatePosition(position) {
             if ((speedKmh > 3 || dist > 0.02) && dist < 50.0) totalDistance += dist;
         }
         
+        // --- UUSI: REITTIVIIVAN PÄIVITYS ---
+        if (speedKmh > 3 || (lastLatLng && getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng) > 0.02)) {
+            routePath.push([lat, lng]);
+            realTimePolyline.setLatLngs(routePath);
+        }
+
         if (startTime) {
             const now = new Date();
             const activeTimeMs = (now - startTime) - totalPauseTime;
@@ -544,12 +568,13 @@ function updatePosition(position) {
             let targetZoom = 18; 
             
             if (currentCarType === 'bike') {
-                targetZoom = 19; 
+                if (speedKmh > 15) targetZoom = 17; else targetZoom = 19;
             } else {
                 if (speedKmh > 100) targetZoom = 14; 
-                else if (speedKmh > 60) targetZoom = 16;
+                else if (speedKmh > 70) targetZoom = 16;
+                else if (speedKmh > 40) targetZoom = 17;
+                else targetZoom = 18;
             }
-            
             if (map.getZoom() !== targetZoom) map.setView(newLatLng, targetZoom); else map.panTo(newLatLng);
             mapSpeedEl.innerText = speedKmh.toFixed(1);
             mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
@@ -590,7 +615,6 @@ function fetchWeather(lat, lon) {
                 else if (code <= 82) emoji = "🌧";
                 else if (code <= 86) emoji = "❄️";
                 else emoji = "⛈";
-                
                 currentDriveWeather = `${emoji} ${temp}°C`;
                 dashWeatherEl.innerText = currentDriveWeather;
             }
@@ -609,24 +633,96 @@ function handleMotion(event) {
     if (!acc) return;
     const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
     
-    // VISUAALINEN MUUTOS: Numeron väri
     if (magnitude > 3.5) {
         aggressiveEvents++;
         liveStyleEl.innerText = "Kiihdytys!";
         liveStyleEl.className = "style-badge style-red";
         
-        // Väläytä nopeusnumeroa punaisena
         dashSpeedEl.style.color = "#ff1744";
         
         if (styleResetTimer) clearTimeout(styleResetTimer);
         styleResetTimer = setTimeout(() => {
             liveStyleEl.innerText = "Taloudellinen";
             liveStyleEl.className = "style-badge style-green";
-            // Palauta numeron väri normaaliksi
             dashSpeedEl.style.color = "var(--speed-color)";
         }, 3000);
     }
 }
+
+// --- TILASTOT (UUSI) ---
+let chartInstanceMonthly = null;
+let chartInstanceVehicles = null;
+
+function renderStats() {
+    if (!allHistoryData || allHistoryData.length === 0) return;
+
+    // 1. Data per kuukausi (viimeiset 6kk)
+    const monthlyData = {};
+    const vehicleData = {};
+
+    allHistoryData.forEach(d => {
+        const dist = parseFloat(d.distanceKm) || 0;
+        const date = new Date(d.startTime);
+        
+        // Kuukausi
+        const monthKey = `${date.getMonth()+1}/${date.getFullYear()}`;
+        if (!monthlyData[monthKey]) monthlyData[monthKey] = 0;
+        monthlyData[monthKey] += dist;
+
+        // Ajoneuvo
+        const carName = d.carName || "Muu";
+        if (!vehicleData[carName]) vehicleData[carName] = 0;
+        vehicleData[carName] += dist;
+    });
+
+    const monthLabels = Object.keys(monthlyData).reverse().slice(0, 6).reverse(); // Viim. 6kk
+    const monthValues = monthLabels.map(k => monthlyData[k].toFixed(1));
+
+    const vehicleLabels = Object.keys(vehicleData);
+    const vehicleValues = Object.values(vehicleData).map(v => v.toFixed(1));
+
+    // Chart: Kuukausi
+    const ctxMonthly = document.getElementById('chart-monthly').getContext('2d');
+    if (chartInstanceMonthly) chartInstanceMonthly.destroy();
+    chartInstanceMonthly = new Chart(ctxMonthly, {
+        type: 'bar',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Kilometrit',
+                data: monthValues,
+                backgroundColor: 'rgba(41, 121, 255, 0.6)',
+                borderColor: 'rgba(41, 121, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: { y: { beginAtZero: true } },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Chart: Ajoneuvot
+    const ctxVehicles = document.getElementById('chart-vehicles').getContext('2d');
+    if (chartInstanceVehicles) chartInstanceVehicles.destroy();
+    chartInstanceVehicles = new Chart(ctxVehicles, {
+        type: 'doughnut',
+        data: {
+            labels: vehicleLabels,
+            datasets: [{
+                data: vehicleValues,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)'
+                ],
+                borderWidth: 1
+            }]
+        }
+    });
+}
+
 
 // --- AUTOTALLI LOGIIKKA ---
 function loadCars() {
@@ -683,9 +779,7 @@ carSelectEl.addEventListener('change', () => {
     localStorage.setItem('selectedCarId', currentCarId);
     updateCarTypeVariable();
     
-    if (views.history.style.display !== 'none') {
-        loadHistory();
-    }
+    if (views.history.style.display !== 'none') loadHistory();
 });
 
 function renderCarList() {
