@@ -84,8 +84,8 @@ let allHistoryData = [];
 
 // AUTOT & PYÖRÄT
 let userCars = [];
-let currentCarId = "all"; // Oletus: näytä kaikki (historiassa), tallennuksessa vaaditaan valinta
-let currentCarType = "car"; // Oletus
+let currentCarId = "all"; 
+let currentCarType = "car"; 
 const carSelectEl = document.getElementById('car-select');
 
 // UI Elementit
@@ -119,6 +119,7 @@ const customFilterContainer = document.getElementById('custom-filter-container')
 const filterStart = document.getElementById('filter-start');
 const filterEnd = document.getElementById('filter-end');
 
+// Kontrollit
 const btnStartRec = document.getElementById('btn-start-rec');
 const activeRecBtns = document.getElementById('active-rec-btns');
 const btnPause = document.getElementById('btn-pause');
@@ -140,7 +141,7 @@ auth.onAuthStateChanged((user) => {
             menuUserAvatar.src = user.photoURL;
         }
 
-        loadCars();
+        loadCars(); // Lataa autot heti
 
         if (views.map.style.display !== 'none') setTimeout(() => map.invalidateSize(), 200);
     } else {
@@ -258,7 +259,7 @@ btnStartRec.addEventListener('click', () => {
     
     updateDashboardUI(0, 0, 0, 0, 0, 0);
     
-    // ECO-MITTARI LOGIIKKA: Jos pyörä, älä näytä
+    // ECO-MITTARI: Piilota jos pyörä
     if (currentCarType === 'bike') {
         liveStatusBar.style.opacity = '0';
     } else {
@@ -321,7 +322,7 @@ btnStopRec.addEventListener('click', () => {
         if (aggressiveEvents > 15) styleLabel = "Aggressiivinen";
     }
 
-    // Hae valitun auton nimi (jos "Kaikki" valittu, tallennetaan silti "Ei määritelty" tai oletus)
+    // Hae valitun auton nimi
     let selectedCarName = "Muu ajoneuvo";
     if (currentCarId !== 'all') {
         const c = userCars.find(x => x.id === currentCarId);
@@ -341,7 +342,7 @@ btnStopRec.addEventListener('click', () => {
         drivingStyle: styleLabel,
         carName: selectedCarName, 
         carId: currentCarId,
-        carType: currentCarType // Tallenna myös tyyppi (auto/bike)
+        carType: currentCarType
     };
 
     const mins = Math.floor(activeDurationMs / 60000);
@@ -470,7 +471,7 @@ function updatePosition(position) {
             let targetZoom = 18; 
             
             if (currentCarType === 'bike') {
-                targetZoom = 19; // Lähempi zoom pyörälle
+                targetZoom = 19; 
             } else {
                 if (speedKmh > 100) targetZoom = 14; 
                 else if (speedKmh > 60) targetZoom = 16;
@@ -526,8 +527,7 @@ function fetchWeather(lat, lon) {
 
 function handleMotion(event) {
     if (!isRecording || isPaused) return;
-    // Jos on pyörä, ei mitata G-voimia (koska tärisee liikaa)
-    if (currentCarType === 'bike') return;
+    if (currentCarType === 'bike') return; // Ei g-voimia pyörällä
 
     const now = Date.now();
     if (now - lastMotionTime < 500) return; 
@@ -564,7 +564,6 @@ function loadCars() {
         renderCarList(); 
     });
     
-    // Lataa valittu auto
     const stored = localStorage.getItem('selectedCarId');
     if (stored) {
         currentCarId = stored;
@@ -592,7 +591,6 @@ function updateCarSelect() {
     userCars.forEach(car => {
         const opt = document.createElement('option');
         opt.value = car.id;
-        // Lisää emoji nimeen
         const prefix = (car.type === 'bike') ? "🚲 " : "🚗 ";
         opt.text = prefix + car.name;
         if(car.id === currentCarId) opt.selected = true;
@@ -605,7 +603,6 @@ carSelectEl.addEventListener('change', () => {
     localStorage.setItem('selectedCarId', currentCarId);
     updateCarTypeVariable();
     
-    // Jos ollaan historiassa, päivitä lista heti
     if (views.history.style.display !== 'none') {
         loadHistory();
     }
@@ -645,7 +642,6 @@ const btnSaveCar = document.getElementById('btn-save-car');
 const carTypeSelect = document.getElementById('car-type');
 const carSpecificFields = document.getElementById('car-specific-fields');
 
-// Piilota/Näytä autokentät tyypin mukaan
 window.toggleCarFields = () => {
     if (carTypeSelect.value === 'bike') {
         carSpecificFields.style.display = 'none';
@@ -670,6 +666,7 @@ btnCancelCar.addEventListener('click', () => {
     btnAddCar.style.display = 'block';
 });
 
+// TALLENNUS (VIRHEENKÄSITTELYLLÄ)
 btnSaveCar.addEventListener('click', () => {
     const name = document.getElementById('car-name').value;
     if (!name) { alert("Anna ajoneuvolle nimi!"); return; }
@@ -684,10 +681,14 @@ btnSaveCar.addEventListener('click', () => {
         tank: (type === 'car') ? document.getElementById('car-tank').value : ""
     };
     
-    db.ref('users/' + currentUser.uid + '/cars').push().set(carData);
-    
-    addCarForm.style.display = 'none';
-    btnAddCar.style.display = 'block';
+    db.ref('users/' + currentUser.uid + '/cars').push().set(carData)
+        .then(() => {
+            addCarForm.style.display = 'none';
+            btnAddCar.style.display = 'block';
+        })
+        .catch((error) => {
+            alert("Virhe tallennuksessa: " + error.message + "\n\nMuistithan päivittää Firebase Rules?");
+        });
 });
 
 window.deleteCar = (id) => {
@@ -808,11 +809,9 @@ function renderHistoryList() {
 
     allHistoryData.forEach(drive => {
         try {
-            // TARKISTA AJONEUVO-SUODATUS (Yläpalkin valinta)
+            // TARKISTA AJONEUVO
             if (currentCarId !== 'all') {
-                // Jos ajossa on carId, verrataan sitä
                 if (drive.carId && drive.carId !== currentCarId) return;
-                // Vanhat ajot ilman carId:tä näkyvät vain "Kaikki"-näkymässä tai oletuksessa
                 if (!drive.carId) return;
             }
 
@@ -868,8 +867,6 @@ function renderHistoryList() {
             const subjectText = (drive.subject !== undefined) ? drive.subject : "";
             
             let tagsHtml = "";
-            
-            // Näytä ikoni tyypin mukaan
             if (drive.carName) {
                 const icon = (drive.carType === 'bike') ? "🚲" : "🚗";
                 tagsHtml += `<span class="tag">${icon} ${drive.carName}</span>`;
