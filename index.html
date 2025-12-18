@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mikkokalevin Ajopäiväkirja Pro v4.3</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v4.4</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="ajopaivakirja_logo.png">
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=4.3">
+    <link rel="stylesheet" href="style.css?v=4.4">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -20,8 +20,8 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p style="opacity:0.7; font-size:12px;">Versio 4.3</p>
-            <p>Viritetään moottoreita...</p>
+            <p style="opacity:0.7; font-size:12px;">Versio 4.4</p>
+            <p>Ladataan moottoreita...</p>
         </div>
     </div>
 
@@ -152,17 +152,11 @@
                     </div>
                     <div id="map-coords" class="small-coords">--° --.---'</div>
                 </div>
-                
                 <button id="map-gps-toggle" class="map-gps-btn">📡 ON</button>
-
                 <button id="map-return-btn" class="map-return-btn">🏎️ MITTARISTO</button>
-                
                 <div id="map-legend" class="map-legend" style="display:none;">
-                    <span>Hidas</span>
-                    <div class="legend-gradient"></div>
-                    <span>Nopea</span>
+                    <span>Hidas</span><div class="legend-gradient"></div><span>Nopea</span>
                 </div>
-
                 <div id="map"></div>
             </div>
 
@@ -199,7 +193,16 @@
                 </div>
                 <div class="help-section" id="add-car-form" style="display:none; border: 1px solid var(--accent-color); margin-top:15px;">
                     <h3 id="form-title">Lisää ajoneuvo</h3>
-                    <input type="hidden" id="car-id"> <div style="margin-bottom:10px;">
+                    <input type="hidden" id="car-id">
+                    
+                    <div style="margin-bottom:15px;">
+                        <label>Valitse ikoni:</label>
+                        <div id="car-icon-selector" class="car-icon-grid">
+                            </div>
+                        <input type="hidden" id="selected-car-icon" value="🚗">
+                    </div>
+
+                    <div style="margin-bottom:10px;">
                         <label>Tyyppi</label>
                         <select id="car-type" class="subject-input" onchange="toggleCarFields()">
                             <option value="car">🚗 Auto</option>
@@ -277,7 +280,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="app.js?v=4.3"></script>
+    <script src="app.js?v=4.4"></script>
     <script src="help.js"></script>
 </body>
 </html>
