@@ -10,7 +10,6 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=4.9">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <link rel="stylesheet" href="style.css?v=4.9">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,7 +20,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=4.9" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p style="opacity:0.7; font-size:12px;">Versio 4.9</p>
+            <p style="opacity:0.7; font-size:12px;">Versio 4.9.1</p>
             <p>Haetaan polttoaineen hintoja...</p>
         </div>
     </div>
@@ -140,12 +139,12 @@
                  <div class="time-weather-wrapper">
                      <div class="weather-huge" id="dash-weather">--</div>
                      
-                     <button id="btn-quick-refuel" class="dash-refuel-btn" title="Lisää tankkaus">⛽</button>
-
                      <div class="time-right-col">
                          <div class="clock-box" id="dash-clock">--:--</div>
                          <div class="date-box" id="dash-date">--.--.----</div>
                      </div>
+
+                     <button id="btn-quick-refuel" class="dash-refuel-btn" title="Lisää tankkaus">⛽</button>
                  </div>
 
                  <div class="bottom-branding">
@@ -175,8 +174,8 @@
                 <h2 style="text-align:center; color:var(--accent-color);">Historia</h2>
                 
                 <div class="history-tabs">
-                    <button class="history-tab active" onclick="switchHistoryTab('drives')">🚗 Ajot</button>
-                    <button class="history-tab" onclick="switchHistoryTab('refuels')">⛽ Tankkaukset</button>
+                    <button class="history-tab active" onclick="window.switchHistoryTab('drives')">🚗 Ajot</button>
+                    <button class="history-tab" onclick="window.switchHistoryTab('refuels')">⛽ Tankkaukset</button>
                 </div>
 
                 <div id="history-drives-section">
@@ -373,7 +372,7 @@
             
             <div style="margin-bottom:10px; text-align:left;">
                 <label>Mittarilukema (km)</label>
-                <input type="number" id="refuel-km" class="subject-input" placeholder="Nykyinen mittarilukema" oninput="calculateRefuelStats()">
+                <input type="number" id="refuel-km" class="subject-input" placeholder="Nykyinen mittarilukema" oninput="window.calculateRefuelStats()">
                 <div id="refuel-dist-info" style="font-size:11px; color:#aaa; margin-top:2px;">
                     Edellinen: <span id="prev-km">0</span> km
                 </div>
@@ -382,11 +381,11 @@
             <div style="display:flex; gap:10px;">
                 <div style="margin-bottom:10px; text-align:left; flex:1;">
                     <label>Litrat (l)</label>
-                    <input type="number" id="refuel-liters" class="subject-input" step="0.01" oninput="calculateRefuelStats()">
+                    <input type="number" id="refuel-liters" class="subject-input" step="0.01" oninput="window.calculateRefuelStats()">
                 </div>
                 <div style="margin-bottom:10px; text-align:left; flex:1;">
                     <label>Hinta (€)</label>
-                    <input type="number" id="refuel-price" class="subject-input" step="0.01" oninput="calculateRefuelStats()">
+                    <input type="number" id="refuel-price" class="subject-input" step="0.01" oninput="window.calculateRefuelStats()">
                 </div>
             </div>
             
