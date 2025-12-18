@@ -74,10 +74,11 @@ const btnDeleteCancel = document.getElementById('btn-delete-cancel');
 const refuelModal = document.getElementById('refuel-modal');
 const btnRefuelSave = document.getElementById('btn-refuel-save');
 const btnRefuelCancel = document.getElementById('btn-refuel-cancel');
+const btnRefuelDelete = document.getElementById('btn-refuel-delete');
 
 
 // =========================================================
-// 3. MUUTTUJAT
+// 3. MUUTTUJAT JA TILA
 // =========================================================
 
 let currentUser = null; 
@@ -95,6 +96,7 @@ let timerInterval = null;
 
 let tempDriveData = null; 
 let deleteKey = null;
+let refuelKey = null; // Käytetään tankkauksen muokkauksessa
 
 let maxSpeed = 0;
 let totalDistance = 0;
@@ -243,6 +245,15 @@ document.getElementById('app-logo').addEventListener('click', () => {
     switchView('dashboard');
 });
 
+// UUSI TANKKAUSNAPPI DASHBOARDISSA
+document.getElementById('btn-quick-refuel').addEventListener('click', () => {
+    if(currentCarId === 'all') {
+        alert("Valitse ensin auto yläpalkin valikosta lisätäksesi tankkauksen!");
+    } else {
+        window.openRefuelModal(currentCarId);
+    }
+});
+
 function switchView(viewName) {
     mainMenu.style.display = 'none';
     
@@ -265,7 +276,10 @@ function switchView(viewName) {
 
     if (viewName === 'map') setTimeout(() => map.invalidateSize(), 100);
     
-    if (viewName === 'history') renderHistoryList();
+    if (viewName === 'history') {
+        // Oletuksena "Ajot"-välilehti
+        window.switchHistoryTab('drives');
+    }
     if (viewName === 'settings') renderCarList();
     if (viewName === 'stats') renderStats();
 }
@@ -655,6 +669,7 @@ let chartInstanceFuelPrice = null;
 let chartInstanceFuelCost = null; 
 
 function renderStats() {
+    // Renderoi ajotilastot
     if (allHistoryData.length > 0) {
         const monthlyData = {};
         const vehicleData = {};
@@ -857,29 +872,146 @@ function renderCarList() {
     });
 }
 
+// UUSI: TANKKAUS LOGIIKKA (Historia & Editointi)
+window.switchHistoryTab = (tab) => {
+    document.querySelectorAll('.history-tab').forEach(t => t.classList.remove('active'));
+    
+    if (tab === 'drives') {
+        document.querySelector('.history-tab:first-child').classList.add('active');
+        document.getElementById('history-drives-section').style.display = 'block';
+        document.getElementById('history-refuels-section').style.display = 'none';
+        renderHistoryList();
+    } else {
+        document.querySelector('.history-tab:last-child').classList.add('active');
+        document.getElementById('history-drives-section').style.display = 'none';
+        document.getElementById('history-refuels-section').style.display = 'block';
+        renderRefuelList();
+    }
+}
+
+function renderRefuelList() {
+    const list = document.getElementById('refuel-list');
+    list.innerHTML = "";
+    
+    if(allRefuelData.length === 0) {
+        list.innerHTML = "<p style='text-align:center; color:#888;'>Ei tankkauksia.</p>";
+        return;
+    }
+    
+    // Suodatetaan auton mukaan jos valittu
+    const filtered = (currentCarId === 'all') 
+        ? allRefuelData 
+        : allRefuelData.filter(r => r.carId === currentCarId);
+        
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    filtered.forEach(r => {
+        const d = new Date(r.date);
+        const dateStr = d.toLocaleDateString('fi-FI') + " " + d.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+        const car = userCars.find(c => c.id === r.carId);
+        const icon = car ? (car.icon||"🚗") : "🚗";
+        const name = car ? car.name : "Tuntematon";
+        
+        const div = document.createElement('div');
+        div.className = 'log-card';
+        div.innerHTML = `
+            <div class="log-header">
+                <div class="log-title-group">
+                    <div class="log-date-line">${dateStr}</div>
+                    <div class="log-car-big">${icon} ${name}</div>
+                </div>
+                <button class="edit-btn" onclick="window.openRefuelEdit('${r.key}')">✏️</button>
+            </div>
+            <div class="log-stats">
+                <div><span class="stat-label">LITRAT</span>${r.liters}</div>
+                <div><span class="stat-label">HINTA</span>${r.totalPrice}€</div>
+                <div><span class="stat-label">€/L</span>${r.pricePerLiter}</div>
+                <div><span class="stat-label">KM</span>${r.km}</div>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+// Avaa UUSI tankkaus
 window.openRefuelModal = (carId) => {
     const car = userCars.find(c => c.id === carId);
     if(!car) return;
     
+    refuelKey = null; // Uusi merkintä
     document.getElementById('refuel-car-id').value = carId;
     document.getElementById('refuel-car-name').innerText = `${car.icon||"🚗"} ${car.name}`;
     document.getElementById('refuel-km').value = "";
     document.getElementById('refuel-liters').value = "";
     document.getElementById('refuel-price').value = "";
     document.getElementById('refuel-price-per-liter').innerText = "0.000";
+    document.getElementById('btn-refuel-delete').style.display = 'none'; // Piilota poisto
+    
+    // Hae edellinen lukema
+    findLastRefuelKm(carId).then(km => {
+        document.getElementById('prev-km').innerText = km;
+    });
     
     refuelModal.style.display = 'flex';
 }
 
-window.calculateRefuelPrice = () => {
+// Avaa MUOKKAUS tankkaus
+window.openRefuelEdit = (key) => {
+    const r = allRefuelData.find(x => x.key === key);
+    if(!r) return;
+    
+    refuelKey = key; // Muokkaustila
+    const car = userCars.find(c => c.id === r.carId);
+    
+    document.getElementById('refuel-car-id').value = r.carId;
+    document.getElementById('refuel-car-name').innerText = `${car ? car.icon : "🚗"} ${car ? car.name : "Auto"} (Muokkaus)`;
+    document.getElementById('refuel-km').value = r.km;
+    document.getElementById('refuel-liters').value = r.liters;
+    document.getElementById('refuel-price').value = r.totalPrice;
+    
+    document.getElementById('btn-refuel-delete').style.display = 'block'; // Näytä poisto
+    document.getElementById('btn-refuel-delete').onclick = () => deleteRefuel(key);
+    
+    calculateRefuelStats(); // Päivitä laskelmat
+    refuelModal.style.display = 'flex';
+}
+
+function findLastRefuelKm(carId) {
+    return new Promise(resolve => {
+        // Etsi viimeisin tankkaus tälle autolle
+        const carRefuels = allRefuelData.filter(r => r.carId === carId);
+        if(carRefuels.length === 0) {
+            resolve(0);
+        } else {
+            // Sorttaa km mukaan (suurin ensin)
+            carRefuels.sort((a,b) => b.km - a.km);
+            resolve(carRefuels[0].km);
+        }
+    });
+}
+
+window.calculateRefuelStats = () => {
     const l = parseFloat(document.getElementById('refuel-liters').value);
     const p = parseFloat(document.getElementById('refuel-price').value);
-    const display = document.getElementById('refuel-price-per-liter');
+    const k = parseFloat(document.getElementById('refuel-km').value);
+    const prev = parseFloat(document.getElementById('prev-km').innerText);
     
+    // Litrahinta
     if(l > 0 && p > 0) {
-        display.innerText = (p / l).toFixed(3);
+        document.getElementById('refuel-price-per-liter').innerText = (p / l).toFixed(3);
     } else {
-        display.innerText = "0.000";
+        document.getElementById('refuel-price-per-liter').innerText = "0.000";
+    }
+    
+    // Kulutus ja matka
+    if(k > prev && prev > 0 && l > 0) {
+        const dist = k - prev;
+        const cons = (l * 100) / dist;
+        document.getElementById('refuel-trip').innerText = dist.toFixed(0);
+        document.getElementById('refuel-cons').innerText = cons.toFixed(1);
+    } else {
+        document.getElementById('refuel-trip').innerText = "-";
+        document.getElementById('refuel-cons').innerText = "-";
     }
 }
 
@@ -897,21 +1029,40 @@ btnRefuelSave.addEventListener('click', () => {
     
     const refuelData = {
         carId: carId,
-        date: new Date().toISOString(),
+        date: new Date().toISOString(), 
         km: km,
         liters: liters,
         totalPrice: price,
         pricePerLiter: ppL
     };
     
-    db.ref('refuelings/' + currentUser.uid).push().set(refuelData)
-        .then(() => {
-            alert("Tankkaus tallennettu!");
-            refuelModal.style.display = 'none';
-        })
-        .catch(e => alert("Virhe: " + e.message));
+    if(refuelKey) {
+        // PÄIVITYS
+        db.ref('refuelings/' + currentUser.uid + '/' + refuelKey).update(refuelData)
+            .then(() => {
+                alert("Tankkaus päivitetty!");
+                refuelModal.style.display = 'none';
+            });
+    } else {
+        // UUSI
+        db.ref('refuelings/' + currentUser.uid).push().set(refuelData)
+            .then(() => {
+                alert("Tankkaus tallennettu!");
+                refuelModal.style.display = 'none';
+            })
+            .catch(e => alert("Virhe: " + e.message));
+    }
 });
 
+function deleteRefuel(key) {
+    if(confirm("Poista tankkausmerkintä?")) {
+        db.ref('refuelings/' + currentUser.uid + '/' + key).remove()
+            .then(() => refuelModal.style.display = 'none');
+    }
+}
+
+
+// UUSI: MUOKKAA AUTOA
 window.editCar = (id) => {
     const car = userCars.find(c => c.id === id);
     if(!car) return;
@@ -1061,6 +1212,7 @@ function loadHistory() {
                 allRefuelData.push({key: child.key, ...child.val()});
             });
         }
+        if (views.history.style.display !== 'none') renderRefuelList();
         if (views.stats.style.display !== 'none') renderStats();
     });
 }
@@ -1400,4 +1552,12 @@ function saveToFirebase(data) {
         alert("Virhe: Et ole kirjautunut sisään!");
     }
 }
-async function requestWakeLock() { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} }
+async function requestWakeLock() { 
+    try { 
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen'); 
+        }
+    } catch (err) {
+        console.log("Wake Lock ei onnistunut");
+    } 
+}
