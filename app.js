@@ -245,7 +245,7 @@ document.getElementById('app-logo').addEventListener('click', () => {
     switchView('dashboard');
 });
 
-// UUSI TANKKAUSNAPPI DASHBOARDISSA
+// UUSI TANKKAUS NAPPI DASHBOARDISSA
 document.getElementById('btn-quick-refuel').addEventListener('click', () => {
     if(currentCarId === 'all') {
         alert("Valitse ensin auto yläpalkin valikosta lisätäksesi tankkauksen!");
@@ -277,8 +277,7 @@ function switchView(viewName) {
     if (viewName === 'map') setTimeout(() => map.invalidateSize(), 100);
     
     if (viewName === 'history') {
-        // Oletuksena "Ajot"-välilehti
-        window.switchHistoryTab('drives');
+        window.switchHistoryTab('drives'); // Oletuksena "Ajot"-välilehti
     }
     if (viewName === 'settings') renderCarList();
     if (viewName === 'stats') renderStats();
@@ -669,7 +668,6 @@ let chartInstanceFuelPrice = null;
 let chartInstanceFuelCost = null; 
 
 function renderStats() {
-    // Renderoi ajotilastot
     if (allHistoryData.length > 0) {
         const monthlyData = {};
         const vehicleData = {};
@@ -972,7 +970,7 @@ window.openRefuelEdit = (key) => {
     document.getElementById('btn-refuel-delete').style.display = 'block'; // Näytä poisto
     document.getElementById('btn-refuel-delete').onclick = () => deleteRefuel(key);
     
-    calculateRefuelStats(); // Päivitä laskelmat
+    window.calculateRefuelStats(); // Päivitä laskelmat
     refuelModal.style.display = 'flex';
 }
 
@@ -1552,6 +1550,7 @@ function saveToFirebase(data) {
         alert("Virhe: Et ole kirjautunut sisään!");
     }
 }
+
 async function requestWakeLock() { 
     try { 
         if ('wakeLock' in navigator) {
