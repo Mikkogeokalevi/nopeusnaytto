@@ -1,5 +1,7 @@
 /* BOX-SIZING FIX */
-*, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after {
+    box-sizing: border-box;
+}
 
 :root {
     --bg-color: #121212;
@@ -74,7 +76,10 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     height: 60px; box-sizing: border-box; flex-shrink: 0;
     width: 100%;
 }
-.header-logo { height: 40px; width: 40px; border-radius: 50%; border: 2px solid var(--accent-color); cursor: pointer; }
+.header-logo { 
+    height: 40px; width: 40px; border-radius: 50%; border: 2px solid var(--accent-color); 
+    cursor: pointer;
+}
 
 .top-car-select {
     background-color: var(--bg-color); color: var(--text-color);
