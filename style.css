@@ -215,8 +215,6 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     padding: 15px 30px; border-radius: 30px; border: none; font-weight: bold;
     font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 1000; cursor: pointer;
 }
-
-/* UUSI: GPS TOGGLE NAPPI */
 .map-gps-btn {
     position: absolute; top: 10px; right: 10px; z-index: 1000;
     background-color: rgba(30,30,30,0.8); color: #fff;
@@ -225,8 +223,6 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 .map-gps-btn.inactive { background-color: rgba(100,100,100,0.8); color: #ccc; border-color: #555; }
-
-/* UUSI: VÄRILEGEND */
 .map-legend {
     position: absolute; bottom: 90px; right: 10px; z-index: 1000;
     background-color: rgba(255,255,255,0.9); padding: 5px 10px;
@@ -245,15 +241,24 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .log-card {
     background-color: rgba(30, 30, 30, 0.9); border: 1px solid var(--border-color);
     border-radius: 12px; padding: 15px; margin-bottom: 15px;
-    width: 100%;
+    width: 100%; position: relative; /* Tärkeä */
 }
 .light-theme .log-card { background-color: rgba(255, 255, 255, 0.95); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-.log-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+.log-header { 
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;
+}
 .light-theme .log-header { border-bottom: 1px solid rgba(0,0,0,0.1); }
 .log-date { font-size: 14px; color: var(--subtext-color); font-weight: bold; }
-.delete-btn { background: none; border: none; color: #ff4444; font-size: 20px; padding: 5px; cursor: pointer; }
-.edit-btn { background: none; border: none; color: var(--accent-color); font-size: 20px; padding: 5px; cursor: pointer; margin-right:10px; }
-.map-btn { background: none; border: none; color: #fbc02d; font-size: 20px; padding: 5px; cursor: pointer; margin-right: 10px; }
+
+/* KORJATUT NAPIT MOBIILILLE (ISOMPI KOKO JA Z-INDEX) */
+.delete-btn, .edit-btn, .map-btn { 
+    background: none; border: none; font-size: 24px; padding: 10px; /* Isompi padding */
+    cursor: pointer; position: relative; z-index: 100; /* Klikkaus päällimmäiseksi */
+}
+.delete-btn { color: #ff4444; }
+.edit-btn { color: var(--accent-color); margin-right:5px; }
+.map-btn { color: #fbc02d; margin-right: 5px; }
 
 .log-stats { display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 15px; flex-wrap: wrap; }
 .subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.2); color: var(--text-color); box-sizing: border-box; }
@@ -266,7 +271,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .light-theme .chart-container { background-color: rgba(255, 255, 255, 0.9); }
 .chart-container h3 { text-align: center; color: var(--accent-color); margin-top: 0; }
 
-/* AUTO KORTTI */
+/* AUTO KORTTI JA IKONIT */
 .car-item {
     background-color: rgba(41, 121, 255, 0.1); border: 1px solid var(--border-color);
     border-radius: 8px; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; width: 100%;
@@ -274,6 +279,20 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .car-details { font-size: 14px; }
 .car-title { font-weight: bold; font-size: 16px; color: var(--accent-color); }
 .car-actions { display: flex; gap: 10px; }
+
+/* UUSI: AUTON IKONI VALITSIN */
+.car-icon-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;
+    margin-bottom: 10px;
+}
+.car-icon-option {
+    font-size: 24px; text-align: center; cursor: pointer; padding: 5px;
+    border: 2px solid transparent; border-radius: 5px;
+    background-color: rgba(255,255,255,0.1);
+}
+.car-icon-option.selected-icon {
+    border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.2);
+}
 
 /* TAGIT */
 .log-tags { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; flex-wrap: wrap; }
