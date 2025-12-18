@@ -1,5 +1,5 @@
 const helpContent = `
-    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Mikkokalevin Ajopäiväkirja Pro – Käyttöopas v4.6</h2>
+    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Mikkokalevin Ajopäiväkirja Pro – Käyttöopas v4.9</h2>
     
     <div class="help-section">
         <h3>🚀 1. Käyttöönotto ja Tili</h3>
@@ -37,7 +37,7 @@ const helpContent = `
     </div>
 
     <div class="help-section">
-        <h3>⚙️ 2. Autotalli: Ajoneuvojen Hallinta</h3>
+        <h3>⚙️ 2. Autotalli: Kaluston Hallinta</h3>
         <p>Jotta tilastot pysyvät järkevinä, on tärkeää erotella millä laitteella liikut. "Autotalli"-ominaisuus mahdollistaa useiden ajoneuvojen hallinnan.</p>
         
         <div class="help-step">
@@ -46,7 +46,7 @@ const helpContent = `
             <br>Painamalla <strong>"Muokkaa" (✏️)</strong> voit korjata tietoja tai vaihtaa <strong>auton ikonia</strong>.
             <br>Valittavana on useita kuvakkeita (esim. 🚗, 🚙, 🏎️, 🚌, 🏍️). Tämä ikoni näkyy sitten kaikkialla sovelluksessa kyseisen auton kohdalla.
             <br><br>
-            <strong>Tyyppi-valinta:</strong>
+            <strong>Tyyppi-valinta (Tärkeä!):</strong>
             <br>Tärkein valinta on Tyyppi, sillä se muuttaa sovelluksen toimintalogiikkaa:
             <br><strong>🚗 Auto:</strong> Eco-mittari PÄÄLLÄ. Kartta zoom 14-18. Reitti värittyy punaisella 100km/h kohdalla.
             <br><strong>🚲 Pyörä:</strong> Eco-mittari POIS. Kartta zoom 19 (tarkka). Reitti värittyy punaisella 30km/h kohdalla.
@@ -74,6 +74,11 @@ const helpContent = `
                 <li><strong>Korkeus (m):</strong> Korkeus merenpinnasta. Tarkkuus riippuu puhelimen GPS-sirusta (yleensä +/- 10m).</li>
                 <li><strong>Sää:</strong> Sovellus hakee automaattisesti sijaintisi perusteella lähimmän säähavaintoaseman tiedot (Lämpötila + Sääikoni).</li>
             </ul>
+        </div>
+
+        <div class="help-step">
+            <strong>⛽ Pikatankkaus-nappi (UUSI):</strong>
+            Mittaristossa kellon vieressä on pieni tankkaus-ikoni. Sitä painamalla voit kirjata tankkauksen nopeasti juuri sillä hetkellä valittuna olevalle autolle.
         </div>
 
         <div class="help-step">
@@ -120,7 +125,7 @@ const helpContent = `
             <ul>
                 <li>Tarkista ajoneuvo.</li>
                 <li>Kirjoita aihe (esim. "Työmatka").</li>
-                <li>Paina "Tallenna". <strong>Huom:</strong> Nyt myös ajettu reitti tallentuu pilveen, mukaan lukien nopeustiedot väripiirtoa varten!</li>
+                <li>Paina "Tallenna". <strong>Huom:</strong> Nyt myös ajettu reitti tallentuu pilveen!</li>
             </ul>
         </div>
         
@@ -134,52 +139,76 @@ const helpContent = `
     </div>
 
     <div class="help-section">
-        <h3>📋 5. Historia ja 🗺️ Reitin Katselu</h3>
-        <p>Historia-sivu on ajopäiväkirjasi arkisto.</p>
+        <h3>⛽ 5. Tankkaus ja Kuluseuranta (Versio 4.9)</h3>
+        <p>Versio 4.9 tuo mukanaan täydellisen polttoainekirjanpidon.</p>
 
         <div class="help-step">
-            <strong>Suodatus:</strong>
-            Voit etsiä ajoja kahdella ehdolla:
-            <br>1. <strong>Ajoneuvo (Yläpalkki):</strong> Valitse auto nähdäksesi vain sen ajot.
-            <br>2. <strong>Aikaväli:</strong> Valitse "Vuosi", "Kuukausi" tai oma aikaväli.
+            <strong>Miten lisään tankkauksen?</strong>
+            <br>Paina joko mittariston <strong>⛽-nappia</strong> tai asetusten ajoneuvolistasta löytyvää tankkausikonia.
         </div>
 
         <div class="help-step">
-            <strong>Yhteenvetolaatikko:</strong>
-            Laskee yhteen valitun jakson kilometrit, ajokerrat ja ajan.
-        </div>
-
-        <div class="help-step">
-            <strong>🗺️ Reitin katselu kartalla:</strong>
-            Kun tallennat ajon tällä versiolla (4.4+), myös GPS-jälki tallentuu.
-            <br>Historia-listassa näkyy tällöin pieni <strong>karttaikoni (🗺️)</strong>.
-            <br>Painamalla sitä siirryt karttanäkymään. Reitti väritetään nopeuden mukaan:
-            <br>🔵 Sininen = Hidas
-            <br>🟢 Vihreä = Normaali
-            <br>🔴 Punainen = Nopea
-            <br><em>Huom: Voit kytkeä GPS:n pois päältä kartalla napista "📡 OFF", jotta kartta pysyy paikallaan zoomatessa.</em>
-        </div>
-
-        <div class="help-step">
-            <strong>✏️ Muokkaus:</strong>
-            Painamalla kynä-ikonia (✏️) voit jälkikäteen vaihtaa ajon toiselle autolle tai korjata otsikkoa.
-        </div>
-    </div>
-
-    <div class="help-section">
-        <h3>📊 6. Tilastot (UUSI)</h3>
-        <p>Visuaalinen katsaus ajohistoriaan (löytyy valikosta "Tilastot").</p>
-        <div class="help-step">
-            Tämä sivu laskee automaattisesti yhteen kaiken tallennetun datasi:
+            <strong>Mitä tietoja syötän?</strong>
             <ul>
-                <li><strong>Pylväsdiagrammi:</strong> Näyttää ajetut kilometrit kuukausitasolla (viimeiset 6kk). Auttaa hahmottamaan ajomäärien kehitystä ja vuodenaikojen vaihtelua.</li>
-                <li><strong>Piirakkakuvio (Donitsi):</strong> Näyttää miten kilometrit jakautuvat eri ajoneuvojen kesken. Näet heti, millä autolla tai pyörällä on ajettu eniten.</li>
+                <li><strong>Mittarilukema (km):</strong> Auton matkamittarin lukema tankkaushetkellä. Tämä on kriittinen kulutuksen laskemiseen.</li>
+                <li><strong>Litrat (l) / kWh:</strong> Paljonko tankkasit/latasit energiaa.</li>
+                <li><strong>Hinta (€):</strong> Koko tankkauksen hinta.</li>
+            </ul>
+        </div>
+
+        <div class="help-step">
+            <strong>Älykäs laskenta:</strong>
+            Kun syötät yllä olevat tiedot, sovellus laskee reaaliajassa:
+            <ul>
+                <li><strong>Litrahinnan (€/l):</strong> Näet heti oliko bensa kallista vai halpaa.</li>
+                <li><strong>Keskikulutuksen (l/100km):</strong> Sovellus etsii edellisen tankkauksen kilometrit ja vertaa niitä nykyiseen.</li>
             </ul>
         </div>
     </div>
 
     <div class="help-section">
-        <h3>🗺️ 7. Kartta ja Tasot</h3>
+        <h3>📋 6. Historia ja 🗺️ Reitin Katselu</h3>
+        <p>Historia-sivu on arkistosi, joka on nyt jaettu kahteen osaan.</p>
+
+        <div class="help-step">
+            <strong>Välilehdet:</strong>
+            <br><strong>[ 🚗 Ajot ]:</strong> Näyttää kaikki ajetut matkat, kartat ja nopeustiedot.
+            <br><strong>[ ⛽ Tankkaukset ]:</strong> Näyttää listan kaikista tankkauksista. Tästä näkymästä voit myös <strong>muokata (✏️)</strong> tai <strong>poistaa (🗑)</strong> virheellisiä tankkauksia.
+        </div>
+
+        <div class="help-step">
+            <strong>Suodatus:</strong>
+            Voit etsiä tietoja kahdella ehdolla:
+            <br>1. <strong>Ajoneuvo (Yläpalkki):</strong> Valitse auto nähdäksesi vain sen ajot/tankkaukset.
+            <br>2. <strong>Aikaväli:</strong> Valitse "Vuosi", "Kuukausi" tai oma aikaväli.
+        </div>
+
+        <div class="help-step">
+            <strong>🗺️ Reitin katselu kartalla:</strong>
+            Kun tallennat ajon tällä versiolla, myös GPS-jälki tallentuu.
+            <br>Historia-listassa näkyy tällöin pieni <strong>karttaikoni (🗺️)</strong>.
+            <br>Painamalla sitä siirryt karttanäkymään. Reitti väritetään nopeuden mukaan:
+            <br>🔵 Sininen = Hidas
+            <br>🟢 Vihreä = Normaali
+            <br>🔴 Punainen = Nopea
+        </div>
+    </div>
+
+    <div class="help-section">
+        <h3>📊 7. Tilastot (Graafit)</h3>
+        <p>Visuaalinen katsaus dataan. Nyt mukana neljä graafia:</p>
+        <div class="help-step">
+            <ul>
+                <li><strong>Kilometrit (Pylväät):</strong> Ajetut kilometrit kuukausitasolla.</li>
+                <li><strong>Ajoneuvojakauma (Donitsi):</strong> Millä autolla ajetaan eniten.</li>
+                <li><strong>⛽ Litrahinta (Viiva):</strong> Polttoaineen hinnan kehitys ajan myötä.</li>
+                <li><strong>💰 Tankkauskulut (Pylväät):</strong> Paljonko rahaa on palanut polttoaineeseen per kuukausi.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="help-section">
+        <h3>🗺️ 8. Kartta ja Tasot</h3>
         <div class="help-step">
             <strong>Älykäs Zoom:</strong>
             <ul>
@@ -193,52 +222,39 @@ const helpContent = `
             <ul>
                 <li><strong>Peruskartta:</strong> Selkeä tiekartta (OpenStreetMap).</li>
                 <li><strong>Satelliitti:</strong> Ilmakuva (Esri).</li>
-                <li><strong>Maastokartta (UUSI):</strong> Näyttää korkeuskäyrät ja maastonmuodot (OpenTopoMap). Erinomainen maastopyöräilyyn ja retkeilyyn.</li>
+                <li><strong>Maastokartta (UUSI):</strong> Näyttää korkeuskäyrät ja maastonmuodot (OpenTopoMap).</li>
             </ul>
         </div>
     </div>
 
     <div class="help-section">
-        <h3>❓ 8. Vianmääritys ja UKK (FAQ)</h3>
+        <h3>❓ 9. Vianmääritys ja UKK (FAQ)</h3>
         
         <div class="help-step">
             <strong>K: Näyttö sammuu itsestään ajon aikana?</strong>
-            <br>V: Sovellus käyttää "Wake Lock" -tekniikkaa pitääkseen näytön päällä. Kuitenkin, jos puhelimesi akku on vähissä ja "Virransäästötila" on päällä, puhelimen voi silti pakottaa näytön kiinni.
-            <br><em>Ratkaisu:</em> Kytke virransäästö pois tai lataa puhelinta ajon aikana.
+            <br>V: Sovellus yrittää pitää näytön päällä ("Wake Lock"), mutta puhelimen virransäästötila voi estää sen. Kytke virransäästö pois tai lataa puhelinta ajon aikana.
         </div>
 
         <div class="help-step">
             <strong>K: Reitti on vain suora viiva pisteestä A pisteeseen B?</strong>
-            <br>V: Tämä tarkoittaa, että sovellus ei ole saanut GPS-tietoja matkan aikana. Todennäköisesti näyttö on ollut kiinni tai sovellus on ollut taustalla (esim. olet käyttänyt WhatsAppia) pitkään.
+            <br>V: GPS-yhteys katkesi. Todennäköisesti näyttö on ollut kiinni tai sovellus on ollut taustalla (esim. WhatsAppissa) liian pitkään.
             <br><em>Ratkaisu:</em> Pidä sovellus auki näytöllä ajon aikana.
         </div>
 
         <div class="help-step">
-            <strong>K: Nopeus näyttää nollaa tai hyppii holtittomasti?</strong>
-            <br>V: Tämä johtuu heikosta GPS-signaalista. Oletko sisätiloissa, tunnelissa tai korkeiden rakennusten välissä?
-            <br><em>Ratkaisu:</em> GPS toimii vain ulkona, kun on suora näköyhteys taivaalle.
+            <strong>K: Tankkaus ei tallennu? (Permission Denied)</strong>
+            <br>V: Tietokannan säännöt on päivitetty versiossa 4.9. Jos ongelma jatkuu, kirjaudu ulos ja takaisin sisään.
         </div>
 
         <div class="help-step">
             <strong>K: Auto ei tallennu listalle asetuksissa?</strong>
-            <br>V: Varmista, että olet kirjautunut sisään. Jos yhteys pätkii, tietokantayhteys voi katketa.
-            <br><em>Ratkaisu:</em> Päivitä sivu (vedä alas tai paina selaimen refresh) ja kokeile uudestaan.
-        </div>
-
-        <div class="help-step">
-            <strong>K: Miksi kartasta ei voi hakea osoitteita?</strong>
-            <br>V: Tämä sovellus on ensisijaisesti "Tracker" (seuranta), ei "Navigaattori". Osoitehaku vaatisi maksullisia lisenssejä (kuten Google Maps API), jotka tekisivät sovelluksesta maksullisen.
-        </div>
-
-        <div class="help-step">
-            <strong>K: Miksi Eco-mittari ei toimi pyörällä?</strong>
-            <br>V: Polkupyörän ohjaustanko tärisee ja heiluu luonnostaan paljon enemmän kuin auto. Tämä aiheuttaisi jatkuvia virheellisiä hälytyksiä "aggressiivisesta ajosta", joten ominaisuus on kytketty pois päältä pyörä-moodissa.
+            <br>V: Varmista, että olet kirjautunut sisään. Jos yhteys pätkii, tietokantayhteys voi katketa. Päivitä sivu.
         </div>
     </div>
 
     <div style="text-align: center; margin-top: 50px; color: #888; font-size: 11px; padding-bottom: 30px;">
-        Mikkokalevin Ajopäiväkirja Pro v4.6 &copy; 2025<br>
-        Täyden palvelun ajoseuranta.
+        Mikkokalevin Ajopäiväkirja Pro v4.9 &copy; 2025<br>
+        Täyden palvelun ajoseuranta ja kulukirjanpito.
     </div>
 `;
 
