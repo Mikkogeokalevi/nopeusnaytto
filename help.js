@@ -1,5 +1,5 @@
 const helpContent = `
-    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Mikkokalevin Ajopäiväkirja Pro – Käyttöopas v4.2</h2>
+    <h2 style="text-align:center; color:var(--accent-color); margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Mikkokalevin Ajopäiväkirja Pro – Käyttöopas v4.6</h2>
     
     <div class="help-section">
         <h3>🚀 1. Käyttöönotto ja Tili</h3>
@@ -41,20 +41,15 @@ const helpContent = `
         <p>Jotta tilastot pysyvät järkevinä, on tärkeää erotella millä laitteella liikut. "Autotalli"-ominaisuus mahdollistaa useiden ajoneuvojen hallinnan.</p>
         
         <div class="help-step">
-            <strong>Ajoneuvon Lisääminen:</strong>
-            Mene valikosta kohtaan <strong>⚙️ Asetukset (Tallit)</strong> ja paina "Lisää ajoneuvo".
-            <br>Tärkein valinta on <strong>Tyyppi</strong>, sillä se muuttaa sovelluksen toimintalogiikkaa:
+            <strong>Ajoneuvon Lisääminen ja Muokkaus:</strong>
+            Mene valikosta kohtaan <strong>⚙️ Asetukset (Tallit)</strong>.
+            <br>Painamalla <strong>"Muokkaa" (✏️)</strong> voit korjata tietoja tai vaihtaa <strong>auton ikonia</strong>.
+            <br>Valittavana on useita kuvakkeita (esim. 🚗, 🚙, 🏎️, 🚌, 🏍️). Tämä ikoni näkyy sitten kaikkialla sovelluksessa kyseisen auton kohdalla.
             <br><br>
-            <strong>🚗 Tyyppi: Auto</strong>
-            <ul>
-                <li><strong>Ominaisuudet:</strong> Eco-mittari on PÄÄLLÄ (analysoi ajotapaa). Kartta käyttää laajempaa zoomausta maantienopeuksissa (Zoom 14-18).</li>
-                <li><strong>Tiedot:</strong> Voit tallentaa rekisterinumeron, käyttövoiman (Bensa/Diesel/Sähkö/Hybridi) ja tankin koon.</li>
-            </ul>
-            <strong>🚲 Tyyppi: Polkupyörä</strong>
-            <ul>
-                <li><strong>Ominaisuudet:</strong> Eco-mittari on POIS PÄÄLTÄ. Tämä siksi, että pyöräillessä puhelin tärisee ja heiluu tangossa luonnostaan, mikä aiheuttaisi jatkuvia virheellisiä "Aggressiivinen ajo" -hälytyksiä.</li>
-                <li><strong>Kartta:</strong> Käyttää huomattavasti tarkempaa zoomausta (Zoom 19), jotta erotat metsäpolut ja pyörätiet.</li>
-            </ul>
+            <strong>Tyyppi-valinta:</strong>
+            <br>Tärkein valinta on Tyyppi, sillä se muuttaa sovelluksen toimintalogiikkaa:
+            <br><strong>🚗 Auto:</strong> Eco-mittari PÄÄLLÄ. Kartta zoom 14-18. Reitti värittyy punaisella 100km/h kohdalla.
+            <br><strong>🚲 Pyörä:</strong> Eco-mittari POIS. Kartta zoom 19 (tarkka). Reitti värittyy punaisella 30km/h kohdalla.
         </div>
 
         <div class="help-step">
@@ -125,7 +120,7 @@ const helpContent = `
             <ul>
                 <li>Tarkista ajoneuvo.</li>
                 <li>Kirjoita aihe (esim. "Työmatka").</li>
-                <li>Paina "Tallenna". <strong>Huom:</strong> Nyt myös ajettu reitti tallentuu pilveen!</li>
+                <li>Paina "Tallenna". <strong>Huom:</strong> Nyt myös ajettu reitti tallentuu pilveen, mukaan lukien nopeustiedot väripiirtoa varten!</li>
             </ul>
         </div>
         
@@ -156,10 +151,13 @@ const helpContent = `
 
         <div class="help-step">
             <strong>🗺️ Reitin katselu kartalla:</strong>
-            Kun tallennat ajon tällä versiolla (4.1+), myös GPS-jälki tallentuu.
+            Kun tallennat ajon tällä versiolla (4.4+), myös GPS-jälki tallentuu.
             <br>Historia-listassa näkyy tällöin pieni <strong>karttaikoni (🗺️)</strong>.
-            <br>Painamalla sitä siirryt karttanäkymään, jossa kyseinen reitti piirretään <strong>oranssilla viivalla</strong>. Voit zoomata ja tarkastella missä ajoit.
-            <br><em>Huom: Vanhoissa ajoissa (ennen v4.1) ei ole reittidataa, joten niissä ikonia ei näy.</em>
+            <br>Painamalla sitä siirryt karttanäkymään. Reitti väritetään nopeuden mukaan:
+            <br>🔵 Sininen = Hidas
+            <br>🟢 Vihreä = Normaali
+            <br>🔴 Punainen = Nopea
+            <br><em>Huom: Voit kytkeä GPS:n pois päältä kartalla napista "📡 OFF", jotta kartta pysyy paikallaan zoomatessa.</em>
         </div>
 
         <div class="help-step">
@@ -205,7 +203,7 @@ const helpContent = `
         
         <div class="help-step">
             <strong>K: Näyttö sammuu itsestään ajon aikana?</strong>
-            <br>V: Sovellus käyttää "Wake Lock" -tekniikkaa pitääkseen näytön päällä. Kuitenkin, jos puhelimesi akku on vähissä ja "Virransäästötila" on päällä, puhelin voi silti pakottaa näytön kiinni.
+            <br>V: Sovellus käyttää "Wake Lock" -tekniikkaa pitääkseen näytön päällä. Kuitenkin, jos puhelimesi akku on vähissä ja "Virransäästötila" on päällä, puhelimen voi silti pakottaa näytön kiinni.
             <br><em>Ratkaisu:</em> Kytke virransäästö pois tai lataa puhelinta ajon aikana.
         </div>
 
@@ -239,7 +237,7 @@ const helpContent = `
     </div>
 
     <div style="text-align: center; margin-top: 50px; color: #888; font-size: 11px; padding-bottom: 30px;">
-        Mikkokalevin Ajopäiväkirja Pro v4.2 &copy; 2025<br>
+        Mikkokalevin Ajopäiväkirja Pro v4.6 &copy; 2025<br>
         Täyden palvelun ajoseuranta.
     </div>
 `;
