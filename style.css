@@ -1,8 +1,9 @@
-/* BOX-SIZING FIX */
+/* BOX-SIZING FIX - Tärkeä asettelulle */
 *, *::before, *::after {
     box-sizing: border-box;
 }
 
+/* VÄRIMUUTTUJAT (TUMMA TEEMA OLETUS) */
 :root {
     --bg-color: #121212;
     --panel-bg: #1e1e1e;
@@ -13,6 +14,7 @@
     --subtext-color: #888;
 }
 
+/* VAALEA TEEMA */
 body.light-theme {
     --bg-color: #f0f2f5;
     --panel-bg: #ffffff;
@@ -23,26 +25,40 @@ body.light-theme {
     --subtext-color: #555;
 }
 
+/* PERUSTYYLIT */
 body {
-    background-color: var(--bg-color); color: var(--text-color);
+    background-color: var(--bg-color); 
+    color: var(--text-color);
     font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-    margin: 0; display: flex; flex-direction: column; height: 100vh;
-    overflow: hidden; width: 100%; overflow-x: hidden;
+    margin: 0; 
+    display: flex; 
+    flex-direction: column; 
+    height: 100vh;
+    overflow: hidden; 
+    width: 100%; 
+    overflow-x: hidden;
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* TAUSTALOGO */
+/* TAUSTALOGO (VESILEIMA) */
 .watermark-bg { position: relative; z-index: 0; }
 .watermark-bg::before {
-    content: ""; position: absolute;
+    content: ""; 
+    position: absolute;
     top: 35%; left: 50%; transform: translate(-50%, -50%);
     width: 80%; height: 55%;
-    background-image: url('ajopaivakirja_logo_mu.png?v=4.8');
-    background-position: center; background-repeat: no-repeat; background-size: contain;
-    opacity: 0.1; z-index: -1; pointer-events: none;
+    background-image: url('ajopaivakirja_logo_mu.png?v=4.9');
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-size: contain;
+    opacity: 0.1; 
+    z-index: -1; 
+    pointer-events: none;
     transition: background-image 0.3s ease-in-out;
 }
-body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_logo.png?v=4.8'); }
+body.light-theme .watermark-bg::before { 
+    background-image: url('ajopaivakirja_logo.png?v=4.9'); 
+}
 
 /* KIRJAUTUMINEN */
 #login-view {
@@ -77,8 +93,8 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     width: 100%;
 }
 .header-logo { 
-    height: 40px; width: 40px; border-radius: 50%; border: 2px solid var(--accent-color); 
-    cursor: pointer;
+    height: 40px; width: 40px; border-radius: 50%; 
+    border: 2px solid var(--accent-color); cursor: pointer;
 }
 
 .top-car-select {
@@ -127,8 +143,14 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .menu-divider { width: 100%; border: 0; border-top: 1px solid var(--border-color); margin: 5px 0; }
 
 /* PÄÄSISÄLTÖ */
-.main-content { flex-grow: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; width: 100%; }
-.view-section { flex-grow: 1; display: flex; flex-direction: column; width: 100%; height: 100%; }
+.main-content { 
+    flex-grow: 1; position: relative; overflow: hidden; 
+    display: flex; flex-direction: column; width: 100%; 
+}
+.view-section { 
+    flex-grow: 1; display: flex; flex-direction: column; 
+    width: 100%; height: 100%; 
+}
 
 /* MITTARISTO */
 #dashboard-view { 
@@ -139,7 +161,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     width: 100%;
 }
 
-/* LIVE STATUS BAR (ECO) */
+/* ECO-MITTARI (STATUS BAR) */
 .status-bar {
     display: flex; gap: 15px; align-items: center; justify-content: center;
     margin-top: 10px; font-size: 14px; color: var(--subtext-color);
@@ -166,7 +188,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 #side-tap-left { left: 0; border-radius: 0 10px 10px 0; } 
 .side-tap-zone:active { width: 45px; background-color: var(--accent-color); color: #fff; }
 
-/* ISO NOPEUS */
+/* ISO NOPEUSNÄYTTÖ */
 .huge-speed-container { text-align: center; margin: 20px 0; }
 .huge-speed {
     font-size: 110px; font-weight: bold; color: var(--speed-color); line-height: 1;
@@ -174,7 +196,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .huge-unit { font-size: 24px; color: var(--subtext-color); font-weight: normal; display: block; text-align: center; margin-top:-10px; }
 
-/* GRIDI */
+/* DATAGRIDI */
 .stats-grid { 
     display: grid; grid-template-columns: 1fr 1fr; gap: 10px; 
     width: 100%; max-width: 400px; margin-bottom: 15px; margin-top: 10px; 
@@ -191,7 +213,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .stat-unit { font-size: 12px; color: var(--subtext-color); }
 .coords-box { font-family: monospace; color: var(--accent-color); margin-top: 5px; text-shadow: 0 0 5px black; font-size: 14px; }
 
-/* TIME & WEATHER */
+/* AIKA, SÄÄ JA TANKKAUSNAPPI */
 .time-weather-wrapper {
     display: flex; justify-content: center; align-items: center; gap: 20px;
     margin-top: 15px; text-align: center; width: 100%;
@@ -203,6 +225,16 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .time-right-col { display: flex; flex-direction: column; text-align: left; }
 .clock-box { font-size: 32px; font-weight: bold; color: var(--text-color); letter-spacing: 1px; line-height: 1; }
 .date-box { font-size: 16px; color: var(--subtext-color); margin-top: 0px; text-transform: capitalize; font-weight: bold; }
+
+/* UUSI: TANKKAUSNAPPI DASHBOARDISSA */
+.dash-refuel-btn {
+    background: none; border: 2px solid #aa00ff; border-radius: 50%;
+    color: #aa00ff; width: 50px; height: 50px; font-size: 24px;
+    cursor: pointer; display: flex; justify-content: center; align-items: center;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 0 10px rgba(170, 0, 255, 0.3);
+}
+.dash-refuel-btn:active { transform: scale(0.9); background: rgba(170, 0, 255, 0.2); }
 
 /* KARTTA */
 #map { flex-grow: 1; width: 100%; z-index: 1; }
@@ -246,29 +278,25 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .log-card {
     background-color: rgba(30, 30, 30, 0.9); border: 1px solid var(--border-color);
     border-radius: 12px; padding: 15px; margin-bottom: 15px;
-    width: 100%; position: relative; /* Tärkeä */
+    width: 100%; position: relative;
 }
 .light-theme .log-card { background-color: rgba(255, 255, 255, 0.95); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+/* UUSI HISTORIA HEADER (Iso auto, pieni pvm) */
 .log-header { 
     display: flex; justify-content: space-between; align-items: flex-start;
     margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;
 }
 .light-theme .log-header { border-bottom: 1px solid rgba(0,0,0,0.1); }
 
-.log-title-group {
-    display: flex; flex-direction: column;
-}
-.log-car-big {
-    font-size: 18px; font-weight: bold; color: var(--accent-color); margin-top: 2px;
-}
-.log-date-line {
-    font-size: 13px; color: var(--subtext-color);
-}
+.log-title-group { display: flex; flex-direction: column; }
+.log-car-big { font-size: 18px; font-weight: bold; color: var(--accent-color); margin-top: 2px; }
+.log-date-line { font-size: 13px; color: var(--subtext-color); }
 
-/* NAPIT MOBIILILLE (ISOMPI KOKO JA Z-INDEX) */
+/* NAPIT LISTOISSA */
 .delete-btn, .edit-btn, .map-btn, .refuel-btn { 
-    background: none; border: none; font-size: 24px; padding: 10px; /* Isompi padding */
-    cursor: pointer; position: relative; z-index: 100; /* Klikkaus päällimmäiseksi */
+    background: none; border: none; font-size: 24px; padding: 10px; 
+    cursor: pointer; position: relative; z-index: 100;
 }
 .delete-btn { color: #ff4444; }
 .edit-btn { color: var(--text-color); margin-right:5px; opacity: 0.7; }
@@ -278,6 +306,14 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .log-stats { display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 15px; flex-wrap: wrap; }
 .subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.2); color: var(--text-color); box-sizing: border-box; }
 
+/* UUSI: HISTORIA VÄLILEHDET */
+.history-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.history-tab {
+    padding: 10px 20px; background: none; border: 1px solid var(--border-color);
+    color: var(--text-color); border-radius: 20px; cursor: pointer;
+}
+.history-tab.active { background-color: var(--accent-color); border-color: var(--accent-color); color: #fff; }
+
 /* TILASTOT */
 .chart-container {
     background-color: rgba(30, 30, 30, 0.8); border-radius: 12px; padding: 15px;
@@ -286,7 +322,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .light-theme .chart-container { background-color: rgba(255, 255, 255, 0.9); }
 .chart-container h3 { text-align: center; color: var(--accent-color); margin-top: 0; }
 
-/* AUTO KORTTI JA IKONIT */
+/* AUTO KORTTI ASETUKSISSA */
 .car-item {
     background-color: rgba(41, 121, 255, 0.1); border: 1px solid var(--border-color);
     border-radius: 8px; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; width: 100%;
