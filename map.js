@@ -68,8 +68,14 @@ if (mapGpsToggle) {
 
 // 4. Reitin katselu historiasta
 window.showRouteOnMap = (key) => {
+    // 1. Vaihda näkymä ensin, jotta kartta tulee esiin
+    if(typeof switchView === 'function') switchView('map');
+
     const drive = allHistoryData.find(d => d.key === key);
-    if (!drive || !drive.route) { alert("Ei reittidataa."); return; }
+    if (!drive || !drive.route) { 
+        alert("Ei reittidataa."); 
+        return; 
+    }
 
     clearSavedRoute();
     
@@ -88,35 +94,39 @@ window.showRouteOnMap = (key) => {
     if(btnDash) btnDash.style.display = 'none';
     if(btnHist) btnHist.style.display = 'block';
 
-    // Tarkista formaatti
-    const isNewFormat = (drive.route.length > 0 && typeof drive.route[0] === 'object' && drive.route[0].lat);
+    // 2. Odota hetki, että kartta ehtii renderöityä (invalidateSize ui.js:ssä), ja piirrä sitten
+    setTimeout(() => {
+        if (!map) return;
+        map.invalidateSize(); // Varmuuden vuoksi vielä tässä
 
-    if (isNewFormat) {
-        // UUSI VÄRILLINEN REÏTTI
-        for (let i = 0; i < drive.route.length - 1; i++) {
-            const p1 = drive.route[i];
-            const p2 = drive.route[i+1];
+        // Tarkista formaatti
+        const isNewFormat = (drive.route.length > 0 && typeof drive.route[0] === 'object' && drive.route[0].lat);
+
+        if (isNewFormat) {
+            // UUSI VÄRILLINEN REÏTTI
+            for (let i = 0; i < drive.route.length - 1; i++) {
+                const p1 = drive.route[i];
+                const p2 = drive.route[i+1];
+                
+                const color = getSpeedColor(p1.spd || 0, drive.carType);
+                
+                const segment = L.polyline([[p1.lat, p1.lng], [p2.lat, p2.lng]], {
+                    color: color, 
+                    weight: 5, 
+                    opacity: 0.8
+                }).addTo(map);
+                
+                savedRouteLayers.push(segment);
+            }
+            const bounds = L.latLngBounds(drive.route.map(p => [p.lat, p.lng]));
+            map.fitBounds(bounds, {padding: [50, 50]});
             
-            const color = getSpeedColor(p1.spd || 0, drive.carType);
-            
-            const segment = L.polyline([[p1.lat, p1.lng], [p2.lat, p2.lng]], {
-                color: color, 
-                weight: 5, 
-                opacity: 0.8
-            }).addTo(map);
-            
-            savedRouteLayers.push(segment);
+        } else {
+            // VANHA VIIVA
+            savedRouteLayer = L.polyline(drive.route, {color: '#ff9100', weight: 5, opacity: 0.8}).addTo(map);
+            map.fitBounds(savedRouteLayer.getBounds(), {padding: [50, 50]});
         }
-        const bounds = L.latLngBounds(drive.route.map(p => [p.lat, p.lng]));
-        map.fitBounds(bounds, {padding: [50, 50]});
-        
-    } else {
-        // VANHA VIIVA
-        savedRouteLayer = L.polyline(drive.route, {color: '#ff9100', weight: 5, opacity: 0.8}).addTo(map);
-        map.fitBounds(savedRouteLayer.getBounds(), {padding: [50, 50]});
-    }
-    
-    if(typeof switchView === 'function') switchView('map');
+    }, 300); // 300ms viive piirtoon
 };
 
 // 5. Apufunktiot
@@ -132,7 +142,7 @@ function clearSavedRoute() {
     }
 }
 
-// UUSI VÄRILOGIIKKA (Herkempi sininen)
+// VÄRILOGIIKKA
 function getSpeedColor(speed, type) {
     // PYÖRÄ
     if (type === 'bike') {
@@ -142,7 +152,6 @@ function getSpeedColor(speed, type) {
     }
 
     // AUTO
-    // Nostettu sinisen rajaa 3 -> 20 km/h, jotta risteykset näkyvät
     if (speed < 20) return '#2979ff';  // Sininen (Hidas / Ruuhka / Valot)
     if (speed < 60) return '#00e676';  // Vihreä (Kaupunkiajo)
     if (speed < 90) return '#ffea00';  // Keltainen (Maantie)
