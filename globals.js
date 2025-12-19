@@ -75,3 +75,7 @@ var currentCarType = "car";
 // Tilastot (Chart.js instanssit)
 var chartInstanceMonthly = null;
 var chartInstanceVehicles = null;
+
+// Tankkausdata
+var allRefuelings = [];
+var currentRefuelingCarId = null; // Minkä auton tankkausta ollaan lisäämässä
