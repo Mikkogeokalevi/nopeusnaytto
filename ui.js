@@ -1,9 +1,9 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (FIXED)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
-// (Tämä alkuosa on sama kuin ennen, varmista että kaikki muuttujat ovat täällä)
+
 const splashScreen = document.getElementById('splash-screen');
 const loginView = document.getElementById('login-view');
 const appContainer = document.getElementById('app-container');
@@ -39,26 +39,6 @@ const navBtns = {
     settings: document.getElementById('nav-settings'),
     help: document.getElementById('nav-help')
 };
-
-// Modaalit
-const saveModal = document.getElementById('save-modal');
-const modalDistEl = document.getElementById('modal-dist');
-const modalTimeEl = document.getElementById('modal-time');
-const modalSubjectEl = document.getElementById('modal-subject');
-const modalCarNameEl = document.getElementById('modal-car-name');
-const btnModalSave = document.getElementById('btn-modal-save');
-const btnModalCancel = document.getElementById('btn-modal-cancel');
-
-const editModal = document.getElementById('edit-modal');
-const editKeyEl = document.getElementById('edit-key');
-const editSubjectEl = document.getElementById('edit-subject');
-const editCarSelectEl = document.getElementById('edit-car-select');
-const btnEditSave = document.getElementById('btn-edit-save');
-const btnEditCancel = document.getElementById('btn-edit-cancel');
-
-const deleteModal = document.getElementById('delete-modal');
-const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
-const btnDeleteCancel = document.getElementById('btn-delete-cancel');
 
 // Mittaristo UI
 const dashSpeedEl = document.getElementById('dash-speed');
@@ -103,6 +83,26 @@ const btnPause = document.getElementById('btn-pause');
 const btnResume = document.getElementById('btn-resume');
 const btnStopRec = document.getElementById('btn-stop-rec');
 
+// Modaalit (Haetaan turvallisesti)
+const saveModal = document.getElementById('save-modal');
+const modalDistEl = document.getElementById('modal-dist');
+const modalTimeEl = document.getElementById('modal-time');
+const modalSubjectEl = document.getElementById('modal-subject');
+const modalCarNameEl = document.getElementById('modal-car-name');
+const btnModalSave = document.getElementById('btn-modal-save');
+const btnModalCancel = document.getElementById('btn-modal-cancel');
+
+const editModal = document.getElementById('edit-modal');
+const editKeyEl = document.getElementById('edit-key');
+const editSubjectEl = document.getElementById('edit-subject');
+const editCarSelectEl = document.getElementById('edit-car-select');
+const btnEditSave = document.getElementById('btn-edit-save');
+const btnEditCancel = document.getElementById('btn-edit-cancel');
+
+const deleteModal = document.getElementById('delete-modal');
+const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
+const btnDeleteCancel = document.getElementById('btn-delete-cancel');
+
 // Autotalli lomakkeet
 const addCarForm = document.getElementById('add-car-form');
 const btnAddCar = document.getElementById('btn-add-car');
@@ -114,6 +114,7 @@ const carSpecificFields = document.getElementById('car-specific-fields');
 
 // --- 2. UI LOGIIKKA ---
 
+// Päänäkymän vaihtaja
 function switchView(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
     
@@ -129,6 +130,7 @@ function switchView(viewName) {
 
     // Näytä valittu
     if (views[viewName]) {
+        // Flexbox mittaristolle ja kartalle, jotta ne täyttävät ruudun oikein
         if (viewName === 'dashboard' || viewName === 'map') {
             views[viewName].style.display = 'flex';
         } else {
@@ -140,20 +142,22 @@ function switchView(viewName) {
         navBtns[viewName].classList.add('active-menu');
     }
 
-    // Kartalta poistuminen siivoaa jäljet
+    // Jos poistutaan kartalta
     if (viewName !== 'map') {
         if (typeof clearSavedRoute === 'function') clearSavedRoute();
         isViewingHistory = false;
         if(mapLegend) mapLegend.style.display = 'none';
     } else {
-        // OLEMME KARTALLA
+        // OLEMME KARTALLA - RESETOI NAPIT
         if (mapReturnBtn) mapReturnBtn.style.display = 'block';
         if (mapHistoryBtn) mapHistoryBtn.style.display = 'none';
         
-        // KORJAUS: Pakotetaan kartan päivitys HETI ja VIIVEELLÄ
+        // *** TÄRKEÄ KORJAUS: PAKOTA KARTAN PÄIVITYS ***
+        // Tehdään tämä useaan kertaan varmuuden vuoksi
         if (typeof map !== 'undefined' && map) {
-            map.invalidateSize(); // Heti
-            setTimeout(() => { map.invalidateSize(); }, 300); // Viiveellä
+            map.invalidateSize(); 
+            setTimeout(() => { map.invalidateSize(); }, 100);
+            setTimeout(() => { map.invalidateSize(); }, 500);
         }
     }
     
@@ -196,9 +200,10 @@ if (appLogo) appLogo.addEventListener('click', () => switchView('dashboard'));
 if (sideTapLeft) sideTapLeft.addEventListener('click', () => switchView('map'));
 if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
 
-// UUSI NAPPI: Takaisin historiaan
+// UUSI NAPPI: Takaisin historiaan (Suojattu)
 if (mapHistoryBtn) mapHistoryBtn.addEventListener('click', () => switchView('history'));
 
+// Navigaationapit (Suojattu)
 if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
 if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
 if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
