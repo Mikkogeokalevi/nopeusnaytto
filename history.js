@@ -6,7 +6,6 @@
 function loadHistory() {
     if (!currentUser) return;
 
-    // Poista vanha kuuntelija ja lisää uusi
     db.ref('ajopaivakirja/' + currentUser.uid).off();
     
     const historyRef = db.ref('ajopaivakirja/' + currentUser.uid)
@@ -23,12 +22,10 @@ function loadHistory() {
                 }
             });
         }
-        // Järjestä uusin ensin
         allHistoryData.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
         
         if(typeof populateFilter === 'function') populateFilter();
         
-        // Jos olemme "Ajot"-tabissa, renderöi lista.
         const logList = document.getElementById('log-list');
         if (logList && logList.style.display !== 'none') {
             renderHistoryList();
@@ -94,7 +91,6 @@ function renderHistoryList() {
     
     logList.innerHTML = "";
     
-    // Tarkistetaan onko yhtään ajoa
     if (allHistoryData.length === 0) {
         logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
         if(historySummaryEl) historySummaryEl.style.display = 'none';
@@ -116,7 +112,6 @@ function renderHistoryList() {
             let start = new Date(drive.startTime);
             if (isNaN(start.getTime())) return;
 
-            // Aikavälisuodatus
             if (selectedFilter !== 'all') {
                 if (selectedFilter === 'custom') {
                     const startInput = filterStart.value; const endInput = filterEnd.value;
@@ -133,7 +128,6 @@ function renderHistoryList() {
                 }
             }
 
-            // Data calculation
             let durationMinutes = 0;
             let durationMs = 0;
             if (drive.durationMs) {
@@ -149,7 +143,6 @@ function renderHistoryList() {
             totalKm += dist;
             totalMs += durationMs;
 
-            // UI Elements
             let mapBtn = "";
             if (drive.route && drive.route.length > 0) {
                 mapBtn = `<button class="map-btn" onclick="window.showRouteOnMap('${drive.key}')" title="Näytä reitti">🗺️</button>`;
@@ -192,7 +185,6 @@ function renderHistoryList() {
         } catch (err) { console.error(err); }
     });
 
-    // PÄIVITÄ YHTEENVETO (UUSI ID-JÄRJESTELMÄ)
     if (renderCount === 0) {
         logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei ajoja valittuna ajanjaksona.</p>";
         if(historySummaryEl) historySummaryEl.style.display = 'none';
@@ -200,15 +192,12 @@ function renderHistoryList() {
         const h = Math.floor(totalMs / 3600000);
         const m = Math.floor((totalMs % 3600000) / 60000);
         
-        // PAIKKA 1: KM
         document.getElementById('sum-val-1').innerText = totalKm.toFixed(1);
         document.getElementById('sum-label-1').innerText = "km";
 
-        // PAIKKA 2: KPL
         document.getElementById('sum-val-2').innerText = renderCount;
         document.getElementById('sum-label-2').innerText = "kpl";
 
-        // PAIKKA 3: AIKA
         document.getElementById('sum-val-3').innerText = `${h}h ${m}min`;
         document.getElementById('sum-label-3').innerText = "aika";
         
@@ -216,70 +205,219 @@ function renderHistoryList() {
     }
 }
 
-// 4. TILASTOT
-function renderStats() {
-    // Tankkaukset
-    let totalRefuelEur = 0;
-    let totalRefuelLit = 0;
-    if (allRefuelings && allRefuelings.length > 0) {
-        allRefuelings.forEach(ref => {
-            if (currentCarId === 'all' || ref.carId === currentCarId) {
-                totalRefuelEur += (parseFloat(ref.euros) || 0);
-                totalRefuelLit += (parseFloat(ref.liters) || 0);
-            }
-        });
-    }
-    const statFuelEur = document.getElementById('stat-fuel-eur');
-    const statFuelLit = document.getElementById('stat-fuel-lit');
-    if(statFuelEur) statFuelEur.innerText = totalRefuelEur.toFixed(2) + " €";
-    if(statFuelLit) statFuelLit.innerText = totalRefuelLit.toFixed(1) + " L";
+// 4. TILASTOT (GRAAFIT + TABIT)
+// --------------------------------------------------------------------------------
 
-    // Graafit
+// Kuuntelijat tilastovälilehdille
+const statTabDrives = document.getElementById('stat-tab-drives');
+const statTabFuel = document.getElementById('stat-tab-fuel');
+const statsDrivesContainer = document.getElementById('stats-drives-container');
+const statsFuelContainer = document.getElementById('stats-fuel-container');
+
+if(statTabDrives) {
+    statTabDrives.addEventListener('click', () => {
+        statsDrivesContainer.style.display = 'block';
+        statsFuelContainer.style.display = 'none';
+        statTabDrives.classList.add('blue-btn'); statTabDrives.style.backgroundColor = '';
+        statTabFuel.classList.remove('blue-btn'); statTabFuel.style.backgroundColor = '#333';
+        renderDriveStats();
+    });
+}
+
+if(statTabFuel) {
+    statTabFuel.addEventListener('click', () => {
+        statsDrivesContainer.style.display = 'none';
+        statsFuelContainer.style.display = 'block';
+        statTabFuel.classList.add('blue-btn'); statTabFuel.style.backgroundColor = '';
+        statTabDrives.classList.remove('blue-btn'); statTabDrives.style.backgroundColor = '#333';
+        renderFuelStats();
+    });
+}
+
+
+function renderStats() {
+    // Renderöi aktiivinen välilehti
+    if(statsFuelContainer && statsFuelContainer.style.display !== 'none') {
+        renderFuelStats();
+    } else {
+        renderDriveStats();
+    }
+}
+
+function renderDriveStats() {
     if (!allHistoryData || allHistoryData.length === 0) return;
     if (typeof Chart === 'undefined') return;
 
+    // DATA PREP
     const monthlyData = {};
     const vehicleData = {};
+    const styleData = { "Taloudellinen": 0, "Tasainen": 0, "Reipas": 0, "Aggressiivinen": 0 };
 
     allHistoryData.forEach(d => {
         const dist = parseFloat(d.distanceKm) || 0;
         const date = new Date(d.startTime);
+        
+        // Kuukausittaiset kilometrit
         const monthKey = `${date.getMonth()+1}/${date.getFullYear()}`;
         if (!monthlyData[monthKey]) monthlyData[monthKey] = 0;
         monthlyData[monthKey] += dist;
 
+        // Ajoneuvot
         let carObj = userCars.find(c => c.id === d.carId);
         let carIcon = carObj ? (carObj.icon || (carObj.type==='bike'?"🚲":"🚗")) : (d.carIcon || (d.carType==='bike'?"🚲":"🚗"));
         let carName = carObj ? carObj.name : (d.carName || "Muu");
         let label = `${carIcon} ${carName}`;
-        
         if (!vehicleData[label]) vehicleData[label] = 0;
         vehicleData[label] += dist;
+
+        // Ajotyyli
+        if(d.drivingStyle) {
+            if(!styleData[d.drivingStyle]) styleData[d.drivingStyle] = 0;
+            styleData[d.drivingStyle]++;
+        }
     });
 
     const monthLabels = Object.keys(monthlyData).reverse().slice(0, 6).reverse(); 
     const monthValues = monthLabels.map(k => monthlyData[k].toFixed(1));
-    const vehicleLabels = Object.keys(vehicleData);
-    const vehicleValues = Object.values(vehicleData).map(v => v.toFixed(1));
 
-    const canvasMonthly = document.getElementById('chart-monthly');
+    // 1. KILOMETRIT (BAR)
+    const canvasMonthly = document.getElementById('chart-drive-monthly');
     if (canvasMonthly) {
-        if (chartInstanceMonthly) { chartInstanceMonthly.destroy(); chartInstanceMonthly = null; }
+        if (chartInstanceMonthly) { chartInstanceMonthly.destroy(); }
         chartInstanceMonthly = new Chart(canvasMonthly.getContext('2d'), {
             type: 'bar',
             data: { labels: monthLabels, datasets: [{ label: 'Kilometrit', data: monthValues, backgroundColor: 'rgba(41, 121, 255, 0.6)', borderColor: 'rgba(41, 121, 255, 1)', borderWidth: 1 }] },
             options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
         });
     }
-    const canvasVehicles = document.getElementById('chart-vehicles');
+
+    // 2. AJONEUVOT (DOUGHNUT)
+    const canvasVehicles = document.getElementById('chart-drive-vehicles');
     if (canvasVehicles) {
-        if (chartInstanceVehicles) { chartInstanceVehicles.destroy(); chartInstanceVehicles = null; }
+        if (chartInstanceVehicles) { chartInstanceVehicles.destroy(); }
         chartInstanceVehicles = new Chart(canvasVehicles.getContext('2d'), {
             type: 'doughnut',
-            data: { labels: vehicleLabels, datasets: [{ data: vehicleValues, backgroundColor: ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)'], borderWidth: 1 }] }
+            data: { labels: Object.keys(vehicleData), datasets: [{ data: Object.values(vehicleData).map(v => v.toFixed(1)), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'], borderWidth: 1 }] }
+        });
+    }
+
+    // 3. AJOTYYLI (PIE)
+    const canvasStyle = document.getElementById('chart-drive-style');
+    if (canvasStyle) {
+        if (chartInstanceStyle) { chartInstanceStyle.destroy(); }
+        // Suodatetaan nollat pois
+        const filteredStyle = Object.entries(styleData).filter(([k,v]) => v > 0);
+        chartInstanceStyle = new Chart(canvasStyle.getContext('2d'), {
+            type: 'pie',
+            data: { 
+                labels: filteredStyle.map(x => x[0]), 
+                datasets: [{ 
+                    data: filteredStyle.map(x => x[1]),
+                    backgroundColor: ['#00c853', '#2979ff', '#fbc02d', '#ff1744'] // Vihreä, Sininen, Keltainen, Punainen
+                }] 
+            }
         });
     }
 }
+
+function renderFuelStats() {
+    if (!allRefuelings || allRefuelings.length === 0) return;
+    if (typeof Chart === 'undefined') return;
+
+    // DATA PREP
+    let totalRefuelEur = 0;
+    let totalRefuelLit = 0;
+    const monthlyCosts = {};
+    const priceTrend = [];
+    const carCosts = {};
+
+    // Lajitellaan tankkaukset vanhimmasta uusimpaan trendiä varten
+    const sortedRefs = [...allRefuelings].sort((a,b) => new Date(a.date) - new Date(b.date));
+
+    sortedRefs.forEach(ref => {
+        const eur = parseFloat(ref.euros) || 0;
+        const lit = parseFloat(ref.liters) || 0;
+        const price = parseFloat(ref.pricePerLiter) || 0;
+        const date = new Date(ref.date);
+
+        // Summat
+        totalRefuelEur += eur;
+        totalRefuelLit += lit;
+
+        // Kuukausikulut
+        const monthKey = `${date.getMonth()+1}/${date.getFullYear()}`;
+        if(!monthlyCosts[monthKey]) monthlyCosts[monthKey] = 0;
+        monthlyCosts[monthKey] += eur;
+
+        // Hintatrendi (X, Y)
+        if(price > 0) {
+            priceTrend.push({ x: date.toLocaleDateString('fi-FI'), y: price });
+        }
+
+        // Kulut per auto
+        const car = userCars.find(c => c.id === ref.carId);
+        const carName = car ? car.name : "Tuntematon";
+        if(!carCosts[carName]) carCosts[carName] = 0;
+        carCosts[carName] += eur;
+    });
+
+    // Päivitä yhteenvetolaatikko
+    const statFuelEur = document.getElementById('stat-fuel-eur');
+    const statFuelLit = document.getElementById('stat-fuel-lit');
+    if(statFuelEur) statFuelEur.innerText = totalRefuelEur.toFixed(2) + " €";
+    if(statFuelLit) statFuelLit.innerText = totalRefuelLit.toFixed(1) + " L";
+
+    // 1. KUUKAUSIKULUT (BAR)
+    const monthLabels = Object.keys(monthlyCosts); // Järjestys voi vaatia parantelua jos vuodet vaihtuu oudosti, mutta perusobjekti toimii usein ok
+    const monthValues = Object.values(monthlyCosts).map(v => v.toFixed(2));
+    
+    const canvasMonthly = document.getElementById('chart-fuel-monthly');
+    if (canvasMonthly) {
+        if (chartInstanceFuelMonthly) { chartInstanceFuelMonthly.destroy(); }
+        chartInstanceFuelMonthly = new Chart(canvasMonthly.getContext('2d'), {
+            type: 'bar',
+            data: { labels: monthLabels, datasets: [{ label: 'Euroa (€)', data: monthValues, backgroundColor: '#fbc02d', borderColor: '#fbc02d', borderWidth: 1 }] },
+            options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+        });
+    }
+
+    // 2. HINTATRENDI (LINE)
+    const canvasTrend = document.getElementById('chart-fuel-trend');
+    if (canvasTrend) {
+        if (chartInstanceFuelTrend) { chartInstanceFuelTrend.destroy(); }
+        chartInstanceFuelTrend = new Chart(canvasTrend.getContext('2d'), {
+            type: 'line',
+            data: { 
+                labels: priceTrend.map(p => p.x), 
+                datasets: [{ 
+                    label: 'Litrahinta (€)', 
+                    data: priceTrend.map(p => p.y), 
+                    borderColor: '#ff1744', 
+                    tension: 0.3,
+                    pointRadius: 3
+                }] 
+            },
+            options: { responsive: true }
+        });
+    }
+
+    // 3. KULUT PER AUTO (DOUGHNUT)
+    const canvasCar = document.getElementById('chart-fuel-car');
+    if (canvasCar) {
+        if (chartInstanceFuelCar) { chartInstanceFuelCar.destroy(); }
+        chartInstanceFuelCar = new Chart(canvasCar.getContext('2d'), {
+            type: 'doughnut',
+            data: { 
+                labels: Object.keys(carCosts), 
+                datasets: [{ 
+                    data: Object.values(carCosts).map(v => v.toFixed(2)), 
+                    backgroundColor: ['#36A2EB', '#FF6384', '#4BC0C0', '#FF9F40'] 
+                }] 
+            }
+        });
+    }
+}
+
 
 // 5. APUFUNKTIOT
 window.openEditLogModal = (key) => {
