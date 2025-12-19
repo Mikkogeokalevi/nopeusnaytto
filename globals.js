@@ -1,6 +1,9 @@
 // =========================================================
-// 1. FIREBASE ALUSTUS (GLOBAL)
+// 1. ASETUKSET JA VERSIO (GLOBAL)
 // =========================================================
+
+// TÄMÄ ON PÄÄVERSIONUMERO - Muuta tätä, niin se päivittyy kaikkialle
+const APP_VERSION = "5.1"; 
 
 const firebaseConfig = {
     apiKey: "AIzaSyCZIupycr2puYrPK2KajAW7PcThW9Pjhb0",
@@ -78,4 +81,4 @@ var chartInstanceVehicles = null;
 
 // Tankkausdata
 var allRefuelings = [];
-var currentRefuelingCarId = null; // Minkä auton tankkausta ollaan lisäämässä
+var currentRefuelingCarId = null;
