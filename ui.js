@@ -1,8 +1,10 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄ (FIXED GLOBAL SCOPE)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT
 // =========================================================
 
-// --- DOM ELEMENTIT ---
+// --- 1. DOM ELEMENTIT ---
+
+// Päänäkymät
 const splashScreen = document.getElementById('splash-screen');
 const loginView = document.getElementById('login-view');
 const appContainer = document.getElementById('app-container');
@@ -17,7 +19,7 @@ const appLogo = document.getElementById('app-logo');
 // Sivupainikkeet
 const sideTapLeft = document.getElementById('side-tap-left');
 const mapReturnBtn = document.getElementById('map-return-btn');
-const mapHistoryBtn = document.getElementById('map-history-btn'); 
+const mapHistoryBtn = document.getElementById('map-history-btn'); // UUSI NAPPI
 
 // Näkymät
 const views = {
@@ -38,6 +40,26 @@ const navBtns = {
     settings: document.getElementById('nav-settings'),
     help: document.getElementById('nav-help')
 };
+
+// Modaalit
+const saveModal = document.getElementById('save-modal');
+const modalDistEl = document.getElementById('modal-dist');
+const modalTimeEl = document.getElementById('modal-time');
+const modalSubjectEl = document.getElementById('modal-subject');
+const modalCarNameEl = document.getElementById('modal-car-name');
+const btnModalSave = document.getElementById('btn-modal-save');
+const btnModalCancel = document.getElementById('btn-modal-cancel');
+
+const editModal = document.getElementById('edit-modal');
+const editKeyEl = document.getElementById('edit-key');
+const editSubjectEl = document.getElementById('edit-subject');
+const editCarSelectEl = document.getElementById('edit-car-select');
+const btnEditSave = document.getElementById('btn-edit-save');
+const btnEditCancel = document.getElementById('btn-edit-cancel');
+
+const deleteModal = document.getElementById('delete-modal');
+const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
+const btnDeleteCancel = document.getElementById('btn-delete-cancel');
 
 // Mittaristo UI
 const dashSpeedEl = document.getElementById('dash-speed');
@@ -82,26 +104,6 @@ const btnPause = document.getElementById('btn-pause');
 const btnResume = document.getElementById('btn-resume');
 const btnStopRec = document.getElementById('btn-stop-rec');
 
-// Modaalit
-const saveModal = document.getElementById('save-modal');
-const modalDistEl = document.getElementById('modal-dist');
-const modalTimeEl = document.getElementById('modal-time');
-const modalSubjectEl = document.getElementById('modal-subject');
-const modalCarNameEl = document.getElementById('modal-car-name');
-const btnModalSave = document.getElementById('btn-modal-save');
-const btnModalCancel = document.getElementById('btn-modal-cancel');
-
-const editModal = document.getElementById('edit-modal');
-const editKeyEl = document.getElementById('edit-key');
-const editSubjectEl = document.getElementById('edit-subject');
-const editCarSelectEl = document.getElementById('edit-car-select');
-const btnEditSave = document.getElementById('btn-edit-save');
-const btnEditCancel = document.getElementById('btn-edit-cancel');
-
-const deleteModal = document.getElementById('delete-modal');
-const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
-const btnDeleteCancel = document.getElementById('btn-delete-cancel');
-
 // Autotalli lomakkeet
 const addCarForm = document.getElementById('add-car-form');
 const btnAddCar = document.getElementById('btn-add-car');
@@ -111,10 +113,9 @@ const carTypeSelect = document.getElementById('car-type');
 const carSpecificFields = document.getElementById('car-specific-fields');
 
 
-// --- 2. UI LOGIIKKA (GLOBAALIT FUNKTIOT) ---
+// --- 2. UI LOGIIKKA ---
 
-// Määritellään window-objektiin, jotta HTML löytää nämä varmasti
-window.switchView = function(viewName) {
+function switchView(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
     
     // Piilota kaikki näkymät
@@ -140,46 +141,40 @@ window.switchView = function(viewName) {
         navBtns[viewName].classList.add('active-menu');
     }
 
-    // KARTAN KÄSITTELY
+    // Kartalta poistuminen siivoaa jäljet
     if (viewName !== 'map') {
-        if (typeof window.clearSavedRoute === 'function') window.clearSavedRoute();
+        if (typeof clearSavedRoute === 'function') clearSavedRoute();
         isViewingHistory = false;
         if(mapLegend) mapLegend.style.display = 'none';
     } else {
-        // Kartalle tulo
+        // Jos tullaan kartalle (eikä historiasta), näytä perusnapit
+        // map.js hoitaa tämän jos tullaan historiasta, mutta tässä resetoidaan
         if (mapReturnBtn) mapReturnBtn.style.display = 'block';
         if (mapHistoryBtn) mapHistoryBtn.style.display = 'none';
-        
-        // PAKOTA KARTAN PÄIVITYS (FIX HARMAA RUUTU)
-        if (typeof map !== 'undefined' && map) {
-            map.invalidateSize();
-            setTimeout(() => { map.invalidateSize(); }, 200);
-            setTimeout(() => { map.invalidateSize(); }, 500);
-        }
+        setTimeout(() => { if(map) map.invalidateSize(); }, 100);
     }
     
     // Lataa listat tarvittaessa
-    if (viewName === 'history' && typeof loadHistory === 'function') loadHistory(); // Varmistus
     if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
-};
+}
 
-window.updateDashboardUI = function(spd, max, dist, time, alt, avg) {
+function updateDashboardUI(spd, max, dist, time, alt, avg) {
     if(dashSpeedEl) dashSpeedEl.innerText = spd.toFixed(1); 
     if(dashMaxSpeedEl) dashMaxSpeedEl.innerText = max.toFixed(1);
     if(dashDistEl) dashDistEl.innerText = dist.toFixed(2); 
     if(dashAltEl) dashAltEl.innerText = Math.round(alt);
     if(avg !== undefined && dashAvgEl) dashAvgEl.innerText = avg.toFixed(1);
-};
+}
 
-window.updateClockAndDate = function() {
+function updateClockAndDate() {
     const now = new Date();
     if(dashClockEl) dashClockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     if(dashDateEl) dashDateEl.innerText = now.toLocaleDateString('fi-FI', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
-};
-setInterval(window.updateClockAndDate, 1000);
-window.updateClockAndDate();
+}
+setInterval(updateClockAndDate, 1000);
+updateClockAndDate();
 
 
 // --- 3. TAPAHTUMANKUUNTELIJAT ---
@@ -194,15 +189,16 @@ if (menuBtn) {
     });
 }
 
-if (appLogo) appLogo.addEventListener('click', () => window.switchView('dashboard'));
-if (sideTapLeft) sideTapLeft.addEventListener('click', () => window.switchView('map'));
-if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => window.switchView('dashboard'));
-if (mapHistoryBtn) mapHistoryBtn.addEventListener('click', () => window.switchView('history'));
+if (appLogo) appLogo.addEventListener('click', () => switchView('dashboard'));
+if (sideTapLeft) sideTapLeft.addEventListener('click', () => switchView('map'));
+if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
 
-// Navigaationapit
-if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => window.switchView('dashboard'));
-if (navBtns.map) navBtns.map.addEventListener('click', () => window.switchView('map'));
-if (navBtns.history) navBtns.history.addEventListener('click', () => window.switchView('history'));
-if (navBtns.stats) navBtns.stats.addEventListener('click', () => window.switchView('stats'));
-if (navBtns.settings) navBtns.settings.addEventListener('click', () => window.switchView('settings'));
-if (navBtns.help) navBtns.help.addEventListener('click', () => window.switchView('help'));
+// UUSI NAPPI: Takaisin historiaan
+if (mapHistoryBtn) mapHistoryBtn.addEventListener('click', () => switchView('history'));
+
+if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
+if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
+if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
+if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('stats'));
+if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
+if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
