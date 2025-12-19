@@ -10,10 +10,19 @@ if (btnActivate) {
     btnActivate.addEventListener('click', () => {
         if (!isGPSActive) {
             startGPS();
+            
+            // 1. Piilota aktivointinappi
             btnActivate.style.display = 'none';
+            
+            // 2. Näytä kontrollialue
             if(document.getElementById('rec-controls')) {
                 document.getElementById('rec-controls').style.display = 'flex';
             }
+
+            // 3. KORJAUS: Varmista, että vain ALOITA-nappi näkyy aluksi
+            if(activeRecBtns) activeRecBtns.style.display = 'none'; // Piilota Tauko/Lopeta
+            if(btnStartRec) btnStartRec.style.display = 'inline-block'; // Näytä Aloita
+            
             if(statusEl) statusEl.innerText = "GPS Päällä";
         }
     });
@@ -70,7 +79,7 @@ if (btnStartRec) {
             }
         }
         
-        // Päivitä napit
+        // Päivitä napit (Piilota Aloita, näytä Tauko/Lopeta)
         btnStartRec.style.display = 'none';
         activeRecBtns.style.display = 'flex';
         btnPause.style.display = 'inline-block';
