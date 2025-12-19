@@ -4,13 +4,8 @@
 
 // 1. HISTORIAN LATAUS
 function loadHistory() {
-    if (!currentUser) {
-        console.log("loadHistory: Ei käyttäjää, keskeytetään.");
-        return;
-    }
+    if (!currentUser) return;
 
-    console.log("loadHistory: Aloitetaan lataus käyttäjälle", currentUser.uid);
-    
     // Poista vanha kuuntelija ja lisää uusi
     db.ref('ajopaivakirja/' + currentUser.uid).off();
     
@@ -19,9 +14,7 @@ function loadHistory() {
                          .limitToLast(300);
 
     historyRef.on('value', (snapshot) => {
-        console.log("loadHistory: Data saapui Firebasesta.");
         allHistoryData = [];
-        
         if (snapshot.exists()) {
             snapshot.forEach(child => {
                 const data = child.val();
@@ -30,28 +23,26 @@ function loadHistory() {
                 }
             });
         }
-
         // Järjestä uusin ensin
         allHistoryData.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
         
-        // Päivitä suodatinvalikko
         if(typeof populateFilter === 'function') populateFilter();
         
-        // Päivitä lista
-        if(typeof renderHistoryList === 'function') renderHistoryList();
+        // Jos olemme "Ajot"-tabissa, renderöi lista.
+        const logList = document.getElementById('log-list');
+        if (logList && logList.style.display !== 'none') {
+            renderHistoryList();
+        }
         
-        // Päivitä tilastot
         if(typeof renderStats === 'function') renderStats();
 
     }, (error) => {
-        console.error("loadHistory VIRHE:", error);
         const logList = document.getElementById('log-list');
         if(logList) logList.innerHTML = `<p style="color:red; text-align:center;">Virhe: ${error.message}</p>`;
     });
 }
 
 // 2. SUODATUS LOGIIKKA
-
 if(filterEl) {
     filterEl.addEventListener('change', () => {
         if (filterEl.value === 'custom') {
@@ -62,28 +53,21 @@ if(filterEl) {
         }
     });
 }
-
 if(filterStart) filterStart.addEventListener('change', renderHistoryList);
 if(filterEnd) filterEnd.addEventListener('change', renderHistoryList);
 
 function populateFilter() {
     if(!filterEl) return;
-    
     const currentVal = filterEl.value;
-    filterEl.innerHTML = `
-        <option value="all">Kaikki ajot</option>
-        <option value="custom">Mukautettu aikaväli...</option>
-    `;
+    filterEl.innerHTML = `<option value="all">Kaikki ajot</option><option value="custom">Mukautettu aikaväli...</option>`;
     
     const periods = new Set();
-    
     allHistoryData.forEach(drive => {
         if (drive.startTime) {
             const d = new Date(drive.startTime);
             if (!isNaN(d.getTime())) {
                 const yearKey = "YEAR-" + d.getFullYear();
                 periods.add(JSON.stringify({key: yearKey, label: "Vuosi " + d.getFullYear(), sort: d.getFullYear() * 100}));
-
                 const monthKey = d.getFullYear() + '-' + (d.getMonth() + 1);
                 const monthLabel = d.toLocaleString('fi-FI', { month: 'long', year: 'numeric' });
                 const finalMonthLabel = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
@@ -91,19 +75,15 @@ function populateFilter() {
             }
         }
     });
-
     const sortedPeriods = Array.from(periods).map(p => JSON.parse(p)).sort((a, b) => b.sort - a.sort);
-
     sortedPeriods.forEach(p => {
         const option = document.createElement('option');
         option.value = p.key;
         option.innerText = p.label;
         filterEl.appendChild(option);
     });
-
     if (currentVal && Array.from(filterEl.options).some(o => o.value === currentVal)) {
         filterEl.value = currentVal;
-        if(currentVal === 'custom' && customFilterContainer) customFilterContainer.style.display = 'block';
     }
 }
 
@@ -114,6 +94,7 @@ function renderHistoryList() {
     
     logList.innerHTML = "";
     
+    // Tarkistetaan onko yhtään ajoa
     if (allHistoryData.length === 0) {
         logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
         if(historySummaryEl) historySummaryEl.style.display = 'none';
@@ -127,7 +108,6 @@ function renderHistoryList() {
 
     allHistoryData.forEach(drive => {
         try {
-            // Suodatus autotallin valinnan mukaan
             if (currentCarId !== 'all') {
                 if (drive.carId && drive.carId !== currentCarId) return;
                 if (!drive.carId) return;
@@ -153,7 +133,7 @@ function renderHistoryList() {
                 }
             }
 
-            // Ajan laskenta
+            // Data calculation
             let durationMinutes = 0;
             let durationMs = 0;
             if (drive.durationMs) {
@@ -161,42 +141,32 @@ function renderHistoryList() {
                 durationMinutes = Math.floor(drive.durationMs / 60000);
             } else if (drive.endTime && start) {
                 const end = new Date(drive.endTime);
-                if (!isNaN(end.getTime())) {
-                    durationMs = (end - start);
-                    durationMinutes = Math.floor(durationMs / 60000);
-                }
+                if (!isNaN(end.getTime())) durationMs = (end - start);
+                durationMinutes = Math.floor(durationMs / 60000);
             }
             
             const dist = parseFloat(drive.distanceKm) || 0;
             totalKm += dist;
             totalMs += durationMs;
 
-            // Karttanappi
+            // UI Elements
             let mapBtn = "";
             if (drive.route && drive.route.length > 0) {
                 mapBtn = `<button class="map-btn" onclick="window.showRouteOnMap('${drive.key}')" title="Näytä reitti">🗺️</button>`;
             }
-
-            // Hae ikoni
             let carObj = userCars.find(c => c.id === drive.carId);
             let icon = carObj ? (carObj.icon || (carObj.type==='bike'?"🚲":"🚗")) : (drive.carIcon || (drive.carType==='bike'?"🚲":"🚗"));
             let carName = carObj ? carObj.name : (drive.carName || "Muu");
-
-            // Muotoilu
             let dateStr = start.toLocaleDateString('fi-FI');
             let startH = start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
-            let endH = "";
-            if (drive.endTime) {
-                endH = " - " + new Date(drive.endTime).toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
-            }
-            let timeRange = `(${startH}${endH})`;
+            let endH = drive.endTime ? " - " + new Date(drive.endTime).toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'}) : "";
 
             const card = document.createElement('div');
             card.className = 'log-card';
             card.innerHTML = `
                 <div class="log-header">
                     <div class="log-title-group">
-                        <div class="log-date-line">${dateStr} ${timeRange}</div>
+                        <div class="log-date-line">${dateStr} (${startH}${endH})</div>
                         <div class="log-car-big">${icon} ${carName}</div>
                     </div>
                     <div style="display:flex; align-items:center;">
@@ -219,48 +189,52 @@ function renderHistoryList() {
             `;
             logList.appendChild(card);
             renderCount++;
-
         } catch (err) { console.error(err); }
     });
 
+    // PÄIVITÄ YHTEENVETO (UUSI ID-JÄRJESTELMÄ)
     if (renderCount === 0) {
         logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei ajoja valittuna ajanjaksona.</p>";
         if(historySummaryEl) historySummaryEl.style.display = 'none';
     } else {
-        if(sumKmEl) sumKmEl.innerText = totalKm.toFixed(1);
-        if(sumCountEl) sumCountEl.innerText = renderCount;
-        
         const h = Math.floor(totalMs / 3600000);
         const m = Math.floor((totalMs % 3600000) / 60000);
-        if(sumTimeEl) sumTimeEl.innerText = `${h}h ${m}min`;
+        
+        // PAIKKA 1: KM
+        document.getElementById('sum-val-1').innerText = totalKm.toFixed(1);
+        document.getElementById('sum-label-1').innerText = "km";
+
+        // PAIKKA 2: KPL
+        document.getElementById('sum-val-2').innerText = renderCount;
+        document.getElementById('sum-label-2').innerText = "kpl";
+
+        // PAIKKA 3: AIKA
+        document.getElementById('sum-val-3').innerText = `${h}h ${m}min`;
+        document.getElementById('sum-label-3').innerText = "aika";
         
         if(historySummaryEl) historySummaryEl.style.display = 'flex';
     }
 }
 
-// 4. TILASTOT (GRAAFIT + TANKKAUS)
+// 4. TILASTOT
 function renderStats() {
-    // 4.1 PÄIVITÄ TANKKAUSYHTEENVETO
+    // Tankkaukset
     let totalRefuelEur = 0;
     let totalRefuelLit = 0;
-    
     if (allRefuelings && allRefuelings.length > 0) {
         allRefuelings.forEach(ref => {
-            // Huomioi auton valinta (jos valittu "Kaikki", laske kaikki)
             if (currentCarId === 'all' || ref.carId === currentCarId) {
                 totalRefuelEur += (parseFloat(ref.euros) || 0);
                 totalRefuelLit += (parseFloat(ref.liters) || 0);
             }
         });
     }
-
     const statFuelEur = document.getElementById('stat-fuel-eur');
     const statFuelLit = document.getElementById('stat-fuel-lit');
     if(statFuelEur) statFuelEur.innerText = totalRefuelEur.toFixed(2) + " €";
     if(statFuelLit) statFuelLit.innerText = totalRefuelLit.toFixed(1) + " L";
 
-
-    // 4.2 PÄIVITÄ GRAAFIT
+    // Graafit
     if (!allHistoryData || allHistoryData.length === 0) return;
     if (typeof Chart === 'undefined') return;
 
@@ -270,16 +244,13 @@ function renderStats() {
     allHistoryData.forEach(d => {
         const dist = parseFloat(d.distanceKm) || 0;
         const date = new Date(d.startTime);
-        
         const monthKey = `${date.getMonth()+1}/${date.getFullYear()}`;
         if (!monthlyData[monthKey]) monthlyData[monthKey] = 0;
         monthlyData[monthKey] += dist;
 
-        // Hae oikea ikoni ja nimi
         let carObj = userCars.find(c => c.id === d.carId);
         let carIcon = carObj ? (carObj.icon || (carObj.type==='bike'?"🚲":"🚗")) : (d.carIcon || (d.carType==='bike'?"🚲":"🚗"));
         let carName = carObj ? carObj.name : (d.carName || "Muu");
-        
         let label = `${carIcon} ${carName}`;
         
         if (!vehicleData[label]) vehicleData[label] = 0;
@@ -293,69 +264,29 @@ function renderStats() {
 
     const canvasMonthly = document.getElementById('chart-monthly');
     if (canvasMonthly) {
-        if (chartInstanceMonthly) {
-            chartInstanceMonthly.destroy();
-            chartInstanceMonthly = null;
-        }
-        const ctxMonthly = canvasMonthly.getContext('2d');
-        
-        chartInstanceMonthly = new Chart(ctxMonthly, {
+        if (chartInstanceMonthly) { chartInstanceMonthly.destroy(); chartInstanceMonthly = null; }
+        chartInstanceMonthly = new Chart(canvasMonthly.getContext('2d'), {
             type: 'bar',
-            data: {
-                labels: monthLabels,
-                datasets: [{
-                    label: 'Kilometrit',
-                    data: monthValues,
-                    backgroundColor: 'rgba(41, 121, 255, 0.6)',
-                    borderColor: 'rgba(41, 121, 255, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true } },
-                plugins: { legend: { display: false } }
-            }
+            data: { labels: monthLabels, datasets: [{ label: 'Kilometrit', data: monthValues, backgroundColor: 'rgba(41, 121, 255, 0.6)', borderColor: 'rgba(41, 121, 255, 1)', borderWidth: 1 }] },
+            options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
         });
     }
-
     const canvasVehicles = document.getElementById('chart-vehicles');
     if (canvasVehicles) {
-        if (chartInstanceVehicles) {
-            chartInstanceVehicles.destroy();
-            chartInstanceVehicles = null;
-        }
-        const ctxVehicles = canvasVehicles.getContext('2d');
-        
-        chartInstanceVehicles = new Chart(ctxVehicles, {
+        if (chartInstanceVehicles) { chartInstanceVehicles.destroy(); chartInstanceVehicles = null; }
+        chartInstanceVehicles = new Chart(canvasVehicles.getContext('2d'), {
             type: 'doughnut',
-            data: {
-                labels: vehicleLabels,
-                datasets: [{
-                    data: vehicleValues,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.7)',
-                        'rgba(54, 162, 235, 0.7)',
-                        'rgba(255, 206, 86, 0.7)',
-                        'rgba(75, 192, 192, 0.7)',
-                        'rgba(153, 102, 255, 0.7)'
-                    ],
-                    borderWidth: 1
-                }]
-            }
+            data: { labels: vehicleLabels, datasets: [{ data: vehicleValues, backgroundColor: ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)'], borderWidth: 1 }] }
         });
     }
 }
 
-// 5. MUOKKAUS JA POISTO (Globaalit funktiot)
-
+// 5. APUFUNKTIOT
 window.openEditLogModal = (key) => {
     const drive = allHistoryData.find(d => d.key === key);
     if (!drive) return;
-
     if(editKeyEl) editKeyEl.value = key;
     if(editSubjectEl) editSubjectEl.value = drive.subject || "";
-    
     if(editCarSelectEl) {
         editCarSelectEl.innerHTML = "";
         userCars.forEach(car => {
@@ -367,7 +298,6 @@ window.openEditLogModal = (key) => {
             editCarSelectEl.appendChild(opt);
         });
     }
-
     if(editModal) editModal.style.display = 'flex';
 };
 
@@ -380,46 +310,14 @@ window.updateLogSubject = (key, text) => {
     if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text }); 
 };
 
-// Modal logiikka
-if(btnEditCancel) {
-    btnEditCancel.addEventListener('click', () => {
-        if(editModal) editModal.style.display = 'none';
-    });
-}
-
-if(btnEditSave) {
-    btnEditSave.addEventListener('click', () => {
-        const key = editKeyEl.value;
-        const newCarId = editCarSelectEl.value;
-        const carObj = userCars.find(c => c.id === newCarId);
-        
-        if (key && currentUser && carObj) {
-            db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({
-                subject: editSubjectEl.value,
-                carId: carObj.id,
-                carName: carObj.name,
-                carIcon: carObj.icon || "🚗",
-                carType: carObj.type
-            }).then(() => {
-                if(editModal) editModal.style.display = 'none';
-            });
-        }
-    });
-}
-
-if(btnDeleteCancel) {
-    btnDeleteCancel.addEventListener('click', () => {
-        if(deleteModal) deleteModal.style.display = 'none';
-        deleteKey = null;
-    });
-}
-
-if(btnDeleteConfirm) {
-    btnDeleteConfirm.addEventListener('click', () => {
-        if (deleteKey && currentUser) {
-            db.ref('ajopaivakirja/' + currentUser.uid + '/' + deleteKey).remove();
-            if(deleteModal) deleteModal.style.display = 'none';
-            deleteKey = null;
-        }
-    });
-}
+if(btnEditCancel) btnEditCancel.addEventListener('click', () => { if(editModal) editModal.style.display = 'none'; });
+if(btnEditSave) btnEditSave.addEventListener('click', () => {
+    const key = editKeyEl.value;
+    const newCarId = editCarSelectEl.value;
+    const carObj = userCars.find(c => c.id === newCarId);
+    if (key && currentUser && carObj) {
+        db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: editSubjectEl.value, carId: carObj.id, carName: carObj.name, carIcon: carObj.icon || "🚗", carType: carObj.type }).then(() => { if(editModal) editModal.style.display = 'none'; });
+    }
+});
+if(btnDeleteCancel) btnDeleteCancel.addEventListener('click', () => { if(deleteModal) deleteModal.style.display = 'none'; deleteKey = null; });
+if(btnDeleteConfirm) btnDeleteConfirm.addEventListener('click', () => { if (deleteKey && currentUser) { db.ref('ajopaivakirja/' + currentUser.uid + '/' + deleteKey).remove(); if(deleteModal) deleteModal.style.display = 'none'; deleteKey = null; } });
