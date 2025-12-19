@@ -326,13 +326,16 @@ function renderFuelStats() {
 
     // DATA PREP
     let totalRefuelEur = 0;
-    let sumGas = 0; // UUSI
-    let sumDiesel = 0; // UUSI
+    let sumGas = 0; 
+    let sumDiesel = 0; 
     
     const monthlyCosts = {};
-    const priceTrend = [];
+    // Trendit eri laaduille
+    const trendGas = [];
+    const trendDiesel = [];
+    
     const carCosts = {};
-    const fuelTypeData = {}; // UUSI: Jakauma chartille
+    const fuelTypeData = {}; 
 
     // Lajitellaan tankkaukset vanhimmasta uusimpaan trendiä varten
     const sortedRefs = [...allRefuelings].sort((a,b) => new Date(a.date) - new Date(b.date));
@@ -342,6 +345,7 @@ function renderFuelStats() {
         const lit = parseFloat(ref.liters) || 0;
         const price = parseFloat(ref.pricePerLiter) || 0;
         const date = new Date(ref.date);
+        const dateStr = date.toLocaleDateString('fi-FI');
 
         // Summat
         totalRefuelEur += eur;
@@ -353,9 +357,11 @@ function renderFuelStats() {
         if(fuelType.includes('bensiini') || fuelType.includes('gas')) {
              sumGas += lit;
              fuelTypeData['Bensiini'] = (fuelTypeData['Bensiini'] || 0) + lit;
+             if(price > 0) trendGas.push({ x: dateStr, y: price }); // Bensa trendi
         } else if(fuelType.includes('diesel')) {
              sumDiesel += lit;
              fuelTypeData['Diesel'] = (fuelTypeData['Diesel'] || 0) + lit;
+             if(price > 0) trendDiesel.push({ x: dateStr, y: price }); // Diesel trendi
         } else {
              fuelTypeData['Muu'] = (fuelTypeData['Muu'] || 0) + lit;
         }
@@ -364,11 +370,6 @@ function renderFuelStats() {
         const monthKey = `${date.getMonth()+1}/${date.getFullYear()}`;
         if(!monthlyCosts[monthKey]) monthlyCosts[monthKey] = 0;
         monthlyCosts[monthKey] += eur;
-
-        // Hintatrendi (X, Y)
-        if(price > 0) {
-            priceTrend.push({ x: date.toLocaleDateString('fi-FI'), y: price });
-        }
 
         // Kulut per auto
         const carName = car ? car.name : "Tuntematon";
@@ -415,21 +416,37 @@ function renderFuelStats() {
         });
     }
 
-    // 3. HINTATRENDI (LINE)
+    // 3. HINTATRENDI (LINE) - NYT KAKSI VIIVAA!
     const canvasTrend = document.getElementById('chart-fuel-trend');
     if (canvasTrend) {
         if (chartInstanceFuelTrend) { chartInstanceFuelTrend.destroy(); }
+        
+        // Yhdistä labelit (kaikki päivät)
+        // Huom: Chart.js osaa piirtää vaikka x-akseli ei täsmää täysin, kunhan data on objektimuodossa {x,y}
+        // Mutta labels-arrayhin tarvitaan kaikki uniikit päivät jotta x-akseli skaalautuu nätisti
+        const allDates = [...new Set([...trendGas.map(d=>d.x), ...trendDiesel.map(d=>d.x)])];
+        
         chartInstanceFuelTrend = new Chart(canvasTrend.getContext('2d'), {
             type: 'line',
             data: { 
-                labels: priceTrend.map(p => p.x), 
-                datasets: [{ 
-                    label: 'Litrahinta (€)', 
-                    data: priceTrend.map(p => p.y), 
-                    borderColor: '#ff1744', 
-                    tension: 0.3,
-                    pointRadius: 3
-                }] 
+                labels: allDates, 
+                datasets: [
+                    { 
+                        label: 'Bensiini (€)', 
+                        data: trendGas, 
+                        borderColor: '#00e676', // Vihreä
+                        tension: 0.3,
+                        pointRadius: 3
+                    },
+                    { 
+                        label: 'Diesel (€)', 
+                        data: trendDiesel, 
+                        borderColor: '#212121', // Musta/Tumma
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        tension: 0.3,
+                        pointRadius: 3
+                    }
+                ] 
             },
             options: { responsive: true }
         });
