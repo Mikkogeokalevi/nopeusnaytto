@@ -16,4 +16,6 @@ if ('serviceWorker' in navigator) {
     // .then(() => console.log('Service Worker Registered'));
 }
 
-console.log("Mikkokalevin Ajopäiväkirja Pro v5.0 (Modular) käynnistetty.");
+// Tulostetaan versio konsoliin (Hakee APP_VERSION globals.js:stä)
+const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : "Unknown";
+console.log(`Mikkokalevin Ajopäiväkirja Pro v${ver} (Modular) käynnistetty.`);
