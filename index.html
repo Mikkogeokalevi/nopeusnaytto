@@ -20,7 +20,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=4.7" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p style="opacity:0.7; font-size:12px;">Modular v5.0</p>
+            <p style="opacity:0.7; font-size:12px;">Versio 5.0 (Modular)</p>
             <p>Ladataan...</p>
         </div>
     </div>
@@ -158,7 +158,10 @@
                     <div id="map-coords" class="small-coords">--° --.---'</div>
                 </div>
                 <button id="map-gps-toggle" class="map-gps-btn">📡 ON</button>
+                
                 <button id="map-return-btn" class="map-return-btn">🏎️ MITTARISTO</button>
+                <button id="map-history-btn" class="map-return-btn" style="display:none; background-color: #555;">📋 TAKAISIN</button>
+
                 <div id="map-legend" class="map-legend" style="display:none;">
                     <span>Hidas</span><div class="legend-gradient"></div><span>Nopea</span>
                 </div>
@@ -243,7 +246,7 @@
 
                     <div style="margin-bottom:10px;">
                         <label>Tyyppi</label>
-                        <select id="car-type" class="subject-input" onchange="window.toggleCarFields()">
+                        <select id="car-type" class="subject-input" onchange="toggleCarFields()">
                             <option value="car">🚗 Auto</option>
                             <option value="bike">🚲 Polkupyörä</option>
                         </select>
@@ -282,7 +285,7 @@
             </div>
 
             <div id="help-view" class="view-section watermark-bg" style="display:none; overflow-y:auto; padding:20px;">
-                </div>
+            </div>
 
         </div>
 
@@ -354,7 +357,7 @@
         </div>
     </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
