@@ -14,6 +14,11 @@ const menuBtn = document.getElementById('btn-menu-toggle');
 const mainMenu = document.getElementById('main-menu');
 const menuUserName = document.getElementById('user-name');
 const menuUserAvatar = document.getElementById('user-photo');
+const appLogo = document.getElementById('app-logo'); // Logo paluuta varten
+
+// Sivupainikkeet (Karttaan siirtyminen)
+const sideTapLeft = document.getElementById('side-tap-left');
+const mapReturnBtn = document.getElementById('map-return-btn');
 
 // Näkymät
 const views = {
@@ -111,11 +116,11 @@ const carSpecificFields = document.getElementById('car-specific-fields');
 
 // Päänäkymän vaihtaja
 function switchView(viewName) {
-    mainMenu.style.display = 'none';
+    if(mainMenu) mainMenu.style.display = 'none';
     
     // Piilota kaikki näkymät
     Object.values(views).forEach(el => {
-        el.style.display = 'none';
+        if(el) el.style.display = 'none';
     });
     
     // Poista aktiivinen luokka napeista
@@ -124,10 +129,12 @@ function switchView(viewName) {
     });
 
     // Näytä valittu
-    if (viewName === 'dashboard' || viewName === 'map') {
-        views[viewName].style.display = 'flex';
-    } else {
-        views[viewName].style.display = 'block';
+    if (views[viewName]) {
+        if (viewName === 'dashboard' || viewName === 'map') {
+            views[viewName].style.display = 'flex';
+        } else {
+            views[viewName].style.display = 'block';
+        }
     }
     
     if(navBtns[viewName]) {
@@ -138,7 +145,7 @@ function switchView(viewName) {
     if (viewName !== 'map') {
         if (typeof clearSavedRoute === 'function') clearSavedRoute();
         isViewingHistory = false;
-        mapLegend.style.display = 'none';
+        if(mapLegend) mapLegend.style.display = 'none';
     }
 
     // Kartalle tulo korjaa koon
@@ -146,7 +153,7 @@ function switchView(viewName) {
         setTimeout(() => map.invalidateSize(), 100);
     }
     
-    // Lataa listat tarvittaessa (kutsutaan funktioita jos ne on olemassa)
+    // Lataa listat tarvittaessa
     if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
@@ -171,3 +178,41 @@ function updateClockAndDate() {
 // Käynnistä kello
 setInterval(updateClockAndDate, 1000);
 updateClockAndDate();
+
+
+// --- 3. TAPAHTUMANKUUNTELIJAT (EVENT LISTENERS) ---
+// TÄMÄ OSIO PUUTTUI AIEMMIN!
+
+// Menu auki/kiinni
+if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+        if (mainMenu.style.display === 'none' || mainMenu.style.display === '') {
+            mainMenu.style.display = 'flex';
+        } else {
+            mainMenu.style.display = 'none';
+        }
+    });
+}
+
+// Logo -> Kotiin
+if (appLogo) {
+    appLogo.addEventListener('click', () => switchView('dashboard'));
+}
+
+// Sivupainike -> Karttaan
+if (sideTapLeft) {
+    sideTapLeft.addEventListener('click', () => switchView('map'));
+}
+
+// Kartalta paluu -> Mittaristoon
+if (mapReturnBtn) {
+    mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
+}
+
+// Valikon napit
+if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
+if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
+if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
+if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('stats'));
+if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
+if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
