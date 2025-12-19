@@ -137,16 +137,18 @@ function clearSavedRoute() {
     }
 }
 
-// Laskee värin nopeuden perusteella
+// Laskee värin nopeuden perusteella (PÄIVITETTY LOGIIKKA)
 function getSpeedColor(speed, type) {
-    let max = (type === 'bike') ? 30 : 100;
-    
-    if (speed <= 3) return '#2979ff'; // Sininen (Hidas)
-    
-    let ratio = speed / max;
-    if (ratio > 1) ratio = 1;
+    // PYÖRÄ (Bike)
+    if (type === 'bike') {
+        if (speed < 5) return '#2979ff';   // Sininen (Talutus/Pysähdys)
+        if (speed < 20) return '#00e676';  // Vihreä (Normaali)
+        return '#ff1744';                  // Punainen (Kova vauhti)
+    }
 
-    if (ratio < 0.33) return '#00e676'; // Vihreä
-    if (ratio < 0.66) return '#ffea00'; // Keltainen
-    return '#ff1744'; // Punainen
+    // AUTO (Car - default)
+    if (speed < 20) return '#2979ff';  // Sininen (Ruuhka/Piha/Valot)
+    if (speed < 60) return '#00e676';  // Vihreä (Kaupunki)
+    if (speed < 90) return '#ffea00';  // Keltainen (Maantie)
+    return '#ff1744';                  // Punainen (Moottoritie/Ylinopeus)
 }
