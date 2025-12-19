@@ -1,8 +1,8 @@
 // =========================================================
-// APP.JS - SOVELLUKSEN KÄYNNISTYS (GLUE CODE)
+// APP.JS - SOVELLUKSEN KÄYNNISTYS (GLUE CODE) v5.0
 // =========================================================
 
-// Teeman vaihto (Logiikka joka ei mahtunut muihin tai on globaali)
+// Teeman vaihto
 const btnTheme = document.getElementById('btn-theme');
 if (btnTheme) {
     btnTheme.addEventListener('click', () => {
