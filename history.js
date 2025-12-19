@@ -4,13 +4,23 @@
 
 // 1. HISTORIAN LATAUS
 function loadHistory() {
-    if (!currentUser) return;
+    if (!currentUser) {
+        console.log("loadHistory: Ei käyttäjää, keskeytetään.");
+        return;
+    }
+
+    console.log("loadHistory: Aloitetaan lataus käyttäjälle", currentUser.uid);
     
     // Poista vanha kuuntelija ja lisää uusi
     db.ref('ajopaivakirja/' + currentUser.uid).off();
-    const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).limitToLast(300);
+    
+    // KORJAUS: Käytetään startTime-indeksiä, joka on määritelty säännöissä
+    const historyRef = db.ref('ajopaivakirja/' + currentUser.uid)
+                         .orderByChild('startTime')
+                         .limitToLast(300);
 
     historyRef.on('value', (snapshot) => {
+        console.log("loadHistory: Data saapui Firebasesta.");
         allHistoryData = [];
         
         if (snapshot.exists()) {
@@ -20,20 +30,28 @@ function loadHistory() {
                     allHistoryData.push({ key: child.key, ...data });
                 }
             });
+        } else {
+            console.log("loadHistory: Ei löytynyt tallennettuja ajoja.");
         }
 
-        // Järjestä uusin ensin
+        // Järjestä uusin ensin (käänteinen järjestys, koska Firebase antaa vanhimman ensin)
         allHistoryData.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
         
-        populateFilter();
+        // Päivitä suodatinvalikko
+        if(typeof populateFilter === 'function') populateFilter();
         
-        // Päivitä näkymät (tämä tapahtuu taustalla, jos näkymä ei ole auki)
-        if (views.history && views.history.style.display !== 'none') {
-            renderHistoryList();
-        }
+        // KORJAUS: Pakota listan päivitys heti, jotta "Ladataan..." teksti katoaa
+        if(typeof renderHistoryList === 'function') renderHistoryList();
         
-        if (views.stats && views.stats.style.display !== 'none') {
-            renderStats();
+        // Päivitä tilastot
+        if(typeof renderStats === 'function') renderStats();
+
+    }, (error) => {
+        // VIRHEENKÄSITTELY
+        console.error("loadHistory VIRHE:", error);
+        const logList = document.getElementById('log-list');
+        if(logList) {
+            logList.innerHTML = `<p style="color:red; text-align:center;">Virhe tietojen latauksessa:<br>${error.message}</p>`;
         }
     });
 }
@@ -98,7 +116,8 @@ function populateFilter() {
 // 3. LISTAN RENDERÖINTI
 function renderHistoryList() {
     const logList = document.getElementById('log-list');
-    if(!logList) return;
+    if(!logList) return; // Jos elementtiä ei löydy, lopeta
+    
     logList.innerHTML = "";
     
     if (allHistoryData.length === 0) {
@@ -260,8 +279,12 @@ function renderStats() {
 
     const canvasMonthly = document.getElementById('chart-monthly');
     if (canvasMonthly) {
+        // Tuhotaan vanha ennen uuden luontia, jotta ei tule haamukuvia
+        if (chartInstanceMonthly) {
+            chartInstanceMonthly.destroy();
+            chartInstanceMonthly = null;
+        }
         const ctxMonthly = canvasMonthly.getContext('2d');
-        if (chartInstanceMonthly) chartInstanceMonthly.destroy();
         
         chartInstanceMonthly = new Chart(ctxMonthly, {
             type: 'bar',
@@ -285,8 +308,11 @@ function renderStats() {
 
     const canvasVehicles = document.getElementById('chart-vehicles');
     if (canvasVehicles) {
+        if (chartInstanceVehicles) {
+            chartInstanceVehicles.destroy();
+            chartInstanceVehicles = null;
+        }
         const ctxVehicles = canvasVehicles.getContext('2d');
-        if (chartInstanceVehicles) chartInstanceVehicles.destroy();
         
         chartInstanceVehicles = new Chart(ctxVehicles, {
             type: 'doughnut',
@@ -325,4 +351,62 @@ window.openEditLogModal = (key) => {
             const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
             opt.text = `${icon} ${car.name}`;
             if(drive.carId === car.id) opt.selected = true;
-            editCar
+            editCarSelectEl.appendChild(opt);
+        });
+    }
+
+    if(editModal) editModal.style.display = 'flex';
+};
+
+window.openDeleteLogModal = (key) => {
+    deleteKey = key;
+    if(deleteModal) deleteModal.style.display = 'flex';
+};
+
+window.updateLogSubject = (key, text) => { 
+    if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text }); 
+};
+
+// Modal logiikka
+if(btnEditCancel) {
+    btnEditCancel.addEventListener('click', () => {
+        if(editModal) editModal.style.display = 'none';
+    });
+}
+
+if(btnEditSave) {
+    btnEditSave.addEventListener('click', () => {
+        const key = editKeyEl.value;
+        const newCarId = editCarSelectEl.value;
+        const carObj = userCars.find(c => c.id === newCarId);
+        
+        if (key && currentUser && carObj) {
+            db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({
+                subject: editSubjectEl.value,
+                carId: carObj.id,
+                carName: carObj.name,
+                carIcon: carObj.icon || "🚗",
+                carType: carObj.type
+            }).then(() => {
+                if(editModal) editModal.style.display = 'none';
+            });
+        }
+    });
+}
+
+if(btnDeleteCancel) {
+    btnDeleteCancel.addEventListener('click', () => {
+        if(deleteModal) deleteModal.style.display = 'none';
+        deleteKey = null;
+    });
+}
+
+if(btnDeleteConfirm) {
+    btnDeleteConfirm.addEventListener('click', () => {
+        if (deleteKey && currentUser) {
+            db.ref('ajopaivakirja/' + currentUser.uid + '/' + deleteKey).remove();
+            if(deleteModal) deleteModal.style.display = 'none';
+            deleteKey = null;
+        }
+    });
+}
