@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mikkokalevin Ajopäiväkirja Pro v5.2</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v5.3</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="ajopaivakirja_logo.png?v=4.7">
@@ -244,12 +244,22 @@
                         </div>
                         <div class="summary-sep">|</div>
                         <div class="summary-item">
-                            <span class="summary-val" id="stat-fuel-lit">0 L</span>
-                            <span class="summary-label">Litrat</span>
+                            <span class="summary-val" id="stat-fuel-gas">0 L</span>
+                            <span class="summary-label">Bensiini</span>
+                        </div>
+                        <div class="summary-sep">|</div>
+                        <div class="summary-item">
+                            <span class="summary-val" id="stat-fuel-diesel">0 L</span>
+                            <span class="summary-label">Diesel</span>
                         </div>
                     </div>
 
                     <div class="chart-container">
+                        <h3>⛽ Polttoainejakauma (L)</h3>
+                        <canvas id="chart-fuel-type"></canvas>
+                    </div>
+
+                    <div class="chart-container" style="margin-top:20px;">
                         <h3>💶 Polttoainekulut kuukausittain (€)</h3>
                         <canvas id="chart-fuel-monthly"></canvas>
                     </div>
