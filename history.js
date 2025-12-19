@@ -326,10 +326,13 @@ function renderFuelStats() {
 
     // DATA PREP
     let totalRefuelEur = 0;
-    let totalRefuelLit = 0;
+    let sumGas = 0; // UUSI
+    let sumDiesel = 0; // UUSI
+    
     const monthlyCosts = {};
     const priceTrend = [];
     const carCosts = {};
+    const fuelTypeData = {}; // UUSI: Jakauma chartille
 
     // Lajitellaan tankkaukset vanhimmasta uusimpaan trendiä varten
     const sortedRefs = [...allRefuelings].sort((a,b) => new Date(a.date) - new Date(b.date));
@@ -342,7 +345,20 @@ function renderFuelStats() {
 
         // Summat
         totalRefuelEur += eur;
-        totalRefuelLit += lit;
+        
+        // Erottele polttoainetyyppi
+        const car = userCars.find(c => c.id === ref.carId);
+        const fuelType = (car ? car.fuel : "Muu").toLowerCase();
+        
+        if(fuelType.includes('bensiini') || fuelType.includes('gas')) {
+             sumGas += lit;
+             fuelTypeData['Bensiini'] = (fuelTypeData['Bensiini'] || 0) + lit;
+        } else if(fuelType.includes('diesel')) {
+             sumDiesel += lit;
+             fuelTypeData['Diesel'] = (fuelTypeData['Diesel'] || 0) + lit;
+        } else {
+             fuelTypeData['Muu'] = (fuelTypeData['Muu'] || 0) + lit;
+        }
 
         // Kuukausikulut
         const monthKey = `${date.getMonth()+1}/${date.getFullYear()}`;
@@ -355,20 +371,38 @@ function renderFuelStats() {
         }
 
         // Kulut per auto
-        const car = userCars.find(c => c.id === ref.carId);
         const carName = car ? car.name : "Tuntematon";
         if(!carCosts[carName]) carCosts[carName] = 0;
         carCosts[carName] += eur;
     });
 
-    // Päivitä yhteenvetolaatikko
+    // Päivitä yhteenvetolaatikko (UUDET ID:t)
     const statFuelEur = document.getElementById('stat-fuel-eur');
-    const statFuelLit = document.getElementById('stat-fuel-lit');
+    const statFuelGas = document.getElementById('stat-fuel-gas');
+    const statFuelDiesel = document.getElementById('stat-fuel-diesel');
+    
     if(statFuelEur) statFuelEur.innerText = totalRefuelEur.toFixed(2) + " €";
-    if(statFuelLit) statFuelLit.innerText = totalRefuelLit.toFixed(1) + " L";
+    if(statFuelGas) statFuelGas.innerText = sumGas.toFixed(1) + " L";
+    if(statFuelDiesel) statFuelDiesel.innerText = sumDiesel.toFixed(1) + " L";
 
-    // 1. KUUKAUSIKULUT (BAR)
-    const monthLabels = Object.keys(monthlyCosts); // Järjestys voi vaatia parantelua jos vuodet vaihtuu oudosti, mutta perusobjekti toimii usein ok
+    // 1. POLTTOAINEJAKAUMA (UUSI CHART)
+    const canvasFuelType = document.getElementById('chart-fuel-type');
+    if (canvasFuelType) {
+        if (chartInstanceFuelType) { chartInstanceFuelType.destroy(); }
+        chartInstanceFuelType = new Chart(canvasFuelType.getContext('2d'), {
+            type: 'doughnut',
+            data: { 
+                labels: Object.keys(fuelTypeData), 
+                datasets: [{ 
+                    data: Object.values(fuelTypeData).map(v => v.toFixed(1)), 
+                    backgroundColor: ['#4caf50', '#2196f3', '#9e9e9e'] // Vihreä(Bensa), Sininen(Diesel), Harmaa(Muu)
+                }] 
+            }
+        });
+    }
+
+    // 2. KUUKAUSIKULUT (BAR)
+    const monthLabels = Object.keys(monthlyCosts); 
     const monthValues = Object.values(monthlyCosts).map(v => v.toFixed(2));
     
     const canvasMonthly = document.getElementById('chart-fuel-monthly');
@@ -381,7 +415,7 @@ function renderFuelStats() {
         });
     }
 
-    // 2. HINTATRENDI (LINE)
+    // 3. HINTATRENDI (LINE)
     const canvasTrend = document.getElementById('chart-fuel-trend');
     if (canvasTrend) {
         if (chartInstanceFuelTrend) { chartInstanceFuelTrend.destroy(); }
@@ -401,7 +435,7 @@ function renderFuelStats() {
         });
     }
 
-    // 3. KULUT PER AUTO (DOUGHNUT)
+    // 4. KULUT PER AUTO (DOUGHNUT)
     const canvasCar = document.getElementById('chart-fuel-car');
     if (canvasCar) {
         if (chartInstanceFuelCar) { chartInstanceFuelCar.destroy(); }
