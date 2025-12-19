@@ -215,6 +215,18 @@
             <div id="stats-view" class="view-section watermark-bg" style="display:none; overflow-y:auto; padding:20px;">
                 <h2 style="text-align:center; color:var(--accent-color);">Tilastot</h2>
                 
+                <div class="summary-box" style="margin-bottom:20px;">
+                    <div class="summary-item">
+                        <span class="summary-val" id="stat-fuel-eur">0 €</span>
+                        <span class="summary-label">Rahaa palanut</span>
+                    </div>
+                    <div class="summary-sep">|</div>
+                    <div class="summary-item">
+                        <span class="summary-val" id="stat-fuel-lit">0 L</span>
+                        <span class="summary-label">Polttoainetta</span>
+                    </div>
+                </div>
+
                 <div class="chart-container">
                     <h3>📅 Kilometrit kuukausittain</h3>
                     <canvas id="chart-monthly"></canvas>
@@ -409,6 +421,8 @@
     <script src="garage.js"></script>
     <script src="history.js"></script>
     <script src="help.js"></script>
-    <script src="fuel.js"></script> <script src="app.js"></script>
+    <script src="fuel.js"></script>
+    
+    <script src="app.js"></script>
 </body>
 </html>
