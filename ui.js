@@ -3,8 +3,7 @@
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
-
-// Päänäkymät
+// (Tämä alkuosa on sama kuin ennen, varmista että kaikki muuttujat ovat täällä)
 const splashScreen = document.getElementById('splash-screen');
 const loginView = document.getElementById('login-view');
 const appContainer = document.getElementById('app-container');
@@ -147,15 +146,14 @@ function switchView(viewName) {
         isViewingHistory = false;
         if(mapLegend) mapLegend.style.display = 'none';
     } else {
-        // Jos tullaan kartalle (eikä historiasta), näytä perusnapit
+        // OLEMME KARTALLA
         if (mapReturnBtn) mapReturnBtn.style.display = 'block';
         if (mapHistoryBtn) mapHistoryBtn.style.display = 'none';
         
-        // KORJAUS: Pakota kartan koon päivitys viiveellä
+        // KORJAUS: Pakotetaan kartan päivitys HETI ja VIIVEELLÄ
         if (typeof map !== 'undefined' && map) {
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 200); // 200ms viive varmistaa että div on näkyvissä
+            map.invalidateSize(); // Heti
+            setTimeout(() => { map.invalidateSize(); }, 300); // Viiveellä
         }
     }
     
