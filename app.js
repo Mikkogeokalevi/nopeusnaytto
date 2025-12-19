@@ -1,28 +1,4 @@
 // =========================================================
-// 1. FIREBASE KONFIGURAATIO JA ALUSTUS
-// =========================================================
-
-const firebaseConfig = {
-    apiKey: "AIzaSyCZIupycr2puYrPK2KajAW7PcThW9Pjhb0",
-    authDomain: "perhekalenteri-projekti.firebaseapp.com",
-    databaseURL: "https://perhekalenteri-projekti-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "perhekalenteri-projekti",
-    storageBucket: "perhekalenteri-projekti.appspot.com",
-    messagingSenderId: "588536838615",
-    appId: "1:588536838615:web:148de0581bbd46c42c7392"
-};
-
-// Tarkistetaan, onko Firebase jo alustettu, jotta vältetään tuplalataus
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-
-// Otetaan tietokanta ja autentikaatio käyttöön
-const db = firebase.database();
-const auth = firebase.auth(); 
-
-
-// =========================================================
 // 2. DOM ELEMENTTIEN HAKU (Käyttöliittymä)
 // =========================================================
 
@@ -77,55 +53,6 @@ const deleteModal = document.getElementById('delete-modal');
 const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
 const btnDeleteCancel = document.getElementById('btn-delete-cancel');
 
-
-// =========================================================
-// 3. MUUTTUJAT JA SOVELLUKSEN TILA
-// =========================================================
-
-// Käyttäjä ja GPS tila
-let currentUser = null; 
-let watchId = null;
-let isGPSActive = false;
-let isRecording = false; 
-let isPaused = false; 
-let isViewingHistory = false; // Tärkeä: Estää kartan automaattisen keskityksen katselutilassa
-
-let wakeLock = null; // Näytön hereillä pito
-
-// Ajanotto ja matka
-let startTime = null;
-let pauseStartTime = null; 
-let totalPauseTime = 0;    
-let timerInterval = null;
-
-// Väliaikaiset tallennustiedot
-let tempDriveData = null; 
-let deleteKey = null;
-
-// Ajodata
-let maxSpeed = 0;
-let totalDistance = 0;
-let lastLatLng = null;
-
-// Reittiviiva ja piirto
-let routePath = []; // Tallentaa objektit: {lat, lng, spd}
-let realTimePolyline = null; // Sininen viiva (live-piirto)
-let savedRouteLayers = []; // Taulukko historian väriviivoille (segmentit)
-let savedRouteLayer = null; // Vanhan version viiva (yhteensopivuus)
-
-// Sää ja Ajotapa
-let currentDriveWeather = ""; 
-let aggressiveEvents = 0;
-let lastMotionTime = 0;
-let styleResetTimer = null; 
-
-// Historia-data muistissa
-let allHistoryData = []; 
-
-// Autotalli
-let userCars = [];
-let currentCarId = "all"; 
-let currentCarType = "car"; 
 const carSelectEl = document.getElementById('car-select');
 
 // UI Elementit (Mittaristo)
@@ -364,7 +291,7 @@ const terrainMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png
 });
 
 // Luodaan kartta
-const map = L.map('map', { 
+map = L.map('map', {
     center: [64.0, 26.0], 
     zoom: 16, 
     layers: [streetMap], 
