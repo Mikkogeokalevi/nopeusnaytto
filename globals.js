@@ -1,9 +1,6 @@
 // =========================================================
-// 1. ASETUKSET JA VERSIO (GLOBAL)
+// 1. FIREBASE ALUSTUS (GLOBAL)
 // =========================================================
-
-// TÄMÄ ON PÄÄVERSIONUMERO - Muuta tätä, niin se päivittyy kaikkialle
-const APP_VERSION = "5.1"; 
 
 const firebaseConfig = {
     apiKey: "AIzaSyCZIupycr2puYrPK2KajAW7PcThW9Pjhb0",
@@ -27,9 +24,12 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
+// TÄMÄ ON PÄÄVERSIONUMERO
+const APP_VERSION = "5.2"; 
+
 // Käyttäjä ja UI tila
 var currentUser = null; 
-var isViewingHistory = false; // Estää kartan keskityksen historiassa
+var isViewingHistory = false; 
 
 // GPS ja Seuranta
 var watchId = null;
@@ -54,12 +54,12 @@ var totalDistance = 0;
 var lastLatLng = null;
 
 // Reitit ja Karttaobjektit
-var routePath = []; // {lat, lng, spd}
-var realTimePolyline = null; // Live-viiva
-var savedRouteLayers = []; // Historian viivat
-var savedRouteLayer = null; // Vanha yhteensopivuus
-var marker = null; // Oma sijainti pallo
-var map = null; // Leaflet kartta-instanssi
+var routePath = []; 
+var realTimePolyline = null; 
+var savedRouteLayers = []; 
+var savedRouteLayer = null; 
+var marker = null; 
+var map = null; 
 
 // Sää ja Ajotapa
 var currentDriveWeather = ""; 
@@ -75,10 +75,17 @@ var userCars = [];
 var currentCarId = "all"; 
 var currentCarType = "car"; 
 
-// Tilastot (Chart.js instanssit)
-var chartInstanceMonthly = null;
-var chartInstanceVehicles = null;
-
 // Tankkausdata
 var allRefuelings = [];
 var currentRefuelingCarId = null;
+
+// --- TILASTOGRAAFIT (INSTANSSIT) ---
+// Ajotilastot
+var chartInstanceMonthly = null;
+var chartInstanceVehicles = null;
+var chartInstanceStyle = null; // Uusi: Ajotapa
+
+// Tankkaustilastot
+var chartInstanceFuelMonthly = null; // Uusi: Eurot/kk
+var chartInstanceFuelTrend = null;   // Uusi: Litrahinta
+var chartInstanceFuelCar = null;     // Uusi: Kulutus per auto
