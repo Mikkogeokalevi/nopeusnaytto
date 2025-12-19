@@ -14,7 +14,6 @@ function loadHistory() {
     // Poista vanha kuuntelija ja lisää uusi
     db.ref('ajopaivakirja/' + currentUser.uid).off();
     
-    // KORJAUS: Käytetään startTime-indeksiä, joka on määritelty säännöissä
     const historyRef = db.ref('ajopaivakirja/' + currentUser.uid)
                          .orderByChild('startTime')
                          .limitToLast(300);
@@ -30,29 +29,24 @@ function loadHistory() {
                     allHistoryData.push({ key: child.key, ...data });
                 }
             });
-        } else {
-            console.log("loadHistory: Ei löytynyt tallennettuja ajoja.");
         }
 
-        // Järjestä uusin ensin (käänteinen järjestys, koska Firebase antaa vanhimman ensin)
+        // Järjestä uusin ensin
         allHistoryData.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
         
         // Päivitä suodatinvalikko
         if(typeof populateFilter === 'function') populateFilter();
         
-        // KORJAUS: Pakota listan päivitys heti, jotta "Ladataan..." teksti katoaa
+        // Päivitä lista
         if(typeof renderHistoryList === 'function') renderHistoryList();
         
         // Päivitä tilastot
         if(typeof renderStats === 'function') renderStats();
 
     }, (error) => {
-        // VIRHEENKÄSITTELY
         console.error("loadHistory VIRHE:", error);
         const logList = document.getElementById('log-list');
-        if(logList) {
-            logList.innerHTML = `<p style="color:red; text-align:center;">Virhe tietojen latauksessa:<br>${error.message}</p>`;
-        }
+        if(logList) logList.innerHTML = `<p style="color:red; text-align:center;">Virhe: ${error.message}</p>`;
     });
 }
 
@@ -116,7 +110,7 @@ function populateFilter() {
 // 3. LISTAN RENDERÖINTI
 function renderHistoryList() {
     const logList = document.getElementById('log-list');
-    if(!logList) return; // Jos elementtiä ei löydy, lopeta
+    if(!logList) return; 
     
     logList.innerHTML = "";
     
@@ -136,7 +130,6 @@ function renderHistoryList() {
             // Suodatus autotallin valinnan mukaan
             if (currentCarId !== 'all') {
                 if (drive.carId && drive.carId !== currentCarId) return;
-                // Vanhat merkinnät ilman carId:tä näytetään vain jos "all"
                 if (!drive.carId) return;
             }
 
@@ -231,7 +224,7 @@ function renderHistoryList() {
     });
 
     if (renderCount === 0) {
-        logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei ajoja valittuna ajanjaksona / ajoneuvolla.</p>";
+        logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei ajoja valittuna ajanjaksona.</p>";
         if(historySummaryEl) historySummaryEl.style.display = 'none';
     } else {
         if(sumKmEl) sumKmEl.innerText = totalKm.toFixed(1);
@@ -245,8 +238,29 @@ function renderHistoryList() {
     }
 }
 
-// 4. TILASTOT (GRAAFIT)
+// 4. TILASTOT (GRAAFIT + TANKKAUS)
 function renderStats() {
+    // 4.1 PÄIVITÄ TANKKAUSYHTEENVETO
+    let totalRefuelEur = 0;
+    let totalRefuelLit = 0;
+    
+    if (allRefuelings && allRefuelings.length > 0) {
+        allRefuelings.forEach(ref => {
+            // Huomioi auton valinta (jos valittu "Kaikki", laske kaikki)
+            if (currentCarId === 'all' || ref.carId === currentCarId) {
+                totalRefuelEur += (parseFloat(ref.euros) || 0);
+                totalRefuelLit += (parseFloat(ref.liters) || 0);
+            }
+        });
+    }
+
+    const statFuelEur = document.getElementById('stat-fuel-eur');
+    const statFuelLit = document.getElementById('stat-fuel-lit');
+    if(statFuelEur) statFuelEur.innerText = totalRefuelEur.toFixed(2) + " €";
+    if(statFuelLit) statFuelLit.innerText = totalRefuelLit.toFixed(1) + " L";
+
+
+    // 4.2 PÄIVITÄ GRAAFIT
     if (!allHistoryData || allHistoryData.length === 0) return;
     if (typeof Chart === 'undefined') return;
 
@@ -279,7 +293,6 @@ function renderStats() {
 
     const canvasMonthly = document.getElementById('chart-monthly');
     if (canvasMonthly) {
-        // Tuhotaan vanha ennen uuden luontia, jotta ei tule haamukuvia
         if (chartInstanceMonthly) {
             chartInstanceMonthly.destroy();
             chartInstanceMonthly = null;
