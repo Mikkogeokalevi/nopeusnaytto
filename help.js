@@ -130,7 +130,7 @@ const helpContent = `
             Täällä näet kaikki ajetut matkat aikajärjestyksessä.
             <ul>
                 <li><strong>Suodatus:</strong> Voit etsiä ajoja tietyn auton mukaan tai aikavälillä (esim. "Tammikuu 2025").</li>
-                <li><strong>🗺️ Karttaikoni:</strong> Avaa kyseisen ajon reitin kartalle. Karttanäkymässä on nappi "📋 TAKAISIN", jolla pääset helposti takaisin listaan.</li>
+                <li><strong>🗺️ Karttaikoni:</strong> Avaa kyseisen ajon reitin kartalle. Kun olet katsellut reittiä, voit palata takaisin historiaan valikon kautta.</li>
                 <li><strong>✏️ Muokkaus:</strong> Voit vaihtaa ajon otsikkoa tai siirtää sen toiselle autolle jälkikäteen.</li>
             </ul>
         </div>
