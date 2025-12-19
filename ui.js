@@ -14,11 +14,12 @@ const menuBtn = document.getElementById('btn-menu-toggle');
 const mainMenu = document.getElementById('main-menu');
 const menuUserName = document.getElementById('user-name');
 const menuUserAvatar = document.getElementById('user-photo');
-const appLogo = document.getElementById('app-logo'); // Logo paluuta varten
+const appLogo = document.getElementById('app-logo'); 
 
-// Sivupainikkeet (Karttaan siirtyminen)
+// Sivupainikkeet
 const sideTapLeft = document.getElementById('side-tap-left');
 const mapReturnBtn = document.getElementById('map-return-btn');
+const mapHistoryBtn = document.getElementById('map-history-btn'); // UUSI NAPPI
 
 // Näkymät
 const views = {
@@ -76,7 +77,7 @@ const dashWeatherEl = document.getElementById('dash-weather');
 const liveStatusBar = document.getElementById('live-status-bar');
 const liveStyleEl = document.getElementById('live-style-indicator');
 
-// Kartta UI napit
+// Kartta UI
 const mapSpeedEl = document.getElementById('map-speed');
 const mapCoordsEl = document.getElementById('map-coords');
 const statusEl = document.getElementById('status');
@@ -112,9 +113,8 @@ const carTypeSelect = document.getElementById('car-type');
 const carSpecificFields = document.getElementById('car-specific-fields');
 
 
-// --- 2. UI LOGIIKKA JA APUFUNKTIOT ---
+// --- 2. UI LOGIIKKA ---
 
-// Päänäkymän vaihtaja
 function switchView(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
     
@@ -146,11 +146,12 @@ function switchView(viewName) {
         if (typeof clearSavedRoute === 'function') clearSavedRoute();
         isViewingHistory = false;
         if(mapLegend) mapLegend.style.display = 'none';
-    }
-
-    // Kartalle tulo korjaa koon
-    if (viewName === 'map' && map) {
-        setTimeout(() => map.invalidateSize(), 100);
+    } else {
+        // Jos tullaan kartalle (eikä historiasta), näytä perusnapit
+        // map.js hoitaa tämän jos tullaan historiasta, mutta tässä resetoidaan
+        if (mapReturnBtn) mapReturnBtn.style.display = 'block';
+        if (mapHistoryBtn) mapHistoryBtn.style.display = 'none';
+        setTimeout(() => { if(map) map.invalidateSize(); }, 100);
     }
     
     // Lataa listat tarvittaessa
@@ -159,7 +160,6 @@ function switchView(viewName) {
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
 }
 
-// Päivitä mittariston luvut
 function updateDashboardUI(spd, max, dist, time, alt, avg) {
     if(dashSpeedEl) dashSpeedEl.innerText = spd.toFixed(1); 
     if(dashMaxSpeedEl) dashMaxSpeedEl.innerText = max.toFixed(1);
@@ -168,22 +168,17 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     if(avg !== undefined && dashAvgEl) dashAvgEl.innerText = avg.toFixed(1);
 }
 
-// Kello ja päivämäärä
 function updateClockAndDate() {
     const now = new Date();
     if(dashClockEl) dashClockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     if(dashDateEl) dashDateEl.innerText = now.toLocaleDateString('fi-FI', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
 }
-
-// Käynnistä kello
 setInterval(updateClockAndDate, 1000);
 updateClockAndDate();
 
 
-// --- 3. TAPAHTUMANKUUNTELIJAT (EVENT LISTENERS) ---
-// TÄMÄ OSIO PUUTTUI AIEMMIN!
+// --- 3. TAPAHTUMANKUUNTELIJAT ---
 
-// Menu auki/kiinni
 if (menuBtn) {
     menuBtn.addEventListener('click', () => {
         if (mainMenu.style.display === 'none' || mainMenu.style.display === '') {
@@ -194,22 +189,13 @@ if (menuBtn) {
     });
 }
 
-// Logo -> Kotiin
-if (appLogo) {
-    appLogo.addEventListener('click', () => switchView('dashboard'));
-}
+if (appLogo) appLogo.addEventListener('click', () => switchView('dashboard'));
+if (sideTapLeft) sideTapLeft.addEventListener('click', () => switchView('map'));
+if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
 
-// Sivupainike -> Karttaan
-if (sideTapLeft) {
-    sideTapLeft.addEventListener('click', () => switchView('map'));
-}
+// UUSI NAPPI: Takaisin historiaan
+if (mapHistoryBtn) mapHistoryBtn.addEventListener('click', () => switchView('history'));
 
-// Kartalta paluu -> Mittaristoon
-if (mapReturnBtn) {
-    mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
-}
-
-// Valikon napit
 if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
 if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
 if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
