@@ -5,7 +5,7 @@
 // DOM Elementit
 const btnOpenFuel = document.getElementById('btn-open-fuel');
 const fuelModal = document.getElementById('fuel-modal');
-const fuelModalTitle = document.getElementById('fuel-modal-title'); // UUSI
+const fuelModalTitle = document.getElementById('fuel-modal-title');
 const fuelCarNameEl = document.getElementById('fuel-car-name');
 const inpFuelOdo = document.getElementById('fuel-odo');
 const inpFuelLiters = document.getElementById('fuel-liters');
@@ -22,13 +22,12 @@ const divFuelList = document.getElementById('fuel-list');
 const divHistoryFilter = document.getElementById('history-filter'); 
 
 // Tilan hallinta
-let currentFuelEditKey = null; // Jos tämä on null, luodaan uusi. Jos arvo, muokataan.
+let currentFuelEditKey = null; 
 
 // 1. LATAA TANKKAUKSET FIREBASESTA
 function loadRefuelings() {
     if (!currentUser) return;
     
-    // Kuunnellaan käyttäjän omia tankkauksia
     const refRef = db.ref('refuelings/' + currentUser.uid).orderByChild('date');
     
     refRef.on('value', (snapshot) => {
@@ -38,30 +37,24 @@ function loadRefuelings() {
                 allRefuelings.push({ key: child.key, ...child.val() });
             });
         }
-        // Järjestä uusin ensin
         allRefuelings.sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        // Jos tankkauslista on auki, päivitä se
+        // Jos tankkauslista on auki, päivitä se heti
         if (divFuelList && divFuelList.style.display !== 'none') {
             renderFuelList();
         }
         
-        // Päivitä tilastot (jos halutaan lennosta)
         if (typeof renderStats === 'function') renderStats();
     });
 }
 
-// 2. AVAA MODAALI (UUSI TANKKAUS)
+// 2. AVAA MODAALI
 if (btnOpenFuel) {
     btnOpenFuel.addEventListener('click', () => {
-        // Nollataan muokkaustila
         currentFuelEditKey = null;
         if(fuelModalTitle) fuelModalTitle.innerText = "⛽ Uusi tankkaus";
 
-        // Selvitä mikä auto on valittuna
         let carName = "Tuntematon auto";
-        
-        // Hae nimi userCars-listasta globaalin currentCarId:n avulla
         if (currentCarId && currentCarId !== 'all') {
             const c = userCars.find(x => x.id === currentCarId);
             if(c) {
@@ -81,36 +74,28 @@ if (btnOpenFuel) {
         inpFuelLiters.value = "";
         inpFuelEuros.value = "";
         txtFuelPrice.innerText = "0.00";
-        
         fuelModal.style.display = 'flex';
     });
 }
 
-// 3. AVAA MODAALI (MUOKKAUS) - Globaali funktio
 window.openEditFuelModal = (key) => {
     const ref = allRefuelings.find(r => r.key === key);
     if (!ref) return;
 
-    // Asetetaan muokkaustilaan
     currentFuelEditKey = key;
-    currentRefuelingCarId = ref.carId; // Varmistetaan että auto pysyy samana muokkauksessa
+    currentRefuelingCarId = ref.carId; 
     if(fuelModalTitle) fuelModalTitle.innerText = "✏️ Muokkaa tankkausta";
 
-    // Hae auton nimi
     const c = userCars.find(x => x.id === ref.carId);
     fuelCarNameEl.innerText = c ? c.name : "Tuntematon auto";
 
-    // Täytä arvot
     inpFuelOdo.value = ref.odometer || "";
     inpFuelLiters.value = ref.liters || "";
     inpFuelEuros.value = ref.euros || "";
-    
-    calcPrice(); // Päivitä litrahinta näkyviin
-    
+    calcPrice();
     fuelModal.style.display = 'flex';
 };
 
-// Laske litrahinta lennosta
 function calcPrice() {
     const l = parseFloat(inpFuelLiters.value);
     const e = parseFloat(inpFuelEuros.value);
@@ -123,7 +108,7 @@ function calcPrice() {
 if(inpFuelLiters) inpFuelLiters.addEventListener('input', calcPrice);
 if(inpFuelEuros) inpFuelEuros.addEventListener('input', calcPrice);
 
-// 4. TALLENNA (Create tai Update)
+// 3. TALLENNA
 if (btnFuelSave) {
     btnFuelSave.addEventListener('click', () => {
         const odo = parseFloat(inpFuelOdo.value);
@@ -135,7 +120,6 @@ if (btnFuelSave) {
             return;
         }
         
-        // Datan runko
         const data = {
             carId: currentRefuelingCarId,
             odometer: odo,
@@ -144,18 +128,15 @@ if (btnFuelSave) {
             pricePerLiter: (eur / lit).toFixed(3)
         };
 
-        // Jos muokkaamme vanhaa
         if (currentFuelEditKey) {
             db.ref('refuelings/' + currentUser.uid + '/' + currentFuelEditKey).update(data)
                 .then(() => {
                     fuelModal.style.display = 'none';
-                    currentFuelEditKey = null; // Nollaa tila
+                    currentFuelEditKey = null; 
                 })
                 .catch(err => alert("Virhe muokkauksessa: " + err.message));
-        } 
-        // Jos luomme uutta
-        else {
-            data.date = new Date().toISOString(); // Lisää päiväys vain uudelle (tai halutessasi voi muokata päiväystäkin)
+        } else {
+            data.date = new Date().toISOString(); 
             db.ref('refuelings/' + currentUser.uid).push(data)
                 .then(() => {
                     fuelModal.style.display = 'none';
@@ -173,7 +154,7 @@ if (btnFuelCancel) {
     });
 }
 
-// 5. HISTORIAN VÄLILEHDET & RENDERÖINTI
+// 4. HISTORIAN VÄLILEHDET & RENDERÖINTI
 
 if (tabDrives) {
     tabDrives.addEventListener('click', () => {
@@ -182,6 +163,9 @@ if (tabDrives) {
         tabDrives.classList.add('blue-btn'); tabDrives.style.backgroundColor = '';
         tabFuel.classList.remove('blue-btn'); tabFuel.style.backgroundColor = '#333';
         if(divHistoryFilter) divHistoryFilter.style.display = 'block'; 
+        
+        // Päivitä yhteenveto ajotilanteeseen
+        if(typeof renderHistoryList === 'function') renderHistoryList();
     });
 }
 
@@ -192,6 +176,8 @@ if (tabFuel) {
         tabFuel.classList.add('blue-btn'); tabFuel.style.backgroundColor = '';
         tabDrives.classList.remove('blue-btn'); tabDrives.style.backgroundColor = '#333';
         if(divHistoryFilter) divHistoryFilter.style.display = 'none'; 
+        
+        // Päivitä lista ja yhteenveto
         renderFuelList();
     });
 }
@@ -204,9 +190,57 @@ function renderFuelList() {
         if (currentCarId === 'all') return true;
         return f.carId === currentCarId;
     });
+    
+    // --- LASKETAAN YHTEENVETO (EURO, BENSA, DIESEL) ---
+    let sumEur = 0;
+    let sumGas = 0;
+    let sumDiesel = 0;
+    
+    filtered.forEach(ref => {
+        sumEur += parseFloat(ref.euros) || 0;
+        
+        // Hae auton tiedot, jotta tiedetään onko Bensiini vai Diesel
+        const car = userCars.find(c => c.id === ref.carId);
+        if (car) {
+            // Vertaillaan tarkasti tai "sisältää"
+            const fuelType = (car.fuel || "").toLowerCase();
+            if (fuelType.includes('bensiini')) {
+                sumGas += parseFloat(ref.liters) || 0;
+            } else if (fuelType.includes('diesel')) {
+                sumDiesel += parseFloat(ref.liters) || 0;
+            } else {
+                // Jos ei kumpikaan, voidaan laittaa vaikka bensiiniin oletuksena tai jättää huomiotta
+                // Tässä esimerkissä oletetaan Bensiini jos ei muuta tietoa, tai voidaan lisätä "Muu" kategoria.
+                // Laitetaan Bensiiniin jos ei ole diesel, yksinkertaisuuden vuoksi, tai luodaan "Muu" jos halutaan.
+                // Käyttäjän toive: "Bensiini" ja "Diesel".
+                sumGas += parseFloat(ref.liters) || 0; 
+            }
+        }
+    });
+    
+    // PÄIVITETÄÄN SININEN LAATIKKO
+    // Paikka 1: Eurot
+    document.getElementById('sum-val-1').innerText = sumEur.toFixed(0) + " €";
+    document.getElementById('sum-label-1').innerText = "Rahaa";
+
+    // Paikka 2: Bensiini
+    document.getElementById('sum-val-2').innerText = sumGas.toFixed(0);
+    document.getElementById('sum-label-2').innerText = "Bensa (l)";
+
+    // Paikka 3: Diesel
+    document.getElementById('sum-val-3').innerText = sumDiesel.toFixed(0);
+    document.getElementById('sum-label-3').innerText = "Diesel (l)";
+    
+    // Varmista että boksi näkyy
+    const historySummaryEl = document.getElementById('history-summary');
+    if(historySummaryEl) historySummaryEl.style.display = 'flex';
 
     if (filtered.length === 0) {
         divFuelList.innerHTML = "<p style='text-align:center; color:#888;'>Ei tankkauksia valitulla autolla.</p>";
+        // Nollataan luvut jos lista tyhjä
+        document.getElementById('sum-val-1').innerText = "0 €";
+        document.getElementById('sum-val-2').innerText = "0";
+        document.getElementById('sum-val-3').innerText = "0";
         return;
     }
 
@@ -219,7 +253,6 @@ function renderFuelList() {
         const carIcon = car ? (car.icon || "⛽") : "⛽";
         const carName = car ? car.name : "Tuntematon";
 
-        // Yksinkertainen kulutuslaskenta
         let consumptionStr = "-";
         if (index < filtered.length - 1) {
             const prev = filtered[index + 1];
