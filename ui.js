@@ -14,7 +14,11 @@ const menuBtn = document.getElementById('btn-menu-toggle');
 const mainMenu = document.getElementById('main-menu');
 const menuUserName = document.getElementById('user-name');
 const menuUserAvatar = document.getElementById('user-photo');
-const appLogo = document.getElementById('app-logo'); // Logo paluuta varten
+const appLogo = document.getElementById('app-logo'); 
+
+// Versioelementit (UUSI)
+const splashVersionEl = document.getElementById('splash-version-el');
+const menuVersionEl = document.getElementById('menu-version-el');
 
 // Sivupainikkeet (Karttaan siirtyminen)
 const sideTapLeft = document.getElementById('side-tap-left');
@@ -181,7 +185,6 @@ updateClockAndDate();
 
 
 // --- 3. TAPAHTUMANKUUNTELIJAT (EVENT LISTENERS) ---
-// TÄMÄ OSIO PUUTTUI AIEMMIN!
 
 // Menu auki/kiinni
 if (menuBtn) {
@@ -216,3 +219,13 @@ if (navBtns.history) navBtns.history.addEventListener('click', () => switchView(
 if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('stats'));
 if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
+
+
+// --- 4. VERSIOHALLINTA (AUTOMATISOINTI) ---
+// Tämä ajaa tekstin elementteihin heti kun sivu latautuu
+(function updateVersionText() {
+    if(typeof APP_VERSION !== 'undefined') {
+        if(splashVersionEl) splashVersionEl.innerText = "Modular v" + APP_VERSION;
+        if(menuVersionEl) menuVersionEl.innerText = "Mikkokalevin Ajopäiväkirja Pro v" + APP_VERSION;
+    }
+})();
