@@ -14,12 +14,6 @@ const menuBtn = document.getElementById('btn-menu-toggle');
 const mainMenu = document.getElementById('main-menu');
 const menuUserName = document.getElementById('user-name');
 const menuUserAvatar = document.getElementById('user-photo');
-const appLogo = document.getElementById('app-logo'); 
-
-// Sivupainikkeet
-const sideTapLeft = document.getElementById('side-tap-left');
-const mapReturnBtn = document.getElementById('map-return-btn');
-const mapHistoryBtn = document.getElementById('map-history-btn'); // UUSI NAPPI
 
 // Näkymät
 const views = {
@@ -77,7 +71,7 @@ const dashWeatherEl = document.getElementById('dash-weather');
 const liveStatusBar = document.getElementById('live-status-bar');
 const liveStyleEl = document.getElementById('live-style-indicator');
 
-// Kartta UI
+// Kartta UI napit
 const mapSpeedEl = document.getElementById('map-speed');
 const mapCoordsEl = document.getElementById('map-coords');
 const statusEl = document.getElementById('status');
@@ -113,14 +107,15 @@ const carTypeSelect = document.getElementById('car-type');
 const carSpecificFields = document.getElementById('car-specific-fields');
 
 
-// --- 2. UI LOGIIKKA ---
+// --- 2. UI LOGIIKKA JA APUFUNKTIOT ---
 
+// Päänäkymän vaihtaja
 function switchView(viewName) {
-    if(mainMenu) mainMenu.style.display = 'none';
+    mainMenu.style.display = 'none';
     
     // Piilota kaikki näkymät
     Object.values(views).forEach(el => {
-        if(el) el.style.display = 'none';
+        el.style.display = 'none';
     });
     
     // Poista aktiivinen luokka napeista
@@ -129,12 +124,10 @@ function switchView(viewName) {
     });
 
     // Näytä valittu
-    if (views[viewName]) {
-        if (viewName === 'dashboard' || viewName === 'map') {
-            views[viewName].style.display = 'flex';
-        } else {
-            views[viewName].style.display = 'block';
-        }
+    if (viewName === 'dashboard' || viewName === 'map') {
+        views[viewName].style.display = 'flex';
+    } else {
+        views[viewName].style.display = 'block';
     }
     
     if(navBtns[viewName]) {
@@ -145,21 +138,21 @@ function switchView(viewName) {
     if (viewName !== 'map') {
         if (typeof clearSavedRoute === 'function') clearSavedRoute();
         isViewingHistory = false;
-        if(mapLegend) mapLegend.style.display = 'none';
-    } else {
-        // Jos tullaan kartalle (eikä historiasta), näytä perusnapit
-        // map.js hoitaa tämän jos tullaan historiasta, mutta tässä resetoidaan
-        if (mapReturnBtn) mapReturnBtn.style.display = 'block';
-        if (mapHistoryBtn) mapHistoryBtn.style.display = 'none';
-        setTimeout(() => { if(map) map.invalidateSize(); }, 100);
+        mapLegend.style.display = 'none';
+    }
+
+    // Kartalle tulo korjaa koon
+    if (viewName === 'map' && map) {
+        setTimeout(() => map.invalidateSize(), 100);
     }
     
-    // Lataa listat tarvittaessa
+    // Lataa listat tarvittaessa (kutsutaan funktioita jos ne on olemassa)
     if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
 }
 
+// Päivitä mittariston luvut
 function updateDashboardUI(spd, max, dist, time, alt, avg) {
     if(dashSpeedEl) dashSpeedEl.innerText = spd.toFixed(1); 
     if(dashMaxSpeedEl) dashMaxSpeedEl.innerText = max.toFixed(1);
@@ -168,37 +161,13 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     if(avg !== undefined && dashAvgEl) dashAvgEl.innerText = avg.toFixed(1);
 }
 
+// Kello ja päivämäärä
 function updateClockAndDate() {
     const now = new Date();
     if(dashClockEl) dashClockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     if(dashDateEl) dashDateEl.innerText = now.toLocaleDateString('fi-FI', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
 }
+
+// Käynnistä kello
 setInterval(updateClockAndDate, 1000);
 updateClockAndDate();
-
-
-// --- 3. TAPAHTUMANKUUNTELIJAT ---
-
-if (menuBtn) {
-    menuBtn.addEventListener('click', () => {
-        if (mainMenu.style.display === 'none' || mainMenu.style.display === '') {
-            mainMenu.style.display = 'flex';
-        } else {
-            mainMenu.style.display = 'none';
-        }
-    });
-}
-
-if (appLogo) appLogo.addEventListener('click', () => switchView('dashboard'));
-if (sideTapLeft) sideTapLeft.addEventListener('click', () => switchView('map'));
-if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
-
-// UUSI NAPPI: Takaisin historiaan
-if (mapHistoryBtn) mapHistoryBtn.addEventListener('click', () => switchView('history'));
-
-if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
-if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
-if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
-if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('stats'));
-if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
-if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
