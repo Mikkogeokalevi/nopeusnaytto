@@ -119,6 +119,11 @@ const helpContent = `
                 <li><strong>Korjaus:</strong> Jos unohdit vaihtaa auton ennen ajoa, voit muokata ajoneuvoa tai ajon nimeä jälkikäteen kynä-ikonista.</li>
             </ul>
         </div>
+        
+        <div class="help-step">
+            <strong>⛽ Tankkaukset:</strong>
+            Historia-näkymässä on oma välilehti tankkauksille. Sieltä näet yhteenvedon polttoainekuluista ja tankatuista litroista.
+        </div>
 
         <div class="help-step">
             <strong>📈 Yhteenveto:</strong>
@@ -148,7 +153,7 @@ const helpContent = `
     </div>
 
     <div style="text-align: center; margin-top: 50px; color: #888; font-size: 11px; padding-bottom: 30px;">
-        Mikkokalevin Ajopäiväkirja Pro v5.0<br>
+        Mikkokalevin Ajopäiväkirja Pro v${APP_VERSION}<br>
         Luotettava kumppani tiellä.
     </div>
 `;
