@@ -14,6 +14,10 @@ const txtFuelPrice = document.getElementById('fuel-price-calc');
 const btnFuelSave = document.getElementById('btn-fuel-save');
 const btnFuelCancel = document.getElementById('btn-fuel-cancel');
 
+// Uudet aikakentät
+const inpFuelDate = document.getElementById('fuel-date');
+const inpFuelTime = document.getElementById('fuel-time');
+
 // Historia-tabit
 const tabDrives = document.getElementById('tab-drives');
 const tabFuel = document.getElementById('tab-fuel');
@@ -48,7 +52,7 @@ function loadRefuelings() {
     });
 }
 
-// 2. AVAA MODAALI
+// 2. AVAA MODAALI (LISÄYS)
 if (btnOpenFuel) {
     btnOpenFuel.addEventListener('click', () => {
         currentFuelEditKey = null;
@@ -70,6 +74,12 @@ if (btnOpenFuel) {
         }
 
         fuelCarNameEl.innerText = carName;
+        
+        // Aseta nykyhetki oletukseksi
+        const now = new Date();
+        inpFuelDate.value = now.toISOString().split('T')[0];
+        inpFuelTime.value = now.toTimeString().split(' ')[0].substring(0, 5);
+
         inpFuelOdo.value = "";
         inpFuelLiters.value = "";
         inpFuelEuros.value = "";
@@ -78,6 +88,7 @@ if (btnOpenFuel) {
     });
 }
 
+// AVAA MODAALI (MUOKKAUS)
 window.openEditFuelModal = (key) => {
     const ref = allRefuelings.find(r => r.key === key);
     if (!ref) return;
@@ -88,6 +99,21 @@ window.openEditFuelModal = (key) => {
 
     const c = userCars.find(x => x.id === ref.carId);
     fuelCarNameEl.innerText = c ? c.name : "Tuntematon auto";
+
+    // Pura tallennettu päiväys (ISO String) osiin
+    if (ref.date) {
+        const d = new Date(ref.date);
+        // Korjaus aikavyöhykeongelmaan inputeissa (käytetään paikallista aikaa string-kikkailulla tai date-fns)
+        // Yksinkertainen tapa:
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        
+        inpFuelDate.value = `${year}-${month}-${day}`;
+        inpFuelTime.value = `${hours}:${minutes}`;
+    }
 
     inpFuelOdo.value = ref.odometer || "";
     inpFuelLiters.value = ref.liters || "";
@@ -114,14 +140,20 @@ if (btnFuelSave) {
         const odo = parseFloat(inpFuelOdo.value);
         const lit = parseFloat(inpFuelLiters.value);
         const eur = parseFloat(inpFuelEuros.value);
+        const dateVal = inpFuelDate.value;
+        const timeVal = inpFuelTime.value;
         
-        if (!odo || !lit || !eur) {
+        if (!odo || !lit || !eur || !dateVal || !timeVal) {
             alert("Täytä kaikki kentät.");
             return;
         }
         
+        // Yhdistä pvm ja aika ISO-stringiksi
+        const combinedDate = new Date(dateVal + 'T' + timeVal);
+        
         const data = {
             carId: currentRefuelingCarId,
+            date: combinedDate.toISOString(),
             odometer: odo,
             liters: lit,
             euros: eur,
@@ -136,7 +168,6 @@ if (btnFuelSave) {
                 })
                 .catch(err => alert("Virhe muokkauksessa: " + err.message));
         } else {
-            data.date = new Date().toISOString(); 
             db.ref('refuelings/' + currentUser.uid).push(data)
                 .then(() => {
                     fuelModal.style.display = 'none';
@@ -199,39 +230,28 @@ function renderFuelList() {
     filtered.forEach(ref => {
         sumEur += parseFloat(ref.euros) || 0;
         
-        // Hae auton tiedot, jotta tiedetään onko Bensiini vai Diesel
         const car = userCars.find(c => c.id === ref.carId);
-        if (car) {
-            // Vertaillaan tarkasti tai "sisältää"
-            const fuelType = (car.fuel || "").toLowerCase();
-            if (fuelType.includes('bensiini')) {
-                sumGas += parseFloat(ref.liters) || 0;
-            } else if (fuelType.includes('diesel')) {
-                sumDiesel += parseFloat(ref.liters) || 0;
-            } else {
-                // Jos ei kumpikaan, voidaan laittaa vaikka bensiiniin oletuksena tai jättää huomiotta
-                // Tässä esimerkissä oletetaan Bensiini jos ei muuta tietoa, tai voidaan lisätä "Muu" kategoria.
-                // Laitetaan Bensiiniin jos ei ole diesel, yksinkertaisuuden vuoksi, tai luodaan "Muu" jos halutaan.
-                // Käyttäjän toive: "Bensiini" ja "Diesel".
-                sumGas += parseFloat(ref.liters) || 0; 
-            }
+        const fuelType = (car ? car.fuel : "Muu").toLowerCase();
+        
+        if (fuelType.includes('bensiini') || fuelType.includes('gas')) {
+            sumGas += parseFloat(ref.liters) || 0;
+        } else if (fuelType.includes('diesel')) {
+            sumDiesel += parseFloat(ref.liters) || 0;
+        } else {
+            sumGas += parseFloat(ref.liters) || 0; 
         }
     });
     
     // PÄIVITETÄÄN SININEN LAATIKKO
-    // Paikka 1: Eurot
     document.getElementById('sum-val-1').innerText = sumEur.toFixed(0) + " €";
     document.getElementById('sum-label-1').innerText = "Rahaa";
 
-    // Paikka 2: Bensiini
     document.getElementById('sum-val-2').innerText = sumGas.toFixed(0);
     document.getElementById('sum-label-2').innerText = "Bensa (l)";
 
-    // Paikka 3: Diesel
     document.getElementById('sum-val-3').innerText = sumDiesel.toFixed(0);
     document.getElementById('sum-label-3').innerText = "Diesel (l)";
     
-    // Varmista että boksi näkyy
     const historySummaryEl = document.getElementById('history-summary');
     if(historySummaryEl) historySummaryEl.style.display = 'flex';
 
