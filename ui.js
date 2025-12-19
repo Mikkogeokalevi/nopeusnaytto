@@ -1,9 +1,8 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (FIXED)
+// UI.JS - KÄYTTÖLIITTYMÄ (FIXED GLOBAL SCOPE)
 // =========================================================
 
-// --- 1. DOM ELEMENTIT ---
-
+// --- DOM ELEMENTIT ---
 const splashScreen = document.getElementById('splash-screen');
 const loginView = document.getElementById('login-view');
 const appContainer = document.getElementById('app-container');
@@ -83,7 +82,7 @@ const btnPause = document.getElementById('btn-pause');
 const btnResume = document.getElementById('btn-resume');
 const btnStopRec = document.getElementById('btn-stop-rec');
 
-// Modaalit (Haetaan turvallisesti)
+// Modaalit
 const saveModal = document.getElementById('save-modal');
 const modalDistEl = document.getElementById('modal-dist');
 const modalTimeEl = document.getElementById('modal-time');
@@ -112,10 +111,10 @@ const carTypeSelect = document.getElementById('car-type');
 const carSpecificFields = document.getElementById('car-specific-fields');
 
 
-// --- 2. UI LOGIIKKA ---
+// --- 2. UI LOGIIKKA (GLOBAALIT FUNKTIOT) ---
 
-// Päänäkymän vaihtaja
-function switchView(viewName) {
+// Määritellään window-objektiin, jotta HTML löytää nämä varmasti
+window.switchView = function(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
     
     // Piilota kaikki näkymät
@@ -130,7 +129,6 @@ function switchView(viewName) {
 
     // Näytä valittu
     if (views[viewName]) {
-        // Flexbox mittaristolle ja kartalle, jotta ne täyttävät ruudun oikein
         if (viewName === 'dashboard' || viewName === 'map') {
             views[viewName].style.display = 'flex';
         } else {
@@ -142,46 +140,46 @@ function switchView(viewName) {
         navBtns[viewName].classList.add('active-menu');
     }
 
-    // Jos poistutaan kartalta
+    // KARTAN KÄSITTELY
     if (viewName !== 'map') {
-        if (typeof clearSavedRoute === 'function') clearSavedRoute();
+        if (typeof window.clearSavedRoute === 'function') window.clearSavedRoute();
         isViewingHistory = false;
         if(mapLegend) mapLegend.style.display = 'none';
     } else {
-        // OLEMME KARTALLA - RESETOI NAPIT
+        // Kartalle tulo
         if (mapReturnBtn) mapReturnBtn.style.display = 'block';
         if (mapHistoryBtn) mapHistoryBtn.style.display = 'none';
         
-        // *** TÄRKEÄ KORJAUS: PAKOTA KARTAN PÄIVITYS ***
-        // Tehdään tämä useaan kertaan varmuuden vuoksi
+        // PAKOTA KARTAN PÄIVITYS (FIX HARMAA RUUTU)
         if (typeof map !== 'undefined' && map) {
-            map.invalidateSize(); 
-            setTimeout(() => { map.invalidateSize(); }, 100);
+            map.invalidateSize();
+            setTimeout(() => { map.invalidateSize(); }, 200);
             setTimeout(() => { map.invalidateSize(); }, 500);
         }
     }
     
     // Lataa listat tarvittaessa
+    if (viewName === 'history' && typeof loadHistory === 'function') loadHistory(); // Varmistus
     if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
-}
+};
 
-function updateDashboardUI(spd, max, dist, time, alt, avg) {
+window.updateDashboardUI = function(spd, max, dist, time, alt, avg) {
     if(dashSpeedEl) dashSpeedEl.innerText = spd.toFixed(1); 
     if(dashMaxSpeedEl) dashMaxSpeedEl.innerText = max.toFixed(1);
     if(dashDistEl) dashDistEl.innerText = dist.toFixed(2); 
     if(dashAltEl) dashAltEl.innerText = Math.round(alt);
     if(avg !== undefined && dashAvgEl) dashAvgEl.innerText = avg.toFixed(1);
-}
+};
 
-function updateClockAndDate() {
+window.updateClockAndDate = function() {
     const now = new Date();
     if(dashClockEl) dashClockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     if(dashDateEl) dashDateEl.innerText = now.toLocaleDateString('fi-FI', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
-}
-setInterval(updateClockAndDate, 1000);
-updateClockAndDate();
+};
+setInterval(window.updateClockAndDate, 1000);
+window.updateClockAndDate();
 
 
 // --- 3. TAPAHTUMANKUUNTELIJAT ---
@@ -196,17 +194,15 @@ if (menuBtn) {
     });
 }
 
-if (appLogo) appLogo.addEventListener('click', () => switchView('dashboard'));
-if (sideTapLeft) sideTapLeft.addEventListener('click', () => switchView('map'));
-if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
+if (appLogo) appLogo.addEventListener('click', () => window.switchView('dashboard'));
+if (sideTapLeft) sideTapLeft.addEventListener('click', () => window.switchView('map'));
+if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => window.switchView('dashboard'));
+if (mapHistoryBtn) mapHistoryBtn.addEventListener('click', () => window.switchView('history'));
 
-// UUSI NAPPI: Takaisin historiaan (Suojattu)
-if (mapHistoryBtn) mapHistoryBtn.addEventListener('click', () => switchView('history'));
-
-// Navigaationapit (Suojattu)
-if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
-if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
-if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
-if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('stats'));
-if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
-if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
+// Navigaationapit
+if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => window.switchView('dashboard'));
+if (navBtns.map) navBtns.map.addEventListener('click', () => window.switchView('map'));
+if (navBtns.history) navBtns.history.addEventListener('click', () => window.switchView('history'));
+if (navBtns.stats) navBtns.stats.addEventListener('click', () => window.switchView('stats'));
+if (navBtns.settings) navBtns.settings.addEventListener('click', () => window.switchView('settings'));
+if (navBtns.help) navBtns.help.addEventListener('click', () => window.switchView('help'));
