@@ -27,6 +27,9 @@ auth.onAuthStateChanged((user) => {
         if(typeof loadCars === 'function') loadCars(); 
         if(typeof loadHistory === 'function') loadHistory(); 
         if(typeof generateCarIcons === 'function') generateCarIcons(); 
+        
+        // UUSI: Ladataan tankkaukset
+        if(typeof loadRefuelings === 'function') loadRefuelings();
 
         // Korjataan kartan koko jos se on piilossa lataushetkellä
         if (views.map && views.map.style.display !== 'none' && map) {
