@@ -19,7 +19,7 @@ const appLogo = document.getElementById('app-logo');
 // Sivupainikkeet
 const sideTapLeft = document.getElementById('side-tap-left');
 const mapReturnBtn = document.getElementById('map-return-btn');
-const mapHistoryBtn = document.getElementById('map-history-btn'); // UUSI NAPPI
+const mapHistoryBtn = document.getElementById('map-history-btn'); 
 
 // Näkymät
 const views = {
@@ -148,10 +148,15 @@ function switchView(viewName) {
         if(mapLegend) mapLegend.style.display = 'none';
     } else {
         // Jos tullaan kartalle (eikä historiasta), näytä perusnapit
-        // map.js hoitaa tämän jos tullaan historiasta, mutta tässä resetoidaan
         if (mapReturnBtn) mapReturnBtn.style.display = 'block';
         if (mapHistoryBtn) mapHistoryBtn.style.display = 'none';
-        setTimeout(() => { if(map) map.invalidateSize(); }, 100);
+        
+        // KORJAUS: Pakota kartan koon päivitys viiveellä
+        if (typeof map !== 'undefined' && map) {
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 200); // 200ms viive varmistaa että div on näkyvissä
+        }
     }
     
     // Lataa listat tarvittaessa
