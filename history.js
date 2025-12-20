@@ -1,20 +1,28 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (FULL)
+// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (FINAL)
 // =========================================================
+
+// Varmistetaan, että funktiot löytyvät globaalisti
+window.renderHistoryList = renderHistoryList;
+window.renderFuelList = renderFuelList;
+window.renderStats = renderStats;
+window.renderDriveStats = renderDriveStats;
+window.renderFuelStats = renderFuelStats;
 
 // 1. HISTORIAN LATAUS
 function loadHistory() {
     if (!currentUser) return;
 
+    // Poistetaan vanhat kuuntelijat ettei tule tuplia
     db.ref('ajopaivakirja/' + currentUser.uid).off();
     
     const historyRef = db.ref('ajopaivakirja/' + currentUser.uid)
                          .orderByChild('startTime')
-                         .limitToLast(300);
+                         .limitToLast(500); // Nostettu raja varmuuden vuoksi
 
     historyRef.on('value', (snapshot) => {
         allHistoryData = [];
-        allRefuelings = []; // Nollataan tankkaukset
+        allRefuelings = [];
         
         if (snapshot.exists()) {
             snapshot.forEach(child => {
@@ -28,30 +36,22 @@ function loadHistory() {
             });
         }
         
-        // Järjestetään molemmat listat (uusin ensin)
+        // Järjestetään (uusin ensin)
         allHistoryData.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
         allRefuelings.sort((a, b) => new Date(b.date) - new Date(a.date));
         
+        // Päivitetään filtterit
         if(typeof populateFilter === 'function') populateFilter();
         
-        // Päivitä näkyvä lista riippuen siitä kumpi on auki
-        const logList = document.getElementById('log-list');
-        const fuelList = document.getElementById('fuel-list');
-        
-        if (logList && logList.style.display !== 'none') {
-            renderHistoryList();
-        }
-        if (fuelList && fuelList.style.display !== 'none') {
-            renderFuelList();
-        }
-        
-        // Päivitä tilastot jos ne on auki
-        if(typeof renderStats === 'function') renderStats();
+        // PAKOTETAAN RENDERÖINTI (Poistettu näkyvyystarkistus)
+        renderHistoryList();
+        renderFuelList();
+        renderStats();
 
     }, (error) => {
-        console.error(error);
+        console.error("Firebase virhe:", error);
         const logList = document.getElementById('log-list');
-        if(logList) logList.innerHTML = `<p style="color:red; text-align:center;">Virhe: ${error.message}</p>`;
+        if(logList) logList.innerHTML = `<p style="color:red; text-align:center;">Virhe datan latauksessa: ${error.message}</p>`;
     });
 }
 
@@ -83,6 +83,7 @@ function populateFilter() {
                 periods.add(JSON.stringify({key: yearKey, label: "Vuosi " + d.getFullYear(), sort: d.getFullYear() * 100}));
                 const monthKey = d.getFullYear() + '-' + (d.getMonth() + 1);
                 const monthLabel = d.toLocaleString('fi-FI', { month: 'long', year: 'numeric' });
+                // Eka kirjain isoksi
                 const finalMonthLabel = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
                 periods.add(JSON.stringify({key: monthKey, label: finalMonthLabel, sort: d.getFullYear() * 100 + (d.getMonth() + 1)}));
             }
@@ -105,7 +106,7 @@ function renderHistoryList() {
     const logList = document.getElementById('log-list');
     if(!logList) return; 
     
-    logList.innerHTML = "";
+    logList.innerHTML = ""; // Tyhjennä "Ladataan..."
     
     if (allHistoryData.length === 0) {
         logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
@@ -146,6 +147,7 @@ function renderHistoryList() {
                 }
             }
 
+            // Aikalaskenta
             let durationMinutes = 0;
             let durationMs = 0;
             if (drive.durationMs) {
@@ -165,18 +167,20 @@ function renderHistoryList() {
             if (drive.route && drive.route.length > 0) {
                 mapBtn = `<button class="map-btn" onclick="window.showRouteOnMap('${drive.key}')" title="Näytä reitti">🗺️</button>`;
             }
+            
+            // Auton tiedot
             let carObj = userCars.find(c => c.id === drive.carId);
             let icon = carObj ? (carObj.icon || (carObj.type==='bike'?"🚲":"🚗")) : (drive.carIcon || (drive.carType==='bike'?"🚲":"🚗"));
             let carName = carObj ? carObj.name : (drive.carName || "Muu");
+            
             let dateStr = start.toLocaleDateString('fi-FI');
             let startH = start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
             let endH = drive.endTime ? " - " + new Date(drive.endTime).toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'}) : "";
 
             const card = document.createElement('div');
             card.className = 'log-card';
-            
-            const delay = Math.min(renderCount * 0.05, 1.0); 
-            card.style.animationDelay = `${delay}s`;
+            // Pieni animaatioviive
+            card.style.animationDelay = `${Math.min(renderCount * 0.05, 1.0)}s`;
 
             card.innerHTML = `
                 <div class="log-header">
@@ -204,7 +208,7 @@ function renderHistoryList() {
             `;
             logList.appendChild(card);
             renderCount++;
-        } catch (err) { console.error(err); }
+        } catch (err) { console.error("Virhe renderöinnissä:", err); }
     });
 
     if (renderCount === 0) {
@@ -228,7 +232,7 @@ function renderHistoryList() {
 }
 
 // 3B. LISTAN RENDERÖINTI (TANKKAUKSET)
-window.renderFuelList = function() {
+function renderFuelList() {
     const fuelList = document.getElementById('fuel-list');
     if(!fuelList) return;
     
@@ -273,12 +277,9 @@ window.renderFuelList = function() {
 
 // 4. TILASTOT (GRAAFIT + TABIT)
 function renderStats() {
-    const statsFuelContainer = document.getElementById('stats-fuel-container');
-    if(statsFuelContainer && statsFuelContainer.style.display !== 'none') {
-        renderFuelStats();
-    } else {
-        renderDriveStats();
-    }
+    // Renderöidään molemmat, css hoitaa näkyvyyden
+    renderDriveStats();
+    renderFuelStats();
 }
 
 function renderDriveStats() {
@@ -289,12 +290,10 @@ function renderDriveStats() {
     const monthlyData = {};
     const vehicleData = {};
     const styleData = { "Taloudellinen": 0, "Tasainen": 0, "Reipas": 0, "Aggressiivinen": 0 };
-    
-    // Autokohtainen kuukausidata viivakaaviolle
     const carMonthlyData = {}; 
     const speedData = {}; 
 
-    // Järjestetään vanhimmasta uusimpaan trendejä varten
+    // Järjestetään
     const sortedDrives = [...allHistoryData].sort((a,b) => new Date(a.startTime) - new Date(b.startTime));
 
     sortedDrives.forEach(d => {
@@ -316,19 +315,19 @@ function renderDriveStats() {
         if (!vehicleData[label]) vehicleData[label] = 0;
         vehicleData[label] += dist;
 
-        // Autokohtainen trendi
+        // Trendi
         if (!carMonthlyData[carName]) carMonthlyData[carName] = {};
         if (!carMonthlyData[carName][monthKey]) carMonthlyData[carName][monthKey] = 0;
         carMonthlyData[carName][monthKey] += dist;
 
-        // Keskinopeus trendi
+        // Nopeus
         if(avgSpd > 0) {
             if(!speedData[monthKey]) speedData[monthKey] = {sum:0, count:0};
             speedData[monthKey].sum += avgSpd;
             speedData[monthKey].count++;
         }
 
-        // Ajotyyli
+        // Tyyli
         if(d.drivingStyle) {
             if(!styleData[d.drivingStyle]) styleData[d.drivingStyle] = 0;
             styleData[d.drivingStyle]++;
@@ -338,7 +337,7 @@ function renderDriveStats() {
     const monthLabels = Object.keys(monthlyData); 
     const monthValues = Object.values(monthlyData).map(v => v.toFixed(1));
 
-    // 1. KILOMETRIT (BAR)
+    // 1. KILOMETRIT
     const canvasMonthly = document.getElementById('chart-drive-monthly');
     if (canvasMonthly) {
         if (chartInstanceMonthly) { chartInstanceMonthly.destroy(); }
@@ -349,7 +348,7 @@ function renderDriveStats() {
         });
     }
 
-    // 2. KILOMETRITRENDI (LINE)
+    // 2. KILOMETRITRENDI
     const canvasTrend = document.getElementById('chart-drive-trend');
     if (canvasTrend) {
         if (chartInstanceDriveTrend) { chartInstanceDriveTrend.destroy(); }
@@ -377,7 +376,7 @@ function renderDriveStats() {
         });
     }
 
-    // 3. NOPEUSTRENDI (LINE)
+    // 3. NOPEUSTRENDI
     const canvasSpeed = document.getElementById('chart-drive-speed');
     if (canvasSpeed) {
         if (chartInstanceDriveSpeed) { chartInstanceDriveSpeed.destroy(); }
@@ -406,7 +405,7 @@ function renderDriveStats() {
         });
     }
 
-    // 4. AJONEUVOT (DOUGHNUT)
+    // 4. AJONEUVOT
     const canvasVehicles = document.getElementById('chart-drive-vehicles');
     if (canvasVehicles) {
         if (chartInstanceVehicles) { chartInstanceVehicles.destroy(); }
@@ -416,7 +415,7 @@ function renderDriveStats() {
         });
     }
 
-    // 5. AJOTYYLI (PIE)
+    // 5. AJOTYYLI
     const canvasStyle = document.getElementById('chart-drive-style');
     if (canvasStyle) {
         if (chartInstanceStyle) { chartInstanceStyle.destroy(); }
