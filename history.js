@@ -22,6 +22,7 @@ function loadHistory() {
                 }
             });
         }
+        // Järjestä uusin ensin
         allHistoryData.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
         
         if(typeof populateFilter === 'function') populateFilter();
@@ -84,7 +85,7 @@ function populateFilter() {
     }
 }
 
-// 3. LISTAN RENDERÖINTI
+// 3. LISTAN RENDERÖINTI (ANIMAATIOLLA)
 function renderHistoryList() {
     const logList = document.getElementById('log-list');
     if(!logList) return; 
@@ -102,7 +103,7 @@ function renderHistoryList() {
     let totalKm = 0;
     let totalMs = 0;
 
-    allHistoryData.forEach(drive => {
+    allHistoryData.forEach((drive, index) => {
         try {
             if (currentCarId !== 'all') {
                 if (drive.carId && drive.carId !== currentCarId) return;
@@ -156,6 +157,12 @@ function renderHistoryList() {
 
             const card = document.createElement('div');
             card.className = 'log-card';
+            
+            // --- ANIMAATIO VIIVE ---
+            // Tämä luo "vesiputous"-efektin (ensimmäinen tulee heti, seuraavat viiveellä)
+            const delay = Math.min(renderCount * 0.05, 1.0); // Max 1s viive
+            card.style.animationDelay = `${delay}s`;
+
             card.innerHTML = `
                 <div class="log-header">
                     <div class="log-title-group">
@@ -422,8 +429,6 @@ function renderFuelStats() {
         if (chartInstanceFuelTrend) { chartInstanceFuelTrend.destroy(); }
         
         // Yhdistä labelit (kaikki päivät)
-        // Huom: Chart.js osaa piirtää vaikka x-akseli ei täsmää täysin, kunhan data on objektimuodossa {x,y}
-        // Mutta labels-arrayhin tarvitaan kaikki uniikit päivät jotta x-akseli skaalautuu nätisti
         const allDates = [...new Set([...trendGas.map(d=>d.x), ...trendDiesel.map(d=>d.x)])];
         
         chartInstanceFuelTrend = new Chart(canvasTrend.getContext('2d'), {
