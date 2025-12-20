@@ -481,12 +481,12 @@ body.light-theme .light-mode-img { display: block; }
 @media screen and (orientation: landscape) and (max-height: 500px) {
     #dashboard-view {
         display: grid;
-        grid-template-columns: 40% 60%; /* Vasen sarake kapeampi */
+        grid-template-columns: 40% 60%;
         grid-template-rows: auto 1fr auto;
         grid-template-areas:
             "status stats"
             "speed stats"
-            "meta stats"; /* meta = osoite + sää */
+            "meta address"; /* Osoite oikealle alas */
         padding: 5px 10px;
         align-content: center;
         justify-items: center;
@@ -509,13 +509,21 @@ body.light-theme .light-mode-img { display: block; }
         grid-template-columns: 1fr 1fr 1fr; /* Kolme laatikkoa vierekkäin */
         gap: 5px;
         align-content: center;
+        align-self: center;
         margin: 0;
         height: 100%;
         padding-left: 10px;
     }
     
-    /* Piilotetaan osoite vaakatilassa, jos tila loppuu */
-    .address-container { display: none; } 
+    /* NÄYTÄ OSOITE VAAKATILASSA */
+    .address-container { 
+        display: block; 
+        grid-area: address;
+        width: 100%;
+        text-align: center;
+        padding-top: 5px;
+        z-index: 60;
+    }
     
     .time-weather-wrapper {
         grid-area: meta;
@@ -527,10 +535,10 @@ body.light-theme .light-mode-img { display: block; }
     .weather-huge { font-size: 24px; }
     .date-box { display: none; } 
 
-    /* Siirrä G-mittari vasempaan yläkulmaan */
+    /* SIIRRÄ G-MITTARI POIS "KARTTA"-NAPIN PÄÄLTÄ */
     .g-force-wrapper {
         top: 10px;
-        left: 10px; 
+        left: 55px; /* Nyt selvästi irti vasemmasta laidasta */
         right: auto;
     }
 }
