@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (FIXED)
+// UI.JS - UI ELEMENTIT, NÄKYMÄT JA TABIT (FINAL FIX)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -43,7 +43,7 @@ const navBtns = {
     help: document.getElementById('nav-help')
 };
 
-// Modaalit & Elementit
+// Modaalit
 const saveModal = document.getElementById('save-modal');
 const modalDistEl = document.getElementById('modal-dist');
 const modalTimeEl = document.getElementById('modal-time');
@@ -63,12 +63,11 @@ const deleteModal = document.getElementById('delete-modal');
 const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
 const btnDeleteCancel = document.getElementById('btn-delete-cancel');
 
-// TANKKAUS MODAALI
+// TANKKAUS
 const fuelModal = document.getElementById('fuel-modal');
 const btnOpenFuel = document.getElementById('btn-open-fuel');
 const btnFuelSave = document.getElementById('btn-fuel-save');
 const btnFuelCancel = document.getElementById('btn-fuel-cancel');
-// Tankkauskentät laskentaa varten
 const inpFuelLiters = document.getElementById('fuel-liters');
 const inpFuelEuros = document.getElementById('fuel-euros');
 const inpFuelCalc = document.getElementById('fuel-price-calc');
@@ -85,15 +84,13 @@ const dashClockEl = document.getElementById('dash-clock');
 const dashDateEl = document.getElementById('dash-date'); 
 const dashHeadingEl = document.getElementById('dash-heading'); 
 const dashWeatherEl = document.getElementById('dash-weather');
-
 const dashAddressEl = document.getElementById('dash-address');
 const compassArrowEl = document.getElementById('compass-arrow');
 const gBubbleEl = document.getElementById('g-bubble');
-
 const liveStatusBar = document.getElementById('live-status-bar');
 const liveStyleEl = document.getElementById('live-style-indicator');
 
-// Kartta UI
+// Kartta
 const mapSpeedEl = document.getElementById('map-speed');
 const mapCoordsEl = document.getElementById('map-coords');
 const statusEl = document.getElementById('status');
@@ -102,12 +99,6 @@ const mapLegend = document.getElementById('map-legend');
 
 // Muut
 const carSelectEl = document.getElementById('car-select');
-const historySummaryEl = document.getElementById('history-summary');
-const filterEl = document.getElementById('history-filter');
-const customFilterContainer = document.getElementById('custom-filter-container');
-const filterStart = document.getElementById('filter-start');
-const filterEnd = document.getElementById('filter-end');
-
 const btnStartRec = document.getElementById('btn-start-rec');
 const activeRecBtns = document.getElementById('active-rec-btns');
 const btnPause = document.getElementById('btn-pause');
@@ -133,7 +124,6 @@ function switchView(viewName) {
             el.style.display = 'none'; 
         }
     });
-    
     Object.values(navBtns).forEach(btn => {
         if(btn) btn.classList.remove('active-menu');
     });
@@ -144,38 +134,28 @@ function switchView(viewName) {
         targetEl.classList.add('active-view');
     }
     
-    if(navBtns[viewName]) {
-        navBtns[viewName].classList.add('active-menu');
-    }
+    if(navBtns[viewName]) navBtns[viewName].classList.add('active-menu');
 
     if (viewName !== 'map') {
         if (typeof clearSavedRoute === 'function') clearSavedRoute();
         isViewingHistory = false;
         if(mapLegend) mapLegend.style.display = 'none';
     }
-    if (viewName === 'map' && map) {
-        setTimeout(() => map.invalidateSize(), 100);
-    }
+    if (viewName === 'map' && map) setTimeout(() => map.invalidateSize(), 100);
     
     if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
 }
 
-// Päivitä mittariston luvut
 function updateDashboardUI(spd, max, dist, time, alt, avg) {
     if(dashSpeedEl) {
         dashSpeedEl.innerText = spd.toFixed(1);
-        if (Math.abs(spd) >= 100) {
-            dashSpeedEl.classList.add('three-digits');
-        } else {
-            dashSpeedEl.classList.remove('three-digits');
-        }
-        if (spd >= 120) {
-            dashSpeedEl.style.color = '#ff1744'; 
-        } else {
-            dashSpeedEl.style.color = ''; 
-        }
+        if (Math.abs(spd) >= 100) dashSpeedEl.classList.add('three-digits');
+        else dashSpeedEl.classList.remove('three-digits');
+        
+        if (spd >= 120) dashSpeedEl.style.color = '#ff1744'; 
+        else dashSpeedEl.style.color = ''; 
     }
     if(dashMaxSpeedEl) dashMaxSpeedEl.innerText = max.toFixed(1);
     if(dashDistEl) dashDistEl.innerText = dist.toFixed(2); 
@@ -183,7 +163,6 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     if(avg !== undefined && dashAvgEl) dashAvgEl.innerText = avg.toFixed(1);
 }
 
-// Kello
 function updateClockAndDate() {
     const now = new Date();
     if(dashClockEl) dashClockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -192,34 +171,43 @@ function updateClockAndDate() {
 setInterval(updateClockAndDate, 1000);
 updateClockAndDate();
 
-// --- 3. EVENT LISTENERS ---
 
-// TANKKAUS LOGIIKKA (KORJATTU TÄHÄN)
+// --- 3. PERUS EVENT LISTENERS ---
+
+if (menuBtn) menuBtn.addEventListener('click', () => { mainMenu.style.display = (mainMenu.style.display === 'none' || mainMenu.style.display === '') ? 'flex' : 'none'; });
+if (appLogo) appLogo.addEventListener('click', () => switchView('dashboard'));
+if (sideTapLeft) sideTapLeft.addEventListener('click', () => switchView('map'));
+if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
+
+if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
+if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
+if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
+if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('stats'));
+if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
+if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
+
+
+// --- 4. TANKKAUS & TABIT (TÄMÄ PUUTTUI AIEMMIN!) ---
+
+// Tankkausnappi
 if (btnOpenFuel) {
     btnOpenFuel.addEventListener('click', () => {
-        // Alusta kentät
         const now = new Date();
-        document.getElementById('fuel-date').value = now.toISOString().split('T')[0];
-        document.getElementById('fuel-time').value = now.toTimeString().split(' ')[0].substring(0,5);
+        const dateInput = document.getElementById('fuel-date');
+        const timeInput = document.getElementById('fuel-time');
+        if(dateInput) dateInput.value = now.toISOString().split('T')[0];
+        if(timeInput) timeInput.value = now.toTimeString().split(' ')[0].substring(0,5);
         if(fuelModal) fuelModal.style.display = 'flex';
     });
 }
+if (btnFuelCancel) btnFuelCancel.addEventListener('click', () => { if(fuelModal) fuelModal.style.display = 'none'; });
 
-if (btnFuelCancel) {
-    btnFuelCancel.addEventListener('click', () => {
-        if(fuelModal) fuelModal.style.display = 'none';
-    });
-}
-
-// Litrahinnan automaattilaskenta
+// Litrahinnan laskenta
 function calcPrice() {
     const l = parseFloat(inpFuelLiters.value) || 0;
     const e = parseFloat(inpFuelEuros.value) || 0;
-    if(l > 0 && inpFuelCalc) {
-        inpFuelCalc.innerText = (e/l).toFixed(3);
-    } else if(inpFuelCalc) {
-        inpFuelCalc.innerText = "0.00";
-    }
+    if(l > 0 && inpFuelCalc) inpFuelCalc.innerText = (e/l).toFixed(3);
+    else if(inpFuelCalc) inpFuelCalc.innerText = "0.00";
 }
 if(inpFuelLiters) inpFuelLiters.addEventListener('input', calcPrice);
 if(inpFuelEuros) inpFuelEuros.addEventListener('input', calcPrice);
@@ -233,10 +221,7 @@ if (btnFuelSave) {
         const lit = document.getElementById('fuel-liters').value;
         const eur = document.getElementById('fuel-euros').value;
 
-        if(!date || !lit || !eur) {
-            alert("Täytä päivämäärä, litrat ja eurot!");
-            return;
-        }
+        if(!date || !lit || !eur) { alert("Täytä tiedot!"); return; }
 
         if(currentUser) {
             const refData = {
@@ -248,36 +233,68 @@ if (btnFuelSave) {
                 pricePerLiter: (parseFloat(eur)/parseFloat(lit)).toFixed(3),
                 carId: currentCarId || 'all'
             };
-            
-            db.ref('ajopaivakirja/' + currentUser.uid).push().set(refData)
-            .then(() => {
+            db.ref('ajopaivakirja/' + currentUser.uid).push().set(refData).then(() => {
                 if(fuelModal) fuelModal.style.display = 'none';
-                inpFuelLiters.value = "";
-                inpFuelEuros.value = "";
+                inpFuelLiters.value = ""; inpFuelEuros.value = "";
                 alert("Tankkaus tallennettu!");
+                // Päivitä listat jos ollaan historiassa
+                if(views.history.style.display !== 'none' || views.history.classList.contains('active-view')) {
+                    if(window.renderFuelList) window.renderFuelList();
+                }
             });
-        } else {
-            alert("Et ole kirjautunut sisään!");
         }
     });
 }
 
-// Muut napit
-if (menuBtn) menuBtn.addEventListener('click', () => {
-    mainMenu.style.display = (mainMenu.style.display === 'none' || mainMenu.style.display === '') ? 'flex' : 'none';
-});
-if (appLogo) appLogo.addEventListener('click', () => switchView('dashboard'));
-if (sideTapLeft) sideTapLeft.addEventListener('click', () => switchView('map'));
-if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
+// --- HISTORIA & TILASTO TABIT (TÄMÄ KORJAA HISTORIAN NÄKYMÄN) ---
 
-if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
-if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
-if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
-if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('stats'));
-if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
-if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
+const tabDrives = document.getElementById('tab-drives');
+const tabFuel = document.getElementById('tab-fuel');
+const historyDrivesList = document.getElementById('log-list');
+const historyFuelList = document.getElementById('fuel-list');
 
-// --- 4. VERSIO & ALUSTUS ---
+if(tabDrives && tabFuel) {
+    tabDrives.addEventListener('click', () => {
+        tabDrives.classList.add('blue-btn'); tabDrives.style.backgroundColor = '';
+        tabFuel.classList.remove('blue-btn'); tabFuel.style.backgroundColor = '#333';
+        historyDrivesList.style.display = 'block';
+        historyFuelList.style.display = 'none';
+        if(window.renderHistoryList) window.renderHistoryList();
+    });
+
+    tabFuel.addEventListener('click', () => {
+        tabFuel.classList.add('blue-btn'); tabFuel.style.backgroundColor = '';
+        tabDrives.classList.remove('blue-btn'); tabDrives.style.backgroundColor = '#333';
+        historyDrivesList.style.display = 'none';
+        historyFuelList.style.display = 'block';
+        if(window.renderFuelList) window.renderFuelList();
+    });
+}
+
+const statTabDrives = document.getElementById('stat-tab-drives');
+const statTabFuel = document.getElementById('stat-tab-fuel');
+const statsDrivesCont = document.getElementById('stats-drives-container');
+const statsFuelCont = document.getElementById('stats-fuel-container');
+
+if(statTabDrives && statTabFuel) {
+    statTabDrives.addEventListener('click', () => {
+        statTabDrives.classList.add('blue-btn'); statTabDrives.style.backgroundColor = '';
+        statTabFuel.classList.remove('blue-btn'); statTabFuel.style.backgroundColor = '#333';
+        statsDrivesCont.style.display = 'block';
+        statsFuelCont.style.display = 'none';
+        if(window.renderDriveStats) window.renderDriveStats();
+    });
+
+    statTabFuel.addEventListener('click', () => {
+        statTabFuel.classList.add('blue-btn'); statTabFuel.style.backgroundColor = '';
+        statTabDrives.classList.remove('blue-btn'); statTabDrives.style.backgroundColor = '#333';
+        statsDrivesCont.style.display = 'none';
+        statsFuelCont.style.display = 'block';
+        if(window.renderFuelStats) window.renderFuelStats();
+    });
+}
+
+// --- 5. ALUSTUS ---
 (function updateVersionText() {
     if(typeof APP_VERSION !== 'undefined') {
         if(splashVersionEl) splashVersionEl.innerText = "Modular v" + APP_VERSION;
@@ -285,7 +302,7 @@ if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'
     }
 })();
 
-// PAKOTA MITTARISTO NÄKYVIIN HETI
+// Pakota mittaristo näkyviin heti latauksessa
 window.addEventListener('DOMContentLoaded', () => {
     switchView('dashboard');
 });
