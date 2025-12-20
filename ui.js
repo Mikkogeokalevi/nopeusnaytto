@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - UI ELEMENTIT, NÄKYMÄT JA TABIT (FINAL FIX)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (FIXED)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -187,7 +187,7 @@ if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchVie
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
 
-// --- 4. TANKKAUS & TABIT (TÄMÄ PUUTTUI AIEMMIN!) ---
+// --- 4. TANKKAUS & TABIT (TÄMÄ ON KRIITTINEN) ---
 
 // Tankkausnappi
 if (btnOpenFuel) {
@@ -246,7 +246,7 @@ if (btnFuelSave) {
     });
 }
 
-// --- HISTORIA & TILASTO TABIT (TÄMÄ KORJAA HISTORIAN NÄKYMÄN) ---
+// --- HISTORIA & TILASTO TABIT ---
 
 const tabDrives = document.getElementById('tab-drives');
 const tabFuel = document.getElementById('tab-fuel');
