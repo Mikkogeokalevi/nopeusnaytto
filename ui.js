@@ -168,9 +168,30 @@ function switchView(viewName) {
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
 }
 
-// Päivitä mittariston luvut
+// Päivitä mittariston luvut (PÄIVITETTY SKAALAUKSELLA)
 function updateDashboardUI(spd, max, dist, time, alt, avg) {
-    if(dashSpeedEl) dashSpeedEl.innerText = spd.toFixed(1); 
+    if(dashSpeedEl) {
+        // Päivitä numero
+        dashSpeedEl.innerText = spd.toFixed(1);
+        
+        // --- ÄLYKÄS SKAALAUS ---
+        // Jos nopeus on 100 tai yli (tai -100), lisää "three-digits" luokka, jotta fontti pienenee
+        if (Math.abs(spd) >= 100) {
+            dashSpeedEl.classList.add('three-digits');
+        } else {
+            dashSpeedEl.classList.remove('three-digits');
+        }
+        
+        // --- VAROITUSVÄRI ---
+        // Jos mennään kovaa (yli 120), muutetaan punaiseksi
+        if (spd >= 120) {
+            dashSpeedEl.style.color = '#ff1744'; // Kirkas punainen
+        } else {
+            // Palautetaan teemaväri
+            dashSpeedEl.style.color = ''; 
+        }
+    }
+    
     if(dashMaxSpeedEl) dashMaxSpeedEl.innerText = max.toFixed(1);
     if(dashDistEl) dashDistEl.innerText = dist.toFixed(2); 
     if(dashAltEl) dashAltEl.innerText = Math.round(alt);
