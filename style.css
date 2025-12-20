@@ -137,12 +137,11 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 #dashboard-view { 
     display: flex; 
     flex-direction: column;
-    /* Jakaa tilan elementtien välille tasaisesti, mutta ei työnnä mitään ulos */
     justify-content: space-evenly; 
     align-items: center;
     padding: 5px 15px; 
     height: 100%;
-    overflow: hidden; /* Estää scrollauksen jos kaikki mahtuu */
+    overflow: hidden; 
 }
 
 /* LIVE STATUS BAR (ECO) */
@@ -150,7 +149,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     display: flex; gap: 15px; align-items: center; justify-content: center;
     font-size: 13px; color: var(--subtext-color);
     transition: opacity 0.5s; width: 100%; min-height: 25px;
-    flex-shrink: 0; /* Ei saa kutistua kasaan */
+    flex-shrink: 0; 
 }
 .style-badge {
     padding: 4px 10px; border-radius: 20px; font-weight: bold; border: 1px solid transparent;
@@ -177,10 +176,9 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 /* ISO NOPEUS - SKAALAUTUVA KOKO */
 .huge-speed-container { 
     text-align: center; position: relative; 
-    flex-shrink: 0; /* Tämä pysyy aina näkyvissä */
+    flex-shrink: 0; 
 }
 .huge-speed {
-    /* KÄYTETÄÄN VH-YKSIKKÖÄ: Nopeus on n. 15% ruudun korkeudesta */
     font-size: 16vh; 
     font-weight: 800; color: var(--speed-color); line-height: 0.9;
     font-variant-numeric: tabular-nums; 
@@ -194,7 +192,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     width: 100%; max-width: 450px; 
     position: relative; z-index: 60;
-    flex-shrink: 1; /* Tämä saa vähän joustaa jos tila loppuu */
+    flex-shrink: 1; 
 }
 .stat-card {
     background-color: var(--card-bg); 
@@ -314,7 +312,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .subject-input:focus { outline: none; border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.05); }
 
-/* AUTO LISTA (GARAGE) - KORJATTU */
+/* AUTO LISTA (GARAGE) */
 #cars-list { width: 100%; max-width: 600px; margin: 0 auto; }
 
 .car-item {
@@ -460,9 +458,9 @@ body.light-theme .light-mode-img { display: block; }
     border-radius: 50%;
     position: absolute;
     top: 50%; left: 50%;
-    transform: translate(-50%, -50%); /* Keskitys */
+    transform: translate(-50%, -50%); 
     box-shadow: 0 0 5px #fff;
-    transition: transform 0.1s ease-out; /* Pehmeä liike */
+    transition: transform 0.1s ease-out; 
 }
 
 /* OSOITE JA KOMPASSI */
@@ -475,5 +473,64 @@ body.light-theme .light-mode-img { display: block; }
 
 #compass-arrow {
     display: inline-block;
-    transition: transform 0.3s cubic-bezier(0.4, 2.5, 0.5, 0.5); /* Pomppiva efekti */
+    transition: transform 0.3s cubic-bezier(0.4, 2.5, 0.5, 0.5); 
+}
+
+/* --- VAAKATASO (LANDSCAPE) TUKI --- */
+/* Tämä aktivoituu, kun puhelin käännetään ja korkeus on pieni */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    #dashboard-view {
+        display: grid;
+        grid-template-columns: 40% 60%; /* Vasen sarake kapeampi */
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas:
+            "status stats"
+            "speed stats"
+            "meta stats"; /* meta = osoite + sää */
+        padding: 5px 10px;
+        align-content: center;
+        justify-items: center;
+    }
+
+    /* Piilota alakuva säästääksesi tilaa */
+    .bottom-branding { display: none; }
+    
+    .status-bar { grid-area: status; width: 100%; justify-content: center; margin: 0; min-height: 20px; }
+    
+    .huge-speed-container { 
+        grid-area: speed; 
+        align-self: center; 
+        margin: 0; 
+    }
+    .huge-speed { font-size: 35vh; } /* Erittäin suuri nopeus */
+    
+    .stats-grid {
+        grid-area: stats;
+        grid-template-columns: 1fr 1fr 1fr; /* Kolme laatikkoa vierekkäin */
+        gap: 5px;
+        align-content: center;
+        margin: 0;
+        height: 100%;
+        padding-left: 10px;
+    }
+    
+    /* Piilotetaan osoite vaakatilassa, jos tila loppuu */
+    .address-container { display: none; } 
+    
+    .time-weather-wrapper {
+        grid-area: meta;
+        flex-direction: row;
+        gap: 15px;
+        padding-bottom: 5px;
+    }
+    .clock-box { font-size: 24px; }
+    .weather-huge { font-size: 24px; }
+    .date-box { display: none; } 
+
+    /* Siirrä G-mittari vasempaan yläkulmaan */
+    .g-force-wrapper {
+        top: 10px;
+        left: 10px; 
+        right: auto;
+    }
 }
