@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (FIXED)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -63,11 +63,15 @@ const deleteModal = document.getElementById('delete-modal');
 const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
 const btnDeleteCancel = document.getElementById('btn-delete-cancel');
 
-// TANKKAUS MODAALI (LISÄTTY TÄHÄN LISTAAN)
+// TANKKAUS MODAALI
 const fuelModal = document.getElementById('fuel-modal');
-const btnOpenFuel = document.getElementById('btn-open-fuel'); // TÄMÄ PUUTTUI AIEMMIN!
+const btnOpenFuel = document.getElementById('btn-open-fuel');
 const btnFuelSave = document.getElementById('btn-fuel-save');
 const btnFuelCancel = document.getElementById('btn-fuel-cancel');
+// Tankkauskentät laskentaa varten
+const inpFuelLiters = document.getElementById('fuel-liters');
+const inpFuelEuros = document.getElementById('fuel-euros');
+const inpFuelCalc = document.getElementById('fuel-price-calc');
 
 // Mittaristo
 const dashSpeedEl = document.getElementById('dash-speed');
@@ -190,18 +194,75 @@ updateClockAndDate();
 
 // --- 3. EVENT LISTENERS ---
 
-// TANKKAUSNAPIN KORJAUS
+// TANKKAUS LOGIIKKA (KORJATTU TÄHÄN)
 if (btnOpenFuel) {
     btnOpenFuel.addEventListener('click', () => {
-        // Yritetään kutsua fuel.js funktiota, tai avataan modaali suoraan
-        if (typeof openFuelModal === 'function') {
-            openFuelModal();
-        } else if (fuelModal) {
-            fuelModal.style.display = 'flex';
+        // Alusta kentät
+        const now = new Date();
+        document.getElementById('fuel-date').value = now.toISOString().split('T')[0];
+        document.getElementById('fuel-time').value = now.toTimeString().split(' ')[0].substring(0,5);
+        if(fuelModal) fuelModal.style.display = 'flex';
+    });
+}
+
+if (btnFuelCancel) {
+    btnFuelCancel.addEventListener('click', () => {
+        if(fuelModal) fuelModal.style.display = 'none';
+    });
+}
+
+// Litrahinnan automaattilaskenta
+function calcPrice() {
+    const l = parseFloat(inpFuelLiters.value) || 0;
+    const e = parseFloat(inpFuelEuros.value) || 0;
+    if(l > 0 && inpFuelCalc) {
+        inpFuelCalc.innerText = (e/l).toFixed(3);
+    } else if(inpFuelCalc) {
+        inpFuelCalc.innerText = "0.00";
+    }
+}
+if(inpFuelLiters) inpFuelLiters.addEventListener('input', calcPrice);
+if(inpFuelEuros) inpFuelEuros.addEventListener('input', calcPrice);
+
+// Tankkauksen tallennus
+if (btnFuelSave) {
+    btnFuelSave.addEventListener('click', () => {
+        const date = document.getElementById('fuel-date').value;
+        const time = document.getElementById('fuel-time').value;
+        const odo = document.getElementById('fuel-odo').value;
+        const lit = document.getElementById('fuel-liters').value;
+        const eur = document.getElementById('fuel-euros').value;
+
+        if(!date || !lit || !eur) {
+            alert("Täytä päivämäärä, litrat ja eurot!");
+            return;
+        }
+
+        if(currentUser) {
+            const refData = {
+                type: 'refuel',
+                date: date + "T" + time,
+                odo: odo,
+                liters: lit,
+                euros: eur,
+                pricePerLiter: (parseFloat(eur)/parseFloat(lit)).toFixed(3),
+                carId: currentCarId || 'all'
+            };
+            
+            db.ref('ajopaivakirja/' + currentUser.uid).push().set(refData)
+            .then(() => {
+                if(fuelModal) fuelModal.style.display = 'none';
+                inpFuelLiters.value = "";
+                inpFuelEuros.value = "";
+                alert("Tankkaus tallennettu!");
+            });
+        } else {
+            alert("Et ole kirjautunut sisään!");
         }
     });
 }
 
+// Muut napit
 if (menuBtn) menuBtn.addEventListener('click', () => {
     mainMenu.style.display = (mainMenu.style.display === 'none' || mainMenu.style.display === '') ? 'flex' : 'none';
 });
@@ -224,9 +285,7 @@ if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'
     }
 })();
 
-// TÄMÄ RIVI KORJAA "TYHJÄN NÄYTÖN" ONGELMAN
-// Se pakottaa mittariston näkyviin heti kun sivu on latautunut.
+// PAKOTA MITTARISTO NÄKYVIIN HETI
 window.addEventListener('DOMContentLoaded', () => {
-    console.log("App loaded, forcing dashboard view.");
     switchView('dashboard');
 });
