@@ -382,6 +382,29 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .modal-content select { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--accent-color); border-radius: 8px; }
 .modal-summary { margin-bottom: 20px; font-size: 22px; font-weight: bold; color: var(--text-color); }
 
+/* --- TOAST ILMOITUKSET --- */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1e1e1e;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    border: 1px solid var(--accent-color);
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    pointer-events: none;
+}
+.toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+}
+
 /* ALAREUNAKUVA */
 .bottom-branding { width: 100%; display: flex; justify-content: center; align-items: flex-end; margin-top: auto; padding-top: 5px; padding-bottom: 0px; z-index: 10; flex-shrink: 1; }
 .footer-img { max-width: 55%; max-height: 15vh; height: auto; object-fit: contain; border-radius: 20px; opacity: 0.8; }
