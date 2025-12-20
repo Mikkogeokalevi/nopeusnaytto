@@ -9,7 +9,7 @@
     --accent-color: #2979ff;
     --border-color: #333;
     --subtext-color: #888;
-    --card-bg: rgba(30, 30, 30, 0.85); /* Lasimainen tausta */
+    --card-bg: rgba(30, 30, 30, 0.85);
 }
 
 body.light-theme {
@@ -133,15 +133,29 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .main-content { flex-grow: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; width: 100%; }
 .view-section { flex-grow: 1; display: flex; flex-direction: column; width: 100%; height: 100%; }
 
-/* === MITTARISTO (DASHBOARD) - JOUSTAVA LAYOUT === */
+/* --- MITTARISTO (DASHBOARD) - JOUSTAVA LAYOUT --- */
 #dashboard-view { 
-    display: flex; 
+    /* Piilotettu oletuksena (JS vaihtaa display-arvoa luokan avulla) */
+    display: none; 
     flex-direction: column;
     justify-content: space-evenly; 
     align-items: center;
     padding: 5px 15px; 
     height: 100%;
     overflow: hidden; 
+}
+
+/* NÄYTÄ KUN AKTIIVINEN (Pysty: Flex) */
+#dashboard-view.active-view {
+    display: flex;
+}
+
+/* MUUT NÄKYMÄT (Pysty: Block) */
+.view-section.active-view:not(#dashboard-view):not(#map-view) {
+    display: block;
+}
+#map-view.active-view {
+    display: flex;
 }
 
 /* LIVE STATUS BAR (ECO) */
@@ -173,7 +187,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 #side-tap-left { left: 0; } 
 .side-tap-zone:active { width: 45px; background: var(--accent-color); color: #fff; }
 
-/* ISO NOPEUS - SKAALAUTUVA KOKO */
+/* ISO NOPEUS */
 .huge-speed-container { 
     text-align: center; position: relative; 
     flex-shrink: 0; 
@@ -187,13 +201,13 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .huge-unit { font-size: 16px; color: var(--subtext-color); font-weight: 500; display: block; text-align: center; margin-top: 0px; text-transform: uppercase; letter-spacing: 2px; }
 
-/* ÄLYKÄS SKAALAUS: Kun vauhti >= 100, pienennetään (pysty) */
+/* ÄLYKÄS SKAALAUS */
 .huge-speed.three-digits {
     font-size: 13vh; 
     letter-spacing: -2px; 
 }
 
-/* GRIDI - LASIMAINEN */
+/* GRIDI */
 .stats-grid { 
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     width: 100%; max-width: 450px; 
@@ -220,14 +234,28 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     display: flex; justify-content: center; align-items: center; gap: 20px;
     text-align: center; width: 100%;
     flex-shrink: 0;
+    /* Tankkausnapin asettelu varten */
+    position: relative;
 }
 .weather-huge {
     font-size: 28px; font-weight: bold; color: var(--text-color);
     filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
 }
-.time-right-col { display: flex; flex-direction: column; text-align: left; }
+.time-right-col { 
+    display: flex; flex-direction: column; text-align: left; 
+    align-items: flex-start; /* Varmistetaan vasen tasaus */
+}
 .clock-box { font-size: 28px; font-weight: 300; color: var(--text-color); letter-spacing: 1px; line-height: 1; }
 .date-box { font-size: 12px; color: var(--accent-color); margin-top: 0px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+
+/* TANKKAUSNAPPI - KORJATTU (EI ENÄÄ ABSOLUUTTINEN) */
+#btn-open-fuel {
+    position: static; /* Poistetaan absolute! */
+    margin-top: 5px; /* Pieni väli päivämäärään */
+    width: 32px; height: 32px;
+    font-size: 16px;
+    transform: none; /* Estetään perimästä outoja transformejia */
+}
 
 /* KARTTA */
 #map-view { display: flex; flex-direction: column; height: 100vh; width: 100%; position: relative; }
@@ -269,255 +297,107 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     border-radius: 4px;
 }
 
-/* LISTA ANIMATIO & KORTIT */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
+/* LISTA ANIMATIO */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 #log-list { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
-
 .log-card {
     background-color: var(--card-bg); border: 1px solid var(--border-color);
     border-radius: 16px; padding: 18px; margin-bottom: 15px;
-    width: 100%; position: relative;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 100%; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     opacity: 0; animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
-
-.log-header { 
-    display: flex; justify-content: space-between; align-items: flex-start;
-    margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
-}
+.log-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
 .light-theme .log-header { border-bottom: 1px solid rgba(0,0,0,0.05); }
-
 .log-car-big { font-size: 16px; font-weight: 700; color: var(--accent-color); margin-top: 3px; display: flex; align-items: center; gap: 5px; }
 .log-date-line { font-size: 12px; color: var(--subtext-color); font-weight: 500; }
-
-.delete-btn, .edit-btn, .map-btn { 
-    background: none; border: none; font-size: 20px; padding: 8px; 
-    cursor: pointer; position: relative; z-index: 100; transition: transform 0.2s;
-}
+.delete-btn, .edit-btn, .map-btn { background: none; border: none; font-size: 20px; padding: 8px; cursor: pointer; transition: transform 0.2s; }
 .delete-btn:hover, .edit-btn:hover { transform: scale(1.1); }
-.delete-btn { color: #ef5350; }
-.edit-btn { color: var(--text-color); opacity: 0.6; }
-.map-btn { color: #fbc02d; }
-
-.log-stats { 
-    display: grid; grid-template-columns: repeat(4, 1fr); 
-    gap: 5px; margin-bottom: 15px; text-align: center;
-}
+.delete-btn { color: #ef5350; } .edit-btn { color: var(--text-color); opacity: 0.6; } .map-btn { color: #fbc02d; }
+.log-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; text-align: center; }
 .log-stats div { display: flex; flex-direction: column; }
 .log-stats span.stat-label { font-size: 9px; margin-bottom: 2px; }
-
-.subject-input { 
-    width: 100%; padding: 10px; border-radius: 8px; 
-    border: 1px solid var(--border-color); 
-    background-color: rgba(0,0,0,0.1); color: var(--text-color); 
-    font-size: 14px;
-}
+.subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.1); color: var(--text-color); font-size: 14px; }
 .subject-input:focus { outline: none; border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.05); }
 
-/* AUTO LISTA (GARAGE) */
+/* AUTO LISTA */
 #cars-list { width: 100%; max-width: 600px; margin: 0 auto; }
-
-.car-item {
-    background-color: var(--card-bg); /* Käytetään samaa lasimaisuutta */
-    border: 1px solid var(--border-color);
-    border-radius: 16px; padding: 15px; margin-bottom: 12px; 
-    display: flex; justify-content: space-between; align-items: center; width: 100%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+.car-item { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .car-details { font-size: 13px; color: var(--subtext-color); margin-top: 4px; }
 .car-title { font-weight: 700; font-size: 16px; color: var(--text-color); display: flex; align-items: center; gap: 8px; }
 .car-actions { display: flex; gap: 5px; }
+.car-icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
+.car-icon-option { font-size: 22px; text-align: center; cursor: pointer; padding: 5px; border: 1px solid var(--border-color); border-radius: 8px; background-color: rgba(255,255,255,0.05); transition: background 0.2s; }
+.car-icon-option.selected-icon { border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.2); }
 
-/* AUTON IKONI VALITSIN */
-.car-icon-grid {
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
-    margin-bottom: 15px;
-}
-.car-icon-option {
-    font-size: 22px; text-align: center; cursor: pointer; padding: 5px;
-    border: 1px solid var(--border-color); border-radius: 8px;
-    background-color: rgba(255,255,255,0.05); transition: background 0.2s;
-}
-.car-icon-option.selected-icon {
-    border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.2);
-}
-
-/* TAGIT */
+/* TAGIT & SUMMARY */
 .log-tags { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-.tag {
-    font-size: 10px; padding: 4px 8px; border-radius: 6px;
-    background-color: rgba(255,255,255,0.05); color: var(--subtext-color);
-    border: 1px solid var(--border-color); display: flex; align-items: center; gap: 4px; font-weight: 600;
-}
-
-/* YHTEENVETO */
-.summary-box {
-    display: flex; justify-content: space-around; align-items: center;
-    background: linear-gradient(135deg, rgba(41, 121, 255, 0.1), transparent);
-    border: 1px solid rgba(41, 121, 255, 0.3);
-    border-radius: 16px; padding: 15px;
-    margin: 0 auto 20px auto; max-width: 600px;
-    width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
+.tag { font-size: 10px; padding: 4px 8px; border-radius: 6px; background-color: rgba(255,255,255,0.05); color: var(--subtext-color); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 4px; font-weight: 600; }
+.summary-box { display: flex; justify-content: space-around; align-items: center; background: linear-gradient(135deg, rgba(41, 121, 255, 0.1), transparent); border: 1px solid rgba(41, 121, 255, 0.3); border-radius: 16px; padding: 15px; margin: 0 auto 20px auto; max-width: 600px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 .summary-val { font-size: 24px; font-weight: 800; color: var(--accent-color); text-shadow: 0 0 10px rgba(41, 121, 255, 0.2); }
 .summary-sep { color: var(--border-color); font-size: 24px; font-weight: 100; opacity: 0.3; }
 
-/* ALAPALKKI & NAPIT */
-.controls-container {
-    background-color: var(--panel-bg); padding: 10px 15px; text-align: center; 
-    border-top: 1px solid var(--border-color); z-index: 2000; flex-shrink: 0; width: 100%;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
-}
-.action-btn {
-    padding: 12px 20px; font-size: 15px; border: none; border-radius: 50px; 
-    color: #fff; font-weight: bold; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 350px; margin: 5px 0;
-    text-transform: uppercase; letter-spacing: 1px;
-    transition: transform 0.1s, box-shadow 0.2s;
-    background-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(0,0,0,0));
-}
+/* CONTROLS */
+.controls-container { background-color: var(--panel-bg); padding: 10px 15px; text-align: center; border-top: 1px solid var(--border-color); z-index: 2000; flex-shrink: 0; width: 100%; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); }
+.action-btn { padding: 12px 20px; font-size: 15px; border: none; border-radius: 50px; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 350px; margin: 5px 0; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s, box-shadow 0.2s; background-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(0,0,0,0)); }
 .action-btn:active { transform: scale(0.97); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-
 .blue-btn { background-color: var(--accent-color); }
 .green-btn { background-color: #00c853; }
 .red-btn { background-color: #d50000; }
 .yellow-btn { background-color: #fbc02d; color: #000; }
-
 #status { margin-bottom: 8px; font-size: 12px; color: var(--subtext-color); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
 
 /* SPLASH */
-#splash-screen {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: var(--bg-color); display: flex;
-    justify-content: center; align-items: center; z-index: 9999;
-    transition: opacity 0.5s ease-out;
-}
-.splash-logo {
-    width: 100px; height: 100px; border-radius: 50%;
-    box-shadow: 0 0 30px rgba(41, 121, 255, 0.4);
-    margin-bottom: 20px; animation: pulse 2s infinite;
-}
-@keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0.4); }
-    70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(41, 121, 255, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0); }
-}
+#splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease-out; }
+.splash-logo { width: 100px; height: 100px; border-radius: 50%; box-shadow: 0 0 30px rgba(41, 121, 255, 0.4); margin-bottom: 20px; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0.4); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(41, 121, 255, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0); } }
 
-/* MODALIT (COMMON) */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.85); z-index: 9000;
-    display: flex; justify-content: center; align-items: center;
-    backdrop-filter: blur(5px);
-}
-.modal-content {
-    background-color: var(--panel-bg);
-    width: 90%; max-width: 400px;
-    border-radius: 20px; padding: 25px; text-align: center;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-    animation: fadeInUp 0.3s ease-out;
-}
-.modal-content select {
-    background-color: var(--bg-color); color: var(--text-color);
-    border: 1px solid var(--accent-color); border-radius: 8px;
-}
+/* MODALS */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 9000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+.modal-content { background-color: var(--panel-bg); width: 90%; max-width: 400px; border-radius: 20px; padding: 25px; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 20px 50px rgba(0,0,0,0.6); animation: fadeInUp 0.3s ease-out; }
+.modal-content select { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--accent-color); border-radius: 8px; }
 .modal-summary { margin-bottom: 20px; font-size: 22px; font-weight: bold; color: var(--text-color); }
 
-/* ALAREUNAKUVA - SÄÄTYVÄ */
-.bottom-branding {
-    width: 100%;
-    display: flex; justify-content: center; align-items: flex-end;
-    margin-top: auto; 
-    padding-top: 5px; 
-    padding-bottom: 0px;
-    z-index: 10;
-    flex-shrink: 1; /* Saa kutistua jos tulee ahdasta */
-}
-.footer-img {
-    max-width: 55%; 
-    max-height: 15vh; /* Maksimissaan 15% ruudun korkeudesta */
-    height: auto; object-fit: contain;
-    border-radius: 20px; opacity: 0.8;
-}
+/* ALAREUNAKUVA */
+.bottom-branding { width: 100%; display: flex; justify-content: center; align-items: flex-end; margin-top: auto; padding-top: 5px; padding-bottom: 0px; z-index: 10; flex-shrink: 1; }
+.footer-img { max-width: 55%; max-height: 15vh; height: auto; object-fit: contain; border-radius: 20px; opacity: 0.8; }
 .light-mode-img { display: none; }
 .dark-mode-img { display: block; }
 body.light-theme .dark-mode-img { display: none; }
 body.light-theme .light-mode-img { display: block; }
 
-/* G-FORCE MITTARI */
-.g-meter-bg {
-    width: 60px; height: 60px;
-    border: 2px solid var(--accent-color);
-    border-radius: 50%;
-    position: relative;
-    background: radial-gradient(circle, rgba(41,121,255,0.1) 0%, rgba(0,0,0,0.5) 100%);
-    box-shadow: 0 0 10px rgba(41, 121, 255, 0.3);
-}
-.g-bubble {
-    width: 12px; height: 12px;
-    background-color: #fff;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%); 
-    box-shadow: 0 0 5px #fff;
-    transition: transform 0.1s ease-out; 
-}
-
-/* OSOITE JA KOMPASSI */
-#dash-address {
-    font-size: 13px; font-weight: bold; color: var(--text-color);
-    margin-bottom: 2px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    max-width: 90vw;
-}
-
-#compass-arrow {
-    display: inline-block;
-    transition: transform 0.3s cubic-bezier(0.4, 2.5, 0.5, 0.5); 
-}
+/* G-FORCE & EXTRAS */
+.g-meter-bg { width: 60px; height: 60px; border: 2px solid var(--accent-color); border-radius: 50%; position: relative; background: radial-gradient(circle, rgba(41,121,255,0.1) 0%, rgba(0,0,0,0.5) 100%); box-shadow: 0 0 10px rgba(41, 121, 255, 0.3); }
+.g-bubble { width: 12px; height: 12px; background-color: #fff; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 5px #fff; transition: transform 0.1s ease-out; }
+#dash-address { font-size: 13px; font-weight: bold; color: var(--text-color); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90vw; }
+#compass-arrow { display: inline-block; transition: transform 0.3s cubic-bezier(0.4, 2.5, 0.5, 0.5); }
 
 /* --- VAAKATASO (LANDSCAPE) TUKI --- */
-/* Tämä aktivoituu, kun puhelin käännetään ja korkeus on pieni */
+/* NÄYTÄ GRID VAIN KUN LUOKKA 'active-view' ON PÄÄLLÄ JA NÄYTTÖ VAAKA */
 @media screen and (orientation: landscape) and (max-height: 500px) {
-    #dashboard-view {
-        display: grid;
+    #dashboard-view.active-view {
+        display: grid; /* TÄMÄ OVERRIDAA FLEXIN */
         grid-template-columns: 40% 60%;
         grid-template-rows: auto 1fr auto;
         grid-template-areas:
             "status stats"
             "speed stats"
-            "meta address"; /* Osoite oikealle alas */
+            "meta address";
         padding: 5px 10px;
         align-content: center;
         justify-items: center;
     }
 
-    /* Piilota alakuva säästääksesi tilaa */
     .bottom-branding { display: none; }
     
     .status-bar { grid-area: status; width: 100%; justify-content: center; margin: 0; min-height: 20px; }
     
-    .huge-speed-container { 
-        grid-area: speed; 
-        align-self: center; 
-        margin: 0; 
-    }
-    .huge-speed { font-size: 35vh; } /* Erittäin suuri nopeus */
-    
-    /* SKAALAUS VAAKATILASSA */
-    .huge-speed.three-digits {
-        font-size: 26vh; /* Pienennetään jotta mahtuu */
-    }
+    .huge-speed-container { grid-area: speed; align-self: center; margin: 0; }
+    .huge-speed { font-size: 35vh; }
+    .huge-speed.three-digits { font-size: 26vh; }
     
     .stats-grid {
         grid-area: stats;
-        grid-template-columns: 1fr 1fr 1fr; /* Kolme laatikkoa vierekkäin */
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 5px;
         align-content: center;
         align-self: center;
@@ -526,46 +406,29 @@ body.light-theme .light-mode-img { display: block; }
         padding-left: 10px;
     }
     
-    /* NÄYTÄ OSOITE VAAKATILASSA */
-    .address-container { 
-        display: block; 
-        grid-area: address;
-        width: 100%;
-        text-align: center;
-        padding-top: 5px;
-        z-index: 60;
-    }
+    .address-container { display: block; grid-area: address; width: 100%; text-align: center; padding-top: 5px; z-index: 60; }
     
     .time-weather-wrapper {
         grid-area: meta;
         flex-direction: row;
         gap: 15px;
         padding-bottom: 5px;
-        position: relative; /* Tarvitaan G-mittarin sijoitteluun */
+        position: relative;
         padding-right: 50px;
     }
     .clock-box { font-size: 24px; }
     .weather-huge { font-size: 24px; }
     .date-box { display: none; } 
 
-    /* SIIRRÄ G-MITTARI KELLON VIEREEN (ALAS) */
     .g-force-wrapper {
         position: absolute;
         top: auto; 
         bottom: 10px; 
-        left: 35%; /* Sijoitetaan kellon viereen */
+        left: 35%; /* Säädä tarvittaessa */
         right: auto;
         width: 40px;
         height: 40px;
     }
-    
-    .g-meter-bg {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .g-bubble {
-        width: 8px;
-        height: 8px;
-    }
+    .g-meter-bg { width: 40px; height: 40px; }
+    .g-bubble { width: 8px; height: 8px; }
 }
