@@ -1,5 +1,5 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (FIXED SUMMARY)
+// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (v5.7.1)
 // =========================================================
 
 // --- 1. MÄÄRITELLÄÄN ELEMENTIT ---
@@ -56,7 +56,6 @@ function loadHistory() {
         } else if (fuelList && fuelList.style.display !== 'none') {
             renderFuelList();
         } else {
-            // Fallback: päivitä ajot
             renderHistoryList();
         }
         
@@ -74,8 +73,8 @@ if(filterEl) {
             if(customFilterContainer) customFilterContainer.style.display = 'block';
         } else {
             if(customFilterContainer) customFilterContainer.style.display = 'none';
-            renderHistoryList(); // Tämä päivittää ajot
-            renderFuelList();    // Tämä päivittää tankkaukset (jos näkyvissä)
+            renderHistoryList(); 
+            renderFuelList();
         }
     });
 }
@@ -115,11 +114,9 @@ function populateFilter() {
 
 // --- 4. LISTAN RENDERÖINTI (AJOT) ---
 function renderHistoryList() {
-    // Varmistetaan että ollaan oikeassa moodissa jos kutsutaan suoraan
     const logList = document.getElementById('log-list');
     if(!logList) return;
     
-    // Tyhjennetään lista
     logList.innerHTML = ""; 
     
     if (allHistoryData.length === 0) {
@@ -135,16 +132,14 @@ function renderHistoryList() {
 
     allHistoryData.forEach((drive) => {
         try {
-            // Suodatukset
             if (currentCarId !== 'all') {
                 if (drive.carId && drive.carId !== currentCarId) return;
-                if (!drive.carId) return; // Piilota jos ei autotietoa ja suodatus päällä
+                if (!drive.carId) return;
             }
 
             let start = new Date(drive.startTime);
             if (isNaN(start.getTime())) return;
 
-            // Aikasuodatus
             if (selectedFilter !== 'all') {
                 if (selectedFilter === 'custom') {
                     const startInput = filterStart.value; const endInput = filterEnd.value;
@@ -161,7 +156,6 @@ function renderHistoryList() {
                 }
             }
 
-            // Laskennat
             let durationMinutes = 0;
             let durationMs = 0;
             if (drive.durationMs) {
@@ -177,7 +171,6 @@ function renderHistoryList() {
             totalKm += dist;
             totalMs += durationMs;
 
-            // Kortin luonti
             let mapBtn = "";
             if (drive.route && drive.route.length > 0) {
                 mapBtn = `<button class="map-btn" onclick="window.showRouteOnMap('${drive.key}')" title="Näytä reitti">🗺️</button>`;
@@ -224,20 +217,15 @@ function renderHistoryList() {
         } catch (err) { console.error(err); }
     });
 
-    // PÄIVITETÄÄN YHTEENVETO (AJOT)
     if (renderCount > 0 && historySummaryEl) {
         const h = Math.floor(totalMs / 3600000);
         const m = Math.floor((totalMs % 3600000) / 60000);
-        
         document.getElementById('sum-val-1').innerText = totalKm.toFixed(1);
         document.getElementById('sum-label-1').innerText = "km";
-
         document.getElementById('sum-val-2').innerText = renderCount;
         document.getElementById('sum-label-2').innerText = "kpl";
-
         document.getElementById('sum-val-3').innerText = `${h}h ${m}min`;
         document.getElementById('sum-label-3').innerText = "aika";
-        
         historySummaryEl.style.display = 'flex';
     } else if (historySummaryEl) {
         historySummaryEl.style.display = 'none';
@@ -257,9 +245,7 @@ function renderFuelList() {
     let sumDiesel = 0;
     let renderCount = 0;
 
-    // Suodatetaan ja lasketaan
     const filteredRefuelings = allRefuelings.filter(ref => {
-        // Autosuodatus
         if (currentCarId !== 'all') {
             if (ref.carId && ref.carId !== currentCarId) return false;
             if (!ref.carId) return false;
@@ -269,7 +255,6 @@ function renderFuelList() {
 
     if(!filteredRefuelings || filteredRefuelings.length === 0) {
         fuelList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tankkauksia valituilla ehdoilla.</p>";
-        // Piilotetaan yhteenveto jos ei tankkauksia
         if(historySummaryEl) historySummaryEl.style.display = 'none';
         return;
     }
@@ -281,14 +266,13 @@ function renderFuelList() {
         totalRefuelEur += eur;
         totalRefuelLit += lit;
 
-        // Tarkistetaan polttoainetyyppi autosta
         let carObj = userCars.find(c => c.id === ref.carId);
         let fuelType = (carObj ? carObj.fuel : "").toLowerCase();
+        let displayFuel = carObj ? (carObj.fuel || "") : ""; // Haetaan näytettävä nimi
         
         if (fuelType.includes('diesel')) {
             sumDiesel += lit;
         } else {
-            // Oletetaan bensiiniksi jos ei ole diesel, tai jos tyyppi on muu
             sumGas += lit;
         }
 
@@ -302,6 +286,7 @@ function renderFuelList() {
         card.className = 'log-card';
         card.style.animationDelay = `${Math.min(index * 0.05, 1.0)}s`;
         
+        // TÄSSÄ ON LISÄYS: displayFuel näytetään litramäärän perässä
         card.innerHTML = `
             <div class="log-header">
                 <div class="log-title-group">
@@ -311,7 +296,7 @@ function renderFuelList() {
                 <button class="delete-btn" onclick="window.openDeleteLogModal('${ref.key}')">🗑</button>
             </div>
             <div class="log-stats" style="grid-template-columns: repeat(3, 1fr);">
-                <div><span class="stat-label">LITRAT</span>${lit.toFixed(2)} L</div>
+                <div><span class="stat-label">LITRAT</span>${lit.toFixed(2)} L <span style="font-size:11px; opacity:0.7; display:block;">${displayFuel}</span></div>
                 <div><span class="stat-label">HINTA</span>${eur.toFixed(2)} €</div>
                 <div><span class="stat-label">€ / L</span>${ref.pricePerLiter}</div>
             </div>
@@ -321,21 +306,13 @@ function renderFuelList() {
         renderCount++;
     });
 
-    // PÄIVITETÄÄN YHTEENVETO (TANKKAUKSET)
     if (renderCount > 0 && historySummaryEl) {
-        // Laatikko 1: Rahat
         document.getElementById('sum-val-1').innerText = totalRefuelEur.toFixed(1) + " €";
         document.getElementById('sum-label-1').innerText = "Rahaa";
-
-        // Laatikko 2: Litrat
         document.getElementById('sum-val-2').innerText = totalRefuelLit.toFixed(1) + " L";
         document.getElementById('sum-label-2').innerText = "Litroja";
-
-        // Laatikko 3: Jakauma (Bensa / Diesel)
-        // Käytetään pienempää fonttia tai lyhenteitä jos tarve
         document.getElementById('sum-val-3').innerText = `B:${sumGas.toFixed(0)} / D:${sumDiesel.toFixed(0)}`;
         document.getElementById('sum-label-3').innerText = "Bensa / Diesel (L)";
-        
         historySummaryEl.style.display = 'flex';
     }
 }
