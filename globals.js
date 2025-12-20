@@ -25,7 +25,7 @@ const auth = firebase.auth();
 // =========================================================
 
 // TÄMÄ ON PÄÄVERSIONUMERO
-const APP_VERSION = "5.4"; 
+const APP_VERSION = "5.6"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -84,6 +84,8 @@ var currentRefuelingCarId = null;
 var chartInstanceMonthly = null;
 var chartInstanceVehicles = null;
 var chartInstanceStyle = null; 
+var chartInstanceDriveTrend = null; // UUSI: Kilometritrendi
+var chartInstanceDriveSpeed = null; // UUSI: Nopeustrendi
 
 // Tankkaustilastot
 var chartInstanceFuelMonthly = null; 
