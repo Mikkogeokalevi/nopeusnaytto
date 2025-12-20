@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO
-const APP_VERSION = "5.7"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT VIRALLISESTI 5.8
+const APP_VERSION = "5.8"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -38,7 +38,7 @@ var isRecording = false;
 var isPaused = false; 
 var wakeLock = null;
 
-// Osoitehaku (UUSI)
+// Osoitehaku
 var lastAddressFetchTime = 0;
 var currentAddress = "Odottaa sijaintia...";
 
