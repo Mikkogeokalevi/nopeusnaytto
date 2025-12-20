@@ -135,7 +135,6 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 
 /* --- MITTARISTO (DASHBOARD) - JOUSTAVA LAYOUT --- */
 #dashboard-view { 
-    /* Piilotettu oletuksena (JS vaihtaa display-arvoa luokan avulla) */
     display: none; 
     flex-direction: column;
     justify-content: space-evenly; 
@@ -145,12 +144,12 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     overflow: hidden; 
 }
 
-/* NÄYTÄ KUN AKTIIVINEN (Pysty: Flex) */
+/* NÄYTÄ KUN AKTIIVINEN */
 #dashboard-view.active-view {
     display: flex;
 }
 
-/* MUUT NÄKYMÄT (Pysty: Block) */
+/* MUUT NÄKYMÄT */
 .view-section.active-view:not(#dashboard-view):not(#map-view) {
     display: block;
 }
@@ -201,7 +200,6 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .huge-unit { font-size: 16px; color: var(--subtext-color); font-weight: 500; display: block; text-align: center; margin-top: 0px; text-transform: uppercase; letter-spacing: 2px; }
 
-/* ÄLYKÄS SKAALAUS */
 .huge-speed.three-digits {
     font-size: 13vh; 
     letter-spacing: -2px; 
@@ -229,13 +227,13 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .stat-unit { font-size: 11px; color: var(--subtext-color); font-weight: normal; }
 .coords-box { font-family: 'Roboto Mono', monospace; color: var(--accent-color); font-size: 11px; opacity: 0.8; margin-top: 5px; }
 
-/* TIME & WEATHER - JOUSTAVA */
+/* TIME & WEATHER - KORJATTU NÄKYVYYS */
 .time-weather-wrapper {
     display: flex; justify-content: center; align-items: center; gap: 20px;
     text-align: center; width: 100%;
     flex-shrink: 0;
-    /* Tankkausnapin asettelu varten */
     position: relative;
+    overflow: visible !important; /* TÄMÄ ON TÄRKEÄ NAPIN NÄKYMISEKSI */
 }
 .weather-huge {
     font-size: 28px; font-weight: bold; color: var(--text-color);
@@ -243,19 +241,29 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .time-right-col { 
     display: flex; flex-direction: column; text-align: left; 
-    align-items: flex-start; /* Varmistetaan vasen tasaus */
+    align-items: flex-start;
+    position: relative;
+    overflow: visible !important; /* TÄMÄ MYÖS */
 }
 .clock-box { font-size: 28px; font-weight: 300; color: var(--text-color); letter-spacing: 1px; line-height: 1; }
 .date-box { font-size: 12px; color: var(--accent-color); margin-top: 0px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
 
-/* TANKKAUSNAPPI - KORJATTU (EI ENÄÄ ABSOLUUTTINEN) */
+/* TANKKAUSNAPPI - KORJATTU SIJAINTI */
 #btn-open-fuel {
-    position: static; /* Poistetaan absolute! */
-    margin-top: 5px; /* Pieni väli päivämäärään */
-    width: 32px; height: 32px;
-    font-size: 16px;
-    transform: none; /* Estetään perimästä outoja transformejia */
+    position: absolute;
+    right: -50px; /* Siirretään tekstin oikealle puolelle */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px; height: 34px;
+    font-size: 18px;
+    background: transparent;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 100;
 }
+#btn-open-fuel:active { background-color: rgba(41, 121, 255, 0.2); }
 
 /* KARTTA */
 #map-view { display: flex; flex-direction: column; height: 100vh; width: 100%; position: relative; }
@@ -375,7 +383,7 @@ body.light-theme .light-mode-img { display: block; }
 /* NÄYTÄ GRID VAIN KUN LUOKKA 'active-view' ON PÄÄLLÄ JA NÄYTTÖ VAAKA */
 @media screen and (orientation: landscape) and (max-height: 500px) {
     #dashboard-view.active-view {
-        display: grid; /* TÄMÄ OVERRIDAA FLEXIN */
+        display: grid;
         grid-template-columns: 40% 60%;
         grid-template-rows: auto 1fr auto;
         grid-template-areas:
