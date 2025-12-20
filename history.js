@@ -1,15 +1,15 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (FIXED v5.7)
+// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (FIXED SUMMARY)
 // =========================================================
 
-// --- 1. MÄÄRITELLÄÄN ELEMENTIT (Nämä puuttuivat aiemmin!) ---
+// --- 1. MÄÄRITELLÄÄN ELEMENTIT ---
 const filterEl = document.getElementById('history-filter');
 const customFilterContainer = document.getElementById('custom-filter-container');
 const filterStart = document.getElementById('filter-start');
 const filterEnd = document.getElementById('filter-end');
 const historySummaryEl = document.getElementById('history-summary');
 
-// Varmistetaan, että funktiot löytyvät globaalisti ui.js:ää varten
+// Varmistetaan globaalit funktiot
 window.renderHistoryList = renderHistoryList;
 window.renderFuelList = renderFuelList;
 window.renderStats = renderStats;
@@ -45,18 +45,25 @@ function loadHistory() {
         allHistoryData.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
         allRefuelings.sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        // Päivitetään filtterit
         if(typeof populateFilter === 'function') populateFilter();
         
-        // PAKOTETAAN RENDERÖINTI
-        renderHistoryList();
-        renderFuelList();
+        // Päivitetään se lista, kumpi onkaan näkyvissä
+        const logList = document.getElementById('log-list');
+        const fuelList = document.getElementById('fuel-list');
+        
+        if (logList && logList.style.display !== 'none') {
+            renderHistoryList();
+        } else if (fuelList && fuelList.style.display !== 'none') {
+            renderFuelList();
+        } else {
+            // Fallback: päivitä ajot
+            renderHistoryList();
+        }
+        
         renderStats();
 
     }, (error) => {
         console.error("Firebase virhe:", error);
-        const logList = document.getElementById('log-list');
-        if(logList) logList.innerHTML = `<p style="color:red; text-align:center;">Virhe datan latauksessa: ${error.message}</p>`;
     });
 }
 
@@ -67,12 +74,13 @@ if(filterEl) {
             if(customFilterContainer) customFilterContainer.style.display = 'block';
         } else {
             if(customFilterContainer) customFilterContainer.style.display = 'none';
-            renderHistoryList();
+            renderHistoryList(); // Tämä päivittää ajot
+            renderFuelList();    // Tämä päivittää tankkaukset (jos näkyvissä)
         }
     });
 }
-if(filterStart) filterStart.addEventListener('change', renderHistoryList);
-if(filterEnd) filterEnd.addEventListener('change', renderHistoryList);
+if(filterStart) filterStart.addEventListener('change', () => { renderHistoryList(); renderFuelList(); });
+if(filterEnd) filterEnd.addEventListener('change', () => { renderHistoryList(); renderFuelList(); });
 
 function populateFilter() {
     if(!filterEl) return;
@@ -107,13 +115,11 @@ function populateFilter() {
 
 // --- 4. LISTAN RENDERÖINTI (AJOT) ---
 function renderHistoryList() {
+    // Varmistetaan että ollaan oikeassa moodissa jos kutsutaan suoraan
     const logList = document.getElementById('log-list');
-    if(!logList) return; 
+    if(!logList) return;
     
-    // Tarkistetaan onko "Ajot" välilehti aktiivinen, jos on, tyhjennetään ja piirretään
-    // Jos "Tankkaukset" on auki, emme halua sotkea sitä, mutta datan päivitys on ok.
-    // Yksinkertaisinta: Tyhjennetään aina ja piirretään, UI.js hoitaa näkyvyyden (display:none).
-    
+    // Tyhjennetään lista
     logList.innerHTML = ""; 
     
     if (allHistoryData.length === 0) {
@@ -127,16 +133,18 @@ function renderHistoryList() {
     let totalKm = 0;
     let totalMs = 0;
 
-    allHistoryData.forEach((drive, index) => {
+    allHistoryData.forEach((drive) => {
         try {
+            // Suodatukset
             if (currentCarId !== 'all') {
                 if (drive.carId && drive.carId !== currentCarId) return;
-                if (!drive.carId) return;
+                if (!drive.carId) return; // Piilota jos ei autotietoa ja suodatus päällä
             }
 
             let start = new Date(drive.startTime);
             if (isNaN(start.getTime())) return;
 
+            // Aikasuodatus
             if (selectedFilter !== 'all') {
                 if (selectedFilter === 'custom') {
                     const startInput = filterStart.value; const endInput = filterEnd.value;
@@ -153,6 +161,7 @@ function renderHistoryList() {
                 }
             }
 
+            // Laskennat
             let durationMinutes = 0;
             let durationMs = 0;
             if (drive.durationMs) {
@@ -168,6 +177,7 @@ function renderHistoryList() {
             totalKm += dist;
             totalMs += durationMs;
 
+            // Kortin luonti
             let mapBtn = "";
             if (drive.route && drive.route.length > 0) {
                 mapBtn = `<button class="map-btn" onclick="window.showRouteOnMap('${drive.key}')" title="Näytä reitti">🗺️</button>`;
@@ -211,18 +221,23 @@ function renderHistoryList() {
             `;
             logList.appendChild(card);
             renderCount++;
-        } catch (err) { console.error("Virhe renderöinnissä:", err); }
+        } catch (err) { console.error(err); }
     });
 
+    // PÄIVITETÄÄN YHTEENVETO (AJOT)
     if (renderCount > 0 && historySummaryEl) {
         const h = Math.floor(totalMs / 3600000);
         const m = Math.floor((totalMs % 3600000) / 60000);
+        
         document.getElementById('sum-val-1').innerText = totalKm.toFixed(1);
         document.getElementById('sum-label-1').innerText = "km";
+
         document.getElementById('sum-val-2').innerText = renderCount;
         document.getElementById('sum-label-2').innerText = "kpl";
+
         document.getElementById('sum-val-3').innerText = `${h}h ${m}min`;
         document.getElementById('sum-label-3').innerText = "aika";
+        
         historySummaryEl.style.display = 'flex';
     } else if (historySummaryEl) {
         historySummaryEl.style.display = 'none';
@@ -236,16 +251,50 @@ function renderFuelList() {
     
     fuelList.innerHTML = "";
     
-    if(!allRefuelings || allRefuelings.length === 0) {
-        fuelList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tankkauksia.</p>";
+    let totalRefuelEur = 0;
+    let totalRefuelLit = 0;
+    let sumGas = 0;
+    let sumDiesel = 0;
+    let renderCount = 0;
+
+    // Suodatetaan ja lasketaan
+    const filteredRefuelings = allRefuelings.filter(ref => {
+        // Autosuodatus
+        if (currentCarId !== 'all') {
+            if (ref.carId && ref.carId !== currentCarId) return false;
+            if (!ref.carId) return false;
+        }
+        return true;
+    });
+
+    if(!filteredRefuelings || filteredRefuelings.length === 0) {
+        fuelList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tankkauksia valituilla ehdoilla.</p>";
+        // Piilotetaan yhteenveto jos ei tankkauksia
+        if(historySummaryEl) historySummaryEl.style.display = 'none';
         return;
     }
 
-    allRefuelings.forEach((ref, index) => {
+    filteredRefuelings.forEach((ref, index) => {
+        const eur = parseFloat(ref.euros) || 0;
+        const lit = parseFloat(ref.liters) || 0;
+        
+        totalRefuelEur += eur;
+        totalRefuelLit += lit;
+
+        // Tarkistetaan polttoainetyyppi autosta
+        let carObj = userCars.find(c => c.id === ref.carId);
+        let fuelType = (carObj ? carObj.fuel : "").toLowerCase();
+        
+        if (fuelType.includes('diesel')) {
+            sumDiesel += lit;
+        } else {
+            // Oletetaan bensiiniksi jos ei ole diesel, tai jos tyyppi on muu
+            sumGas += lit;
+        }
+
         const date = new Date(ref.date);
         const dateStr = date.toLocaleDateString('fi-FI') + " " + date.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
         
-        let carObj = userCars.find(c => c.id === ref.carId);
         let carName = carObj ? carObj.name : "Tuntematon";
         let icon = "⛽";
 
@@ -262,14 +311,33 @@ function renderFuelList() {
                 <button class="delete-btn" onclick="window.openDeleteLogModal('${ref.key}')">🗑</button>
             </div>
             <div class="log-stats" style="grid-template-columns: repeat(3, 1fr);">
-                <div><span class="stat-label">LITRAT</span>${ref.liters} L</div>
-                <div><span class="stat-label">HINTA</span>${ref.euros} €</div>
+                <div><span class="stat-label">LITRAT</span>${lit.toFixed(2)} L</div>
+                <div><span class="stat-label">HINTA</span>${eur.toFixed(2)} €</div>
                 <div><span class="stat-label">€ / L</span>${ref.pricePerLiter}</div>
             </div>
             <div style="font-size:12px; color:#888; text-align:center; margin-top:5px;">Mittarilukema: ${ref.odo || "-"} km</div>
         `;
         fuelList.appendChild(card);
+        renderCount++;
     });
+
+    // PÄIVITETÄÄN YHTEENVETO (TANKKAUKSET)
+    if (renderCount > 0 && historySummaryEl) {
+        // Laatikko 1: Rahat
+        document.getElementById('sum-val-1').innerText = totalRefuelEur.toFixed(1) + " €";
+        document.getElementById('sum-label-1').innerText = "Rahaa";
+
+        // Laatikko 2: Litrat
+        document.getElementById('sum-val-2').innerText = totalRefuelLit.toFixed(1) + " L";
+        document.getElementById('sum-label-2').innerText = "Litroja";
+
+        // Laatikko 3: Jakauma (Bensa / Diesel)
+        // Käytetään pienempää fonttia tai lyhenteitä jos tarve
+        document.getElementById('sum-val-3').innerText = `B:${sumGas.toFixed(0)} / D:${sumDiesel.toFixed(0)}`;
+        document.getElementById('sum-label-3').innerText = "Bensa / Diesel (L)";
+        
+        historySummaryEl.style.display = 'flex';
+    }
 }
 
 
@@ -288,7 +356,6 @@ function renderStats() {
 function renderDriveStats() {
     if (!allHistoryData || allHistoryData.length === 0) return;
     
-    // DATA PREP
     const monthlyData = {};
     const vehicleData = {};
     const styleData = { "Taloudellinen": 0, "Tasainen": 0, "Reipas": 0, "Aggressiivinen": 0 };
@@ -308,7 +375,7 @@ function renderDriveStats() {
 
         let carObj = userCars.find(c => c.id === d.carId);
         let carName = carObj ? carObj.name : (d.carName || "Muu");
-        let label = `${carName}`; 
+        let label = `${carName}`;
         
         if (!vehicleData[label]) vehicleData[label] = 0;
         vehicleData[label] += dist;
@@ -332,7 +399,6 @@ function renderDriveStats() {
     const monthLabels = Object.keys(monthlyData); 
     const monthValues = Object.values(monthlyData).map(v => v.toFixed(1));
 
-    // CHART 1: KILOMETRIT
     const canvasMonthly = document.getElementById('chart-drive-monthly');
     if (canvasMonthly) {
         if (chartInstanceMonthly) { chartInstanceMonthly.destroy(); }
@@ -343,7 +409,6 @@ function renderDriveStats() {
         });
     }
 
-    // CHART 2: TRENDIT
     const canvasTrend = document.getElementById('chart-drive-trend');
     if (canvasTrend) {
         if (chartInstanceDriveTrend) { chartInstanceDriveTrend.destroy(); }
@@ -368,7 +433,6 @@ function renderDriveStats() {
         });
     }
 
-    // CHART 3: NOPEUS
     const canvasSpeed = document.getElementById('chart-drive-speed');
     if (canvasSpeed) {
         if (chartInstanceDriveSpeed) { chartInstanceDriveSpeed.destroy(); }
@@ -386,7 +450,6 @@ function renderDriveStats() {
         });
     }
 
-    // CHART 4: AJONEUVOT
     const canvasVehicles = document.getElementById('chart-drive-vehicles');
     if (canvasVehicles) {
         if (chartInstanceVehicles) { chartInstanceVehicles.destroy(); }
@@ -396,7 +459,6 @@ function renderDriveStats() {
         });
     }
 
-    // CHART 5: TYYLI
     const canvasStyle = document.getElementById('chart-drive-style');
     if (canvasStyle) {
         if (chartInstanceStyle) { chartInstanceStyle.destroy(); }
@@ -413,9 +475,7 @@ function renderDriveStats() {
 
 function renderFuelStats() {
     if (!allRefuelings || allRefuelings.length === 0) return;
-    if (typeof Chart === 'undefined') return;
-
-    // DATA PREP
+    
     let totalRefuelEur = 0;
     let sumGas = 0; let sumDiesel = 0; 
     const monthlyCosts = {};
@@ -466,7 +526,6 @@ function renderFuelStats() {
     if(statFuelGas) statFuelGas.innerText = sumGas.toFixed(1) + " L";
     if(statFuelDiesel) statFuelDiesel.innerText = sumDiesel.toFixed(1) + " L";
 
-    // FUEL CHART 1: JAKAUMA
     const canvasFuelType = document.getElementById('chart-fuel-type');
     if (canvasFuelType) {
         if (chartInstanceFuelType) { chartInstanceFuelType.destroy(); }
@@ -476,7 +535,6 @@ function renderFuelStats() {
         });
     }
 
-    // FUEL CHART 2: KUUKAUSIKULUT
     const canvasMonthly = document.getElementById('chart-fuel-monthly');
     if (canvasMonthly) {
         if (chartInstanceFuelMonthly) { chartInstanceFuelMonthly.destroy(); }
@@ -487,7 +545,6 @@ function renderFuelStats() {
         });
     }
 
-    // FUEL CHART 3: HINTATRENDI
     const canvasTrend = document.getElementById('chart-fuel-trend');
     if (canvasTrend) {
         if (chartInstanceFuelTrend) { chartInstanceFuelTrend.destroy(); }
@@ -505,7 +562,6 @@ function renderFuelStats() {
         });
     }
 
-    // FUEL CHART 4: KULUT PER AUTO
     const canvasCar = document.getElementById('chart-fuel-car');
     if (canvasCar) {
         if (chartInstanceFuelCar) { chartInstanceFuelCar.destroy(); }
@@ -517,7 +573,7 @@ function renderFuelStats() {
 }
 
 
-// 7. APUFUNKTIOT
+// --- 7. APUFUNKTIOT ---
 window.openEditLogModal = (key) => {
     const drive = allHistoryData.find(d => d.key === key);
     if (!drive) return;
@@ -546,7 +602,7 @@ window.updateLogSubject = (key, text) => {
     if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text }); 
 };
 
-// Varmistus: Napit toimivat vaikka ui.js ei niitä nappaisi
+// Varmistusnapit
 const btnEditCancel2 = document.getElementById('btn-edit-cancel');
 if(btnEditCancel2) btnEditCancel2.addEventListener('click', () => { if(editModal) editModal.style.display = 'none'; });
 
