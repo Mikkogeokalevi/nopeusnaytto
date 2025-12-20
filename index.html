@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mikkokalevin Ajopäiväkirja Pro v5.6</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v5.7</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="ajopaivakirja_logo.png?v=4.7">
@@ -98,6 +98,12 @@
                     <span id="live-style-indicator" class="style-badge style-green">Taloudellinen</span>
                 </div>
 
+                <div class="g-force-wrapper" style="position: absolute; top: 60px; right: 10px; width: 60px; height: 60px; z-index: 50; opacity: 0.8;">
+                    <div class="g-meter-bg">
+                        <div id="g-bubble" class="g-bubble"></div>
+                    </div>
+                </div>
+
                 <div class="huge-speed-container">
                     <span id="dash-speed" class="huge-speed">0.0</span>
                     <span class="huge-unit">km/h</span>
@@ -125,7 +131,10 @@
                     </div>
                     <div class="stat-card">
                         <span class="stat-label">Suunta</span>
-                        <span class="stat-value" id="dash-heading">--</span>
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+                            <span style="font-size: 20px; display: inline-block; transition: transform 0.2s;" id="compass-arrow">⬆️</span>
+                            <span class="stat-value" id="dash-heading" style="font-size: 16px;">--</span>
+                        </div>
                     </div>
                     <div class="stat-card">
                         <span class="stat-label">Korkeus</span>
@@ -134,13 +143,19 @@
                     </div>
                 </div>
                 
-                 <div class="coords-box" id="dash-coords">--° --.---'</div>
+                 <div style="text-align: center; margin-top: 5px;">
+                     <div id="dash-address" style="font-size: 13px; font-weight: bold; color: var(--text-color); margin-bottom: 2px;">Odottaa sijaintia...</div>
+                     <div class="coords-box" id="dash-coords">--° --.---'</div>
+                 </div>
                  
                  <div class="time-weather-wrapper">
                      <div class="weather-huge" id="dash-weather">--</div>
                      <div class="time-right-col">
                          <div class="clock-box" id="dash-clock">--:--</div>
                          <div class="date-box" id="dash-date">--.--.----</div>
+                         <button id="btn-open-fuel" class="icon-btn" style="position: absolute; right: -50px; top: 10px; border-color: var(--accent-color); color: var(--accent-color);" title="Lisää tankkaus">
+                            ⛽
+                         </button>
                      </div>
                  </div>
 
@@ -217,27 +232,22 @@
                 </div>
 
                 <div id="stats-drives-container">
-                    
                     <div class="chart-container">
                         <h3>📈 Kilometrikehitys (km/kk)</h3>
                         <canvas id="chart-drive-trend"></canvas>
                     </div>
-
                     <div class="chart-container" style="margin-top:20px;">
                         <h3>📅 Kilometrit yhteensä</h3>
                         <canvas id="chart-drive-monthly"></canvas>
                     </div>
-
                     <div class="chart-container" style="margin-top:20px;">
                         <h3>⏱️ Keskinopeus (km/h)</h3>
                         <canvas id="chart-drive-speed"></canvas>
                     </div>
-
                     <div class="chart-container" style="margin-top:20px;">
                         <h3>🚗 Ajoneuvojakauma (km)</h3>
                         <canvas id="chart-drive-vehicles"></canvas>
                     </div>
-
                     <div class="chart-container" style="margin-top:20px;">
                         <h3>🏎️ Ajotyyli (KPL)</h3>
                         <canvas id="chart-drive-style"></canvas>
@@ -261,22 +271,18 @@
                             <span class="summary-label">Diesel</span>
                         </div>
                     </div>
-
                     <div class="chart-container">
                         <h3>⛽ Polttoainejakauma (L)</h3>
                         <canvas id="chart-fuel-type"></canvas>
                     </div>
-
                     <div class="chart-container" style="margin-top:20px;">
                         <h3>💶 Polttoainekulut kuukausittain (€)</h3>
                         <canvas id="chart-fuel-monthly"></canvas>
                     </div>
-
                     <div class="chart-container" style="margin-top:20px;">
                         <h3>📈 Polttoaineen litrahinta (€/l)</h3>
                         <canvas id="chart-fuel-trend"></canvas>
                     </div>
-
                     <div class="chart-container" style="margin-top:20px;">
                         <h3>⛽ Kulut per auto (€)</h3>
                         <canvas id="chart-fuel-car"></canvas>
