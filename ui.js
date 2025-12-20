@@ -43,7 +43,7 @@ const navBtns = {
     help: document.getElementById('nav-help')
 };
 
-// Modaalit & Elementit (Samat kuin ennen)
+// Modaalit & Elementit
 const saveModal = document.getElementById('save-modal');
 const modalDistEl = document.getElementById('modal-dist');
 const modalTimeEl = document.getElementById('modal-time');
@@ -62,6 +62,12 @@ const btnEditCancel = document.getElementById('btn-edit-cancel');
 const deleteModal = document.getElementById('delete-modal');
 const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
 const btnDeleteCancel = document.getElementById('btn-delete-cancel');
+
+// TANKKAUS MODAALI (LISÄTTY TÄHÄN LISTAAN)
+const fuelModal = document.getElementById('fuel-modal');
+const btnOpenFuel = document.getElementById('btn-open-fuel'); // TÄMÄ PUUTTUI AIEMMIN!
+const btnFuelSave = document.getElementById('btn-fuel-save');
+const btnFuelCancel = document.getElementById('btn-fuel-cancel');
 
 // Mittaristo
 const dashSpeedEl = document.getElementById('dash-speed');
@@ -112,28 +118,24 @@ const carTypeSelect = document.getElementById('car-type');
 const carSpecificFields = document.getElementById('car-specific-fields');
 
 
-// --- 2. UI LOGIIKKA (TÄMÄ ON KORJATTU OSA!) ---
+// --- 2. UI LOGIIKKA ---
 
 function switchView(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
     
-    // 1. Piilota kaikki poistamalla 'active-view' luokka ja asettamalla display: none
     Object.values(views).forEach(el => {
         if(el) {
             el.classList.remove('active-view');
-            el.style.display = 'none'; // Varmistetaan piilotus
+            el.style.display = 'none'; 
         }
     });
     
-    // 2. Nollaa navigaatio napit
     Object.values(navBtns).forEach(btn => {
         if(btn) btn.classList.remove('active-menu');
     });
 
-    // 3. Näytä valittu
     const targetEl = views[viewName];
     if (targetEl) {
-        // Poistetaan inline style "display: none", jotta CSS-luokka voi määrätä
         targetEl.style.display = ''; 
         targetEl.classList.add('active-view');
     }
@@ -142,7 +144,6 @@ function switchView(viewName) {
         navBtns[viewName].classList.add('active-menu');
     }
 
-    // Kartta fixit
     if (viewName !== 'map') {
         if (typeof clearSavedRoute === 'function') clearSavedRoute();
         isViewingHistory = false;
@@ -152,7 +153,6 @@ function switchView(viewName) {
         setTimeout(() => map.invalidateSize(), 100);
     }
     
-    // Lataa listat
     if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
@@ -189,6 +189,19 @@ setInterval(updateClockAndDate, 1000);
 updateClockAndDate();
 
 // --- 3. EVENT LISTENERS ---
+
+// TANKKAUSNAPIN KORJAUS
+if (btnOpenFuel) {
+    btnOpenFuel.addEventListener('click', () => {
+        // Yritetään kutsua fuel.js funktiota, tai avataan modaali suoraan
+        if (typeof openFuelModal === 'function') {
+            openFuelModal();
+        } else if (fuelModal) {
+            fuelModal.style.display = 'flex';
+        }
+    });
+}
+
 if (menuBtn) menuBtn.addEventListener('click', () => {
     mainMenu.style.display = (mainMenu.style.display === 'none' || mainMenu.style.display === '') ? 'flex' : 'none';
 });
@@ -203,10 +216,17 @@ if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('sta
 if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
-// --- 4. VERSIO ---
+// --- 4. VERSIO & ALUSTUS ---
 (function updateVersionText() {
     if(typeof APP_VERSION !== 'undefined') {
         if(splashVersionEl) splashVersionEl.innerText = "Modular v" + APP_VERSION;
         if(menuVersionEl) menuVersionEl.innerText = "Mikkokalevin Ajopäiväkirja Pro v" + APP_VERSION;
     }
 })();
+
+// TÄMÄ RIVI KORJAA "TYHJÄN NÄYTÖN" ONGELMAN
+// Se pakottaa mittariston näkyviin heti kun sivu on latautunut.
+window.addEventListener('DOMContentLoaded', () => {
+    console.log("App loaded, forcing dashboard view.");
+    switchView('dashboard');
+});
