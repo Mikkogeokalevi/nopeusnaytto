@@ -1,5 +1,5 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT
+// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (FULL)
 // =========================================================
 
 // 1. HISTORIAN LATAUS
@@ -14,26 +14,42 @@ function loadHistory() {
 
     historyRef.on('value', (snapshot) => {
         allHistoryData = [];
+        allRefuelings = []; // Nollataan tankkaukset
+        
         if (snapshot.exists()) {
             snapshot.forEach(child => {
                 const data = child.val();
-                if (data && typeof data === 'object') {
+                // Erotellaan tankkaukset ja ajot
+                if (data.type === 'refuel') {
+                    allRefuelings.push({ key: child.key, ...data });
+                } else {
                     allHistoryData.push({ key: child.key, ...data });
                 }
             });
         }
+        
+        // Järjestetään molemmat listat (uusin ensin)
         allHistoryData.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+        allRefuelings.sort((a, b) => new Date(b.date) - new Date(a.date));
         
         if(typeof populateFilter === 'function') populateFilter();
         
+        // Päivitä näkyvä lista riippuen siitä kumpi on auki
         const logList = document.getElementById('log-list');
+        const fuelList = document.getElementById('fuel-list');
+        
         if (logList && logList.style.display !== 'none') {
             renderHistoryList();
         }
+        if (fuelList && fuelList.style.display !== 'none') {
+            renderFuelList();
+        }
         
+        // Päivitä tilastot jos ne on auki
         if(typeof renderStats === 'function') renderStats();
 
     }, (error) => {
+        console.error(error);
         const logList = document.getElementById('log-list');
         if(logList) logList.innerHTML = `<p style="color:red; text-align:center;">Virhe: ${error.message}</p>`;
     });
@@ -84,7 +100,7 @@ function populateFilter() {
     }
 }
 
-// 3. LISTAN RENDERÖINTI
+// 3. LISTAN RENDERÖINTI (AJOT)
 function renderHistoryList() {
     const logList = document.getElementById('log-list');
     if(!logList) return; 
@@ -104,6 +120,7 @@ function renderHistoryList() {
 
     allHistoryData.forEach((drive, index) => {
         try {
+            // Autosuodatus
             if (currentCarId !== 'all') {
                 if (drive.carId && drive.carId !== currentCarId) return;
                 if (!drive.carId) return;
@@ -112,6 +129,7 @@ function renderHistoryList() {
             let start = new Date(drive.startTime);
             if (isNaN(start.getTime())) return;
 
+            // Aikasuodatus
             if (selectedFilter !== 'all') {
                 if (selectedFilter === 'custom') {
                     const startInput = filterStart.value; const endInput = filterEnd.value;
@@ -209,36 +227,53 @@ function renderHistoryList() {
     }
 }
 
+// 3B. LISTAN RENDERÖINTI (TANKKAUKSET)
+window.renderFuelList = function() {
+    const fuelList = document.getElementById('fuel-list');
+    if(!fuelList) return;
+    
+    fuelList.innerHTML = "";
+    
+    if(!allRefuelings || allRefuelings.length === 0) {
+        fuelList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tankkauksia.</p>";
+        return;
+    }
+
+    allRefuelings.forEach((ref, index) => {
+        const date = new Date(ref.date);
+        const dateStr = date.toLocaleDateString('fi-FI') + " " + date.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+        
+        let carObj = userCars.find(c => c.id === ref.carId);
+        let carName = carObj ? carObj.name : "Tuntematon";
+        let icon = "⛽";
+
+        const card = document.createElement('div');
+        card.className = 'log-card';
+        card.style.animationDelay = `${Math.min(index * 0.05, 1.0)}s`;
+        
+        card.innerHTML = `
+            <div class="log-header">
+                <div class="log-title-group">
+                    <div class="log-date-line">${dateStr}</div>
+                    <div class="log-car-big">${icon} ${carName}</div>
+                </div>
+                <button class="delete-btn" onclick="window.openDeleteLogModal('${ref.key}')">🗑</button>
+            </div>
+            <div class="log-stats" style="grid-template-columns: repeat(3, 1fr);">
+                <div><span class="stat-label">LITRAT</span>${ref.liters} L</div>
+                <div><span class="stat-label">HINTA</span>${ref.euros} €</div>
+                <div><span class="stat-label">€ / L</span>${ref.pricePerLiter}</div>
+            </div>
+            <div style="font-size:12px; color:#888; text-align:center; margin-top:5px;">Mittarilukema: ${ref.odo || "-"} km</div>
+        `;
+        fuelList.appendChild(card);
+    });
+}
+
+
 // 4. TILASTOT (GRAAFIT + TABIT)
-// --------------------------------------------------------------------------------
-
-const statTabDrives = document.getElementById('stat-tab-drives');
-const statTabFuel = document.getElementById('stat-tab-fuel');
-const statsDrivesContainer = document.getElementById('stats-drives-container');
-const statsFuelContainer = document.getElementById('stats-fuel-container');
-
-if(statTabDrives) {
-    statTabDrives.addEventListener('click', () => {
-        statsDrivesContainer.style.display = 'block';
-        statsFuelContainer.style.display = 'none';
-        statTabDrives.classList.add('blue-btn'); statTabDrives.style.backgroundColor = '';
-        statTabFuel.classList.remove('blue-btn'); statTabFuel.style.backgroundColor = '#333';
-        renderDriveStats();
-    });
-}
-
-if(statTabFuel) {
-    statTabFuel.addEventListener('click', () => {
-        statsDrivesContainer.style.display = 'none';
-        statsFuelContainer.style.display = 'block';
-        statTabFuel.classList.add('blue-btn'); statTabFuel.style.backgroundColor = '';
-        statTabDrives.classList.remove('blue-btn'); statTabDrives.style.backgroundColor = '#333';
-        renderFuelStats();
-    });
-}
-
-
 function renderStats() {
+    const statsFuelContainer = document.getElementById('stats-fuel-container');
     if(statsFuelContainer && statsFuelContainer.style.display !== 'none') {
         renderFuelStats();
     } else {
@@ -255,9 +290,9 @@ function renderDriveStats() {
     const vehicleData = {};
     const styleData = { "Taloudellinen": 0, "Tasainen": 0, "Reipas": 0, "Aggressiivinen": 0 };
     
-    // UUSI: Autokohtainen kuukausidata viivakaaviolle
-    const carMonthlyData = {}; // { "Auto1": { "10/2025": 100, "11/2025": 200 } }
-    const speedData = {}; // { "10/2025": {sum: 500, count: 10} }
+    // Autokohtainen kuukausidata viivakaaviolle
+    const carMonthlyData = {}; 
+    const speedData = {}; 
 
     // Järjestetään vanhimmasta uusimpaan trendejä varten
     const sortedDrives = [...allHistoryData].sort((a,b) => new Date(a.startTime) - new Date(b.startTime));
@@ -266,13 +301,13 @@ function renderDriveStats() {
         const dist = parseFloat(d.distanceKm) || 0;
         const avgSpd = parseFloat(d.avgSpeed) || 0;
         const date = new Date(d.startTime);
-        const monthKey = `${date.getMonth()+1}/${date.getFullYear()}`; // esim 12/2025
+        const monthKey = `${date.getMonth()+1}/${date.getFullYear()}`; 
 
-        // Kokonaiskilometrit (Pylväs)
+        // Kokonaiskilometrit
         if (!monthlyData[monthKey]) monthlyData[monthKey] = 0;
         monthlyData[monthKey] += dist;
 
-        // Ajoneuvot (Donitsi)
+        // Ajoneuvot
         let carObj = userCars.find(c => c.id === d.carId);
         let carIcon = carObj ? (carObj.icon || (carObj.type==='bike'?"🚲":"🚗")) : (d.carIcon || (d.carType==='bike'?"🚲":"🚗"));
         let carName = carObj ? carObj.name : (d.carName || "Muu");
@@ -281,12 +316,12 @@ function renderDriveStats() {
         if (!vehicleData[label]) vehicleData[label] = 0;
         vehicleData[label] += dist;
 
-        // Autokohtainen trendi (UUSI)
+        // Autokohtainen trendi
         if (!carMonthlyData[carName]) carMonthlyData[carName] = {};
         if (!carMonthlyData[carName][monthKey]) carMonthlyData[carName][monthKey] = 0;
         carMonthlyData[carName][monthKey] += dist;
 
-        // Keskinopeus trendi (UUSI)
+        // Keskinopeus trendi
         if(avgSpd > 0) {
             if(!speedData[monthKey]) speedData[monthKey] = {sum:0, count:0};
             speedData[monthKey].sum += avgSpd;
@@ -300,10 +335,10 @@ function renderDriveStats() {
         }
     });
 
-    const monthLabels = Object.keys(monthlyData); // Aikajärjestyksessä
+    const monthLabels = Object.keys(monthlyData); 
     const monthValues = Object.values(monthlyData).map(v => v.toFixed(1));
 
-    // 1. KILOMETRIT (BAR) - YHTEENSÄ
+    // 1. KILOMETRIT (BAR)
     const canvasMonthly = document.getElementById('chart-drive-monthly');
     if (canvasMonthly) {
         if (chartInstanceMonthly) { chartInstanceMonthly.destroy(); }
@@ -314,20 +349,17 @@ function renderDriveStats() {
         });
     }
 
-    // 2. KILOMETRITRENDI (LINE) - UUSI!
+    // 2. KILOMETRITRENDI (LINE)
     const canvasTrend = document.getElementById('chart-drive-trend');
     if (canvasTrend) {
         if (chartInstanceDriveTrend) { chartInstanceDriveTrend.destroy(); }
         
-        // Luodaan datasetit jokaiselle autolle
         const trendDatasets = [];
         const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
         let colorIdx = 0;
 
         for (const [carName, monthsObj] of Object.entries(carMonthlyData)) {
-            // Täytetään data oikeille kuukausille (monthLabels), nollat jos ei ajoa
             const dataArr = monthLabels.map(m => (monthsObj[m] || 0));
-            
             trendDatasets.push({
                 label: carName,
                 data: dataArr,
@@ -340,15 +372,12 @@ function renderDriveStats() {
 
         chartInstanceDriveTrend = new Chart(canvasTrend.getContext('2d'), {
             type: 'line',
-            data: { 
-                labels: monthLabels, 
-                datasets: trendDatasets 
-            },
+            data: { labels: monthLabels, datasets: trendDatasets },
             options: { responsive: true, scales: { y: { beginAtZero: true } } }
         });
     }
 
-    // 3. NOPEUSTRENDI (LINE) - UUSI!
+    // 3. NOPEUSTRENDI (LINE)
     const canvasSpeed = document.getElementById('chart-drive-speed');
     if (canvasSpeed) {
         if (chartInstanceDriveSpeed) { chartInstanceDriveSpeed.destroy(); }
