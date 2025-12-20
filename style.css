@@ -444,3 +444,36 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .dark-mode-img { display: block; }
 body.light-theme .dark-mode-img { display: none; }
 body.light-theme .light-mode-img { display: block; }
+
+/* G-FORCE MITTARI */
+.g-meter-bg {
+    width: 60px; height: 60px;
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    position: relative;
+    background: radial-gradient(circle, rgba(41,121,255,0.1) 0%, rgba(0,0,0,0.5) 100%);
+    box-shadow: 0 0 10px rgba(41, 121, 255, 0.3);
+}
+.g-bubble {
+    width: 12px; height: 12px;
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%); /* Keskitys */
+    box-shadow: 0 0 5px #fff;
+    transition: transform 0.1s ease-out; /* Pehmeä liike */
+}
+
+/* OSOITE JA KOMPASSI */
+#dash-address {
+    font-size: 13px; font-weight: bold; color: var(--text-color);
+    margin-bottom: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 90vw;
+}
+
+#compass-arrow {
+    display: inline-block;
+    transition: transform 0.3s cubic-bezier(0.4, 2.5, 0.5, 0.5); /* Pomppiva efekti */
+}
