@@ -41,6 +41,7 @@ function loadRefuelings() {
                 allRefuelings.push({ key: child.key, ...child.val() });
             });
         }
+        // Järjestä uusin ensin
         allRefuelings.sort((a, b) => new Date(b.date) - new Date(a.date));
         
         // Jos tankkauslista on auki, päivitä se heti
@@ -48,6 +49,7 @@ function loadRefuelings() {
             renderFuelList();
         }
         
+        // Päivitä myös tilastot, jos ne ovat auki
         if (typeof renderStats === 'function') renderStats();
     });
 }
@@ -77,8 +79,8 @@ if (btnOpenFuel) {
         
         // Aseta nykyhetki oletukseksi
         const now = new Date();
-        inpFuelDate.value = now.toISOString().split('T')[0];
-        inpFuelTime.value = now.toTimeString().split(' ')[0].substring(0, 5);
+        inpFuelDate.value = now.toISOString().split('T')[0]; // YYYY-MM-DD
+        inpFuelTime.value = now.toTimeString().split(' ')[0].substring(0, 5); // HH:MM
 
         inpFuelOdo.value = "";
         inpFuelLiters.value = "";
@@ -88,7 +90,7 @@ if (btnOpenFuel) {
     });
 }
 
-// AVAA MODAALI (MUOKKAUS)
+// AVAA MODAALI (MUOKKAUS) - Globaali funktio
 window.openEditFuelModal = (key) => {
     const ref = allRefuelings.find(r => r.key === key);
     if (!ref) return;
@@ -100,11 +102,10 @@ window.openEditFuelModal = (key) => {
     const c = userCars.find(x => x.id === ref.carId);
     fuelCarNameEl.innerText = c ? c.name : "Tuntematon auto";
 
-    // Pura tallennettu päiväys (ISO String) osiin
+    // Pura tallennettu päiväys inputteihin
     if (ref.date) {
         const d = new Date(ref.date);
-        // Korjaus aikavyöhykeongelmaan inputeissa (käytetään paikallista aikaa string-kikkailulla tai date-fns)
-        // Yksinkertainen tapa:
+        // Puretaan manuaalisesti jotta aikavyöhyke ei sotke
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
@@ -118,10 +119,13 @@ window.openEditFuelModal = (key) => {
     inpFuelOdo.value = ref.odometer || "";
     inpFuelLiters.value = ref.liters || "";
     inpFuelEuros.value = ref.euros || "";
-    calcPrice();
+    
+    calcPrice(); // Päivitä litrahinta näkyviin
+    
     fuelModal.style.display = 'flex';
 };
 
+// Laske litrahinta lennosta
 function calcPrice() {
     const l = parseFloat(inpFuelLiters.value);
     const e = parseFloat(inpFuelEuros.value);
@@ -161,6 +165,7 @@ if (btnFuelSave) {
         };
 
         if (currentFuelEditKey) {
+            // PÄIVITYS
             db.ref('refuelings/' + currentUser.uid + '/' + currentFuelEditKey).update(data)
                 .then(() => {
                     fuelModal.style.display = 'none';
@@ -168,6 +173,7 @@ if (btnFuelSave) {
                 })
                 .catch(err => alert("Virhe muokkauksessa: " + err.message));
         } else {
+            // UUSI
             db.ref('refuelings/' + currentUser.uid).push(data)
                 .then(() => {
                     fuelModal.style.display = 'none';
@@ -238,6 +244,8 @@ function renderFuelList() {
         } else if (fuelType.includes('diesel')) {
             sumDiesel += parseFloat(ref.liters) || 0;
         } else {
+            // Jos muu, lisätään vaikka bensaan tai jätetään huomiotta. 
+            // Tässä oletetaan bensaksi jos ei ole diesel.
             sumGas += parseFloat(ref.liters) || 0; 
         }
     });
@@ -252,6 +260,7 @@ function renderFuelList() {
     document.getElementById('sum-val-3').innerText = sumDiesel.toFixed(0);
     document.getElementById('sum-label-3').innerText = "Diesel (l)";
     
+    // Varmista että boksi näkyy
     const historySummaryEl = document.getElementById('history-summary');
     if(historySummaryEl) historySummaryEl.style.display = 'flex';
 
@@ -273,6 +282,7 @@ function renderFuelList() {
         const carIcon = car ? (car.icon || "⛽") : "⛽";
         const carName = car ? car.name : "Tuntematon";
 
+        // Yksinkertainen kulutuslaskenta (vertaa edelliseen tankkaukseen listalla)
         let consumptionStr = "-";
         if (index < filtered.length - 1) {
             const prev = filtered[index + 1];
@@ -287,6 +297,11 @@ function renderFuelList() {
 
         const div = document.createElement('div');
         div.className = 'log-card';
+        
+        // ANIMAATIO-VIIVE: luo "putoavan" efektin
+        const delay = Math.min(index * 0.05, 1.0); // Maksimissaan 1s viive
+        div.style.animationDelay = `${delay}s`;
+
         div.innerHTML = `
             <div class="log-header">
                 <div class="log-title-group">
