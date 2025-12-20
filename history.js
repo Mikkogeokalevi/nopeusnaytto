@@ -1,8 +1,8 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (FIXED)
+// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (FIXED v5.7)
 // =========================================================
 
-// MÄÄRITELLÄÄN ELEMENTIT HETI ALUSSA (NÄMÄ PUUTTUIVAT AIEMMIN!)
+// --- 1. MÄÄRITELLÄÄN ELEMENTIT (Nämä puuttuivat aiemmin!) ---
 const filterEl = document.getElementById('history-filter');
 const customFilterContainer = document.getElementById('custom-filter-container');
 const filterStart = document.getElementById('filter-start');
@@ -16,7 +16,7 @@ window.renderStats = renderStats;
 window.renderDriveStats = renderDriveStats;
 window.renderFuelStats = renderFuelStats;
 
-// 1. HISTORIAN LATAUS
+// --- 2. HISTORIAN LATAUS ---
 function loadHistory() {
     if (!currentUser) return;
 
@@ -49,11 +49,8 @@ function loadHistory() {
         if(typeof populateFilter === 'function') populateFilter();
         
         // PAKOTETAAN RENDERÖINTI
-        // Tarkistetaan onko elementit olemassa ennen renderöintiä
-        if(document.getElementById('log-list')) renderHistoryList();
-        if(document.getElementById('fuel-list')) renderFuelList();
-        
-        // Renderöidään tilastot taustalle valmiiksi
+        renderHistoryList();
+        renderFuelList();
         renderStats();
 
     }, (error) => {
@@ -63,7 +60,7 @@ function loadHistory() {
     });
 }
 
-// 2. SUODATUS LOGIIKKA
+// --- 3. SUODATUS LOGIIKKA ---
 if(filterEl) {
     filterEl.addEventListener('change', () => {
         if (filterEl.value === 'custom') {
@@ -108,10 +105,14 @@ function populateFilter() {
     }
 }
 
-// 3. LISTAN RENDERÖINTI (AJOT)
+// --- 4. LISTAN RENDERÖINTI (AJOT) ---
 function renderHistoryList() {
     const logList = document.getElementById('log-list');
     if(!logList) return; 
+    
+    // Tarkistetaan onko "Ajot" välilehti aktiivinen, jos on, tyhjennetään ja piirretään
+    // Jos "Tankkaukset" on auki, emme halua sotkea sitä, mutta datan päivitys on ok.
+    // Yksinkertaisinta: Tyhjennetään aina ja piirretään, UI.js hoitaa näkyvyyden (display:none).
     
     logList.innerHTML = ""; 
     
@@ -121,9 +122,7 @@ function renderHistoryList() {
         return;
     }
 
-    // TÄSSÄ SE VIRHE OLI: Nyt filterEl on määritelty tiedoston alussa, joten tämä toimii
     const selectedFilter = filterEl ? filterEl.value : 'all';
-    
     let renderCount = 0;
     let totalKm = 0;
     let totalMs = 0;
@@ -230,7 +229,7 @@ function renderHistoryList() {
     }
 }
 
-// 3B. LISTAN RENDERÖINTI (TANKKAUKSET)
+// --- 5. LISTAN RENDERÖINTI (TANKKAUKSET) ---
 function renderFuelList() {
     const fuelList = document.getElementById('fuel-list');
     if(!fuelList) return;
@@ -274,10 +273,9 @@ function renderFuelList() {
 }
 
 
-// 4. TILASTOT (GRAAFIT)
+// --- 6. TILASTOT (GRAAFIT) ---
 function renderStats() {
     const statsFuelContainer = document.getElementById('stats-fuel-container');
-    // Tarkistetaan onko Chart.js ladattu
     if (typeof Chart === 'undefined') return;
 
     if(statsFuelContainer && statsFuelContainer.style.display !== 'none') {
@@ -310,7 +308,7 @@ function renderDriveStats() {
 
         let carObj = userCars.find(c => c.id === d.carId);
         let carName = carObj ? carObj.name : (d.carName || "Muu");
-        let label = `${carName}`; // Yksinkertaistettu label
+        let label = `${carName}`; 
         
         if (!vehicleData[label]) vehicleData[label] = 0;
         vehicleData[label] += dist;
@@ -415,7 +413,8 @@ function renderDriveStats() {
 
 function renderFuelStats() {
     if (!allRefuelings || allRefuelings.length === 0) return;
-    
+    if (typeof Chart === 'undefined') return;
+
     // DATA PREP
     let totalRefuelEur = 0;
     let sumGas = 0; let sumDiesel = 0; 
@@ -478,8 +477,6 @@ function renderFuelStats() {
     }
 
     // FUEL CHART 2: KUUKAUSIKULUT
-    const monthLabels = Object.keys(monthlyCosts); 
-    const monthValues = Object.values(monthlyCosts).map(v => v.toFixed(2));
     const canvasMonthly = document.getElementById('chart-fuel-monthly');
     if (canvasMonthly) {
         if (chartInstanceFuelMonthly) { chartInstanceFuelMonthly.destroy(); }
@@ -520,7 +517,7 @@ function renderFuelStats() {
 }
 
 
-// 5. APUFUNKTIOT
+// 7. APUFUNKTIOT
 window.openEditLogModal = (key) => {
     const drive = allHistoryData.find(d => d.key === key);
     if (!drive) return;
@@ -549,8 +546,7 @@ window.updateLogSubject = (key, text) => {
     if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text }); 
 };
 
-// NAPIT (Nämä varmuuden vuoksi, vaikka UI.js yleensä hoitaa, 
-// mutta joskus napit ladataan dynaamisesti)
+// Varmistus: Napit toimivat vaikka ui.js ei niitä nappaisi
 const btnEditCancel2 = document.getElementById('btn-edit-cancel');
 if(btnEditCancel2) btnEditCancel2.addEventListener('click', () => { if(editModal) editModal.style.display = 'none'; });
 
