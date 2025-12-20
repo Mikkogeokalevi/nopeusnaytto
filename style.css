@@ -359,9 +359,26 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .splash-logo { width: 100px; height: 100px; border-radius: 50%; box-shadow: 0 0 30px rgba(41, 121, 255, 0.4); margin-bottom: 20px; animation: pulse 2s infinite; }
 @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0.4); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(41, 121, 255, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0); } }
 
-/* MODALS */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 9000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-.modal-content { background-color: var(--panel-bg); width: 90%; max-width: 400px; border-radius: 20px; padding: 25px; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 20px 50px rgba(0,0,0,0.6); animation: fadeInUp 0.3s ease-out; }
+/* --- MODALS (KORJATTU: NOUSEE YLÖS NÄPPÄIMISTÖÄ KARKUUN) --- */
+.modal-overlay { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background-color: rgba(0, 0, 0, 0.85); z-index: 9000; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; /* Muutos: Ylös, ei keskelle */
+    padding-top: 15vh;       /* Muutos: Vähän irti katosta */
+    backdrop-filter: blur(5px); 
+    overflow-y: auto;        /* Varmistus: Skrollaus tarvittaessa */
+}
+
+.modal-content { 
+    background-color: var(--panel-bg); 
+    width: 90%; max-width: 400px; 
+    border-radius: 20px; padding: 25px; text-align: center; 
+    border: 1px solid var(--border-color); 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+    animation: fadeInUp 0.3s ease-out; 
+}
 .modal-content select { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--accent-color); border-radius: 8px; }
 .modal-summary { margin-bottom: 20px; font-size: 22px; font-weight: bold; color: var(--text-color); }
 
