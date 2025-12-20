@@ -4,24 +4,21 @@
 
 // 1. KONTROLLIPAINIKKEET JA LOGIIKKA
 
-// Aktivointinappi (jos ei tallenneta vielä, ensimmäinen käynnistys)
+// Aktivointinappi
 const btnActivate = document.getElementById('btn-activate-gps');
 if (btnActivate) {
     btnActivate.addEventListener('click', () => {
         if (!isGPSActive) {
             startGPS();
             
-            // 1. Piilota aktivointinappi
             btnActivate.style.display = 'none';
             
-            // 2. Näytä kontrollialue
             if(document.getElementById('rec-controls')) {
                 document.getElementById('rec-controls').style.display = 'flex';
             }
 
-            // 3. KORJAUS: Varmista, että vain ALOITA-nappi näkyy aluksi
-            if(activeRecBtns) activeRecBtns.style.display = 'none'; // Piilota Tauko/Lopeta
-            if(btnStartRec) btnStartRec.style.display = 'inline-block'; // Näytä Aloita
+            if(activeRecBtns) activeRecBtns.style.display = 'none'; 
+            if(btnStartRec) btnStartRec.style.display = 'inline-block'; 
             
             if(statusEl) statusEl.innerText = "GPS Päällä";
         }
@@ -31,7 +28,6 @@ if (btnActivate) {
 // ALOITA TALLENNUS
 if (btnStartRec) {
     btnStartRec.addEventListener('click', () => {
-        // Kiihtyvyysanturin lupa (iOS vaatii erillisen pyynnön)
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             DeviceMotionEvent.requestPermission().then(response => {
                 if (response === 'granted') {
@@ -44,20 +40,18 @@ if (btnStartRec) {
 
         isRecording = true;
         isPaused = false;
-        isViewingHistory = false; // Pakota GPS-seuranta päälle
+        isViewingHistory = false;
         
         if(mapGpsToggle) {
             mapGpsToggle.innerText = "📡 ON";
             mapGpsToggle.classList.remove('inactive');
         }
 
-        // Nollataan muuttujat
         startTime = new Date();
         totalPauseTime = 0;
         maxSpeed = 0;
         totalDistance = 0;
         
-        // Nollaa reittidatat
         routePath = [];
         if(realTimePolyline) realTimePolyline.setLatLngs([]);
         if(typeof clearSavedRoute === 'function') clearSavedRoute();
@@ -65,10 +59,8 @@ if (btnStartRec) {
         currentDriveWeather = "";
         aggressiveEvents = 0;
         
-        // Nollataan UI
         if(typeof updateDashboardUI === 'function') updateDashboardUI(0, 0, 0, 0, 0, 0);
         
-        // Eco-mittarin logiikka
         if (currentCarType === 'bike') {
             if(liveStatusBar) liveStatusBar.style.opacity = '0';
         } else {
@@ -79,7 +71,6 @@ if (btnStartRec) {
             }
         }
         
-        // Päivitä napit (Piilota Aloita, näytä Tauko/Lopeta)
         btnStartRec.style.display = 'none';
         activeRecBtns.style.display = 'flex';
         btnPause.style.display = 'inline-block';
@@ -90,7 +81,6 @@ if (btnStartRec) {
             statusEl.style.color = "#ff4444";
         }
         
-        // Käynnistä sekuntikello
         if(timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(updateTimer, 1000);
     });
@@ -150,7 +140,6 @@ if (btnStopRec) {
             if (aggressiveEvents > 15) styleLabel = "Aggressiivinen";
         }
 
-        // Hae valitun auton tiedot
         let selectedCarName = "Muu ajoneuvo";
         let selectedCarIcon = "🚗";
         if (currentCarId !== 'all') {
@@ -161,7 +150,6 @@ if (btnStopRec) {
             }
         }
 
-        // Luodaan tallennusobjekti
         tempDriveData = {
             type: 'end_drive',
             startTime: startTime.toISOString(),
@@ -177,7 +165,7 @@ if (btnStopRec) {
             carIcon: selectedCarIcon, 
             carId: currentCarId,
             carType: currentCarType,
-            route: routePath // TALLENNA REITTI
+            route: routePath
         };
 
         const mins = Math.floor(activeDurationMs / 60000);
@@ -186,14 +174,13 @@ if (btnStopRec) {
         if(modalSubjectEl) modalSubjectEl.value = ""; 
         if(modalCarNameEl) modalCarNameEl.innerText = selectedCarName; 
 
-        // Avaa tallennusikkuna
         if(saveModal) saveModal.style.display = 'flex';
         if(modalSubjectEl) modalSubjectEl.focus();
         if(liveStatusBar) liveStatusBar.style.opacity = '0';
     });
 }
 
-// MODAL NAPIT (TALLENNA / PERUUTA)
+// MODAL NAPIT
 if (btnModalSave) {
     btnModalSave.addEventListener('click', () => {
         if (tempDriveData) {
@@ -237,22 +224,24 @@ function updatePosition(position) {
 
     let currentAvg = 0;
 
+    // --- UUSI: OSOITEHAKU (Max kerran 30s) ---
+    const now = Date.now();
+    if (now - lastAddressFetchTime > 30000 && speedKmh > 2) {
+        fetchAddress(lat, lng);
+        lastAddressFetchTime = now;
+    }
+
     if (currentDriveWeather === "") fetchWeather(lat, lng);
 
-    // Jos nauhoitus on päällä, tallenna dataa
     if (isRecording && !isPaused) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
             const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
-            // WhatsApp-korjaus: Sallitaan 50km hyppy, suodattaa isommat virheet
             if ((speedKmh > 3 || dist > 0.02) && dist < 50.0) totalDistance += dist;
         }
         
-        // Tallenna reittipiste (LAT, LNG, SPEED)
         if (speedKmh > 3 || (lastLatLng && getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng) > 0.02)) {
             routePath.push({ lat: lat, lng: lng, spd: speedKmh });
-            
-            // Piirrä live-viivaa (tarkistetaan onko map ja polyline olemassa)
             if(realTimePolyline) realTimePolyline.addLatLng([lat, lng]);
         }
 
@@ -264,32 +253,23 @@ function updatePosition(position) {
         }
     }
     
-    // Päivitä sijainti kartalla
     if (!lastLatLng || speedKmh > 0 || isGPSActive) {
         lastLatLng = { lat, lng };
         const newLatLng = new L.LatLng(lat, lng);
         if(marker) marker.setLatLng(newLatLng);
         
-        // Keskitä kartta VAIN JOS emme katsele historiaa
         if (views.map && views.map.style.display !== 'none' && !isViewingHistory && map) {
-            
-            // ZOOM Logiikka nopeuden mukaan
             let targetZoom = 18; 
             if (currentCarType === 'bike') {
-                if (speedKmh > 15) targetZoom = 17; 
-                else targetZoom = 19; 
+                if (speedKmh > 15) targetZoom = 17; else targetZoom = 19; 
             } else {
                 if (speedKmh > 100) targetZoom = 14; 
                 else if (speedKmh > 70) targetZoom = 16;
                 else if (speedKmh > 40) targetZoom = 17;
                 else targetZoom = 18;
             }
-            
-            if (map.getZoom() !== targetZoom) {
-                map.setView(newLatLng, targetZoom);
-            } else {
-                map.panTo(newLatLng);
-            }
+            if (map.getZoom() !== targetZoom) map.setView(newLatLng, targetZoom);
+            else map.panTo(newLatLng);
         }
         if(mapSpeedEl) mapSpeedEl.innerText = speedKmh.toFixed(1);
         if(mapCoordsEl) mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
@@ -301,10 +281,10 @@ function updatePosition(position) {
     
     if(dashCoordsEl) dashCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
     
-    if (heading !== null && !isNaN(heading) && speedKmh > 3 && dashHeadingEl) {
-        dashHeadingEl.innerText = `${getCardinalDirection(heading)} ${Math.round(heading)}°`;
-    } else if (dashHeadingEl && dashHeadingEl.innerText === "--") {
-        dashHeadingEl.innerText = "--";
+    // --- UUSI: KOMPASSI ---
+    if (heading !== null && !isNaN(heading)) {
+        if(dashHeadingEl) dashHeadingEl.innerText = `${Math.round(heading)}°`;
+        if(compassArrowEl) compassArrowEl.style.transform = `rotate(${heading}deg)`;
     }
 
     if (isGPSActive && wakeLock === null) requestWakeLock();
@@ -319,17 +299,37 @@ function stopGPSAndRec() {
     window.removeEventListener('devicemotion', handleMotion);
 }
 
+// --- UUSI: G-VOIMA JA ECO ---
 function handleMotion(event) {
     if (!isRecording || isPaused) return;
-    if (currentCarType === 'bike') return;
+    
+    const acc = event.acceleration; 
+    const accG = event.accelerationIncludingGravity; 
+    
+    if (!acc) return;
 
+    // G-METER
+    if(gBubbleEl && accG) {
+        let x = -acc.x * 5; 
+        let y = acc.z * 5; 
+
+        const maxDist = 25;
+        const dist = Math.sqrt(x*x + y*y);
+        if (dist > maxDist) {
+            x = (x / dist) * maxDist;
+            y = (y / dist) * maxDist;
+        }
+        
+        gBubbleEl.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    }
+
+    // ECO
+    if (currentCarType === 'bike') return;
     const now = Date.now();
     if (now - lastMotionTime < 500) return; 
     lastMotionTime = now;
-    const acc = event.acceleration; 
-    if (!acc) return;
-    const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
     
+    const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
     if (magnitude > 3.5) {
         aggressiveEvents++;
         if(liveStyleEl) {
@@ -365,6 +365,7 @@ function resetRecordingUI() {
     if(typeof updateDashboardUI === 'function') updateDashboardUI(0, 0, 0, 0, 0, 0);
     if(dashTimeEl) dashTimeEl.innerText = "00:00";
     if(liveStatusBar) liveStatusBar.style.opacity = '0'; 
+    if(dashAddressEl) dashAddressEl.innerText = "Odottaa sijaintia...";
 }
 
 // 3. APUFUNKTIOT
@@ -405,6 +406,27 @@ function fetchWeather(lat, lon) {
         .catch(e => console.error(e));
 }
 
+// --- UUSI: OSOITEHAKU ---
+function fetchAddress(lat, lon) {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
+    
+    fetch(url, { headers: { 'User-Agent': 'AjopaivakirjaPro/5.7' } })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.address) {
+                const road = data.address.road || "";
+                const number = data.address.house_number || "";
+                const city = data.address.city || data.address.town || data.address.village || "";
+                
+                if (road) {
+                    currentAddress = `${road} ${number}, ${city}`;
+                    if(dashAddressEl) dashAddressEl.innerText = currentAddress;
+                }
+            }
+        })
+        .catch(e => console.log("Osoitehaku ei onnistunut:", e));
+}
+
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   const R = 6371; 
   const dLat = (lat2-lat1)*(Math.PI/180);
@@ -431,7 +453,6 @@ function handleError(e) {
     if(statusEl) statusEl.innerText = "GPS Virhe: " + e.message; 
 }
 
-// Tallennus Firebaseen
 function saveToFirebase(data) {
     if (currentUser) {
         db.ref('ajopaivakirja/' + currentUser.uid).push().set(data)
@@ -442,7 +463,6 @@ function saveToFirebase(data) {
     }
 }
 
-// Wake Lock
 document.addEventListener('visibilitychange', async () => {
     if (document.visibilityState === 'visible' && isGPSActive) requestWakeLock();
 });
