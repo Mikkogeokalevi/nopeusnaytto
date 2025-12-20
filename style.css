@@ -9,7 +9,7 @@
     --accent-color: #2979ff;
     --border-color: #333;
     --subtext-color: #888;
-    --card-bg: rgba(30, 30, 30, 0.85);
+    --card-bg: rgba(30, 30, 30, 0.85); /* Lasimainen tausta */
 }
 
 body.light-theme {
@@ -133,22 +133,24 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .main-content { flex-grow: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; width: 100%; }
 .view-section { flex-grow: 1; display: flex; flex-direction: column; width: 100%; height: 100%; }
 
-/* MITTARISTO - KOMPAKTI VERSIO */
+/* === MITTARISTO (DASHBOARD) - JOUSTAVA LAYOUT === */
 #dashboard-view { 
-    align-items: center; justify-content: flex-start; 
+    display: flex; 
+    flex-direction: column;
+    /* Jakaa tilan elementtien välille tasaisesti, mutta ei työnnä mitään ulos */
+    justify-content: space-evenly; 
+    align-items: center;
     padding: 5px 15px; 
-    position: relative; overflow-y: auto; 
-    overflow-x: hidden;
-    width: 100%;
-    /* Flex-ominaisuudet auttavat jakamaan tilan */
-    display: flex; flex-direction: column;
+    height: 100%;
+    overflow: hidden; /* Estää scrollauksen jos kaikki mahtuu */
 }
 
 /* LIVE STATUS BAR (ECO) */
 .status-bar {
     display: flex; gap: 15px; align-items: center; justify-content: center;
-    margin-top: 5px; font-size: 13px; color: var(--subtext-color);
-    transition: opacity 0.5s; width: 100%; min-height: 22px;
+    font-size: 13px; color: var(--subtext-color);
+    transition: opacity 0.5s; width: 100%; min-height: 25px;
+    flex-shrink: 0; /* Ei saa kutistua kasaan */
 }
 .style-badge {
     padding: 4px 10px; border-radius: 20px; font-weight: bold; border: 1px solid transparent;
@@ -172,10 +174,14 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 #side-tap-left { left: 0; } 
 .side-tap-zone:active { width: 45px; background: var(--accent-color); color: #fff; }
 
-/* ISO NOPEUS (KOMPAKTI) */
-.huge-speed-container { text-align: center; margin: 10px 0 5px 0; position: relative; }
+/* ISO NOPEUS - SKAALAUTUVA KOKO */
+.huge-speed-container { 
+    text-align: center; position: relative; 
+    flex-shrink: 0; /* Tämä pysyy aina näkyvissä */
+}
 .huge-speed {
-    font-size: 90px; /* Pienennetty */
+    /* KÄYTETÄÄN VH-YKSIKKÖÄ: Nopeus on n. 15% ruudun korkeudesta */
+    font-size: 16vh; 
     font-weight: 800; color: var(--speed-color); line-height: 0.9;
     font-variant-numeric: tabular-nums; 
     text-shadow: 0 0 20px rgba(41, 121, 255, 0.4); 
@@ -183,17 +189,17 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .huge-unit { font-size: 16px; color: var(--subtext-color); font-weight: 500; display: block; text-align: center; margin-top: 0px; text-transform: uppercase; letter-spacing: 2px; }
 
-/* GRIDI - KOMPAKTI */
+/* GRIDI - LASIMAINEN */
 .stats-grid { 
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; /* Pienempi väli */
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     width: 100%; max-width: 450px; 
-    margin-bottom: 10px; margin-top: 10px; 
     position: relative; z-index: 60;
+    flex-shrink: 1; /* Tämä saa vähän joustaa jos tila loppuu */
 }
 .stat-card {
     background-color: var(--card-bg); 
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    padding: 8px; /* Vähemmän paddingia */
+    padding: 8px;
     border-radius: 14px; text-align: center;
     width: 100%; border: 1px solid rgba(255,255,255,0.05);
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -203,20 +209,21 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .stat-label { font-size: 9px; color: var(--subtext-color); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1px; display: block; }
 .stat-value { font-size: 20px; font-weight: 700; color: var(--text-color); }
 .stat-unit { font-size: 11px; color: var(--subtext-color); font-weight: normal; }
-.coords-box { font-family: 'Roboto Mono', monospace; color: var(--accent-color); margin-top: 5px; font-size: 12px; opacity: 0.8; }
+.coords-box { font-family: 'Roboto Mono', monospace; color: var(--accent-color); font-size: 11px; opacity: 0.8; margin-top: 5px; }
 
-/* TIME & WEATHER - KOMPAKTI */
+/* TIME & WEATHER - JOUSTAVA */
 .time-weather-wrapper {
     display: flex; justify-content: center; align-items: center; gap: 20px;
-    margin-top: 5px; text-align: center; width: 100%;
+    text-align: center; width: 100%;
+    flex-shrink: 0;
 }
 .weather-huge {
     font-size: 28px; font-weight: bold; color: var(--text-color);
     filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
 }
 .time-right-col { display: flex; flex-direction: column; text-align: left; }
-.clock-box { font-size: 30px; font-weight: 300; color: var(--text-color); letter-spacing: 1px; line-height: 1; }
-.date-box { font-size: 13px; color: var(--accent-color); margin-top: 0px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+.clock-box { font-size: 28px; font-weight: 300; color: var(--text-color); letter-spacing: 1px; line-height: 1; }
+.date-box { font-size: 12px; color: var(--accent-color); margin-top: 0px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
 
 /* KARTTA */
 #map-view { display: flex; flex-direction: column; height: 100vh; width: 100%; position: relative; }
@@ -271,8 +278,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     border-radius: 16px; padding: 18px; margin-bottom: 15px;
     width: 100%; position: relative;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    opacity: 0; /* JS hoitaa animation-delayn */
-    animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    opacity: 0; animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .log-header { 
@@ -307,6 +313,34 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     font-size: 14px;
 }
 .subject-input:focus { outline: none; border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.05); }
+
+/* AUTO LISTA (GARAGE) - KORJATTU */
+#cars-list { width: 100%; max-width: 600px; margin: 0 auto; }
+
+.car-item {
+    background-color: var(--card-bg); /* Käytetään samaa lasimaisuutta */
+    border: 1px solid var(--border-color);
+    border-radius: 16px; padding: 15px; margin-bottom: 12px; 
+    display: flex; justify-content: space-between; align-items: center; width: 100%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.car-details { font-size: 13px; color: var(--subtext-color); margin-top: 4px; }
+.car-title { font-weight: 700; font-size: 16px; color: var(--text-color); display: flex; align-items: center; gap: 8px; }
+.car-actions { display: flex; gap: 5px; }
+
+/* AUTON IKONI VALITSIN */
+.car-icon-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
+    margin-bottom: 15px;
+}
+.car-icon-option {
+    font-size: 22px; text-align: center; cursor: pointer; padding: 5px;
+    border: 1px solid var(--border-color); border-radius: 8px;
+    background-color: rgba(255,255,255,0.05); transition: background 0.2s;
+}
+.car-icon-option.selected-icon {
+    border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.2);
+}
 
 /* TAGIT */
 .log-tags { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -390,18 +424,19 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .modal-summary { margin-bottom: 20px; font-size: 22px; font-weight: bold; color: var(--text-color); }
 
-/* ALAREUNAKUVA - TIIVISTETTY */
+/* ALAREUNAKUVA - SÄÄTYVÄ */
 .bottom-branding {
     width: 100%;
     display: flex; justify-content: center; align-items: flex-end;
     margin-top: auto; 
-    padding-top: 5px; /* Pienennetty */
+    padding-top: 5px; 
     padding-bottom: 0px;
     z-index: 10;
+    flex-shrink: 1; /* Saa kutistua jos tulee ahdasta */
 }
 .footer-img {
-    max-width: 50%; /* Pienennetty */
-    max-height: 120px; /* Rajoitettu korkeus */
+    max-width: 55%; 
+    max-height: 15vh; /* Maksimissaan 15% ruudun korkeudesta */
     height: auto; object-fit: contain;
     border-radius: 20px; opacity: 0.8;
 }
