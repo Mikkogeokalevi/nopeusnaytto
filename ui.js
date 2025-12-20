@@ -4,7 +4,6 @@
 
 // --- 1. DOM ELEMENTIT ---
 
-// Päänäkymät
 const splashScreen = document.getElementById('splash-screen');
 const loginView = document.getElementById('login-view');
 const appContainer = document.getElementById('app-container');
@@ -16,11 +15,11 @@ const menuUserName = document.getElementById('user-name');
 const menuUserAvatar = document.getElementById('user-photo');
 const appLogo = document.getElementById('app-logo'); 
 
-// Versioelementit
+// Versio
 const splashVersionEl = document.getElementById('splash-version-el');
 const menuVersionEl = document.getElementById('menu-version-el');
 
-// Sivupainikkeet (Karttaan siirtyminen)
+// Sivupainikkeet
 const sideTapLeft = document.getElementById('side-tap-left');
 const mapReturnBtn = document.getElementById('map-return-btn');
 
@@ -34,7 +33,7 @@ const views = {
     help: document.getElementById('help-view')
 };
 
-// Navigaationapit
+// Navigaatio
 const navBtns = {
     dashboard: document.getElementById('nav-dashboard'),
     map: document.getElementById('nav-map'),
@@ -44,7 +43,7 @@ const navBtns = {
     help: document.getElementById('nav-help')
 };
 
-// Modaalit
+// Modaalit & Elementit (Samat kuin ennen)
 const saveModal = document.getElementById('save-modal');
 const modalDistEl = document.getElementById('modal-dist');
 const modalTimeEl = document.getElementById('modal-time');
@@ -64,7 +63,7 @@ const deleteModal = document.getElementById('delete-modal');
 const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
 const btnDeleteCancel = document.getElementById('btn-delete-cancel');
 
-// Mittaristo UI
+// Mittaristo
 const dashSpeedEl = document.getElementById('dash-speed');
 const dashMaxSpeedEl = document.getElementById('dash-max-speed');
 const dashDistEl = document.getElementById('dash-dist');
@@ -77,7 +76,6 @@ const dashDateEl = document.getElementById('dash-date');
 const dashHeadingEl = document.getElementById('dash-heading'); 
 const dashWeatherEl = document.getElementById('dash-weather');
 
-// UUSI: Osoite, Kompassi ja G-voima
 const dashAddressEl = document.getElementById('dash-address');
 const compassArrowEl = document.getElementById('compass-arrow');
 const gBubbleEl = document.getElementById('g-bubble');
@@ -85,34 +83,27 @@ const gBubbleEl = document.getElementById('g-bubble');
 const liveStatusBar = document.getElementById('live-status-bar');
 const liveStyleEl = document.getElementById('live-style-indicator');
 
-// Kartta UI napit
+// Kartta UI
 const mapSpeedEl = document.getElementById('map-speed');
 const mapCoordsEl = document.getElementById('map-coords');
 const statusEl = document.getElementById('status');
 const mapGpsToggle = document.getElementById('map-gps-toggle');
 const mapLegend = document.getElementById('map-legend');
 
-// Autovalinta
+// Muut
 const carSelectEl = document.getElementById('car-select');
-
-// Yhteenveto & Filtterit
 const historySummaryEl = document.getElementById('history-summary');
-const sumKmEl = document.getElementById('sum-km');
-const sumCountEl = document.getElementById('sum-count');
-const sumTimeEl = document.getElementById('sum-time');
 const filterEl = document.getElementById('history-filter');
 const customFilterContainer = document.getElementById('custom-filter-container');
 const filterStart = document.getElementById('filter-start');
 const filterEnd = document.getElementById('filter-end');
 
-// Kontrollit
 const btnStartRec = document.getElementById('btn-start-rec');
 const activeRecBtns = document.getElementById('active-rec-btns');
 const btnPause = document.getElementById('btn-pause');
 const btnResume = document.getElementById('btn-resume');
 const btnStopRec = document.getElementById('btn-stop-rec');
 
-// Autotalli lomakkeet
 const addCarForm = document.getElementById('add-car-form');
 const btnAddCar = document.getElementById('btn-add-car');
 const btnCancelCar = document.getElementById('btn-cancel-car');
@@ -121,124 +112,90 @@ const carTypeSelect = document.getElementById('car-type');
 const carSpecificFields = document.getElementById('car-specific-fields');
 
 
-// --- 2. UI LOGIIKKA JA APUFUNKTIOT ---
+// --- 2. UI LOGIIKKA (TÄMÄ ON KORJATTU OSA!) ---
 
-// Päänäkymän vaihtaja
 function switchView(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
     
-    // Piilota kaikki näkymät
+    // 1. Piilota kaikki poistamalla 'active-view' luokka ja asettamalla display: none
     Object.values(views).forEach(el => {
-        if(el) el.style.display = 'none';
+        if(el) {
+            el.classList.remove('active-view');
+            el.style.display = 'none'; // Varmistetaan piilotus
+        }
     });
     
-    // Poista aktiivinen luokka napeista
+    // 2. Nollaa navigaatio napit
     Object.values(navBtns).forEach(btn => {
         if(btn) btn.classList.remove('active-menu');
     });
 
-    // Näytä valittu
-    if (views[viewName]) {
-        if (viewName === 'dashboard' || viewName === 'map') {
-            views[viewName].style.display = 'flex';
-        } else {
-            views[viewName].style.display = 'block';
-        }
+    // 3. Näytä valittu
+    const targetEl = views[viewName];
+    if (targetEl) {
+        // Poistetaan inline style "display: none", jotta CSS-luokka voi määrätä
+        targetEl.style.display = ''; 
+        targetEl.classList.add('active-view');
     }
     
     if(navBtns[viewName]) {
         navBtns[viewName].classList.add('active-menu');
     }
 
-    // Kartalta poistuminen siivoaa jäljet
+    // Kartta fixit
     if (viewName !== 'map') {
         if (typeof clearSavedRoute === 'function') clearSavedRoute();
         isViewingHistory = false;
         if(mapLegend) mapLegend.style.display = 'none';
     }
-
-    // Kartalle tulo korjaa koon
     if (viewName === 'map' && map) {
         setTimeout(() => map.invalidateSize(), 100);
     }
     
-    // Lataa listat tarvittaessa
+    // Lataa listat
     if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
 }
 
-// Päivitä mittariston luvut (PÄIVITETTY SKAALAUKSELLA)
+// Päivitä mittariston luvut
 function updateDashboardUI(spd, max, dist, time, alt, avg) {
     if(dashSpeedEl) {
-        // Päivitä numero
         dashSpeedEl.innerText = spd.toFixed(1);
-        
-        // --- ÄLYKÄS SKAALAUS ---
-        // Jos nopeus on 100 tai yli (tai -100), lisää "three-digits" luokka, jotta fontti pienenee
         if (Math.abs(spd) >= 100) {
             dashSpeedEl.classList.add('three-digits');
         } else {
             dashSpeedEl.classList.remove('three-digits');
         }
-        
-        // --- VAROITUSVÄRI ---
-        // Jos mennään kovaa (yli 120), muutetaan punaiseksi
         if (spd >= 120) {
-            dashSpeedEl.style.color = '#ff1744'; // Kirkas punainen
+            dashSpeedEl.style.color = '#ff1744'; 
         } else {
-            // Palautetaan teemaväri
             dashSpeedEl.style.color = ''; 
         }
     }
-    
     if(dashMaxSpeedEl) dashMaxSpeedEl.innerText = max.toFixed(1);
     if(dashDistEl) dashDistEl.innerText = dist.toFixed(2); 
     if(dashAltEl) dashAltEl.innerText = Math.round(alt);
     if(avg !== undefined && dashAvgEl) dashAvgEl.innerText = avg.toFixed(1);
 }
 
-// Kello ja päivämäärä
+// Kello
 function updateClockAndDate() {
     const now = new Date();
     if(dashClockEl) dashClockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     if(dashDateEl) dashDateEl.innerText = now.toLocaleDateString('fi-FI', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
 }
-
-// Käynnistä kello
 setInterval(updateClockAndDate, 1000);
 updateClockAndDate();
 
+// --- 3. EVENT LISTENERS ---
+if (menuBtn) menuBtn.addEventListener('click', () => {
+    mainMenu.style.display = (mainMenu.style.display === 'none' || mainMenu.style.display === '') ? 'flex' : 'none';
+});
+if (appLogo) appLogo.addEventListener('click', () => switchView('dashboard'));
+if (sideTapLeft) sideTapLeft.addEventListener('click', () => switchView('map'));
+if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
 
-// --- 3. TAPAHTUMANKUUNTELIJAT (EVENT LISTENERS) ---
-
-// Menu auki/kiinni
-if (menuBtn) {
-    menuBtn.addEventListener('click', () => {
-        if (mainMenu.style.display === 'none' || mainMenu.style.display === '') {
-            mainMenu.style.display = 'flex';
-        } else {
-            mainMenu.style.display = 'none';
-        }
-    });
-}
-
-// Logo -> Kotiin
-if (appLogo) {
-    appLogo.addEventListener('click', () => switchView('dashboard'));
-}
-
-// Sivupainike -> Karttaan
-if (sideTapLeft) {
-    sideTapLeft.addEventListener('click', () => switchView('map'));
-}
-
-// Kartalta paluu -> Mittaristoon
-if (mapReturnBtn) {
-    mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
-}
-
-// Valikon napit
 if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
 if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
 if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
@@ -246,8 +203,7 @@ if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('sta
 if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
-
-// --- 4. VERSIOHALLINTA (AUTOMATISOINTI) ---
+// --- 4. VERSIO ---
 (function updateVersionText() {
     if(typeof APP_VERSION !== 'undefined') {
         if(splashVersionEl) splashVersionEl.innerText = "Modular v" + APP_VERSION;
