@@ -1,5 +1,5 @@
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (PREMIUM UI v5.8)
 // =========================================================
 
 // 1. KONTROLLIPAINIKKEET JA LOGIIKKA
@@ -175,7 +175,8 @@ if (btnStopRec) {
         if(modalCarNameEl) modalCarNameEl.innerText = selectedCarName; 
 
         if(saveModal) saveModal.style.display = 'flex';
-        if(modalSubjectEl) modalSubjectEl.focus();
+        // Varmista ettei näppäimistö hyppää heti silmille
+        // if(modalSubjectEl) modalSubjectEl.focus(); 
         if(liveStatusBar) liveStatusBar.style.opacity = '0';
     });
 }
@@ -194,9 +195,18 @@ if (btnModalSave) {
 
 if (btnModalCancel) {
     btnModalCancel.addEventListener('click', () => {
-        if(confirm("Haluatko varmasti hylätä tämän ajon?")) {
-            if(saveModal) saveModal.style.display = 'none';
-            resetRecordingUI();
+        // KORVATTU SELAINCONFIRM TYYLIKKÄÄLLÄ MODAALILLA
+        if(typeof openConfirmModal === 'function') {
+            openConfirmModal("Hylkää ajo?", "Haluatko varmasti hylätä tämän ajon? Tietoja ei tallenneta.", () => {
+                if(saveModal) saveModal.style.display = 'none';
+                resetRecordingUI();
+            });
+        } else {
+            // Fallback jos ei jostain syystä toimi
+            if(confirm("Haluatko varmasti hylätä tämän ajon?")) {
+                if(saveModal) saveModal.style.display = 'none';
+                resetRecordingUI();
+            }
         }
     });
 }
@@ -224,7 +234,7 @@ function updatePosition(position) {
 
     let currentAvg = 0;
 
-    // --- UUSI: OSOITEHAKU (Max kerran 30s) ---
+    // OSOITEHAKU (Max kerran 30s)
     const now = Date.now();
     if (now - lastAddressFetchTime > 30000 && speedKmh > 2) {
         fetchAddress(lat, lng);
@@ -281,7 +291,7 @@ function updatePosition(position) {
     
     if(dashCoordsEl) dashCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
     
-    // --- UUSI: KOMPASSI ---
+    // KOMPASSI
     if (heading !== null && !isNaN(heading)) {
         if(dashHeadingEl) dashHeadingEl.innerText = `${Math.round(heading)}°`;
         if(compassArrowEl) compassArrowEl.style.transform = `rotate(${heading}deg)`;
@@ -299,7 +309,7 @@ function stopGPSAndRec() {
     window.removeEventListener('devicemotion', handleMotion);
 }
 
-// --- UUSI: G-VOIMA JA ECO ---
+// G-VOIMA JA ECO
 function handleMotion(event) {
     if (!isRecording || isPaused) return;
     
@@ -406,7 +416,7 @@ function fetchWeather(lat, lon) {
         .catch(e => console.error(e));
 }
 
-// --- UUSI: OSOITEHAKU ---
+// OSOITEHAKU
 function fetchAddress(lat, lon) {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
     
@@ -456,7 +466,13 @@ function handleError(e) {
 function saveToFirebase(data) {
     if (currentUser) {
         db.ref('ajopaivakirja/' + currentUser.uid).push().set(data)
-            .then(() => { console.log("Tallennus onnistui"); })
+            .then(() => { 
+                console.log("Tallennus onnistui");
+                // KORVATTU CONSOLE LOG TOASTILLA
+                if(typeof showToast === 'function') {
+                    showToast("Ajo tallennettu onnistuneesti! 🏁");
+                }
+            })
             .catch((error) => { alert("VIRHE: " + error.message); });
     } else {
         alert("Virhe: Et ole kirjautunut sisään!");
