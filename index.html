@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=4.7">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=4.8"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css?v=4.9"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -332,8 +332,8 @@
                             <input type="text" id="car-plate" class="subject-input" placeholder="ABC-123">
                         </div>
                         <div style="margin-bottom:10px;">
-                                <label>Käyttövoima</label>
-                                <select id="car-fuel" class="subject-input">
+                            <label>Käyttövoima</label>
+                            <select id="car-fuel" class="subject-input">
                                 <option value="Bensiini">Bensiini</option>
                                 <option value="Diesel">Diesel</option>
                                 <option value="Hybridi (Bensiini)">Hybridi (Bensiini)</option>
@@ -455,6 +455,19 @@
             </div>
         </div>
     </div>
+
+    <div id="custom-confirm-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h3 id="confirm-title" style="margin-top:0; color:var(--accent-color);">Vahvista</h3>
+            <p id="confirm-msg" style="color:var(--text-color);">Oletko varma?</p>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                <button id="btn-confirm-no" class="action-btn" style="background-color:#555; width:auto;">Ei</button>
+                <button id="btn-confirm-yes" class="action-btn red-btn" style="width:auto;">Kyllä</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-notification" class="toast"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
