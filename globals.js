@@ -12,7 +12,7 @@ const firebaseConfig = {
     appId: "1:588536838615:web:148de0581bbd46c42c7392"
 };
 
-// Alustetaan Firebase heti, jotta 'db' ja 'auth' ovat käytössä kaikkialla
+// Alustetaan Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -25,7 +25,7 @@ const auth = firebase.auth();
 // =========================================================
 
 // TÄMÄ ON PÄÄVERSIONUMERO
-const APP_VERSION = "5.6"; 
+const APP_VERSION = "5.7"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -37,6 +37,10 @@ var isGPSActive = false;
 var isRecording = false; 
 var isPaused = false; 
 var wakeLock = null;
+
+// Osoitehaku (UUSI)
+var lastAddressFetchTime = 0;
+var currentAddress = "Odottaa sijaintia...";
 
 // Ajanotto
 var startTime = null;
@@ -79,15 +83,13 @@ var currentCarType = "car";
 var allRefuelings = [];
 var currentRefuelingCarId = null;
 
-// --- TILASTOGRAAFIT (INSTANSSIT) ---
-// Ajotilastot
+// Tilastograafit
 var chartInstanceMonthly = null;
 var chartInstanceVehicles = null;
 var chartInstanceStyle = null; 
-var chartInstanceDriveTrend = null; // UUSI: Kilometritrendi
-var chartInstanceDriveSpeed = null; // UUSI: Nopeustrendi
+var chartInstanceDriveTrend = null;
+var chartInstanceDriveSpeed = null;
 
-// Tankkaustilastot
 var chartInstanceFuelMonthly = null; 
 var chartInstanceFuelTrend = null;   
 var chartInstanceFuelCar = null;     
