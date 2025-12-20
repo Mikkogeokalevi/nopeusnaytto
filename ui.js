@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (FIXED)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.8)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -63,6 +63,14 @@ const deleteModal = document.getElementById('delete-modal');
 const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
 const btnDeleteCancel = document.getElementById('btn-delete-cancel');
 
+// PREMIUM CONFIRM MODAL
+const confirmModal = document.getElementById('custom-confirm-modal');
+const confirmTitle = document.getElementById('confirm-title');
+const confirmMsg = document.getElementById('confirm-msg');
+const btnConfirmYes = document.getElementById('btn-confirm-yes');
+const btnConfirmNo = document.getElementById('btn-confirm-no');
+let confirmCallback = null; // Callback funktiolle
+
 // TANKKAUS
 const fuelModal = document.getElementById('fuel-modal');
 const btnOpenFuel = document.getElementById('btn-open-fuel');
@@ -113,7 +121,43 @@ const carTypeSelect = document.getElementById('car-type');
 const carSpecificFields = document.getElementById('car-specific-fields');
 
 
-// --- 2. UI LOGIIKKA ---
+// --- 2. APUFUNKTIOT (TOAST & CONFIRM) ---
+
+window.showToast = (msg, type = 'info') => {
+    const toast = document.getElementById('toast-notification');
+    if (!toast) return;
+    toast.innerText = msg;
+    // Voit lisätä tyyliluokkia (error/success) tässä jos haluat
+    toast.classList.add('visible');
+    setTimeout(() => {
+        toast.classList.remove('visible');
+    }, 3000);
+}
+
+window.openConfirmModal = (title, message, callback) => {
+    if(confirmTitle) confirmTitle.innerText = title;
+    if(confirmMsg) confirmMsg.innerText = message;
+    confirmCallback = callback;
+    if(confirmModal) confirmModal.style.display = 'flex'; // Käytä flex jotta keskitys toimii css:ssä
+}
+
+// Confirm napit
+if(btnConfirmNo) {
+    btnConfirmNo.addEventListener('click', () => {
+        if(confirmModal) confirmModal.style.display = 'none';
+        confirmCallback = null;
+    });
+}
+if(btnConfirmYes) {
+    btnConfirmYes.addEventListener('click', () => {
+        if(confirmCallback) confirmCallback();
+        if(confirmModal) confirmModal.style.display = 'none';
+        confirmCallback = null;
+    });
+}
+
+
+// --- 3. UI LOGIIKKA ---
 
 function switchView(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
@@ -172,7 +216,7 @@ setInterval(updateClockAndDate, 1000);
 updateClockAndDate();
 
 
-// --- 3. PERUS EVENT LISTENERS ---
+// --- 4. PERUS EVENT LISTENERS ---
 
 if (menuBtn) menuBtn.addEventListener('click', () => { mainMenu.style.display = (mainMenu.style.display === 'none' || mainMenu.style.display === '') ? 'flex' : 'none'; });
 if (appLogo) appLogo.addEventListener('click', () => switchView('dashboard'));
@@ -187,7 +231,7 @@ if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchVie
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
 
-// --- 4. TANKKAUS & TABIT (TÄMÄ ON KRIITTINEN) ---
+// --- 5. TANKKAUS & TABIT (PÄIVITETTY PREMIUM ILMOITUKSILLA) ---
 
 // Tankkausnappi
 if (btnOpenFuel) {
@@ -221,7 +265,11 @@ if (btnFuelSave) {
         const lit = document.getElementById('fuel-liters').value;
         const eur = document.getElementById('fuel-euros').value;
 
-        if(!date || !lit || !eur) { alert("Täytä tiedot!"); return; }
+        // KORVATTU ALERT TOASTILLA
+        if(!date || !lit || !eur) { 
+            showToast("Täytä pakolliset tiedot (pvm, litrat, eurot)!"); 
+            return; 
+        }
 
         if(currentUser) {
             const refData = {
@@ -236,8 +284,9 @@ if (btnFuelSave) {
             db.ref('ajopaivakirja/' + currentUser.uid).push().set(refData).then(() => {
                 if(fuelModal) fuelModal.style.display = 'none';
                 inpFuelLiters.value = ""; inpFuelEuros.value = "";
-                alert("Tankkaus tallennettu!");
-                // Päivitä listat jos ollaan historiassa
+                // KORVATTU ALERT TOASTILLA
+                showToast("Tankkaus tallennettu! ⛽");
+                
                 if(views.history.style.display !== 'none' || views.history.classList.contains('active-view')) {
                     if(window.renderFuelList) window.renderFuelList();
                 }
@@ -294,7 +343,7 @@ if(statTabDrives && statTabFuel) {
     });
 }
 
-// --- 5. ALUSTUS ---
+// --- 6. ALUSTUS ---
 (function updateVersionText() {
     if(typeof APP_VERSION !== 'undefined') {
         if(splashVersionEl) splashVersionEl.innerText = "Modular v" + APP_VERSION;
