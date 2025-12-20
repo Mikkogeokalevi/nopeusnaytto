@@ -16,7 +16,7 @@ const menuUserName = document.getElementById('user-name');
 const menuUserAvatar = document.getElementById('user-photo');
 const appLogo = document.getElementById('app-logo'); 
 
-// Versioelementit (UUSI)
+// Versioelementit
 const splashVersionEl = document.getElementById('splash-version-el');
 const menuVersionEl = document.getElementById('menu-version-el');
 
@@ -76,6 +76,11 @@ const dashClockEl = document.getElementById('dash-clock');
 const dashDateEl = document.getElementById('dash-date'); 
 const dashHeadingEl = document.getElementById('dash-heading'); 
 const dashWeatherEl = document.getElementById('dash-weather');
+
+// UUSI: Osoite, Kompassi ja G-voima
+const dashAddressEl = document.getElementById('dash-address');
+const compassArrowEl = document.getElementById('compass-arrow');
+const gBubbleEl = document.getElementById('g-bubble');
 
 const liveStatusBar = document.getElementById('live-status-bar');
 const liveStyleEl = document.getElementById('live-style-indicator');
@@ -222,7 +227,6 @@ if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'
 
 
 // --- 4. VERSIOHALLINTA (AUTOMATISOINTI) ---
-// Tämä ajaa tekstin elementteihin heti kun sivu latautuu
 (function updateVersionText() {
     if(typeof APP_VERSION !== 'undefined') {
         if(splashVersionEl) splashVersionEl.innerText = "Modular v" + APP_VERSION;
