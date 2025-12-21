@@ -79,6 +79,13 @@ const btnFuelCancel = document.getElementById('btn-fuel-cancel');
 const inpFuelLiters = document.getElementById('fuel-liters');
 const inpFuelEuros = document.getElementById('fuel-euros');
 const inpFuelCalc = document.getElementById('fuel-price-calc');
+const inpFuelOdo = document.getElementById('fuel-odo');
+const inpFuelDate = document.getElementById('fuel-date');
+const inpFuelTime = document.getElementById('fuel-time');
+const inpFuelCarSelect = document.getElementById('fuel-car-select');
+const inpFuelEditKey = document.getElementById('fuel-edit-key');
+const fuelModalTitle = document.getElementById('fuel-modal-title');
+
 
 // Mittaristo
 const dashSpeedEl = document.getElementById('dash-speed');
@@ -231,19 +238,84 @@ if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchVie
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
 
-// --- 5. TANKKAUS & TABIT (PÄIVITETTY PREMIUM ILMOITUKSILLA) ---
+// --- 5. TANKKAUS & TABIT (PÄIVITETTY PREMIUM ILMOITUKSILLA JA MUOKKAUKSELLA) ---
 
-// Tankkausnappi
+// Apufunktio valikon täyttöön
+function populateFuelCarSelect(selectedId) {
+    if(!inpFuelCarSelect) return;
+    inpFuelCarSelect.innerHTML = "";
+    
+    if(userCars.length === 0) {
+        const opt = document.createElement('option');
+        opt.text = "Ei ajoneuvoja";
+        inpFuelCarSelect.appendChild(opt);
+        return;
+    }
+    
+    userCars.forEach(car => {
+        const opt = document.createElement('option');
+        opt.value = car.id;
+        const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
+        opt.text = `${icon} ${car.name}`;
+        if(selectedId && car.id === selectedId) opt.selected = true;
+        inpFuelCarSelect.appendChild(opt);
+    });
+}
+
+// Uusi tankkaus (Nappi)
 if (btnOpenFuel) {
     btnOpenFuel.addEventListener('click', () => {
         const now = new Date();
-        const dateInput = document.getElementById('fuel-date');
-        const timeInput = document.getElementById('fuel-time');
-        if(dateInput) dateInput.value = now.toISOString().split('T')[0];
-        if(timeInput) timeInput.value = now.toTimeString().split(' ')[0].substring(0,5);
+        if(inpFuelDate) inpFuelDate.value = now.toISOString().split('T')[0];
+        if(inpFuelTime) inpFuelTime.value = now.toTimeString().split(' ')[0].substring(0,5);
+        if(inpFuelOdo) inpFuelOdo.value = "";
+        if(inpFuelLiters) inpFuelLiters.value = "";
+        if(inpFuelEuros) inpFuelEuros.value = "";
+        if(inpFuelCalc) inpFuelCalc.innerText = "0.00";
+        if(inpFuelEditKey) inpFuelEditKey.value = ""; // Tyhjä = Uusi
+        
+        if(fuelModalTitle) fuelModalTitle.innerText = "⛽ Uusi tankkaus";
+        
+        // Valitse nykyinen auto oletuksena
+        populateFuelCarSelect(currentCarId !== 'all' ? currentCarId : null);
+        
         if(fuelModal) fuelModal.style.display = 'flex';
     });
 }
+
+// Muokkaa tankkausta (Kutsutaan historiasta)
+window.editRefueling = (key) => {
+    const ref = allRefuelings.find(r => r.key === key);
+    if(!ref) return;
+    
+    // Pura pvm ja aika (ISO string tai legacy)
+    let dateVal = "";
+    let timeVal = "";
+    if (ref.date.includes('T')) {
+        const parts = ref.date.split('T');
+        dateVal = parts[0];
+        timeVal = parts[1].substring(0,5);
+    } else {
+        // Fallback jos vanha formaatti
+        dateVal = new Date(ref.date).toISOString().split('T')[0];
+        timeVal = "12:00";
+    }
+
+    if(inpFuelDate) inpFuelDate.value = dateVal;
+    if(inpFuelTime) inpFuelTime.value = timeVal;
+    if(inpFuelOdo) inpFuelOdo.value = ref.odo || "";
+    if(inpFuelLiters) inpFuelLiters.value = ref.liters || "";
+    if(inpFuelEuros) inpFuelEuros.value = ref.euros || "";
+    if(inpFuelCalc) inpFuelCalc.innerText = ref.pricePerLiter || "0.00";
+    if(inpFuelEditKey) inpFuelEditKey.value = key; // Aseta avain muokkausta varten
+
+    if(fuelModalTitle) fuelModalTitle.innerText = "✏️ Muokkaa tankkausta";
+    
+    populateFuelCarSelect(ref.carId);
+    
+    if(fuelModal) fuelModal.style.display = 'flex';
+};
+
 if (btnFuelCancel) btnFuelCancel.addEventListener('click', () => { if(fuelModal) fuelModal.style.display = 'none'; });
 
 // Litrahinnan laskenta
@@ -256,16 +328,17 @@ function calcPrice() {
 if(inpFuelLiters) inpFuelLiters.addEventListener('input', calcPrice);
 if(inpFuelEuros) inpFuelEuros.addEventListener('input', calcPrice);
 
-// Tankkauksen tallennus
+// Tankkauksen tallennus (Uusi tai Päivitys)
 if (btnFuelSave) {
     btnFuelSave.addEventListener('click', () => {
-        const date = document.getElementById('fuel-date').value;
-        const time = document.getElementById('fuel-time').value;
-        const odo = document.getElementById('fuel-odo').value;
-        const lit = document.getElementById('fuel-liters').value;
-        const eur = document.getElementById('fuel-euros').value;
+        const date = inpFuelDate.value;
+        const time = inpFuelTime.value;
+        const odo = inpFuelOdo.value;
+        const lit = inpFuelLiters.value;
+        const eur = inpFuelEuros.value;
+        const selectedCarId = inpFuelCarSelect.value;
+        const editKey = inpFuelEditKey.value;
 
-        // KORVATTU ALERT TOASTILLA
         if(!date || !lit || !eur) { 
             showToast("Täytä pakolliset tiedot (pvm, litrat, eurot)!"); 
             return; 
@@ -279,18 +352,25 @@ if (btnFuelSave) {
                 liters: lit,
                 euros: eur,
                 pricePerLiter: (parseFloat(eur)/parseFloat(lit)).toFixed(3),
-                carId: currentCarId || 'all'
+                carId: selectedCarId
             };
-            db.ref('ajopaivakirja/' + currentUser.uid).push().set(refData).then(() => {
-                if(fuelModal) fuelModal.style.display = 'none';
-                inpFuelLiters.value = ""; inpFuelEuros.value = "";
-                // KORVATTU ALERT TOASTILLA
-                showToast("Tankkaus tallennettu! ⛽");
-                
-                if(views.history.style.display !== 'none' || views.history.classList.contains('active-view')) {
+
+            if (editKey) {
+                // PÄIVITYS
+                db.ref('ajopaivakirja/' + currentUser.uid + '/' + editKey).update(refData).then(() => {
+                    if(fuelModal) fuelModal.style.display = 'none';
+                    showToast("Tankkaus päivitetty! ✏️");
                     if(window.renderFuelList) window.renderFuelList();
-                }
-            });
+                });
+            } else {
+                // UUSI
+                db.ref('ajopaivakirja/' + currentUser.uid).push().set(refData).then(() => {
+                    if(fuelModal) fuelModal.style.display = 'none';
+                    inpFuelLiters.value = ""; inpFuelEuros.value = "";
+                    showToast("Tankkaus tallennettu! ⛽");
+                    if(window.renderFuelList) window.renderFuelList();
+                });
+            }
         }
     });
 }
