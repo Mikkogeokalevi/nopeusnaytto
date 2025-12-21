@@ -1,20 +1,35 @@
 {
   "name": "Ajopäiväkirja Pro",
-  "short_name": "Ajo",
+  "short_name": "Ajopäiväkirja",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#121212",
-  "theme_color": "#1e1e1e",
+  "theme_color": "#1f1f1f",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "ajopaivakirja_logo.png",
+      "src": "assets/icons/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "ajopaivakirja_logo.png",
+      "src": "assets/icons/icon-192x192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512x512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
