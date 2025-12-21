@@ -2,6 +2,12 @@
 // GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (PREMIUM UI v5.8)
 // =========================================================
 
+// --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
+// Tämä pitää selaimen prosessin hengissä vaikka näyttö sammuisi.
+const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
+silentAudio.loop = true;
+silentAudio.volume = 0.01; // Hyvin hiljainen varmuuden vuoksi
+
 // 1. KONTROLLIPAINIKKEET JA LOGIIKKA
 
 // Aktivointinappi
@@ -11,6 +17,13 @@ if (btnActivate) {
         if (!isGPSActive) {
             startGPS();
             
+            // Käynnistetään taustaääni heti käyttäjän interaktiosta
+            silentAudio.play().then(() => {
+                console.log("Background audio started");
+            }).catch(e => {
+                console.warn("Background audio failed:", e);
+            });
+
             btnActivate.style.display = 'none';
             
             if(document.getElementById('rec-controls')) {
@@ -58,6 +71,11 @@ if (btnStartRec) {
         isRecording = true;
         isPaused = false;
         isViewingHistory = false;
+        
+        // Varmistetaan että ääni soi (jos se ei lähtenyt käyntiin activate-napista)
+        if (silentAudio.paused) {
+            silentAudio.play().catch(e => console.warn(e));
+        }
         
         if(mapGpsToggle) {
             mapGpsToggle.innerText = "📡 ON";
@@ -324,6 +342,12 @@ function stopGPSAndRec() {
     isGPSActive = false;
     if(watchId) navigator.geolocation.clearWatch(watchId);
     window.removeEventListener('devicemotion', handleMotion);
+    
+    // Pysäytä taustaääni
+    if(silentAudio) {
+        silentAudio.pause();
+        silentAudio.currentTime = 0;
+    }
 }
 
 // G-VOIMA JA ECO
@@ -393,6 +417,12 @@ function resetRecordingUI() {
     if(dashTimeEl) dashTimeEl.innerText = "00:00";
     if(liveStatusBar) liveStatusBar.style.opacity = '0'; 
     if(dashAddressEl) dashAddressEl.innerText = "Odottaa sijaintia...";
+    
+    // Varmistetaan että ääni pysähtyy myös tässä tilanteessa
+    if(silentAudio) {
+        silentAudio.pause();
+        silentAudio.currentTime = 0;
+    }
 }
 
 // 3. APUFUNKTIOT
