@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - KATTAVA KÄYTTÖOPAS JA UKK (v5.7)
+// HELP.JS - KATTAVA KÄYTTÖOPAS JA UKK (v5.9)
 // =========================================================
 
 const helpContent = `
@@ -30,11 +30,11 @@ const helpContent = `
 
     <div class="help-section">
         <h3>🏎️ 2. Mittaristo (Dashboard)</h3>
-        <p>Mittaristo on sovelluksen sydän. Versiossa 5.7 se on älykkäämpi kuin koskaan.</p>
+        <p>Mittaristo on sovelluksen sydän. Versiossa 5.9 se on luotettavampi kuin koskaan.</p>
         
         <div class="help-step">
             <strong>📍 Live-osoite:</strong>
-            Nopeuslukeman yläpuolella näkyy nykyinen katuosoite ja kaupunki. Se päivittyy automaattisesti n. 30 sekunnin välein, kun olet liikkeellä.
+            Nopeuslukeman yläpuolella näkyy nykyinen katuosoite ja kaupunki. Se päivittyy automaattisesti n. 30 sekunnin välein.
         </div>
 
         <div class="help-step">
@@ -43,101 +43,69 @@ const helpContent = `
             <ul>
                 <li><strong>Pallo keskellä:</strong> Tasainen, taloudellinen ajo.</li>
                 <li><strong>Pallo laidassa:</strong> Voimakas kiihdytys, jarrutus tai kaarre.</li>
-                <li>Jos pallo osuu reunaan, ajotapa muuttuu "Aggressiiviseksi" ja nopeusluku muuttuu punaiseksi.</li>
-            </ul>
-        </div>
-
-        <div class="help-step">
-            <strong>🧭 Kompassi & Vaakatila:</strong>
-            <ul>
-                <li><strong>Suunta:</strong> Pyörivä nuoli näyttää ajosuunnan tai pohjoisen (laitteesta riippuen).</li>
-                <li><strong>Vaakatila (Landscape):</strong> Käännä puhelin sivuttain autotelineessä! Mittaristo muokkautuu automaattisesti leveään näkymään, siirtäen nopeuden vasemmalle ja tilastot oikealle.</li>
             </ul>
         </div>
     </div>
 
     <div class="help-section">
         <h3>🚗 3. Autotalli ja Profiilit</h3>
-        <p>Sovellus käyttäytyy eri tavalla riippuen valitusta ajoneuvosta.</p>
-        
         <div class="help-step">
             <strong>Valitse tyyppi oikein:</strong>
             <ul>
-                <li><strong>🚗 Auto:</strong> Kartta loitontaa näkymää maantienopeuksissa. G-voimamittari ja Eco-analyysi ovat päällä.</li>
-                <li><strong>🚲 Pyörä:</strong> Kartta pysyy tiukassa lähikuvassa (Zoom 17-19). Eco-analyysi on pois päältä, jotta puhelimen tärinä tangossa ei vääristä tuloksia.</li>
+                <li><strong>🚗 Auto:</strong> Kartta loitontaa maantienopeuksissa. G-voimamittari ja Eco-analyysi ovat päällä.</li>
+                <li><strong>🚲 Pyörä:</strong> Kartta pysyy lähikuvassa. Eco-analyysi on pois päältä.</li>
             </ul>
         </div>
         <div class="help-step" style="border-left-color: #fbc02d;">
-            <strong>💡 Vinkki:</strong> Muista valita oikea auto yläpalkista <em>ennen</em> ajon aloitusta!
+            <strong>💡 Tärkeää:</strong> Valitse oikea ajoneuvo yläpalkista <em>ennen</em> ajon aloitusta! Sovellus estää tallennuksen aloituksen, jos valittuna on "Kaikki ajoneuvot".
         </div>
     </div>
 
     <div class="help-section">
-        <h3>⏱️ 4. Ajon tallennus</h3>
-        <p>Oikeaoppinen tallennus takaa luotettavan datan.</p>
+        <h3>⏱️ 4. Ajon tallennus & Tausta-ajo</h3>
+        <p>Sovellus käyttää edistynyttä tekniikkaa GPS:n ylläpitoon.</p>
         
         <div class="help-step">
-            <strong>Tauko (Pause):</strong>
-            Paina aina ⏸ TAUKO, kun pysähdyt pidemmäksi aikaa (esim. kauppaan).
-            <br><em>Miksi?</em> Jos et paina taukoa ja kävelet puhelin taskussa sisällä, GPS "hyppii" seinien läpi. Tämä kerryttää haamukilometrejä ja pilaa keskinopeuden.
+            <strong>🔊 Tausta-ajo (Silent Audio):</strong>
+            Kun GPS on päällä, sovellus toistaa taustalla äänetöntä audiota. Tämä huijaa puhelimen käyttöjärjestelmää pitämään sovelluksen käynnissä, vaikka näyttö sammuisi.
+            <br><em>Huom: Saatat nähdä media-ilmoituksen puhelimessasi – tämä on normaalia.</em>
         </div>
 
         <div class="help-step">
-            <strong>Lopetus:</strong>
-            Ajon päätteeksi voit nimetä ajon (esim. "Työmatka") ja sovellus tallentaa reitin, sään, ajotyylin ja kilometrit pilveen.
+            <strong>Tauko (Pause):</strong>
+            Paina aina ⏸ TAUKO, kun pysähdyt pidemmäksi aikaa, jotta GPS ei "hypi" paikallaan ollessa ja vääristä matkaa.
         </div>
     </div>
 
     <div class="help-section">
         <h3>⛽ 5. Tankkaukset</h3>
-        <p>Pidä kirjaa polttoainekuluista ja kulutuksesta.</p>
-        
         <div class="help-step">
             <strong>Lisääminen:</strong>
-            Paina mittaristossa kellon vieressä olevaa <strong>⛽-nappia</strong>.
-            Syötä mittarilukema, litrat ja eurot. Sovellus laskee litrahinnan automaattisesti.
+            Paina mittaristossa kellon vieressä olevaa <strong>⛽-nappia</strong>. Litrahinta lasketaan automaattisesti.
         </div>
         
         <div class="help-step">
-            <strong>Muokkaus:</strong>
-            Voit muokata tankkauksia jälkikäteen Historia-sivun "Tankkaukset"-välilehdeltä. Voit korjata myös päivämäärän ja kellonajan, jos unohdit merkitä tankkauksen heti asemalla.
+            <strong>✏️ Muokkaus:</strong>
+            Voit nyt muokata tankkauksia jälkikäteen! Mene Historia-sivulle, valitse "Tankkaukset"-välilehti ja paina kynä-ikonia. Voit vaihtaa autoa, hintaa, litroja tai korjata päivämäärän.
         </div>
     </div>
 
     <div class="help-section">
-        <h3>📊 6. Tilastot ja Analyysi</h3>
-        <p>Uudistettu Tilastot-näkymä on jaettu kahteen osaan:</p>
+        <h3>📊 6. Tilastot ja Analyysi (UUSI)</h3>
+        <p>Tilastot-näkymä on uudistettu versiossa 5.9.</p>
+
+        <div class="help-step">
+            <strong>📅 Aikavälin valinta:</strong>
+            Sivun yläreunassa on uusi valikko, josta voit valita tarkastelujakson:
+            <ul>
+                <li><strong>7 pv / 30 pv:</strong> Graafit näyttävät datan <strong>päiväkohtaisesti</strong>. Näet tarkasti, minä päivinä ajoja on kertynyt.</li>
+                <li><strong>Vuosi / Kaikki:</strong> Graafit näyttävät datan <strong>kuukausitasolla</strong>. Hyvä pitkän aikavälin seurantaan.</li>
+            </ul>
+        </div>
 
         <div class="help-step">
             <strong>🏎️ Ajotilastot:</strong>
-            <ul>
-                <li><strong>Kilometrikehitys:</strong> Viivakaavio näyttää ajomäärät kuukausittain jokaiselle autolle erikseen.</li>
-                <li><strong>Nopeustrendi:</strong> Näet onko keskinopeutesi noussut tai laskenut eri kuukausina.</li>
-                <li><strong>Ajotyyli:</strong> Ympyrädiagrammi näyttää, kuinka suuri osa ajoista on ollut taloudellista vs. aggressiivista.</li>
-            </ul>
-        </div>
-
-        <div class="help-step">
-            <strong>⛽ Tankkaustilastot:</strong>
-            <ul>
-                <li><strong>Jakauma:</strong> Paljonko olet tankannut Bensiiniä vs. Dieseliä.</li>
-                <li><strong>Hintakehitys:</strong> Seuraa polttoaineen litrahinnan muutoksia aikajanalla. Bensiini (vihreä) ja Diesel (tumma) eroteltuna.</li>
-                <li><strong>Kulut:</strong> Eurot per kuukausi ja per auto.</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="help-section">
-        <h3>❓ Ongelmatilanteet (UKK)</h3>
-        
-        <div class="help-step">
-            <strong>K: G-pallo ei liiku?</strong>
-            <br>V: Varmista, että olet sallinut "Liike ja suunta" (Motion & Orientation) luvat selaimen asetuksista. iOS-laitteilla tämä vaatii usein erillisen luvan asetuksista.
-        </div>
-
-        <div class="help-step">
-            <strong>K: Kartalla näkyy suora viiva ("teleporttaus")?</strong>
-            <br>V: GPS-signaali katkesi tai puhelimen virransäästö sammutti GPS:n näytön ollessa pimeänä. Pidä puhelin latauksessa ajon aikana jos mahdollista.
+            Sisältää kilometrikehityksen, keskinopeuden muutokset ja ajoneuvojakauman.
         </div>
     </div>
 
