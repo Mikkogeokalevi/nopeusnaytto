@@ -286,14 +286,17 @@ function renderFuelList() {
         card.className = 'log-card';
         card.style.animationDelay = `${Math.min(index * 0.05, 1.0)}s`;
         
-        // TÄSSÄ ON LISÄYS: displayFuel näytetään litramäärän perässä
+        // TÄSSÄ ON LISÄYS: Edit-nappi roskakorin viereen
         card.innerHTML = `
             <div class="log-header">
                 <div class="log-title-group">
                     <div class="log-date-line">${dateStr}</div>
                     <div class="log-car-big">${icon} ${carName}</div>
                 </div>
-                <button class="delete-btn" onclick="window.openDeleteLogModal('${ref.key}')">🗑</button>
+                <div>
+                    <button class="edit-btn" onclick="window.editRefueling('${ref.key}')">✏️</button>
+                    <button class="delete-btn" onclick="window.openDeleteLogModal('${ref.key}')">🗑</button>
+                </div>
             </div>
             <div class="log-stats" style="grid-template-columns: repeat(3, 1fr);">
                 <div><span class="stat-label">LITRAT</span>${lit.toFixed(2)} L <span style="font-size:11px; opacity:0.7; display:block;">${displayFuel}</span></div>
@@ -598,3 +601,5 @@ if(btnDeleteCancel2) btnDeleteCancel2.addEventListener('click', () => { if(delet
 
 const btnDeleteConfirm2 = document.getElementById('btn-delete-confirm');
 if(btnDeleteConfirm2) btnDeleteConfirm2.addEventListener('click', () => { if (deleteKey && currentUser) { db.ref('ajopaivakirja/' + currentUser.uid + '/' + deleteKey).remove(); if(deleteModal) deleteModal.style.display = 'none'; deleteKey = null; } });
+
+}
