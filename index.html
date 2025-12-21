@@ -233,14 +233,23 @@
                     <button id="stat-tab-drives" class="action-btn blue-btn" style="width:auto; font-size:14px; padding:8px 15px;">🏎️ Ajotilastot</button>
                     <button id="stat-tab-fuel" class="action-btn" style="width:auto; font-size:14px; padding:8px 15px; background-color: #333;">⛽ Tankkaustilastot</button>
                 </div>
+                
+                <div style="text-align:center; margin-bottom: 20px;">
+                    <select id="stats-time-range" class="subject-input" style="width: auto; font-weight: bold; padding: 8px;">
+                        <option value="7d">Viimeiset 7 päivää</option>
+                        <option value="30d" selected>Viimeiset 30 päivää</option>
+                        <option value="year">Tämä vuosi (kk)</option>
+                        <option value="all">Kaikki ajat (kk)</option>
+                    </select>
+                </div>
 
                 <div id="stats-drives-container">
                     <div class="chart-container">
-                        <h3>📈 Kilometrikehitys (km/kk)</h3>
+                        <h3 id="label-drive-trend">📈 Kilometrikehitys</h3>
                         <canvas id="chart-drive-trend"></canvas>
                     </div>
                     <div class="chart-container" style="margin-top:20px;">
-                        <h3>📅 Kilometrit yhteensä</h3>
+                        <h3 id="label-drive-total">📅 Kilometrit yhteensä</h3>
                         <canvas id="chart-drive-monthly"></canvas>
                     </div>
                     <div class="chart-container" style="margin-top:20px;">
@@ -279,7 +288,7 @@
                         <canvas id="chart-fuel-type"></canvas>
                     </div>
                     <div class="chart-container" style="margin-top:20px;">
-                        <h3>💶 Polttoainekulut kuukausittain (€)</h3>
+                        <h3>💶 Polttoainekulut (€)</h3>
                         <canvas id="chart-fuel-monthly"></canvas>
                     </div>
                     <div class="chart-container" style="margin-top:20px;">
