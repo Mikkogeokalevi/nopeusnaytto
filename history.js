@@ -1,5 +1,5 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (v5.7.1)
+// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (v5.8.1 FIX)
 // =========================================================
 
 // --- 1. MÄÄRITELLÄÄN ELEMENTIT ---
@@ -601,5 +601,3 @@ if(btnDeleteCancel2) btnDeleteCancel2.addEventListener('click', () => { if(delet
 
 const btnDeleteConfirm2 = document.getElementById('btn-delete-confirm');
 if(btnDeleteConfirm2) btnDeleteConfirm2.addEventListener('click', () => { if (deleteKey && currentUser) { db.ref('ajopaivakirja/' + currentUser.uid + '/' + deleteKey).remove(); if(deleteModal) deleteModal.style.display = 'none'; deleteKey = null; } });
-
-}
