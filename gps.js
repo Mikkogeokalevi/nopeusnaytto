@@ -2,6 +2,43 @@
 // GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (PREMIUM UI v5.8)
 // =========================================================
 
+// --- TAUSTA-AJON HUIJAUS (Silent Audio Hack) ---
+// Tämä pitää selaimen JavaScript-moottorin käynnissä vaikka näyttö sammuu.
+let backgroundAudio = null;
+
+function initBackgroundMode() {
+    if (!backgroundAudio) {
+        // Luodaan äänetön audio-elementti
+        backgroundAudio = new Audio();
+        // Base64-koodattu erittäin lyhyt ja hiljainen WAV-tiedosto
+        backgroundAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAgZGF0YQQAAAAAAA==';
+        backgroundAudio.loop = true;
+        backgroundAudio.volume = 0.01; // Ei nolla, jotta iOS ei "huomaa" huijausta
+    }
+}
+
+function startBackgroundTask() {
+    // 1. Käynnistetään Wake Lock
+    requestWakeLock();
+
+    // 2. Käynnistetään "Silent Audio"
+    if (backgroundAudio) {
+        backgroundAudio.play().then(() => {
+            console.log("🔊 Tausta-ajo aktivoitu (Audio hack)");
+        }).catch(e => {
+            console.warn("⚠️ Tausta-ajo ei käynnistynyt (Autoplay estetty?)", e);
+        });
+    }
+}
+
+function stopBackgroundTask() {
+    if (backgroundAudio) {
+        backgroundAudio.pause();
+        backgroundAudio.currentTime = 0;
+        console.log("🔇 Tausta-ajo pysäytetty");
+    }
+}
+
 // 1. KONTROLLIPAINIKKEET JA LOGIIKKA
 
 // Aktivointinappi
@@ -28,6 +65,11 @@ if (btnActivate) {
 // ALOITA TALLENNUS
 if (btnStartRec) {
     btnStartRec.addEventListener('click', () => {
+        // --- KÄYNNISTETÄÄN TAUSTA-AJO HETI KUN KÄYTTÄJÄ KLIKKAA ---
+        initBackgroundMode();
+        startBackgroundTask();
+        // ----------------------------------------------------------
+
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             DeviceMotionEvent.requestPermission().then(response => {
                 if (response === 'granted') {
@@ -301,6 +343,10 @@ function updatePosition(position) {
 }
 
 function stopGPSAndRec() {
+    // --- PYSÄYTETÄÄN TAUSTA-AJO ---
+    stopBackgroundTask();
+    // ----------------------------
+
     isRecording = false;
     isPaused = false;
     clearInterval(timerInterval);
