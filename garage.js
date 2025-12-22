@@ -1,5 +1,5 @@
 // =========================================================
-// GARAGE.JS - AJONEUVOJEN HALLINTA JA ARKISTOINTI (v5.9 FIX)
+// GARAGE.JS - AJONEUVOJEN HALLINTA JA ARKISTOINTI (v5.9 SMART MENU)
 // =========================================================
 
 // 1. AJONEUVOJEN LATAUS
@@ -40,13 +40,14 @@ function loadCars() {
     }
 }
 
-// 2. VALIKKOJEN PÄIVITYS (YLÄPALKKI)
+// 2. VALIKKOJEN PÄIVITYS (YLÄPALKKI - NYT ÄLYKÄS)
 function updateCarSelect() {
     const select = document.getElementById('car-select');
     if (!select) return;
     
-    // Talleta vanha valinta jotta se säilyy päivityksessä jos mahdollista
-    const oldValue = select.value;
+    // Otetaan talteen nykyinen valinta, mutta varmistetaan että se on validi
+    let targetValue = currentCarId; 
+    
     select.innerHTML = "";
 
     // 1. "Kaikki aktiiviset" (Oletus)
@@ -55,7 +56,7 @@ function updateCarSelect() {
     optAllActive.text = "Kaikki aktiiviset";
     select.appendChild(optAllActive);
 
-    // 2. "Kaikki (sis. arkistoidut)" (Koko historia)
+    // 2. "Kaikki (sis. arkistoidut)" (Portti arkistoon)
     const optAllArchived = document.createElement('option');
     optAllArchived.value = "all_archived";
     optAllArchived.text = "Kaikki (sis. arkistoidut)";
@@ -66,7 +67,7 @@ function updateCarSelect() {
     const activeCars = userCars.filter(c => !c.isArchived);
     const archivedCars = userCars.filter(c => c.isArchived);
 
-    // 3. Aktiiviset autot
+    // 3. Aktiiviset autot (Aina näkyvissä)
     if (activeCars.length > 0) {
         const groupActive = document.createElement('optgroup');
         groupActive.label = "Aktiiviset";
@@ -80,8 +81,23 @@ function updateCarSelect() {
         select.appendChild(groupActive);
     }
 
-    // 4. Arkistoidut autot
-    if (archivedCars.length > 0) {
+    // 4. Arkistoidut autot (ÄLYKÄS PIILOTUS)
+    // Näytetään arkistoidut autot vain, jos:
+    // A) Käyttäjä on valinnut "Kaikki (sis. arkistoidut)"
+    // B) TAI Käyttäjällä on jo valittuna jokin arkistoitu auto (jotta se ei katoa alta)
+    
+    let showArchived = false;
+    if (currentCarId === 'all_archived') {
+        showArchived = true;
+    } else {
+        // Onko nykyinen auto arkistoitu?
+        const currentCarObj = userCars.find(c => c.id === currentCarId);
+        if (currentCarObj && currentCarObj.isArchived) {
+            showArchived = true;
+        }
+    }
+
+    if (showArchived && archivedCars.length > 0) {
         const groupArchived = document.createElement('optgroup');
         groupArchived.label = "Arkistoidut";
         archivedCars.forEach(car => {
@@ -95,14 +111,17 @@ function updateCarSelect() {
         select.appendChild(groupArchived);
     }
 
-    // Palauta valinta
-    if (oldValue && Array.from(select.options).some(o => o.value === oldValue)) {
-        select.value = oldValue;
-    } else {
-        select.value = "all"; // Fallback
+    // Asetetaan valinta takaisin elementtiin
+    // Jos targetValue ei enää löydy listalta (esim. vaihdettiin tilaa), fallback "all"
+    // Mutta tässä logiikassa sen pitäisi löytyä, koska showArchived hoitaa sen.
+    select.value = targetValue;
+    
+    // Varmistus: Jos select.value on tyhjä (selain ei löytänyt vastinetta), pakota 'all'
+    if (!select.value) {
+        select.value = 'all';
+        currentCarId = 'all';
     }
     
-    currentCarId = select.value;
     updateCarTypeVariable();
 }
 
@@ -113,6 +132,11 @@ if (carSelectElement) {
         currentCarId = e.target.value;
         localStorage.setItem('selectedCarId', currentCarId);
         updateCarTypeVariable();
+        
+        // TÄRKEÄÄ: Päivitä lista heti valinnan jälkeen.
+        // Tämä tekee sen "tempun": Jos valitset "Kaikki aktiiviset", arkistoidut katoavat listalta.
+        // Jos valitset "Kaikki (sis. arkistoidut)", arkistoidut ilmestyvät listalle.
+        updateCarSelect(); 
         
         // Päivitä näkymät
         if (typeof renderHistoryList === 'function') renderHistoryList();
@@ -154,7 +178,7 @@ function renderCarList() {
         });
     }
 
-    // --- ARKISTOIDUT ---
+    // --- ARKISTOIDUT (Asetuksissa näytetään aina kaikki, jotta niitä voi hallita) ---
     if (archivedCars.length > 0) {
         const sep = document.createElement('div');
         sep.innerHTML = "<h4 style='color:var(--subtext-color); margin: 20px 0 10px 0; text-align:center; text-transform:uppercase; font-size:12px; letter-spacing:1px;'>Arkisto</h4>";
@@ -283,11 +307,15 @@ function toggleCarArchive(id, shouldArchive) {
         db.ref('users/' + currentUser.uid + '/cars/' + id).update({ isArchived: shouldArchive })
             .then(() => {
                 // Jos nykyinen auto arkistoitiin, vaihda valinta "all":iin
+                // Tämä triggeröi listan päivityksen ja piilottaa arkistoidut
                 if (currentCarId === id && shouldArchive) {
-                    const select = document.getElementById('car-select');
-                    if(select) select.value = 'all';
                     currentCarId = 'all';
+                    updateCarSelect();
+                } else {
+                    // Päivitä lista muutenkin, jotta status muuttuu
+                    updateCarSelect();
                 }
+                
                 if(typeof showToast === 'function') showToast(shouldArchive ? "Ajoneuvo arkistoitu 🗄️" : "Ajoneuvo palautettu ♻️");
             });
     }
