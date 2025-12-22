@@ -1,5 +1,5 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (v5.8.2 DYNAMIC)
+// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (v5.9 ARCHIVE SUPPORT)
 // =========================================================
 
 // --- 1. MÄÄRITELLÄÄN ELEMENTIT ---
@@ -25,7 +25,7 @@ function loadHistory() {
     
     const historyRef = db.ref('ajopaivakirja/' + currentUser.uid)
                          .orderByChild('startTime')
-                         .limitToLast(1000); // Nostettu rajaa varmuuden vuoksi
+                         .limitToLast(1000); 
 
     historyRef.on('value', (snapshot) => {
         allHistoryData = [];
@@ -82,7 +82,7 @@ if(filterEl) {
 if(filterStart) filterStart.addEventListener('change', () => { renderHistoryList(); renderFuelList(); });
 if(filterEnd) filterEnd.addEventListener('change', () => { renderHistoryList(); renderFuelList(); });
 
-// --- UUSI: AIKAVÄLI VALINTA (Tilastot-sivulle) ---
+// --- AIKAVÄLI VALINTA (Tilastot-sivulle) ---
 if(statsTimeRange) {
     statsTimeRange.addEventListener('change', () => {
         renderStats();
@@ -140,10 +140,19 @@ function renderHistoryList() {
 
     allHistoryData.forEach((drive) => {
         try {
-            if (currentCarId !== 'all') {
+            // --- ARKISTOINTI LOGIIKKA ---
+            if (currentCarId === 'all') {
+                // "Kaikki aktiiviset" -> Piilota jos auto on arkistoitu
+                const carObj = userCars.find(c => c.id === drive.carId);
+                if (carObj && carObj.isArchived) return; 
+            } else if (currentCarId === 'all_archived') {
+                // "Kaikki sis. arkistoidut" -> Näytä kaikki, älä suodata
+            } else {
+                // Tietty auto valittu -> Näytä vain se
                 if (drive.carId && drive.carId !== currentCarId) return;
-                if (!drive.carId) return;
+                if (!drive.carId) return; 
             }
+            // -----------------------------
 
             let start = new Date(drive.startTime);
             if (isNaN(start.getTime())) return;
@@ -254,11 +263,18 @@ function renderFuelList() {
     let renderCount = 0;
 
     const filteredRefuelings = allRefuelings.filter(ref => {
-        if (currentCarId !== 'all') {
+        // --- ARKISTOINTI LOGIIKKA ---
+        if (currentCarId === 'all') {
+            const carObj = userCars.find(c => c.id === ref.carId);
+            if (carObj && carObj.isArchived) return false; // Piilota arkistoidut
+        } else if (currentCarId === 'all_archived') {
+            // Näytä kaikki
+        } else {
             if (ref.carId && ref.carId !== currentCarId) return false;
             if (!ref.carId) return false;
         }
         return true;
+        // -----------------------------
     });
 
     if(!filteredRefuelings || filteredRefuelings.length === 0) {
@@ -276,7 +292,7 @@ function renderFuelList() {
 
         let carObj = userCars.find(c => c.id === ref.carId);
         let fuelType = (carObj ? carObj.fuel : "").toLowerCase();
-        let displayFuel = carObj ? (carObj.fuel || "") : ""; // Haetaan näytettävä nimi
+        let displayFuel = carObj ? (carObj.fuel || "") : ""; 
         
         if (fuelType.includes('diesel')) {
             sumDiesel += lit;
@@ -328,7 +344,7 @@ function renderFuelList() {
 }
 
 
-// --- 6. TILASTOT (GRAAFIT - DYNAMIC) ---
+// --- 6. TILASTOT (GRAAFIT - DYNAMIC + ARCHIVE) ---
 function renderStats() {
     const statsFuelContainer = document.getElementById('stats-fuel-container');
     if (typeof Chart === 'undefined') return;
@@ -345,25 +361,37 @@ function renderDriveStats() {
     if (!allHistoryData || allHistoryData.length === 0) return;
     
     // Luetaan aikavalinta
-    const range = statsTimeRange ? statsTimeRange.value : '30d'; // Oletus 30d
+    const range = statsTimeRange ? statsTimeRange.value : '30d'; 
     
-    const timeData = {}; // X-akselin data
+    const timeData = {}; 
     const vehicleData = {};
     const styleData = { "Taloudellinen": 0, "Tasainen": 0, "Reipas": 0, "Aggressiivinen": 0 };
     const carTimeData = {}; 
     const speedData = {}; 
 
-    // Lasketaan alkupäivä suodatukselle
+    // Lasketaan alkupäivä
     const now = new Date();
-    let startDate = new Date(1970, 0, 1); // "all"
+    let startDate = new Date(1970, 0, 1); 
     
     if (range === '7d') { startDate = new Date(); startDate.setDate(now.getDate() - 7); }
     else if (range === '30d') { startDate = new Date(); startDate.setDate(now.getDate() - 30); }
     else if (range === 'year') { startDate = new Date(now.getFullYear(), 0, 1); }
 
-    // Suodatetaan ja järjestetään (vanhin ensin graafeja varten)
+    // Suodatetaan ja järjestetään
     const sortedDrives = [...allHistoryData]
-        .filter(d => new Date(d.startTime) >= startDate)
+        .filter(d => {
+            // --- ARKISTOINTI LOGIIKKA ---
+            if (currentCarId === 'all') {
+                const carObj = userCars.find(c => c.id === d.carId);
+                if (carObj && carObj.isArchived) return false; 
+            } else if (currentCarId === 'all_archived') {
+                // Näytä kaikki
+            } else {
+                if (d.carId && d.carId !== currentCarId) return false;
+            }
+            // --- AIKAVÄLI ---
+            return new Date(d.startTime) >= startDate;
+        })
         .sort((a,b) => new Date(a.startTime) - new Date(b.startTime));
 
     sortedDrives.forEach(d => {
@@ -371,13 +399,10 @@ function renderDriveStats() {
         const avgSpd = parseFloat(d.avgSpeed) || 0;
         const date = new Date(d.startTime);
         
-        // Määritetään avain (Päivä vai Kuukausi)
         let key = "";
         if (range === '7d' || range === '30d') {
-            // Päivämuoto: 24.12.
             key = `${date.getDate()}.${date.getMonth()+1}.`;
         } else {
-            // Kuukausimuoto: 12/2025
             key = `${date.getMonth()+1}/${date.getFullYear()}`;
         }
 
@@ -387,30 +412,25 @@ function renderDriveStats() {
         let carObj = userCars.find(c => c.id === d.carId);
         let carName = carObj ? carObj.name : (d.carName || "Muu");
         
-        // Ajoneuvojakauma (Kokonaismäärä aikavälillä)
         if (!vehicleData[carName]) vehicleData[carName] = 0;
         vehicleData[carName] += dist;
 
-        // Auto per aikayksikkö (Viivagraafi)
         if (!carTimeData[carName]) carTimeData[carName] = {};
         if (!carTimeData[carName][key]) carTimeData[carName][key] = 0;
         carTimeData[carName][key] += dist;
 
-        // Nopeus
         if(avgSpd > 0) {
             if(!speedData[key]) speedData[key] = {sum:0, count:0};
             speedData[key].sum += avgSpd;
             speedData[key].count++;
         }
 
-        // Ajotyyli
         if(d.drivingStyle) {
             if(!styleData[d.drivingStyle]) styleData[d.drivingStyle] = 0;
             styleData[d.drivingStyle]++;
         }
     });
 
-    // Päivitetään otsikot
     const labelTrend = document.getElementById('label-drive-trend');
     const labelTotal = document.getElementById('label-drive-total');
     const unit = (range === '7d' || range === '30d') ? "(km/pv)" : "(km/kk)";
@@ -420,7 +440,7 @@ function renderDriveStats() {
     const labels = Object.keys(timeData); 
     const values = Object.values(timeData).map(v => v.toFixed(1));
 
-    // 1. Pylväsdiagrammi (Yhteensä)
+    // 1. Pylväs
     const canvasMonthly = document.getElementById('chart-drive-monthly');
     if (canvasMonthly) {
         if (chartInstanceMonthly) { chartInstanceMonthly.destroy(); }
@@ -431,7 +451,7 @@ function renderDriveStats() {
         });
     }
 
-    // 2. Viivadiagrammi (Per auto)
+    // 2. Viiva
     const canvasTrend = document.getElementById('chart-drive-trend');
     if (canvasTrend) {
         if (chartInstanceDriveTrend) { chartInstanceDriveTrend.destroy(); }
@@ -474,7 +494,7 @@ function renderDriveStats() {
         });
     }
 
-    // 4. Autojakauma (Donitsi)
+    // 4. Autojakauma
     const canvasVehicles = document.getElementById('chart-drive-vehicles');
     if (canvasVehicles) {
         if (chartInstanceVehicles) { chartInstanceVehicles.destroy(); }
@@ -484,7 +504,7 @@ function renderDriveStats() {
         });
     }
 
-    // 5. Ajotyyli (Piirakka)
+    // 5. Ajotyyli
     const canvasStyle = document.getElementById('chart-drive-style');
     if (canvasStyle) {
         if (chartInstanceStyle) { chartInstanceStyle.destroy(); }
@@ -521,7 +541,19 @@ function renderFuelStats() {
     else if (range === 'year') { startDate = new Date(now.getFullYear(), 0, 1); }
 
     const sortedRefs = [...allRefuelings]
-        .filter(r => new Date(r.date) >= startDate)
+        .filter(r => {
+             // --- ARKISTOINTI LOGIIKKA ---
+             if (currentCarId === 'all') {
+                const carObj = userCars.find(c => c.id === r.carId);
+                if (carObj && carObj.isArchived) return false;
+            } else if (currentCarId === 'all_archived') {
+                // Näytä kaikki
+            } else {
+                if (r.carId && r.carId !== currentCarId) return false;
+            }
+            // --- AIKAVÄLI ---
+            return new Date(r.date) >= startDate;
+        })
         .sort((a,b) => new Date(a.date) - new Date(b.date));
 
     sortedRefs.forEach(ref => {
@@ -530,7 +562,6 @@ function renderFuelStats() {
         const price = parseFloat(ref.pricePerLiter) || 0;
         const date = new Date(ref.date);
         
-        // PVM merkkijono hintatrendille (aina tarkka pvm)
         const dateStr = date.toLocaleDateString('fi-FI');
 
         totalRefuelEur += eur;
@@ -550,7 +581,6 @@ function renderFuelStats() {
              fuelTypeData['Muu'] = (fuelTypeData['Muu'] || 0) + lit;
         }
 
-        // Avain pylväsgraafille (Päivä tai Kk)
         let key = "";
         if (range === '7d' || range === '30d') {
             key = `${date.getDate()}.${date.getMonth()+1}.`;
@@ -595,7 +625,7 @@ function renderFuelStats() {
         });
     }
 
-    // 3. Litrahintatrendi (tämä pysyy aina tarkkana päivämääränä)
+    // 3. Litrahintatrendi
     const canvasTrend = document.getElementById('chart-fuel-trend');
     if (canvasTrend) {
         if (chartInstanceFuelTrend) { chartInstanceFuelTrend.destroy(); }
@@ -634,10 +664,14 @@ window.openEditLogModal = (key) => {
     if(editCarSelectEl) {
         editCarSelectEl.innerHTML = "";
         userCars.forEach(car => {
+            // Lisää valikkoon myös arkistoidut autot jos muokataan vanhaa ajoa
+            // Mutta merkitään ne selkeästi
             const opt = document.createElement('option');
             opt.value = car.id;
             const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
-            opt.text = `${icon} ${car.name}`;
+            const archivedLabel = car.isArchived ? " (Arkistoitu)" : "";
+            opt.text = `${icon} ${car.name}${archivedLabel}`;
+            
             if(drive.carId === car.id) opt.selected = true;
             editCarSelectEl.appendChild(opt);
         });
