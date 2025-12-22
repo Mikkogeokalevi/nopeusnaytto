@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.9)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.9 FIX)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -236,7 +236,7 @@ if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchVie
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
 
-// --- 5. TANKKAUS (KORJATTU: EI PYÖRIÄ, EI ARKISTOITUJA) ---
+// --- 5. TANKKAUS (KORJATTU: TALLENNUSLUKKO) ---
 
 // Apufunktio valikon täyttöön (Vain aktiiviset autot)
 function populateFuelCarSelect(selectedId) {
@@ -339,7 +339,7 @@ function calcPrice() {
 if(inpFuelLiters) inpFuelLiters.addEventListener('input', calcPrice);
 if(inpFuelEuros) inpFuelEuros.addEventListener('input', calcPrice);
 
-// Tankkauksen tallennus (Uusi tai Päivitys)
+// Tankkauksen tallennus (Uusi tai Päivitys) - KORJATTU LUKKO
 if (btnFuelSave) {
     btnFuelSave.addEventListener('click', () => {
         const date = inpFuelDate.value;
@@ -347,7 +347,6 @@ if (btnFuelSave) {
         const odo = inpFuelOdo.value;
         const lit = inpFuelLiters.value;
         const eur = inpFuelEuros.value;
-        // Luetaan valittu auto suoraan valikosta
         const selectedCarId = inpFuelCarSelect ? inpFuelCarSelect.value : null;
         const editKey = inpFuelEditKey.value;
 
@@ -362,6 +361,11 @@ if (btnFuelSave) {
         }
 
         if(currentUser) {
+            // --- ESTÄ TUPLAKLIKKAUS ---
+            const originalText = btnFuelSave.innerText;
+            btnFuelSave.disabled = true;
+            btnFuelSave.innerText = "Tallennetaan...";
+
             const refData = {
                 type: 'refuel',
                 date: date + "T" + time,
@@ -372,21 +376,41 @@ if (btnFuelSave) {
                 carId: selectedCarId
             };
 
+            const onComplete = () => {
+                // --- PALAUTA NAPPI ---
+                btnFuelSave.disabled = false;
+                btnFuelSave.innerText = originalText;
+
+                // --- SULJE IKKUNA ---
+                if(fuelModal) fuelModal.style.display = 'none';
+                
+                // Tyhjennä vain jos oli uusi tankkaus
+                if (!editKey) {
+                    inpFuelLiters.value = ""; 
+                    inpFuelEuros.value = "";
+                }
+                
+                showToast(editKey ? "Tankkaus päivitetty! ✏️" : "Tankkaus tallennettu! ⛽");
+                if(window.renderFuelList) window.renderFuelList();
+            };
+
+            const onError = (error) => {
+                // Virheen sattuessa vapauta nappi
+                btnFuelSave.disabled = false;
+                btnFuelSave.innerText = originalText;
+                alert("Virhe: " + error.message);
+            };
+
             if (editKey) {
                 // PÄIVITYS
-                db.ref('ajopaivakirja/' + currentUser.uid + '/' + editKey).update(refData).then(() => {
-                    if(fuelModal) fuelModal.style.display = 'none';
-                    showToast("Tankkaus päivitetty! ✏️");
-                    if(window.renderFuelList) window.renderFuelList();
-                });
+                db.ref('ajopaivakirja/' + currentUser.uid + '/' + editKey).update(refData)
+                    .then(onComplete)
+                    .catch(onError);
             } else {
                 // UUSI
-                db.ref('ajopaivakirja/' + currentUser.uid).push().set(refData).then(() => {
-                    if(fuelModal) fuelModal.style.display = 'none';
-                    inpFuelLiters.value = ""; inpFuelEuros.value = "";
-                    showToast("Tankkaus tallennettu! ⛽");
-                    if(window.renderFuelList) window.renderFuelList();
-                });
+                db.ref('ajopaivakirja/' + currentUser.uid).push().set(refData)
+                    .then(onComplete)
+                    .catch(onError);
             }
         }
     });
