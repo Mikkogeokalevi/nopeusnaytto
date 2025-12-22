@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.8)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.9)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -71,7 +71,7 @@ const btnConfirmYes = document.getElementById('btn-confirm-yes');
 const btnConfirmNo = document.getElementById('btn-confirm-no');
 let confirmCallback = null; // Callback funktiolle
 
-// TANKKAUS
+// TANKKAUS ELEMENTIT
 const fuelModal = document.getElementById('fuel-modal');
 const btnOpenFuel = document.getElementById('btn-open-fuel');
 const btnFuelSave = document.getElementById('btn-fuel-save');
@@ -85,7 +85,6 @@ const inpFuelTime = document.getElementById('fuel-time');
 const inpFuelCarSelect = document.getElementById('fuel-car-select');
 const inpFuelEditKey = document.getElementById('fuel-edit-key');
 const fuelModalTitle = document.getElementById('fuel-modal-title');
-
 
 // Mittaristo
 const dashSpeedEl = document.getElementById('dash-speed');
@@ -134,7 +133,6 @@ window.showToast = (msg, type = 'info') => {
     const toast = document.getElementById('toast-notification');
     if (!toast) return;
     toast.innerText = msg;
-    // Voit lisätä tyyliluokkia (error/success) tässä jos haluat
     toast.classList.add('visible');
     setTimeout(() => {
         toast.classList.remove('visible');
@@ -145,7 +143,7 @@ window.openConfirmModal = (title, message, callback) => {
     if(confirmTitle) confirmTitle.innerText = title;
     if(confirmMsg) confirmMsg.innerText = message;
     confirmCallback = callback;
-    if(confirmModal) confirmModal.style.display = 'flex'; // Käytä flex jotta keskitys toimii css:ssä
+    if(confirmModal) confirmModal.style.display = 'flex';
 }
 
 // Confirm napit
@@ -238,26 +236,33 @@ if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchVie
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
 
-// --- 5. TANKKAUS & TABIT (PÄIVITETTY PREMIUM ILMOITUKSILLA JA MUOKKAUKSELLA) ---
+// --- 5. TANKKAUS (KORJATTU: EI PYÖRIÄ, EI "ALL" VALINTAA) ---
 
-// Apufunktio valikon täyttöön
+// Apufunktio valikon täyttöön (Vain autot)
 function populateFuelCarSelect(selectedId) {
     if(!inpFuelCarSelect) return;
     inpFuelCarSelect.innerHTML = "";
     
-    if(userCars.length === 0) {
+    // Suodatetaan pois pyörät
+    const validCars = userCars.filter(c => c.type !== 'bike');
+    
+    if(validCars.length === 0) {
         const opt = document.createElement('option');
-        opt.text = "Ei ajoneuvoja";
+        opt.text = "Ei tankattavia ajoneuvoja";
         inpFuelCarSelect.appendChild(opt);
         return;
     }
     
-    userCars.forEach(car => {
+    validCars.forEach(car => {
         const opt = document.createElement('option');
         opt.value = car.id;
-        const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
+        const icon = car.icon || "🚗";
         opt.text = `${icon} ${car.name}`;
-        if(selectedId && car.id === selectedId) opt.selected = true;
+        
+        // Jos valittu ID täsmää, tai jos ei valintaa ja tämä on eka, valitaan se
+        if(selectedId && car.id === selectedId) {
+            opt.selected = true;
+        }
         inpFuelCarSelect.appendChild(opt);
     });
 }
@@ -265,6 +270,12 @@ function populateFuelCarSelect(selectedId) {
 // Uusi tankkaus (Nappi)
 if (btnOpenFuel) {
     btnOpenFuel.addEventListener('click', () => {
+        // TARKISTUS: Estä jos nykyinen kulkuneuvo on pyörä
+        if (currentCarType === 'bike') {
+            showToast("Polkupyörää ei voi tankata! 🚲🚫");
+            return;
+        }
+
         const now = new Date();
         if(inpFuelDate) inpFuelDate.value = now.toISOString().split('T')[0];
         if(inpFuelTime) inpFuelTime.value = now.toTimeString().split(' ')[0].substring(0,5);
@@ -276,8 +287,10 @@ if (btnOpenFuel) {
         
         if(fuelModalTitle) fuelModalTitle.innerText = "⛽ Uusi tankkaus";
         
-        // Valitse nykyinen auto oletuksena
-        populateFuelCarSelect(currentCarId !== 'all' ? currentCarId : null);
+        // Valitse nykyinen auto oletuksena (jos se ei ole 'all')
+        // Jos on 'all', populateFuelCarSelect valitsee listan ensimmäisen auton
+        const targetId = (currentCarId !== 'all') ? currentCarId : null;
+        populateFuelCarSelect(targetId);
         
         if(fuelModal) fuelModal.style.display = 'flex';
     });
@@ -288,7 +301,6 @@ window.editRefueling = (key) => {
     const ref = allRefuelings.find(r => r.key === key);
     if(!ref) return;
     
-    // Pura pvm ja aika (ISO string tai legacy)
     let dateVal = "";
     let timeVal = "";
     if (ref.date.includes('T')) {
@@ -296,7 +308,6 @@ window.editRefueling = (key) => {
         dateVal = parts[0];
         timeVal = parts[1].substring(0,5);
     } else {
-        // Fallback jos vanha formaatti
         dateVal = new Date(ref.date).toISOString().split('T')[0];
         timeVal = "12:00";
     }
@@ -307,7 +318,7 @@ window.editRefueling = (key) => {
     if(inpFuelLiters) inpFuelLiters.value = ref.liters || "";
     if(inpFuelEuros) inpFuelEuros.value = ref.euros || "";
     if(inpFuelCalc) inpFuelCalc.innerText = ref.pricePerLiter || "0.00";
-    if(inpFuelEditKey) inpFuelEditKey.value = key; // Aseta avain muokkausta varten
+    if(inpFuelEditKey) inpFuelEditKey.value = key; 
 
     if(fuelModalTitle) fuelModalTitle.innerText = "✏️ Muokkaa tankkausta";
     
@@ -336,8 +347,14 @@ if (btnFuelSave) {
         const odo = inpFuelOdo.value;
         const lit = inpFuelLiters.value;
         const eur = inpFuelEuros.value;
-        const selectedCarId = inpFuelCarSelect.value;
+        // Luetaan valittu auto suoraan valikosta
+        const selectedCarId = inpFuelCarSelect ? inpFuelCarSelect.value : null;
         const editKey = inpFuelEditKey.value;
+
+        if(!selectedCarId || selectedCarId === 'Ei tankattavia ajoneuvoja') {
+             showToast("Valitse ajoneuvo!");
+             return;
+        }
 
         if(!date || !lit || !eur) { 
             showToast("Täytä pakolliset tiedot (pvm, litrat, eurot)!"); 
