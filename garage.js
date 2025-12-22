@@ -1,5 +1,5 @@
 // =========================================================
-// GARAGE.JS - AJONEUVOJEN HALLINTA (AUTOTALLI)
+// GARAGE.JS - AJONEUVOJEN HALLINTA JA ARKISTOINTI (v5.9)
 // =========================================================
 
 // 1. AJONEUVOJEN LATAUS
@@ -23,7 +23,7 @@ function loadCars() {
             renderCarList(); 
         }
         
-        // Päivitä historia ja tilastot jos autojen tiedot (ikonit/nimet) muuttuvat
+        // Päivitä historia ja tilastot jos autojen tiedot muuttuvat
         if (views.history && views.history.style.display !== 'none' && typeof renderHistoryList === 'function') {
             renderHistoryList();
         }
@@ -40,168 +40,280 @@ function loadCars() {
     }
 }
 
-// 2. LOGIIKKA JA VALINNAT
-
-function updateCarTypeVariable() {
-    const c = userCars.find(x => x.id === currentCarId);
-    if (c) {
-        currentCarType = c.type || "car";
-    } else {
-        currentCarType = "car";
-    }
-}
-
+// 2. VALIKKOJEN PÄIVITYS (YLÄPALKKI)
 function updateCarSelect() {
-    if(!carSelectEl) return;
+    const select = document.getElementById('car-select');
+    if (!select) return;
     
-    carSelectEl.innerHTML = "";
+    // Talleta vanha valinta jotta se säilyy päivityksessä jos mahdollista
+    const oldValue = select.value;
+    select.innerHTML = "";
+
+    // 1. "Kaikki aktiiviset" (Oletus)
+    const optAllActive = document.createElement('option');
+    optAllActive.value = "all";
+    optAllActive.text = "Kaikki aktiiviset";
+    select.appendChild(optAllActive);
+
+    // 2. "Kaikki (sis. arkistoidut)" (Koko historia)
+    const optAllArchived = document.createElement('option');
+    optAllArchived.value = "all_archived";
+    optAllArchived.text = "Kaikki (sis. arkistoidut)";
+    optAllArchived.style.color = "#888"; 
+    select.appendChild(optAllArchived);
+
+    // Erotellaan autot
+    const activeCars = userCars.filter(c => !c.isArchived);
+    const archivedCars = userCars.filter(c => c.isArchived);
+
+    // 3. Aktiiviset autot
+    if (activeCars.length > 0) {
+        const groupActive = document.createElement('optgroup');
+        groupActive.label = "Aktiiviset";
+        activeCars.forEach(car => {
+            const opt = document.createElement('option');
+            opt.value = car.id;
+            const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
+            opt.text = `${icon} ${car.name}`;
+            groupActive.appendChild(opt);
+        });
+        select.appendChild(groupActive);
+    }
+
+    // 4. Arkistoidut autot
+    if (archivedCars.length > 0) {
+        const groupArchived = document.createElement('optgroup');
+        groupArchived.label = "Arkistoidut";
+        archivedCars.forEach(car => {
+            const opt = document.createElement('option');
+            opt.value = car.id;
+            const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
+            opt.text = `🗄️ ${icon} ${car.name}`;
+            opt.style.color = "#888";
+            groupArchived.appendChild(opt);
+        });
+        select.appendChild(groupArchived);
+    }
+
+    // Palauta valinta
+    if (oldValue && Array.from(select.options).some(o => o.value === oldValue)) {
+        select.value = oldValue;
+    } else {
+        select.value = "all"; // Fallback
+    }
     
-    // "Kaikki" -valinta
-    const allOpt = document.createElement('option'); 
-    allOpt.value = 'all'; 
-    allOpt.text = "Kaikki ajoneuvot"; 
-    carSelectEl.appendChild(allOpt);
-    
-    // Käyttäjän autot
-    userCars.forEach(car => {
-        const opt = document.createElement('option'); 
-        opt.value = car.id;
-        const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
-        opt.text = `${icon} ${car.name}`;
-        if(car.id === currentCarId) opt.selected = true;
-        carSelectEl.appendChild(opt);
-    });
+    currentCarId = select.value;
+    updateCarTypeVariable();
 }
 
-// Kuuntele valinnan muutosta
-if(carSelectEl) {
-    carSelectEl.addEventListener('change', () => {
-        currentCarId = carSelectEl.value;
+// Kuuntelija valinnan muutokselle
+const carSelectElement = document.getElementById('car-select');
+if (carSelectElement) {
+    carSelectElement.addEventListener('change', (e) => {
+        currentCarId = e.target.value;
         localStorage.setItem('selectedCarId', currentCarId);
         updateCarTypeVariable();
         
-        // Päivitä historialista suodatuksen mukaan
-        if (views.history && views.history.style.display !== 'none' && typeof renderHistoryList === 'function') {
-            renderHistoryList();
-        }
+        // Päivitä näkymät
+        if (typeof renderHistoryList === 'function') renderHistoryList();
+        if (typeof renderStats === 'function') renderStats();
+        
+        // Tyhjennä reitti kartalta jos vaihdetaan autoa
+        if (typeof clearSavedRoute === 'function') clearSavedRoute();
     });
 }
 
-// 3. IKONIEN HALLINTA
-const carIconsList = [
-    "🚗", "🚙", "🛻", "🚌", "🏎️", "🚕", "🚓", "🚑", "🚒", "🚐", "🚚", "🚜", "🏍️", "🛵", "🚲", "🛴", 
-    "🚘", "🚔", "🚖", "🚍", "🦽", "🦼", "🛹", "🛶", "🚤", "🛳️"
-];
+function updateCarTypeVariable() {
+    if (currentCarId === 'all' || currentCarId === 'all_archived') {
+        currentCarType = 'car'; // Oletus
+    } else {
+        const c = userCars.find(x => x.id === currentCarId);
+        if (c) currentCarType = c.type;
+    }
+}
 
-function generateCarIcons() {
+// 3. ASETUSNÄKYMÄN LISTAUS (SETTINGS)
+function renderCarList() {
+    const list = document.getElementById('cars-list');
+    if(!list) return;
+    list.innerHTML = "";
+
+    // Erotellaan autot
+    const activeCars = userCars.filter(c => !c.isArchived);
+    const archivedCars = userCars.filter(c => c.isArchived);
+
+    // --- AKTIIVISET ---
+    if (activeCars.length === 0 && archivedCars.length === 0) {
+        list.innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>Ei ajoneuvoja. Lisää ensimmäinen!</div>";
+        return;
+    }
+
+    if (activeCars.length > 0) {
+        activeCars.forEach(car => {
+            renderCarCard(car, list, false);
+        });
+    }
+
+    // --- ARKISTOIDUT ---
+    if (archivedCars.length > 0) {
+        const sep = document.createElement('div');
+        sep.innerHTML = "<h4 style='color:var(--subtext-color); margin: 20px 0 10px 0; text-align:center; text-transform:uppercase; font-size:12px; letter-spacing:1px;'>Arkisto</h4>";
+        list.appendChild(sep);
+
+        archivedCars.forEach(car => {
+            renderCarCard(car, list, true);
+        });
+    }
+}
+
+function renderCarCard(car, container, isArchived) {
+    const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
+    const div = document.createElement('div');
+    div.className = 'car-item';
+    div.style.display = 'flex';
+    div.style.justifyContent = 'space-between';
+    div.style.alignItems = 'center';
+    div.style.padding = '15px';
+    div.style.marginBottom = '10px';
+    div.style.backgroundColor = 'var(--panel-bg)';
+    div.style.border = '1px solid var(--border-color)';
+    div.style.borderRadius = '8px';
+    if (isArchived) div.style.opacity = '0.6';
+
+    const infoDiv = document.createElement('div');
+    infoDiv.innerHTML = `<strong style="font-size:16px;">${icon} ${car.name}</strong><br>
+                         <span style="font-size:12px; color:var(--subtext-color);">
+                            ${car.plate || '-'} • ${car.fuel || '-'} • ${car.tank || 0}
+                         </span>`;
+    
+    const btnGroup = document.createElement('div');
+    btnGroup.style.display = 'flex';
+    btnGroup.style.gap = '10px';
+
+    // MUOKKAA
+    const editBtn = document.createElement('button');
+    editBtn.innerText = "✏️";
+    editBtn.className = "icon-btn";
+    editBtn.style.border = "1px solid var(--border-color)";
+    editBtn.onclick = () => openEditCar(car);
+    
+    // ARKISTOI / PALAUTA
+    const archiveBtn = document.createElement('button');
+    archiveBtn.innerText = isArchived ? "♻️" : "🗄️"; // Palauta vs Arkistoi
+    archiveBtn.title = isArchived ? "Palauta käyttöön" : "Arkistoi (piilota)";
+    archiveBtn.className = "icon-btn";
+    archiveBtn.style.border = "1px solid var(--border-color)";
+    archiveBtn.onclick = () => toggleCarArchive(car.id, !isArchived);
+
+    // POISTA (Vain jos haluaa oikeasti tuhota datan)
+    const delBtn = document.createElement('button');
+    delBtn.innerText = "🗑";
+    delBtn.className = "icon-btn";
+    delBtn.style.color = "#ff4444";
+    delBtn.style.borderColor = "#ff4444";
+    delBtn.onclick = () => deleteCar(car.id);
+
+    btnGroup.appendChild(archiveBtn);
+    btnGroup.appendChild(editBtn);
+    btnGroup.appendChild(delBtn);
+    
+    div.appendChild(infoDiv);
+    div.appendChild(btnGroup);
+    container.appendChild(div);
+}
+
+// 4. MUOKKAUS JA TALLENNUS
+window.toggleCarFields = () => {
+    const type = document.getElementById('car-type').value;
+    const fields = document.getElementById('car-specific-fields');
+    if (type === 'bike') fields.style.display = 'none';
+    else fields.style.display = 'block';
+};
+
+function openEditCar(car) {
+    if(addCarForm) addCarForm.style.display = 'block';
+    if(btnAddCar) btnAddCar.style.display = 'none';
+    
+    document.getElementById('form-title').innerText = "Muokkaa ajoneuvoa";
+    document.getElementById('car-id').value = car.id;
+    document.getElementById('car-name').value = car.name;
+    document.getElementById('car-type').value = car.type || 'car';
+    document.getElementById('selected-car-icon').value = car.icon || "🚗";
+    
+    window.toggleCarFields();
+    
+    if (car.type !== 'bike') {
+        document.getElementById('car-plate').value = car.plate || "";
+        document.getElementById('car-fuel').value = car.fuel || "Bensiini";
+        document.getElementById('car-tank').value = car.tank || "";
+    }
+    
+    generateCarIcons(car.icon); 
+}
+
+// --- IKONIVALITSIN ---
+function generateCarIcons(selectedIcon) {
     const grid = document.getElementById('car-icon-selector');
     if(!grid) return;
-    
     grid.innerHTML = "";
-    carIconsList.forEach(icon => {
+    
+    const icons = ["🚗","🚙","🏎️","🚕","🚓","🚌","🚐","🛻","🚚","🚜","🚲","🛵","🏍️","🛴"];
+    
+    icons.forEach(icon => {
         const div = document.createElement('div');
-        div.className = 'car-icon-option';
         div.innerText = icon;
-        div.onclick = () => selectIcon(div, icon);
+        div.className = 'car-icon-item';
+        if (icon === selectedIcon) div.classList.add('selected');
+        
+        div.onclick = () => {
+            document.querySelectorAll('.car-icon-item').forEach(el => el.classList.remove('selected'));
+            div.classList.add('selected');
+            document.getElementById('selected-car-icon').value = icon;
+        };
         grid.appendChild(div);
     });
 }
 
-function selectIcon(element, icon) {
-    document.querySelectorAll('.car-icon-option').forEach(el => el.classList.remove('selected-icon'));
-    element.classList.add('selected-icon');
-    const input = document.getElementById('selected-car-icon');
-    if(input) input.value = icon;
+// 5. NAPPIEN LOGIIKKA
+function toggleCarArchive(id, shouldArchive) {
+    if (!currentUser) return;
+    const action = shouldArchive ? "arkistoida" : "palauttaa";
+    if (confirm(`Haluatko varmasti ${action} tämän ajoneuvon?`)) {
+        db.ref('users/' + currentUser.uid + '/cars/' + id).update({ isArchived: shouldArchive })
+            .then(() => {
+                // Jos nykyinen auto arkistoitiin, vaihda valinta "all":iin
+                if (currentCarId === id && shouldArchive) {
+                    const select = document.getElementById('car-select');
+                    if(select) select.value = 'all';
+                    currentCarId = 'all';
+                }
+                if(typeof showToast === 'function') showToast(shouldArchive ? "Ajoneuvo arkistoitu 🗄️" : "Ajoneuvo palautettu ♻️");
+            });
+    }
 }
 
-// 4. CRUD TOIMINNOT (Create, Read, Update, Delete)
-
-function renderCarList() {
-    const list = document.getElementById('cars-list');
-    if(!list) return;
-    
-    list.innerHTML = "";
-    
-    if (userCars.length === 0) {
-        list.innerHTML = "<p>Ei ajoneuvoja. Lisää ensimmäinen!</p>";
-        return;
+function deleteCar(id) {
+    if (!currentUser) return;
+    if (confirm("VAROITUS: Tämä poistaa auton pysyvästi. Haluatko mieluummin arkistoida sen? \n\nOK = Poista pysyvästi\nCancel = Peruuta")) {
+        db.ref('users/' + currentUser.uid + '/cars/' + id).remove();
     }
-    
-    userCars.forEach(car => {
-        const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
-        const div = document.createElement('div'); div.className = 'car-item';
-        div.innerHTML = `<div><div class="car-title">${icon} ${car.name}</div><div class="car-details">${car.plate || ''} ${car.fuel || ''}</div></div>
-        <div class="car-actions">
-            <button class="edit-btn" onclick="window.editCar('${car.id}')">✏️</button>
-            <button class="delete-btn" onclick="window.deleteCar('${car.id}')">🗑</button>
-        </div>`;
-        list.appendChild(div);
-    });
 }
 
-// Globaalit funktiot (kutsutaan HTML onclick -atribuutista)
-window.editCar = (id) => {
-    const car = userCars.find(c => c.id === id);
-    if(!car) return;
-    
-    // Täytä lomake
-    document.getElementById('car-id').value = car.id;
-    document.getElementById('car-name').value = car.name;
-    document.getElementById('car-type').value = car.type;
-    
-    const icon = car.icon || "🚗";
-    const iconInput = document.getElementById('selected-car-icon');
-    if(iconInput) iconInput.value = icon;
-    
-    // Korosta valittu ikoni
-    document.querySelectorAll('.car-icon-option').forEach(el => el.classList.remove('selected-icon'));
-    const options = document.querySelectorAll('.car-icon-option');
-    options.forEach(opt => {
-        if(opt.innerText === icon) opt.classList.add('selected-icon');
-    });
+// Lomake-elementit
+const btnAddCar = document.getElementById('btn-add-car');
+const btnCancelCar = document.getElementById('btn-cancel-car');
+const btnSaveCar = document.getElementById('btn-save-car');
 
-    toggleCarFields();
-    
-    if(car.type === 'car') {
-        document.getElementById('car-plate').value = car.plate || '';
-        document.getElementById('car-fuel').value = car.fuel || 'Bensiini';
-        document.getElementById('car-tank').value = car.tank || '';
-    }
-    
-    document.getElementById('form-title').innerText = "Muokkaa ajoneuvoa";
-    if(addCarForm) addCarForm.style.display = 'block';
-    if(btnAddCar) btnAddCar.style.display = 'none';
-}
-
-window.deleteCar = (id) => {
-    if(confirm("Poista ajoneuvo?")) db.ref('users/' + currentUser.uid + '/cars/' + id).remove();
-};
-
-window.toggleCarFields = () => {
-    if(!carTypeSelect || !carSpecificFields) return;
-    if (carTypeSelect.value === 'bike') {
-        carSpecificFields.style.display = 'none';
-    } else {
-        carSpecificFields.style.display = 'block';
-    }
-};
-
-// Lomakkeen napit
 if(btnAddCar) {
     btnAddCar.addEventListener('click', () => {
-        document.getElementById('car-id').value = '';
-        document.getElementById('car-name').value = '';
-        document.getElementById('car-plate').value = '';
-        document.getElementById('car-tank').value = '';
-        document.getElementById('selected-car-icon').value = '🚗';
-        document.getElementById('form-title').innerText = "Lisää ajoneuvo";
-        
-        document.querySelectorAll('.car-icon-option').forEach(el => el.classList.remove('selected-icon'));
-        
         if(addCarForm) addCarForm.style.display = 'block';
         if(btnAddCar) btnAddCar.style.display = 'none';
-        if(carTypeSelect) carTypeSelect.value = 'car';
-        toggleCarFields();
+        document.getElementById('form-title').innerText = "Lisää ajoneuvo";
+        document.getElementById('car-id').value = "";
+        document.getElementById('car-name').value = "";
+        document.getElementById('car-plate').value = "";
+        document.getElementById('car-tank').value = "";
+        generateCarIcons("🚗");
     });
 }
 
@@ -221,10 +333,18 @@ if(btnSaveCar) {
         const id = document.getElementById('car-id').value;
         const icon = document.getElementById('selected-car-icon').value;
         
+        // Säilytetään isArchived status jos muokataan olemassa olevaa
+        let isArchived = false;
+        if (id) {
+            const existing = userCars.find(c => c.id === id);
+            if(existing) isArchived = existing.isArchived || false;
+        }
+
         const carData = {
             name: name,
             type: type,
             icon: icon,
+            isArchived: isArchived,
             plate: (type === 'car') ? document.getElementById('car-plate').value : "",
             fuel: (type === 'car') ? document.getElementById('car-fuel').value : "",
             tank: (type === 'car') ? document.getElementById('car-tank').value : ""
@@ -235,12 +355,14 @@ if(btnSaveCar) {
                 .then(() => {
                     if(addCarForm) addCarForm.style.display = 'none';
                     if(btnAddCar) btnAddCar.style.display = 'block';
+                    if(typeof showToast === 'function') showToast("Tiedot tallennettu! ✅");
                 });
         } else {
             db.ref('users/' + currentUser.uid + '/cars').push().set(carData)
                 .then(() => {
                     if(addCarForm) addCarForm.style.display = 'none';
                     if(btnAddCar) btnAddCar.style.display = 'block';
+                    if(typeof showToast === 'function') showToast("Ajoneuvo lisätty! 🚗");
                 });
         }
     });
