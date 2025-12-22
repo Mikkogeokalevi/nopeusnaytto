@@ -236,15 +236,15 @@ if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchVie
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
 
-// --- 5. TANKKAUS (KORJATTU: EI PYÖRIÄ, EI "ALL" VALINTAA) ---
+// --- 5. TANKKAUS (KORJATTU: EI PYÖRIÄ, EI ARKISTOITUJA) ---
 
-// Apufunktio valikon täyttöön (Vain autot)
+// Apufunktio valikon täyttöön (Vain aktiiviset autot)
 function populateFuelCarSelect(selectedId) {
     if(!inpFuelCarSelect) return;
     inpFuelCarSelect.innerHTML = "";
     
-    // Suodatetaan pois pyörät
-    const validCars = userCars.filter(c => c.type !== 'bike');
+    // Suodatetaan pois pyörät JA arkistoidut
+    const validCars = userCars.filter(c => c.type !== 'bike' && !c.isArchived);
     
     if(validCars.length === 0) {
         const opt = document.createElement('option');
