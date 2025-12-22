@@ -1,5 +1,5 @@
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (PREMIUM UI v5.8)
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (PREMIUM UI v5.9)
 // =========================================================
 
 // --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
@@ -42,7 +42,8 @@ if (btnActivate) {
 if (btnStartRec) {
     btnStartRec.addEventListener('click', () => {
         // --- UUSI TARKISTUS: Estä aloitus jos autoa ei ole valittu ---
-        if (currentCarId === 'all') {
+        // Nyt estetään myös jos valittuna on "Kaikki (sis. arkistoidut)"
+        if (currentCarId === 'all' || currentCarId === 'all_archived') {
             if(typeof showToast === 'function') {
                 showToast("Valitse ajoneuvo ennen aloitusta! ⚠️");
             } else {
@@ -177,7 +178,7 @@ if (btnStopRec) {
 
         let selectedCarName = "Muu ajoneuvo";
         let selectedCarIcon = "🚗";
-        if (currentCarId !== 'all') {
+        if (currentCarId !== 'all' && currentCarId !== 'all_archived') {
             const c = userCars.find(x => x.id === currentCarId);
             if(c) {
                 selectedCarName = c.name;
