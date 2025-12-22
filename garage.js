@@ -1,5 +1,5 @@
 // =========================================================
-// GARAGE.JS - AJONEUVOJEN HALLINTA JA ARKISTOINTI (v5.9)
+// GARAGE.JS - AJONEUVOJEN HALLINTA JA ARKISTOINTI (v5.9 FIX)
 // =========================================================
 
 // 1. AJONEUVOJEN LATAUS
@@ -232,7 +232,8 @@ window.toggleCarFields = () => {
 
 function openEditCar(car) {
     if(addCarForm) addCarForm.style.display = 'block';
-    if(btnAddCar) btnAddCar.style.display = 'none';
+    // Huom: gBtnAddCar viittaa alempana määriteltyyn muuttujaan
+    if(gBtnAddCar) gBtnAddCar.style.display = 'none';
     
     document.getElementById('form-title').innerText = "Muokkaa ajoneuvoa";
     document.getElementById('car-id').value = car.id;
@@ -299,15 +300,16 @@ function deleteCar(id) {
     }
 }
 
-// Lomake-elementit
-const btnAddCar = document.getElementById('btn-add-car');
-const btnCancelCar = document.getElementById('btn-cancel-car');
-const btnSaveCar = document.getElementById('btn-save-car');
+// --- 6. LOMAKKEEN TAPAHTUMAKUUNTELIJAT (FIX: NIMETTY UUDELLEEN) ---
+// Nämä muuttujat nimetty g-alkuisiksi välttämään ristiriitaa ui.js:n kanssa
+const gBtnAddCar = document.getElementById('btn-add-car');
+const gBtnCancelCar = document.getElementById('btn-cancel-car');
+const gBtnSaveCar = document.getElementById('btn-save-car');
 
-if(btnAddCar) {
-    btnAddCar.addEventListener('click', () => {
+if(gBtnAddCar) {
+    gBtnAddCar.addEventListener('click', () => {
         if(addCarForm) addCarForm.style.display = 'block';
-        if(btnAddCar) btnAddCar.style.display = 'none';
+        if(gBtnAddCar) gBtnAddCar.style.display = 'none';
         document.getElementById('form-title').innerText = "Lisää ajoneuvo";
         document.getElementById('car-id').value = "";
         document.getElementById('car-name').value = "";
@@ -317,15 +319,15 @@ if(btnAddCar) {
     });
 }
 
-if(btnCancelCar) {
-    btnCancelCar.addEventListener('click', () => {
+if(gBtnCancelCar) {
+    gBtnCancelCar.addEventListener('click', () => {
         if(addCarForm) addCarForm.style.display = 'none';
-        if(btnAddCar) btnAddCar.style.display = 'block';
+        if(gBtnAddCar) gBtnAddCar.style.display = 'block';
     });
 }
 
-if(btnSaveCar) {
-    btnSaveCar.addEventListener('click', () => {
+if(gBtnSaveCar) {
+    gBtnSaveCar.addEventListener('click', () => {
         const name = document.getElementById('car-name').value;
         if (!name) { alert("Anna ajoneuvolle nimi!"); return; }
         
@@ -354,14 +356,14 @@ if(btnSaveCar) {
             db.ref('users/' + currentUser.uid + '/cars/' + id).update(carData)
                 .then(() => {
                     if(addCarForm) addCarForm.style.display = 'none';
-                    if(btnAddCar) btnAddCar.style.display = 'block';
+                    if(gBtnAddCar) gBtnAddCar.style.display = 'block';
                     if(typeof showToast === 'function') showToast("Tiedot tallennettu! ✅");
                 });
         } else {
             db.ref('users/' + currentUser.uid + '/cars').push().set(carData)
                 .then(() => {
                     if(addCarForm) addCarForm.style.display = 'none';
-                    if(btnAddCar) btnAddCar.style.display = 'block';
+                    if(gBtnAddCar) gBtnAddCar.style.display = 'block';
                     if(typeof showToast === 'function') showToast("Ajoneuvo lisätty! 🚗");
                 });
         }
