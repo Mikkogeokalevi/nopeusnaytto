@@ -1,7 +1,3 @@
-/* =========================================================
-   STYLE.CSS - TYYLITIEDOSTO (v6.04 MAP BTN POSITION)
-   ========================================================= */
-
 /* BOX-SIZING FIX */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -35,169 +31,227 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
+/* TAUSTALOGO */
+.watermark-bg { position: relative; z-index: 0; }
+.watermark-bg::before {
+    content: ""; position: absolute;
+    top: 40%; left: 50%; transform: translate(-50%, -50%);
+    width: 80%; height: 50%;
+    background-image: url('ajopaivakirja_logo_mu.png?v=4.6');
+    background-position: center; background-repeat: no-repeat; background-size: contain;
+    opacity: 0.08; z-index: -1; pointer-events: none;
+    transition: background-image 0.3s ease-in-out;
+}
+body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_logo.png?v=4.6'); opacity: 0.05; }
+
+/* KIRJAUTUMINEN */
+#login-view {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: var(--bg-color);
+    display: flex; justify-content: center; align-items: center; z-index: 5000;
+}
+.login-content { text-align: center; padding: 20px; width: 100%; max-width: 400px; animation: fadeInUp 0.5s ease-out; }
+.login-logo { width: 100px; height: 100px; margin-bottom: 20px; border-radius: 50%; border: 2px solid var(--accent-color); box-shadow: 0 0 20px rgba(41, 121, 255, 0.2); }
+.google-btn { background-color: #4285F4; margin-top: 5px; }
+
+.login-input {
+    width: 100%; padding: 12px; margin-bottom: 10px;
+    border-radius: 8px; border: 1px solid var(--border-color);
+    background-color: rgba(255,255,255,0.05); color: var(--text-color);
+    transition: border-color 0.3s;
+}
+.login-input:focus { outline: none; border-color: var(--accent-color); }
+.light-theme .login-input { background-color: #fff; color: #000; border: 1px solid #ccc; }
+
+.text-btn {
+    background: none; border: none; color: var(--subtext-color);
+    font-size: 14px; text-decoration: underline; cursor: pointer;
+    transition: color 0.2s; margin-top: 10px;
+}
+.text-btn:hover { color: var(--accent-color); }
+
+/* YLÄPALKKI */
 .top-bar-container {
-    background-color: var(--panel-bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 10px 15px;
     display: flex; justify-content: space-between; align-items: center;
-    z-index: 100;
-    height: 60px;
-    flex-shrink: 0;
+    padding: 8px 15px; background-color: var(--panel-bg);
+    border-bottom: 1px solid var(--border-color); z-index: 2000;
+    height: 55px; box-sizing: border-box; flex-shrink: 0;
+    width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
-
-/* --- LOGO FIX (CSS Content Swap) --- */
-.header-logo { 
-    height: 35px; 
-    width: auto; 
-    cursor: pointer;
-    /* Oletus: Tumma teema (Musta tausta -logo) */
-    content: url("ajopaivakirja_logo_mu.png");
-}
-
-body.light-theme .header-logo {
-    /* Vaalea teema (Valkoiset reunat -logo) */
-    content: url("ajopaivakirja_logo.png");
-}
+.header-logo { height: 34px; width: 34px; border-radius: 50%; border: 2px solid var(--accent-color); cursor: pointer; transition: transform 0.2s; }
+.header-logo:active { transform: scale(0.9); }
 
 .top-car-select {
-    background: transparent; color: var(--text-color);
+    background-color: transparent; color: var(--text-color);
     border: 1px solid var(--border-color); border-radius: 20px;
-    padding: 5px 10px; font-size: 14px; margin-left: 10px;
-    max-width: 140px;
+    padding: 4px 12px; font-size: 13px; font-weight: 600;
+    max-width: 160px; outline: none;
+    transition: border-color 0.3s;
 }
+.top-car-select:focus { border-color: var(--accent-color); }
 
-.top-buttons { display: flex; gap: 15px; }
-
-/* --- ICON BTN FIX (Font size & Wrap) --- */
+.top-buttons { display: flex; align-items: center; gap: 10px; }
 .icon-btn {
-    background: none; border: 1px solid var(--border-color);
-    color: var(--text-color); 
-    font-size: 15px; /* Pienennetty 18px -> 15px jotta mahtuu */
-    white-space: nowrap; /* Estää rivityksen */
-    cursor: pointer;
-    width: 36px; height: 36px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 1px solid var(--border-color); color: var(--text-color);
+    border-radius: 10px; width: 34px; height: 34px; font-size: 16px;
+    cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; flex-shrink: 0;
+    transition: all 0.2s;
 }
+.icon-btn:active { transform: scale(0.9); background-color: rgba(255,255,255,0.1); }
+.menu-btn { font-size: 20px; border-color: var(--accent-color); color: var(--accent-color); }
 
-/* --- MENU DROPDOWN --- */
+/* MENU DROPDOWN */
 .menu-dropdown {
-    position: absolute; 
-    top: 60px; 
-    right: 10px; 
-    width: 260px;
+    position: absolute; top: 60px; right: 10px; width: 260px;
     background-color: var(--panel-bg); 
-    border: 1px solid var(--border-color); 
-    border-radius: 12px; 
-    z-index: 3000; 
-    display: flex; flex-direction: column;
-    padding: 20px; 
+    border: 1px solid var(--border-color); border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 3000; display: flex; flex-direction: column;
     animation: slideIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
 }
 @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-.menu-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-.menu-user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-.menu-user-name { font-weight: bold; font-size: 14px; }
-.menu-items { display: flex; flex-direction: column; gap: 10px; }
+.menu-header {
+    padding: 20px; background: linear-gradient(135deg, rgba(41, 121, 255, 0.1), transparent);
+    display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border-color);
+}
+.menu-user-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent-color); }
+.menu-user-name { font-weight: bold; font-size: 15px; overflow: hidden; text-overflow: ellipsis; }
+
+.menu-items { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
 .menu-item {
-    background: none; border: none; color: var(--text-color);
-    text-align: left; font-size: 16px; padding: 10px;
-    cursor: pointer; border-radius: 8px; transition: background 0.2s;
+    background: none; border: none; color: var(--text-color); text-align: left;
+    padding: 12px 15px; font-size: 15px; cursor: pointer; border-radius: 8px;
+    transition: background 0.2s, transform 0.1s; display: flex; align-items: center; gap: 10px;
 }
-.menu-item:hover, .menu-item.active-menu { background-color: rgba(255,255,255,0.1); }
-.menu-divider { border: 0; border-top: 1px solid var(--border-color); margin: 10px 0; width: 100%; }
-.logout-item { color: #ff4444; }
+.menu-item:active { transform: scale(0.98); }
+.active-menu { background-color: var(--accent-color) !important; color: #fff !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.logout-item { color: #ff4444; border-top: 1px solid var(--border-color); margin-top: 5px; border-radius: 0 0 8px 8px; }
 
-.main-content {
-    flex: 1; position: relative; overflow: hidden;
-    display: flex; flex-direction: column;
-}
+/* PÄÄSISÄLTÖ */
+.main-content { flex-grow: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; width: 100%; }
+.view-section { flex-grow: 1; display: flex; flex-direction: column; width: 100%; height: 100%; }
 
-.view-section {
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    display: flex; flex-direction: column;
-    padding: 10px;
-    overflow-y: auto; 
-    overflow-x: hidden;
-}
-
-.watermark-bg::before {
-    content: ""; position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%); width: 80%; height: 80%;
-    /* Taustakuva hoidetaan tässä tapauksessa vain yhdellä tiedostolla, opacity hoitaa himmennyksen */
-    background: url('ajopaivakirja_logo_mu.png') no-repeat center center;
-    background-size: contain; opacity: 0.03; pointer-events: none; z-index: -1;
-}
-
-/* --- MITTARISTON ASETTELU --- */
+/* --- MITTARISTO (DASHBOARD) - JOUSTAVA LAYOUT --- */
 #dashboard-view { 
     display: none; 
     flex-direction: column;
-    justify-content: center; 
+    justify-content: space-evenly; 
     align-items: center;
     padding: 5px 15px; 
-    padding-bottom: 80px; 
-    gap: 15px; 
     height: 100%;
     overflow: hidden; 
 }
 
+/* NÄYTÄ KUN AKTIIVINEN */
 #dashboard-view.active-view {
     display: flex;
 }
 
-.huge-speed-container {
-    flex: 0 0 auto;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    position: relative;
-    margin-top: 10px;
+/* MUUT NÄKYMÄT */
+.view-section.active-view:not(#dashboard-view):not(#map-view) {
+    display: block;
+}
+#map-view.active-view {
+    display: flex;
+}
+
+/* LIVE STATUS BAR (ECO) */
+.status-bar {
+    display: flex; gap: 15px; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--subtext-color);
+    transition: opacity 0.5s; width: 100%; min-height: 25px;
+    flex-shrink: 0; 
+}
+.style-badge {
+    padding: 4px 10px; border-radius: 20px; font-weight: bold; border: 1px solid transparent;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+    transition: all 0.3s;
+}
+.style-green { background-color: rgba(0, 200, 83, 0.15); color: #00c853; border-color: #00c853; box-shadow: 0 0 10px rgba(0,200,83,0.2); }
+.style-red { background-color: rgba(213, 0, 0, 0.15); color: #ff1744; border-color: #ff1744; animation: shake 0.5s; box-shadow: 0 0 10px rgba(255,23,68,0.2); }
+@keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+
+/* VASEN SIVUNAPPI */
+.side-tap-zone {
+    position: absolute; top: 10px; height: 120px; width: 30px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(to right, rgba(41, 121, 255, 0.2), transparent);
+    color: var(--accent-color); font-weight: bold; font-size: 12px;
+    cursor: pointer; writing-mode: vertical-rl; text-orientation: mixed;
+    z-index: 50; border-radius: 0 10px 10px 0; border: 1px solid rgba(41, 121, 255, 0.3); border-left: none;
+    transition: width 0.2s, background 0.2s;
+}
+#side-tap-left { left: 0; } 
+.side-tap-zone:active { width: 45px; background: var(--accent-color); color: #fff; }
+
+/* ISO NOPEUS */
+.huge-speed-container { 
+    text-align: center; position: relative; 
+    flex-shrink: 0; 
 }
 .huge-speed {
-    font-size: 120px; 
-    font-weight: 800; line-height: 1;
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 0 20px rgba(41, 121, 255, 0.3);
-    color: var(--speed-color);
+    font-size: 16vh; 
+    font-weight: 800; color: var(--speed-color); line-height: 0.9;
+    font-variant-numeric: tabular-nums; 
+    text-shadow: 0 0 20px rgba(41, 121, 255, 0.4); 
+    transition: color 0.3s, text-shadow 0.3s;
 }
-.huge-speed.three-digits { font-size: 90px; }
-.huge-unit { font-size: 20px; color: var(--subtext-color); margin-top: -5px; text-transform: uppercase; letter-spacing: 2px; }
+.huge-unit { font-size: 16px; color: var(--subtext-color); font-weight: 500; display: block; text-align: center; margin-top: 0px; text-transform: uppercase; letter-spacing: 2px; }
 
-.stats-grid {
+.huge-speed.three-digits {
+    font-size: 13vh; 
+    letter-spacing: -2px; 
+}
+
+/* GRIDI */
+.stats-grid { 
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    margin-bottom: 5px;
-    width: 100%; max-width: 450px;
+    width: 100%; max-width: 450px; 
+    position: relative; z-index: 60;
+    flex-shrink: 1; 
 }
 .stat-card {
-    background: var(--card-bg); padding: 8px 10px; border-radius: 12px;
-    text-align: center; border: 1px solid rgba(255,255,255,0.05);
+    background-color: var(--card-bg); 
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    padding: 8px;
+    border-radius: 14px; text-align: center;
+    width: 100%; border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
-.stat-label { font-size: 10px; text-transform: uppercase; color: var(--subtext-color); display: block; margin-bottom: 2px; }
-.stat-value { font-size: 18px; font-weight: 700; color: var(--text-color); }
-.stat-unit { font-size: 11px; color: var(--subtext-color); margin-left: 2px; }
+.light-theme .stat-card { border: 1px solid rgba(0,0,0,0.05); }
 
-.address-container {
-    text-align: center; margin-bottom: 10px;
-    background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 8px;
-    max-width: 90%;
-}
-.coords-box { font-family: monospace; color: var(--subtext-color); font-size: 10px; margin-top: 2px; }
+.stat-label { font-size: 9px; color: var(--subtext-color); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1px; display: block; }
+.stat-value { font-size: 20px; font-weight: 700; color: var(--text-color); }
+.stat-unit { font-size: 11px; color: var(--subtext-color); font-weight: normal; }
+.coords-box { font-family: 'Roboto Mono', monospace; color: var(--accent-color); font-size: 11px; opacity: 0.8; margin-top: 5px; }
 
+/* TIME & WEATHER - KORJATTU NÄKYVYYS */
 .time-weather-wrapper {
     display: flex; justify-content: center; align-items: center; gap: 20px;
-    background: var(--card-bg); padding: 10px 20px; border-radius: 15px;
-    margin-bottom: 0; position: relative;
+    text-align: center; width: 100%;
     flex-shrink: 0;
+    position: relative;
+    overflow: visible !important; /* TÄMÄ ON TÄRKEÄ NAPIN NÄKYMISEKSI */
 }
-.weather-huge { font-size: 28px; }
-.time-right-col { text-align: right; }
-.clock-box { font-size: 24px; font-weight: bold; line-height: 1; }
-.date-box { font-size: 12px; color: var(--subtext-color); text-transform: uppercase; }
+.weather-huge {
+    font-size: 28px; font-weight: bold; color: var(--text-color);
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
+}
+.time-right-col { 
+    display: flex; flex-direction: column; text-align: left; 
+    align-items: flex-start;
+    position: relative;
+    overflow: visible !important; /* TÄMÄ MYÖS */
+}
+.clock-box { font-size: 28px; font-weight: 300; color: var(--text-color); letter-spacing: 1px; line-height: 1; }
+.date-box { font-size: 12px; color: var(--accent-color); margin-top: 0px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
 
+/* TANKKAUSNAPPI - KORJATTU SIJAINTI */
 #btn-open-fuel {
     position: absolute;
-    right: -45px; 
+    right: -50px; /* Siirretään tekstin oikealle puolelle */
     top: 50%;
     transform: translateY(-50%);
     width: 34px; height: 34px;
@@ -209,301 +263,183 @@ body.light-theme .header-logo {
     cursor: pointer;
     z-index: 100;
 }
+#btn-open-fuel:active { background-color: rgba(41, 121, 255, 0.2); }
 
-.controls-container {
-    background-color: var(--panel-bg);
-    border-top: 1px solid var(--border-color);
-    padding: 15px; text-align: center;
-    z-index: 100; flex-shrink: 0;
-}
-#status { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; color: var(--subtext-color); }
-
-.action-btn {
-    width: 100%; border: none; padding: 15px; border-radius: 12px;
-    font-size: 16px; font-weight: bold; color: white; cursor: pointer;
-    text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s;
-}
-.action-btn:active { transform: scale(0.98); }
-.blue-btn { background: linear-gradient(135deg, #2979ff, #1565c0); }
-.green-btn { background: linear-gradient(135deg, #00e676, #00c853); color: #000; }
-.red-btn { background: linear-gradient(135deg, #ff1744, #d50000); }
-.yellow-btn { background: linear-gradient(135deg, #ffea00, #ffd600); color: #000; }
-
-#map { width: 100%; height: 100%; }
-
-/* --- KARTTAELEMENTIT (Nappi Vasemmalla) --- */
+/* KARTTA */
+#map-view { display: flex; flex-direction: column; height: 100vh; width: 100%; position: relative; }
+#map { flex-grow: 1; width: 100%; height: 100%; z-index: 1; }
 
 .map-overlay {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 1000;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 10px 15px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    text-align: left;
+    position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+    background-color: rgba(30, 30, 30, 0.85); backdrop-filter: blur(5px);
+    padding: 5px 20px; border-radius: 30px; z-index: 1000; text-align: center;
+    border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
-.speed-container { margin-bottom: 0; }
-#map-speed { font-size: 28px; font-weight: 800; color: var(--speed-color); }
-.small-coords { font-size: 10px; font-family: monospace; color: #ccc; margin-top: 2px; }
-
-/* GPS Nappi - Vasen reuna */
-.map-gps-btn {
-    position: absolute;
-    top: 130px;
-    left: 10px;
-    z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    border: 2px solid #444;
-    padding: 10px 15px;
-    border-radius: 50px;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-}
-.map-gps-btn.inactive {
-    background-color: rgba(255, 23, 68, 0.8);
-    border-color: #ff1744;
-}
+.speed-container { font-size: 28px; font-weight: bold; color: var(--speed-color); }
+.small-coords { font-family: 'Roboto Mono', monospace; font-size: 10px; color: #ccc; margin-top: -2px; }
 
 .map-return-btn {
     position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-    z-index: 1000; background-color: var(--accent-color); color: #fff;
-    border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold;
-    font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    background-color: var(--accent-color); color: #fff;
+    padding: 12px 30px; border-radius: 30px; border: none; font-weight: bold;
+    font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 1000; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 1px;
 }
-
+.map-gps-btn {
+    position: absolute; top: 15px; right: 15px; z-index: 1000;
+    background-color: var(--card-bg); color: #fff;
+    border: 1px solid var(--accent-color); border-radius: 12px;
+    padding: 8px 12px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+}
+.map-gps-btn.inactive { background-color: rgba(50,50,50,0.8); color: #aaa; border-color: #555; }
 .map-legend {
-    position: absolute; bottom: 30px; right: 10px; z-index: 900;
-    background: rgba(0,0,0,0.6); padding: 5px 10px; border-radius: 8px;
-    font-size: 10px; color: #fff; display: flex; align-items: center; gap: 5px;
+    position: absolute; bottom: 100px; right: 15px; z-index: 1000;
+    background-color: rgba(255,255,255,0.95); padding: 8px 12px;
+    border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-size: 10px; color: #000; display: flex; align-items: center; gap: 8px; font-weight: bold;
 }
 .legend-gradient {
-    width: 60px; height: 6px; border-radius: 3px;
-    background: linear-gradient(to right, #2979ff, #ff1744);
+    width: 80px; height: 8px;
+    background: linear-gradient(to right, #2979ff, #00c853, #fbc02d, #ff1744);
+    border-radius: 4px;
 }
 
-/* Sivupainikkeet - KARTTA */
-.side-tap-zone {
-    position: absolute; 
-    top: 25%; /* MUUTETTU: Nostettu 50% -> 25% jotta on nopeusnäytön vieressä */
-    width: 40px; height: 100px;
-    transform: translateY(-50%); z-index: 800;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; color: rgba(255,255,255,0.3);
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(0,0,0,0.2);
-    border-radius: 0 10px 10px 0;
-    writing-mode: vertical-rl; text-orientation: mixed;
-    left: 0;
-}
-
-/* Status Bar & G-Bubble */
-.status-bar {
-    display: flex; justify-content: center; margin-bottom: 10px;
-    opacity: 0; transition: opacity 0.3s;
-}
-.style-badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-.style-green { background: rgba(0, 200, 83, 0.2); color: #00e676; border: 1px solid #00e676; }
-.style-red { background: rgba(213, 0, 0, 0.2); color: #ff1744; border: 1px solid #ff1744; }
-
-.g-force-wrapper { pointer-events: none; }
-.g-meter-bg {
-    width: 100%; height: 100%; border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.1);
-    background: rgba(0,0,0,0.3); position: relative;
-}
-.g-meter-bg::after {
-    content: "+"; position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%); color: rgba(255,255,255,0.2); font-size: 20px;
-}
-.g-bubble {
-    width: 12px; height: 12px; background: var(--accent-color);
-    border-radius: 50%; position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 5px var(--accent-color);
-    transition: transform 0.1s ease-out;
-}
-
-/* Splash */
-#splash-screen {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: var(--bg-color); z-index: 9999;
-    display: flex; justify-content: center; align-items: center;
-    flex-direction: column;
-}
-.splash-logo { width: 120px; margin-bottom: 20px; animation: pulse 2s infinite; }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-/* Login */
-#login-view {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--bg-color); z-index: 5000;
-    display: flex; justify-content: center; align-items: center;
-}
-.login-content {
-    background: var(--panel-bg); padding: 30px; border-radius: 20px;
-    text-align: center; width: 90%; max-width: 400px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-.login-logo { width: 80px; margin-bottom: 10px; }
-.login-input {
-    width: 100%; padding: 12px; margin-bottom: 10px;
-    background: rgba(255,255,255,0.05); border: 1px solid var(--border-color);
-    color: var(--text-color); border-radius: 8px; font-size: 16px;
-}
-.google-btn { background: #fff; color: #333; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.text-btn { background: none; border: none; color: var(--subtext-color); font-size: 14px; margin-top: 10px; cursor: pointer; text-decoration: underline; }
-
-/* Historia & Logit */
+/* LISTA ANIMATIO */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+#log-list { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
 .log-card {
-    background-color: var(--card-bg); border-radius: 12px;
-    padding: 15px; margin-bottom: 10px;
-    border-left: 4px solid var(--accent-color);
-    animation: fadeIn 0.3s ease-out backwards;
+    background-color: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 16px; padding: 18px; margin-bottom: 15px;
+    width: 100%; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    opacity: 0; animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.log-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+.light-theme .log-header { border-bottom: 1px solid rgba(0,0,0,0.05); }
+.log-car-big { font-size: 16px; font-weight: 700; color: var(--accent-color); margin-top: 3px; display: flex; align-items: center; gap: 5px; }
+.log-date-line { font-size: 12px; color: var(--subtext-color); font-weight: 500; }
+.delete-btn, .edit-btn, .map-btn { background: none; border: none; font-size: 20px; padding: 8px; cursor: pointer; transition: transform 0.2s; }
+.delete-btn:hover, .edit-btn:hover { transform: scale(1.1); }
+.delete-btn { color: #ef5350; } .edit-btn { color: var(--text-color); opacity: 0.6; } .map-btn { color: #fbc02d; }
+.log-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; text-align: center; }
+.log-stats div { display: flex; flex-direction: column; }
+.log-stats span.stat-label { font-size: 9px; margin-bottom: 2px; }
+.subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.1); color: var(--text-color); font-size: 14px; }
+.subject-input:focus { outline: none; border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.05); }
 
-.log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.log-title-group { display: flex; flex-direction: column; text-align: left; }
-.log-date-line { font-size: 11px; color: var(--subtext-color); text-transform: uppercase; }
-.log-car-big { font-size: 16px; font-weight: bold; color: var(--text-color); }
+/* AUTO LISTA */
+#cars-list { width: 100%; max-width: 600px; margin: 0 auto; }
+.car-item { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.car-details { font-size: 13px; color: var(--subtext-color); margin-top: 4px; }
+.car-title { font-weight: 700; font-size: 16px; color: var(--text-color); display: flex; align-items: center; gap: 8px; }
+.car-actions { display: flex; gap: 5px; }
+.car-icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
+.car-icon-option { font-size: 22px; text-align: center; cursor: pointer; padding: 5px; border: 1px solid var(--border-color); border-radius: 8px; background-color: rgba(255,255,255,0.05); transition: background 0.2s; }
+.car-icon-option.selected-icon { border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.2); }
 
-.log-stats { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px; margin-bottom: 8px; }
-.log-stats div { text-align: center; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; font-size: 14px; font-weight: bold; }
-.log-stats .stat-label { font-size: 9px; }
+/* TAGIT & SUMMARY */
+.log-tags { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.tag { font-size: 10px; padding: 4px 8px; border-radius: 6px; background-color: rgba(255,255,255,0.05); color: var(--subtext-color); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 4px; font-weight: 600; }
+.summary-box { display: flex; justify-content: space-around; align-items: center; background: linear-gradient(135deg, rgba(41, 121, 255, 0.1), transparent); border: 1px solid rgba(41, 121, 255, 0.3); border-radius: 16px; padding: 15px; margin: 0 auto 20px auto; max-width: 600px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.summary-val { font-size: 24px; font-weight: 800; color: var(--accent-color); text-shadow: 0 0 10px rgba(41, 121, 255, 0.2); }
+.summary-sep { color: var(--border-color); font-size: 24px; font-weight: 100; opacity: 0.3; }
 
-.subject-input {
-    width: 100%; background: transparent; border: none;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-color); padding: 5px; font-size: 14px;
+/* CONTROLS */
+.controls-container { background-color: var(--panel-bg); padding: 10px 15px; text-align: center; border-top: 1px solid var(--border-color); z-index: 2000; flex-shrink: 0; width: 100%; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); }
+.action-btn { padding: 12px 20px; font-size: 15px; border: none; border-radius: 50px; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 350px; margin: 5px 0; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s, box-shadow 0.2s; background-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(0,0,0,0)); }
+.action-btn:active { transform: scale(0.97); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.blue-btn { background-color: var(--accent-color); }
+.green-btn { background-color: #00c853; }
+.red-btn { background-color: #d50000; }
+.yellow-btn { background-color: #fbc02d; color: #000; }
+#status { margin-bottom: 8px; font-size: 12px; color: var(--subtext-color); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+
+/* SPLASH */
+#splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease-out; }
+.splash-logo { width: 100px; height: 100px; border-radius: 50%; box-shadow: 0 0 30px rgba(41, 121, 255, 0.4); margin-bottom: 20px; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0.4); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(41, 121, 255, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0); } }
+
+/* --- MODALS (KORJATTU: NOUSEE YLÖS NÄPPÄIMISTÖÄ KARKUUN) --- */
+.modal-overlay { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background-color: rgba(0, 0, 0, 0.85); z-index: 9000; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; /* Muutos: Ylös, ei keskelle */
+    padding-top: 15vh;       /* Muutos: Vähän irti katosta */
+    backdrop-filter: blur(5px); 
+    overflow-y: auto;        /* Varmistus: Skrollaus tarvittaessa */
 }
 
-.map-btn, .delete-btn, .edit-btn {
-    background: none; border: 1px solid var(--border-color);
-    color: var(--text-color); cursor: pointer; border-radius: 50%;
-    width: 30px; height: 30px; margin-left: 5px;
-    display: inline-flex; align-items: center; justify-content: center;
+.modal-content { 
+    background-color: var(--panel-bg); 
+    width: 90%; max-width: 400px; 
+    border-radius: 20px; padding: 25px; text-align: center; 
+    border: 1px solid var(--border-color); 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+    animation: fadeInUp 0.3s ease-out; 
 }
-.delete-btn { color: #ff4444; border-color: #ff4444; }
-.edit-btn { color: #2979ff; border-color: #2979ff; }
+.modal-content select { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--accent-color); border-radius: 8px; }
+.modal-summary { margin-bottom: 20px; font-size: 22px; font-weight: bold; color: var(--text-color); }
 
-/* Kalusto lista */
-.car-item {
-    background: var(--panel-bg); padding: 15px; border-radius: 10px;
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 10px; border: 1px solid var(--border-color);
-}
-.car-archived { opacity: 0.6; border: 1px dashed #666; }
-
-/* Modaalit */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8); z-index: 6000;
-    display: flex; justify-content: center; align-items: center;
-}
-.modal-content {
-    background: var(--panel-bg); padding: 25px; border-radius: 20px;
-    width: 90%; max-width: 350px; text-align: center;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-    border: 1px solid var(--border-color);
-}
-.modal-summary { font-size: 24px; font-weight: bold; margin: 15px 0; color: var(--accent-color); }
-
-/* Toast */
+/* --- TOAST ILMOITUKSET --- */
 .toast {
-    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-    background: rgba(40,40,40,0.95); color: #fff;
-    padding: 12px 24px; border-radius: 50px;
-    font-size: 14px; z-index: 7000;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s;
-    border: 1px solid rgba(255,255,255,0.1);
-    white-space: nowrap;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1e1e1e;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    border: 1px solid var(--accent-color);
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    pointer-events: none;
 }
-.toast.visible { opacity: 1; }
+.toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+}
 
-.bottom-branding {
-    position: absolute; bottom: 10px; left: 50%;
-    transform: translateX(-50%); width: 140px;
-    opacity: 0.5; pointer-events: none;
-}
-.footer-img { width: 100%; height: auto; display: none; }
-body:not(.light-theme) .dark-mode-img { display: block; }
+/* ALAREUNAKUVA */
+.bottom-branding { width: 100%; display: flex; justify-content: center; align-items: flex-end; margin-top: auto; padding-top: 5px; padding-bottom: 0px; z-index: 10; flex-shrink: 1; }
+.footer-img { max-width: 55%; max-height: 15vh; height: auto; object-fit: contain; border-radius: 20px; opacity: 0.8; }
+.light-mode-img { display: none; }
+.dark-mode-img { display: block; }
+body.light-theme .dark-mode-img { display: none; }
 body.light-theme .light-mode-img { display: block; }
 
-/* Help section */
-.help-section { background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: left; }
-.help-section h3 { margin-top: 0; color: var(--accent-color); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
-.help-step { margin-bottom: 15px; font-size: 14px; line-height: 1.5; }
+/* G-FORCE & EXTRAS */
+.g-meter-bg { width: 60px; height: 60px; border: 2px solid var(--accent-color); border-radius: 50%; position: relative; background: radial-gradient(circle, rgba(41,121,255,0.1) 0%, rgba(0,0,0,0.5) 100%); box-shadow: 0 0 10px rgba(41, 121, 255, 0.3); }
+.g-bubble { width: 12px; height: 12px; background-color: #fff; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 5px #fff; transition: transform 0.1s ease-out; }
+#dash-address { font-size: 13px; font-weight: bold; color: var(--text-color); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90vw; }
+#compass-arrow { display: inline-block; transition: transform 0.3s cubic-bezier(0.4, 2.5, 0.5, 0.5); }
 
-/* Car Icon Grid */
-.car-icon-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 10px 0; }
-.car-icon-option { font-size: 24px; cursor: pointer; padding: 5px; border-radius: 5px; border: 1px solid transparent; text-align: center; }
-.car-icon-option.selected { background: rgba(255,255,255,0.1); border-color: var(--accent-color); }
-
-.summary-box {
-    display: flex; justify-content: space-around;
-    background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; margin-bottom: 15px;
-}
-.summary-item { text-align: center; }
-.summary-val { font-size: 18px; font-weight: bold; color: var(--accent-color); display: block; }
-.summary-label { font-size: 10px; text-transform: uppercase; color: var(--subtext-color); }
-.summary-sep { color: var(--border-color); font-size: 20px; font-weight: 100; }
-
-.chart-container { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; margin-bottom: 10px; }
-.chart-container h3 { margin: 0 0 10px 0; font-size: 14px; text-align: center; color: var(--subtext-color); }
-
-.log-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
-.tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: #ccc; }
-
-@media (min-width: 600px) {
-    .stats-grid { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; }
-    .huge-speed { font-size: 200px; }
-}
-
-/* Landscape Mode Adjustments */
-@media (orientation: landscape) and (max-height: 600px) {
-    #dashboard-view {
+/* --- VAAKATASO (LANDSCAPE) TUKI --- */
+/* NÄYTÄ GRID VAIN KUN LUOKKA 'active-view' ON PÄÄLLÄ JA NÄYTTÖ VAAKA */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    #dashboard-view.active-view {
         display: grid;
-        grid-template-areas: 
+        grid-template-columns: 40% 60%;
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas:
             "status stats"
             "speed stats"
             "meta address";
-        grid-template-columns: 1fr 1.2fr;
-        grid-template-rows: auto 1fr auto;
         padding: 5px 10px;
         align-content: center;
         justify-items: center;
-        /* Nollataan pystytilan säädöt vaakatasossa */
-        justify-content: unset;
-        gap: unset;
-        padding-bottom: 5px;
     }
 
     .bottom-branding { display: none; }
     
-    .status-bar { 
-        grid-area: status; 
-        width: 100%; 
-        justify-content: center; 
-        margin: 0; 
-        min-height: 20px; 
-        position: static; 
-    }
+    .status-bar { grid-area: status; width: 100%; justify-content: center; margin: 0; min-height: 20px; }
     
-    .huge-speed-container { 
-        grid-area: speed; 
-        align-self: center; 
-        margin: 0; 
-        padding-left: 0;
-        align-items: center;
-        justify-content: center;
-    }
+    .huge-speed-container { grid-area: speed; align-self: center; margin: 0; }
     .huge-speed { font-size: 35vh; }
     .huge-speed.three-digits { font-size: 26vh; }
     
@@ -516,31 +452,31 @@ body.light-theme .light-mode-img { display: block; }
         margin: 0;
         height: 100%;
         padding-left: 10px;
-        overflow-y: visible; 
     }
     
-    .address-container { 
-        display: block; 
-        grid-area: address; 
-        width: 100%; 
-        text-align: center; 
-        padding-top: 5px; 
-        z-index: 60; 
-        padding-left: 0;
-    }
+    .address-container { display: block; grid-area: address; width: 100%; text-align: center; padding-top: 5px; z-index: 60; }
     
     .time-weather-wrapper {
         grid-area: meta;
-        display: flex;
         flex-direction: row;
         gap: 15px;
         padding-bottom: 5px;
         position: relative;
         padding-right: 50px;
-        margin-bottom: 0;
-        background: transparent;
     }
-    
-    /* Kartta landscape korjaus napille */
-    .map-gps-btn { top: 100px; left: 10px; }
+    .clock-box { font-size: 24px; }
+    .weather-huge { font-size: 24px; }
+    .date-box { display: none; } 
+
+    .g-force-wrapper {
+        position: absolute;
+        top: auto; 
+        bottom: 10px; 
+        left: 35%; /* Säädä tarvittaessa */
+        right: auto;
+        width: 40px;
+        height: 40px;
+    }
+    .g-meter-bg { width: 40px; height: 40px; }
+    .g-bubble { width: 8px; height: 8px; }
 }

@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (FIXED v6.8)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.96)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -52,7 +52,6 @@ const modalCarNameEl = document.getElementById('modal-car-name');
 const btnModalSave = document.getElementById('btn-modal-save');
 const btnModalCancel = document.getElementById('btn-modal-cancel');
 
-// MUOKKAUS MODAALI (Logit)
 const editModal = document.getElementById('edit-modal');
 const editKeyEl = document.getElementById('edit-key');
 const editSubjectEl = document.getElementById('edit-subject');
@@ -65,6 +64,7 @@ const manualModal = document.getElementById('manual-drive-modal');
 const btnManualDrive = document.getElementById('btn-manual-drive');
 const btnManualCancel = document.getElementById('btn-manual-cancel');
 const btnManualSave = document.getElementById('btn-manual-save');
+// const btnManualCalc = document.getElementById('btn-manual-calc'); // POISTETTU TÄSTÄ VERSIOSTA
 const inpManualDate = document.getElementById('manual-date');
 const inpManualCar = document.getElementById('manual-car-select');
 const inpManualStart = document.getElementById('manual-start-addr');
@@ -72,7 +72,7 @@ const inpManualEnd = document.getElementById('manual-end-addr');
 const inpManualDist = document.getElementById('manual-dist');
 const inpManualSubj = document.getElementById('manual-subject');
 
-// PREVIEW MODAL
+// PREVIEW MODAL (UUSI)
 const previewModal = document.getElementById('preview-modal');
 const btnPreviewCancel = document.getElementById('btn-preview-cancel');
 const btnPreviewConfirm = document.getElementById('btn-preview-confirm');
@@ -84,13 +84,13 @@ const btnDeleteCancel = document.getElementById('btn-delete-cancel');
 // CSV EXPORT BUTTON
 const btnExportCsv = document.getElementById('btn-export-csv');
 
-// CONFIRM MODAL
+// PREMIUM CONFIRM MODAL
 const confirmModal = document.getElementById('custom-confirm-modal');
 const confirmTitle = document.getElementById('confirm-title');
 const confirmMsg = document.getElementById('confirm-msg');
 const btnConfirmYes = document.getElementById('btn-confirm-yes');
 const btnConfirmNo = document.getElementById('btn-confirm-no');
-let confirmCallback = null; 
+let confirmCallback = null; // Callback funktiolle
 
 // TANKKAUS ELEMENTIT
 const fuelModal = document.getElementById('fuel-modal');
@@ -167,6 +167,7 @@ window.openConfirmModal = (title, message, callback) => {
     if(confirmModal) confirmModal.style.display = 'flex';
 }
 
+// Confirm napit
 if(btnConfirmNo) {
     btnConfirmNo.addEventListener('click', () => {
         if(confirmModal) confirmModal.style.display = 'none';
@@ -182,7 +183,7 @@ if(btnConfirmYes) {
 }
 
 
-// --- 3. UI LOGIIKKA & NAVIGAATIO ---
+// --- 3. UI LOGIIKKA ---
 
 function switchView(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
@@ -199,8 +200,7 @@ function switchView(viewName) {
 
     const targetEl = views[viewName];
     if (targetEl) {
-        if (viewName === 'dashboard') targetEl.style.display = 'flex';
-        else targetEl.style.display = 'block'; 
+        targetEl.style.display = ''; 
         targetEl.classList.add('active-view');
     }
     
@@ -213,8 +213,7 @@ function switchView(viewName) {
     }
     if (viewName === 'map' && map) setTimeout(() => map.invalidateSize(), 100);
     
-    // Pakotetaan päivitys
-    if (viewName === 'history' && typeof loadHistory === 'function') loadHistory();
+    if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
 }
@@ -258,48 +257,26 @@ if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchVie
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
 
-// --- 5. TANKKAUS (EDIT & DELETE FIX) ---
+// --- 5. TANKKAUS (TALLENNUSLUKKO) ---
 
-function populateFuelCarSelect(selectedId) {
-    if(!inpFuelCarSelect) return;
-    inpFuelCarSelect.innerHTML = "";
+function populateFuelCarSelect(selectedId, selectElement = inpFuelCarSelect) {
+    if(!selectElement) return;
+    selectElement.innerHTML = "";
     const validCars = userCars.filter(c => c.type !== 'bike' && !c.isArchived);
     if(validCars.length === 0) {
-        inpFuelCarSelect.add(new Option("Ei tankattavia ajoneuvoja", ""));
+        const opt = document.createElement('option');
+        opt.text = "Ei tankattavia ajoneuvoja";
+        selectElement.appendChild(opt);
         return;
     }
     validCars.forEach(car => {
-        const opt = new Option(`${car.icon||"🚗"} ${car.name}`, car.id);
+        const opt = document.createElement('option');
+        opt.value = car.id;
+        const icon = car.icon || "🚗";
+        opt.text = `${icon} ${car.name}`;
         if(selectedId && car.id === selectedId) opt.selected = true;
-        inpFuelCarSelect.appendChild(opt);
+        selectElement.appendChild(opt);
     });
-}
-
-// Lisätään polttoainetyypin valinta dynaamisesti modaaliin, jos se puuttuu
-function ensureFuelTypeField() {
-    if (document.getElementById('fuel-type-container')) return;
-    
-    // Etsitään paikka litra/hinta kenttien jälkeen
-    const litersField = document.getElementById('fuel-liters').parentNode.parentNode; // .display:flex container
-    
-    const div = document.createElement('div');
-    div.id = 'fuel-type-container';
-    div.style.marginBottom = "15px";
-    div.style.textAlign = "left";
-    
-    div.innerHTML = `
-        <label>Polttoaine</label>
-        <select id="fuel-type-select" class="subject-input">
-            <option value="Bensiini">Bensiini</option>
-            <option value="Diesel">Diesel</option>
-            <option value="Sähkö">Sähkö</option>
-            <option value="Muu">Muu</option>
-        </select>
-    `;
-    
-    // Lisätään DOMiin oikeaan kohtaan (esim. ennen laskuria)
-    const calc = document.getElementById('fuel-price-calc').parentNode;
-    fuelModal.querySelector('.modal-content').insertBefore(div, calc);
 }
 
 if (btnOpenFuel) {
@@ -317,23 +294,8 @@ if (btnOpenFuel) {
         if(inpFuelCalc) inpFuelCalc.innerText = "0.00";
         if(inpFuelEditKey) inpFuelEditKey.value = ""; 
         if(fuelModalTitle) fuelModalTitle.innerText = "⛽ Uusi tankkaus";
-        
-        ensureFuelTypeField();
-        
-        // Valitse auto ja sen polttoaine oletukseksi
         const targetId = (currentCarId !== 'all' && currentCarId !== 'all_archived') ? currentCarId : null;
         populateFuelCarSelect(targetId);
-        
-        const car = userCars.find(c => c.id === targetId);
-        if (car && document.getElementById('fuel-type-select')) {
-            const fType = car.fuel || "Bensiini";
-            // Yritetään mätsätä yksinkertaiseen listaan
-            const sel = document.getElementById('fuel-type-select');
-            if (fType.toLowerCase().includes('diesel')) sel.value = "Diesel";
-            else if (fType.toLowerCase().includes('sähkö')) sel.value = "Sähkö";
-            else sel.value = "Bensiini"; 
-        }
-
         if(fuelModal) fuelModal.style.display = 'flex';
     });
 }
@@ -341,32 +303,25 @@ if (btnOpenFuel) {
 window.editRefueling = (key) => {
     const ref = allRefuelings.find(r => r.key === key);
     if(!ref) return;
-    
-    // PVM & Aika
-    let dateVal = "", timeVal = "";
-    if (ref.date && ref.date.includes('T')) {
+    let dateVal = "";
+    let timeVal = "";
+    if (ref.date.includes('T')) {
         const parts = ref.date.split('T');
         dateVal = parts[0];
         timeVal = parts[1].substring(0,5);
-    } else if (ref.startTime) {
-        const d = new Date(ref.startTime);
-        dateVal = d.toISOString().split('T')[0];
-        timeVal = d.toTimeString().substring(0,5);
+    } else {
+        dateVal = new Date(ref.date).toISOString().split('T')[0];
+        timeVal = "12:00";
     }
-    
     if(inpFuelDate) inpFuelDate.value = dateVal;
     if(inpFuelTime) inpFuelTime.value = timeVal;
-    if(inpFuelOdo) inpFuelOdo.value = ref.odo || ref.odometer || "";
+    if(inpFuelOdo) inpFuelOdo.value = ref.odo || "";
     if(inpFuelLiters) inpFuelLiters.value = ref.liters || "";
-    if(inpFuelEuros) inpFuelEuros.value = ref.euros || ref.totalCost || "";
+    if(inpFuelEuros) inpFuelEuros.value = ref.euros || "";
     if(inpFuelCalc) inpFuelCalc.innerText = ref.pricePerLiter || "0.00";
     if(inpFuelEditKey) inpFuelEditKey.value = key; 
-    
     if(fuelModalTitle) fuelModalTitle.innerText = "✏️ Muokkaa tankkausta";
-    
-    ensureFuelTypeField();
     populateFuelCarSelect(ref.carId);
-    
     if(fuelModal) fuelModal.style.display = 'flex';
 };
 
@@ -390,70 +345,62 @@ if (btnFuelSave) {
         const eur = inpFuelEuros.value;
         const selectedCarId = inpFuelCarSelect ? inpFuelCarSelect.value : null;
         const editKey = inpFuelEditKey.value;
-        const fType = document.getElementById('fuel-type-select') ? document.getElementById('fuel-type-select').value : "";
 
-        if(!selectedCarId) { showToast("Valitse ajoneuvo!"); return; }
-        if(!date || !lit || !eur) { showToast("Täytä pakolliset tiedot!"); return; }
+        if(!selectedCarId || selectedCarId === 'Ei tankattavia ajoneuvoja') { showToast("Valitse ajoneuvo!"); return; }
+        if(!date || !lit || !eur) { showToast("Täytä pakolliset tiedot (pvm, litrat, eurot)!"); return; }
 
         if(currentUser) {
             const originalText = btnFuelSave.innerText;
             btnFuelSave.disabled = true;
             btnFuelSave.innerText = "Tallennetaan...";
 
-            const car = userCars.find(c => c.id === selectedCarId);
-            
             const refData = {
-                type: 'refueling', // Yhtenäinen tyyppi
-                startTime: new Date(date + "T" + time).toISOString(), // Yhtenäinen aika
-                date: date + "T" + time, // Legacy tuki
+                type: 'refuel',
+                date: date + "T" + time,
                 odo: odo,
-                odometer: odo,
                 liters: lit,
                 euros: eur,
-                totalCost: eur,
                 pricePerLiter: (parseFloat(eur)/parseFloat(lit)).toFixed(3),
-                carId: selectedCarId,
-                carName: car ? car.name : "Tuntematon",
-                fuelType: fType
+                carId: selectedCarId
             };
-
-            const dbPath = (typeof DB_PATHS !== 'undefined') ? DB_PATHS.DRIVELOG : 'ajopaivakirja/';
 
             const onComplete = () => {
                 btnFuelSave.disabled = false;
                 btnFuelSave.innerText = originalText;
                 if(fuelModal) fuelModal.style.display = 'none';
+                if (!editKey) { inpFuelLiters.value = ""; inpFuelEuros.value = ""; }
                 showToast(editKey ? "Tankkaus päivitetty! ✏️" : "Tankkaus tallennettu! ⛽");
-                
-                // Pakota listojen päivitys
-                if(typeof loadHistory === 'function') loadHistory();
+                if(window.renderFuelList) window.renderFuelList();
+            };
+            const onError = (error) => {
+                btnFuelSave.disabled = false;
+                btnFuelSave.innerText = originalText;
+                alert("Virhe: " + error.message);
             };
 
             if (editKey) {
-                db.ref(dbPath + currentUser.uid + '/' + editKey).update(refData).then(onComplete);
+                db.ref('ajopaivakirja/' + currentUser.uid + '/' + editKey).update(refData).then(onComplete).catch(onError);
             } else {
-                db.ref(dbPath + currentUser.uid).push().set(refData).then(onComplete);
+                db.ref('ajopaivakirja/' + currentUser.uid).push().set(refData).then(onComplete).catch(onError);
             }
         }
     });
 }
 
-// --- 6. MANUAALINEN LISÄYS (FIX: LÄHTÖ/MÄÄRÄNPÄÄ TALLENNUS) ---
+// --- 6. MANUAALINEN LISÄYS ---
 
 if (btnManualDrive) {
     btnManualDrive.addEventListener('click', () => {
         const now = new Date();
-        const tzOffset = now.getTimezoneOffset() * 60000;
-        const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 16);
-        
-        if(inpManualDate) inpManualDate.value = localISOTime;
+        const dateStr = now.toISOString().slice(0,16);
+        if(inpManualDate) inpManualDate.value = dateStr;
         if(inpManualStart) inpManualStart.value = "";
         if(inpManualEnd) inpManualEnd.value = "";
         if(inpManualDist) inpManualDist.value = "";
         if(inpManualSubj) inpManualSubj.value = "";
         
         if(inpManualCar) {
-            populateFuelCarSelect(currentCarId !== 'all' ? currentCarId : null);
+            populateFuelCarSelect(null, inpManualCar);
         }
         if(manualModal) manualModal.style.display = 'flex';
     });
@@ -468,10 +415,9 @@ if (btnManualSave) {
         const dateTime = inpManualDate.value;
         const carId = inpManualCar.value;
         const dist = parseFloat(inpManualDist.value);
-        
-        // Hae tyyppi
+        const typeEls = document.getElementsByName('manual-type');
         let driveType = 'private';
-        document.getElementsByName('manual-type').forEach(r => { if(r.checked) driveType = r.value; });
+        for(let r of typeEls) if(r.checked) driveType = r.value;
 
         if (!dateTime || !carId || isNaN(dist)) { showToast("Täytä aika, auto ja matka!"); return; }
 
@@ -481,8 +427,9 @@ if (btnManualSave) {
             btnManualSave.innerText = "Tallennetaan...";
 
             const carObj = userCars.find(c => c.id === carId);
-            
-            const dbPath = (typeof DB_PATHS !== 'undefined') ? DB_PATHS.DRIVELOG : 'ajopaivakirja/';
+            const carName = carObj ? carObj.name : "Tuntematon";
+            const carIcon = carObj ? (carObj.icon || "🚗") : "🚗";
+            const carType = carObj ? carObj.type : "car";
 
             const driveData = {
                 type: 'manual_drive',
@@ -490,37 +437,70 @@ if (btnManualSave) {
                 endTime: new Date(new Date(dateTime).getTime() + (dist * 60000)).toISOString(),
                 distanceKm: dist.toFixed(2),
                 maxSpeed: 0, avgSpeed: 0, durationMs: 0,
-                subject: inpManualSubj.value || "",
-                carName: carObj ? carObj.name : "Tuntematon",
-                carIcon: carObj ? (carObj.icon || "🚗") : "🚗",
-                carId: carId,
-                carType: carObj ? carObj.type : "car",
-                route: [], 
-                driveType: driveType,
-                startAddress: inpManualStart.value, 
-                endAddress: inpManualEnd.value
+                subject: inpManualSubj.value || "Manuaalinen kirjaus",
+                weather: "", drivingStyle: "Manuaalinen",
+                carName: carName, carIcon: carIcon, carId: carId, carType: carType,
+                route: [], driveType: driveType,
+                startAddress: inpManualStart.value, endAddress: inpManualEnd.value
             };
 
-            db.ref(dbPath + currentUser.uid).push().set(driveData)
+            db.ref('ajopaivakirja/' + currentUser.uid).push().set(driveData)
                 .then(() => {
                     btnManualSave.disabled = false;
                     btnManualSave.innerText = origText;
                     if(manualModal) manualModal.style.display = 'none';
                     showToast("Ajo lisätty manuaalisesti! 📝");
-                    if(typeof loadHistory === 'function') loadHistory();
+                    
+                    try {
+                        if(window.renderHistoryList) window.renderHistoryList();
+                    } catch(e) { console.error("Listan päivitys epäonnistui", e); }
+                })
+                .catch(err => {
+                    btnManualSave.disabled = false;
+                    btnManualSave.innerText = origText;
+                    alert("Virhe: " + err.message);
                 });
         }
     });
 }
 
-// --- 7. AJON MUOKKAUS (INJECT OSOITTEET) ---
+// --- CSV EXPORT & PREVIEW (UUSI) ---
+// Tässä avataan esikatseluikkuna EIKÄ ladata suoraan
+if(btnExportCsv) {
+    btnExportCsv.addEventListener('click', () => {
+        if(typeof window.populatePreviewTable === 'function') {
+            window.populatePreviewTable();
+            if(previewModal) previewModal.style.display = 'flex';
+        } else {
+            // Fallback jos history.js ei ole vielä päivittynyt
+            if(typeof exportToCSV === 'function') exportToCSV();
+        }
+    });
+}
 
-// Korvataan vanha btnEditSave kuuntelija uudella
-const btnEditSaveNew = document.getElementById('btn-edit-save');
-if(btnEditSaveNew) {
-    // Kloonataan jotta vanhat kuuntelijat poistuvat
-    const newBtn = btnEditSaveNew.cloneNode(true);
-    btnEditSaveNew.parentNode.replaceChild(newBtn, btnEditSaveNew);
+// Esikatseluikkunan napit
+if(btnPreviewCancel) {
+    btnPreviewCancel.addEventListener('click', () => {
+        if(previewModal) previewModal.style.display = 'none';
+    });
+}
+
+if(btnPreviewConfirm) {
+    btnPreviewConfirm.addEventListener('click', () => {
+        if(typeof window.exportToCSV === 'function') {
+            window.exportToCSV();
+            if(previewModal) previewModal.style.display = 'none';
+            showToast("Raportti ladattu! 📥");
+        }
+    });
+}
+
+// --- 7. APUFUNKTIOT ---
+
+const btnEditSave2 = document.getElementById('btn-edit-save');
+if(btnEditSave2) {
+    const newBtn = btnEditSave2.cloneNode(true);
+    btnEditSave2.parentNode.replaceChild(newBtn, btnEditSave2);
     
     newBtn.addEventListener('click', () => {
         const key = document.getElementById('edit-key').value;
@@ -529,141 +509,106 @@ if(btnEditSaveNew) {
         const newDateTime = document.getElementById('edit-datetime').value;
         const newDist = document.getElementById('edit-distance').value;
         
-        const newStart = document.getElementById('edit-start-addr') ? document.getElementById('edit-start-addr').value : "";
-        const newEnd = document.getElementById('edit-end-addr') ? document.getElementById('edit-end-addr').value : "";
-        
+        const typeEls = document.getElementsByName('edit-type');
         let newType = 'private';
-        document.getElementsByName('edit-type').forEach(r => { if(r.checked) newType = r.value; });
+        for(let r of typeEls) if(r.checked) newType = r.value;
 
         const carObj = userCars.find(c => c.id === newCarId);
         
-        if (key && currentUser) {
-            const dbPath = (typeof DB_PATHS !== 'undefined') ? DB_PATHS.DRIVELOG : 'ajopaivakirja/';
+        if (key && currentUser && carObj) {
             
+            const origText = newBtn.innerText;
+            newBtn.disabled = true;
+            newBtn.innerText = "Tallennetaan...";
+
             const updates = { 
                 subject: newSubj, 
-                carId: newCarId, 
-                carName: carObj ? carObj.name : "Muu", 
-                carIcon: carObj ? (carObj.icon || "🚗") : "🚗",
-                driveType: newType,
-                startAddress: newStart,
-                endAddress: newEnd
+                carId: carObj.id, 
+                carName: carObj.name, 
+                carIcon: carObj.icon || "🚗", 
+                carType: carObj.type,
+                driveType: newType
             };
             if (newDateTime) updates.startTime = new Date(newDateTime).toISOString();
             if (newDist) updates.distanceKm = parseFloat(newDist).toFixed(2);
 
-            db.ref(dbPath + currentUser.uid + '/' + key).update(updates)
+            db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update(updates)
                 .then(() => { 
+                    newBtn.disabled = false;
+                    newBtn.innerText = origText;
+                    
                     if(editModal) editModal.style.display = 'none'; 
                     showToast("Muutokset tallennettu! ✅");
-                    if(typeof loadHistory === 'function') loadHistory();
+                    
+                    try {
+                        if(window.renderHistoryList) window.renderHistoryList();
+                    } catch(e) { console.error(e); }
+                })
+                .catch(err => {
+                    newBtn.disabled = false;
+                    newBtn.innerText = origText;
+                    alert("Virhe tallennuksessa: " + err.message);
                 });
         }
     });
 }
 
-// Funktio, joka lisää osoitekentät muokkausikkunaan jos ne puuttuvat
-window.ensureEditAddressFields = () => {
-    const container = document.querySelector('#edit-modal .modal-content');
-    if (!container || document.getElementById('edit-start-addr')) return;
+// --- RESTORED TABS LOGIC ---
 
-    // Etsitään Aihe-kenttä
-    const subjectDiv = document.getElementById('edit-subject').parentNode;
-    
-    const addrDiv = document.createElement('div');
-    addrDiv.style.marginBottom = "10px";
-    addrDiv.style.textAlign = "left";
-    addrDiv.innerHTML = `
-        <div style="display:flex; gap:10px;">
-            <div style="flex:1;">
-                <label>Lähtö:</label>
-                <input type="text" id="edit-start-addr" class="subject-input">
-            </div>
-            <div style="flex:1;">
-                <label>Määränpää:</label>
-                <input type="text" id="edit-end-addr" class="subject-input">
-            </div>
-        </div>
-    `;
-    
-    // Lisätään aiheen jälkeen
-    container.insertBefore(addrDiv, subjectDiv.nextSibling);
-};
+const tabDrives = document.getElementById('tab-drives');
+const tabFuel = document.getElementById('tab-fuel');
+const historyDrivesList = document.getElementById('log-list');
+const historyFuelList = document.getElementById('fuel-list');
 
-// Päivitetään avausfunktio
-window.openEditLog = (key) => {
-    const drive = allHistoryData.find(d => d.key === key);
-    if(!drive) return;
-    
-    // Varmista kentät
-    window.ensureEditAddressFields();
-    
-    document.getElementById('edit-key').value = key;
-    
-    // Aika
-    const d = new Date(drive.startTime);
-    const tzOffset = d.getTimezoneOffset() * 60000;
-    document.getElementById('edit-datetime').value = (new Date(d - tzOffset)).toISOString().slice(0, 16);
-    
-    document.getElementById('edit-distance').value = drive.distanceKm || "";
-    document.getElementById('edit-subject').value = drive.subject || "";
-    
-    if(document.getElementById('edit-start-addr')) document.getElementById('edit-start-addr').value = drive.startAddress || "";
-    if(document.getElementById('edit-end-addr')) document.getElementById('edit-end-addr').value = drive.endAddress || "";
-    
-    // Tyyppi
-    const targetType = drive.driveType || 'private';
-    document.getElementsByName('edit-type').forEach(r => {
-        if(r.value === targetType) r.checked = true;
+if(tabDrives && tabFuel) {
+    tabDrives.addEventListener('click', () => {
+        tabDrives.classList.add('blue-btn'); tabDrives.style.backgroundColor = '';
+        tabFuel.classList.remove('blue-btn'); tabFuel.style.backgroundColor = '#333';
+        historyDrivesList.style.display = 'block';
+        historyFuelList.style.display = 'none';
+        if(window.renderHistoryList) window.renderHistoryList();
     });
-    
-    // Auto
-    const carSel = document.getElementById('edit-car-select');
-    if(carSel) {
-        carSel.innerHTML = "";
-        userCars.forEach(car => {
-            const opt = new Option(`${car.icon||"🚗"} ${car.name}`, car.id);
-            if(drive.carId === car.id) opt.selected = true;
-            carSel.appendChild(opt);
-        });
+
+    tabFuel.addEventListener('click', () => {
+        tabFuel.classList.add('blue-btn'); tabFuel.style.backgroundColor = '';
+        tabDrives.classList.remove('blue-btn'); tabDrives.style.backgroundColor = '#333';
+        historyDrivesList.style.display = 'none';
+        historyFuelList.style.display = 'block';
+        if(window.renderFuelList) window.renderFuelList();
+    });
+}
+
+const statTabDrives = document.getElementById('stat-tab-drives');
+const statTabFuel = document.getElementById('stat-tab-fuel');
+const statsDrivesCont = document.getElementById('stats-drives-container');
+const statsFuelCont = document.getElementById('stats-fuel-container');
+
+if(statTabDrives && statTabFuel) {
+    statTabDrives.addEventListener('click', () => {
+        statTabDrives.classList.add('blue-btn'); statTabDrives.style.backgroundColor = '';
+        statTabFuel.classList.remove('blue-btn'); statTabFuel.style.backgroundColor = '#333';
+        statsDrivesCont.style.display = 'block';
+        statsFuelCont.style.display = 'none';
+        if(window.renderDriveStats) window.renderDriveStats();
+    });
+
+    statTabFuel.addEventListener('click', () => {
+        statTabFuel.classList.add('blue-btn'); statTabFuel.style.backgroundColor = '';
+        statTabDrives.classList.remove('blue-btn'); statTabDrives.style.backgroundColor = '#333';
+        statsDrivesCont.style.display = 'none';
+        statsFuelCont.style.display = 'block';
+        if(window.renderFuelStats) window.renderFuelStats();
+    });
+}
+
+// --- 6. ALUSTUS ---
+(function updateVersionText() {
+    if(typeof APP_VERSION !== 'undefined') {
+        if(splashVersionEl) splashVersionEl.innerText = "Modular v" + APP_VERSION;
+        if(menuVersionEl) menuVersionEl.innerText = "Mikkokalevin Ajopäiväkirja Pro v" + APP_VERSION;
     }
+})();
 
-    if(editModal) editModal.style.display = 'flex';
-};
-
-// --- 8. POISTAMINEN ---
-window.openDeleteLogModal = (key) => {
-    deleteKey = key; // Globaali deleteKey (globals.js)
-    if(deleteModal) deleteModal.style.display = 'flex';
-};
-
-if(btnDeleteConfirm) {
-    const newDel = btnDeleteConfirm.cloneNode(true);
-    btnDeleteConfirm.parentNode.replaceChild(newDel, btnDeleteConfirm);
-    
-    newDel.addEventListener('click', () => {
-        if (deleteKey && currentUser) {
-            const dbPath = (typeof DB_PATHS !== 'undefined') ? DB_PATHS.DRIVELOG : 'ajopaivakirja/';
-            db.ref(dbPath + currentUser.uid + '/' + deleteKey).remove()
-                .then(() => {
-                    if(deleteModal) deleteModal.style.display = 'none';
-                    deleteKey = null;
-                    showToast("Merkintä poistettu 🗑");
-                    // Jos tankkaus poistettiin, päivitetään historia
-                    if(typeof loadHistory === 'function') loadHistory();
-                });
-        }
-    });
-}
-
-if(btnDeleteCancel) {
-    btnDeleteCancel.addEventListener('click', () => {
-        if(deleteModal) deleteModal.style.display = 'none';
-        deleteKey = null;
-    });
-}
-
-// --- 9. ALUSTUS ---
 window.addEventListener('DOMContentLoaded', () => {
     switchView('dashboard');
 });

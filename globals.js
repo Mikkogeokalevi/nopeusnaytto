@@ -1,17 +1,7 @@
 // =========================================================
-// GLOBALS.JS - ASETUKSET, TILA JA VAKIOT (FIXED v6.6)
+// 1. FIREBASE ALUSTUS (GLOBAL)
 // =========================================================
 
-// 1. KONFIGURAATIO JA VERSIO
-const APP_CONFIG = {
-    VERSION: "6.60",
-    THEME_STORAGE_KEY: "app_theme",
-    CAR_STORAGE_KEY: "selectedCarId"
-};
-
-const APP_VERSION = APP_CONFIG.VERSION;
-
-// 2. FIREBASE ALUSTUS
 const firebaseConfig = {
     apiKey: "AIzaSyCZIupycr2puYrPK2KajAW7PcThW9Pjhb0",
     authDomain: "perhekalenteri-projekti.firebaseapp.com",
@@ -22,6 +12,7 @@ const firebaseConfig = {
     appId: "1:588536838615:web:148de0581bbd46c42c7392"
 };
 
+// Alustetaan Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -29,15 +20,14 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 const auth = firebase.auth(); 
 
-// 3. TIETOKANTAPOLUT (TÄRKEÄ: NÄITÄ KÄYTETÄÄN KAIKKIALLA)
-const DB_PATHS = {
-    USERS: 'users/',
-    DRIVELOG: 'ajopaivakirja/' 
-};
+// =========================================================
+// 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
+// =========================================================
 
-// 4. SOVELLUKSEN TILA (GLOBAL STATE)
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT VIRALLISESTI 5.95
+const APP_VERSION = "5.95"; 
 
-// Käyttäjä ja UI
+// Käyttäjä ja UI tila
 var currentUser = null; 
 var isViewingHistory = false; 
 
@@ -51,7 +41,6 @@ var wakeLock = null;
 // Osoitehaku
 var lastAddressFetchTime = 0;
 var currentAddress = "Odottaa sijaintia...";
-var lastLatLng = null; 
 
 // Ajanotto
 var startTime = null;
@@ -66,6 +55,7 @@ var deleteKey = null;
 // Ajodata (Live)
 var maxSpeed = 0;
 var totalDistance = 0;
+var lastLatLng = null;
 
 // Reitit ja Karttaobjektit
 var routePath = []; 
@@ -83,23 +73,24 @@ var styleResetTimer = null;
 
 // Historia ja Data
 var allHistoryData = []; 
-var allRefuelings = [];
 
 // Autotalli
 var userCars = [];
 var currentCarId = "all"; 
 var currentCarType = "car"; 
+
+// Tankkausdata
+var allRefuelings = [];
 var currentRefuelingCarId = null;
 
-// Tilastograafit (Chart.js instanssit)
-var chartInstances = {
-    monthly: null,
-    vehicles: null,
-    style: null,
-    trend: null,
-    speed: null,
-    fuelMonthly: null,
-    fuelTrend: null,
-    fuelCar: null,
-    fuelType: null
-};
+// Tilastograafit
+var chartInstanceMonthly = null;
+var chartInstanceVehicles = null;
+var chartInstanceStyle = null; 
+var chartInstanceDriveTrend = null;
+var chartInstanceDriveSpeed = null;
+
+var chartInstanceFuelMonthly = null; 
+var chartInstanceFuelTrend = null;   
+var chartInstanceFuelCar = null;     
+var chartInstanceFuelType = null;

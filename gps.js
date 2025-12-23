@@ -1,27 +1,38 @@
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (REFACTORED v6.1)
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (PREMIUM UI v5.95)
 // =========================================================
 
 // --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
-// Pitää selaimen prosessin hengissä taustalla.
-const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
+// Tämä pitää selaimen prosessin hengissä vaikka näyttö sammuisi.
+const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
 silentAudio.loop = true;
-silentAudio.volume = 0.01;
+silentAudio.volume = 0.01; // Hyvin hiljainen varmuuden vuoksi
 
 // 1. KONTROLLIPAINIKKEET JA LOGIIKKA
 
-// Aktivointinappi (Aktivoi äänet ja valmistelee GPS:n)
+// Aktivointinappi
 const btnActivate = document.getElementById('btn-activate-gps');
 if (btnActivate) {
     btnActivate.addEventListener('click', () => {
         if (!isGPSActive) {
             startGPS();
-            silentAudio.play().then(() => console.log("Background audio started")).catch(e => console.warn("Background audio failed:", e));
+            
+            // Käynnistetään taustaääni heti käyttäjän interaktiosta
+            silentAudio.play().then(() => {
+                console.log("Background audio started");
+            }).catch(e => {
+                console.warn("Background audio failed:", e);
+            });
 
             btnActivate.style.display = 'none';
-            if(document.getElementById('rec-controls')) document.getElementById('rec-controls').style.display = 'flex';
+            
+            if(document.getElementById('rec-controls')) {
+                document.getElementById('rec-controls').style.display = 'flex';
+            }
+
             if(activeRecBtns) activeRecBtns.style.display = 'none'; 
             if(btnStartRec) btnStartRec.style.display = 'inline-block'; 
+            
             if(statusEl) statusEl.innerText = "GPS Päällä";
         }
     });
@@ -30,34 +41,41 @@ if (btnActivate) {
 // ALOITA TALLENNUS
 if (btnStartRec) {
     btnStartRec.addEventListener('click', () => {
-        // Estä aloitus jos autoa ei ole valittu tai arkistotila päällä
+        // --- TARKISTUS: Estä aloitus jos autoa ei ole valittu ---
         if (currentCarId === 'all' || currentCarId === 'all_archived') {
-            if(typeof showToast === 'function') showToast("Valitse ajoneuvo ennen aloitusta! ⚠️");
-            else alert("Valitse ajoneuvo ennen aloitusta!");
-            
+            if(typeof showToast === 'function') {
+                showToast("Valitse ajoneuvo ennen aloitusta! ⚠️");
+            } else {
+                alert("Valitse ajoneuvo ennen aloitusta!");
+            }
+            // Välkytetään valikkoa huomion herättämiseksi
             const carSelect = document.getElementById('car-select');
             if(carSelect) {
                 carSelect.style.borderColor = 'red';
                 setTimeout(() => carSelect.style.borderColor = '', 2000);
             }
-            return;
+            return; // Keskeytetään suoritus tähän
         }
+        // -------------------------------------------------------------
 
-        // Pyydä liiketunnistimen lupaa (iOS 13+)
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             DeviceMotionEvent.requestPermission().then(response => {
-                if (response === 'granted') window.addEventListener('devicemotion', handleMotion);
+                if (response === 'granted') {
+                    window.addEventListener('devicemotion', handleMotion);
+                }
             }).catch(console.error);
         } else {
             window.addEventListener('devicemotion', handleMotion);
         }
 
-        // Nollaa tilat
         isRecording = true;
         isPaused = false;
         isViewingHistory = false;
         
-        if (silentAudio.paused) silentAudio.play().catch(e => console.warn(e));
+        // Varmistetaan että ääni soi
+        if (silentAudio.paused) {
+            silentAudio.play().catch(e => console.warn(e));
+        }
         
         if(mapGpsToggle) {
             mapGpsToggle.innerText = "📡 ON";
@@ -78,7 +96,6 @@ if (btnStartRec) {
         
         if(typeof updateDashboardUI === 'function') updateDashboardUI(0, 0, 0, 0, 0, 0);
         
-        // UI päivitykset
         if (currentCarType === 'bike') {
             if(liveStatusBar) liveStatusBar.style.opacity = '0';
         } else {
@@ -151,7 +168,6 @@ if (btnStopRec) {
         const durationHours = activeDurationMs / (1000 * 60 * 60);
         let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
 
-        // Ajotyylin päättely
         let styleLabel = "";
         if (currentCarType !== 'bike') {
             styleLabel = "Tasainen";
@@ -159,7 +175,6 @@ if (btnStopRec) {
             if (aggressiveEvents > 15) styleLabel = "Aggressiivinen";
         }
 
-        // Auton tiedot
         let selectedCarName = "Muu ajoneuvo";
         let selectedCarIcon = "🚗";
         if (currentCarId !== 'all' && currentCarId !== 'all_archived') {
@@ -170,7 +185,6 @@ if (btnStopRec) {
             }
         }
 
-        // Valmistellaan data tallennusta varten (tempDriveData on globaali)
         tempDriveData = {
             type: 'end_drive',
             startTime: startTime.toISOString(),
@@ -196,17 +210,18 @@ if (btnStopRec) {
         if(modalCarNameEl) modalCarNameEl.innerText = selectedCarName; 
 
         if(saveModal) saveModal.style.display = 'flex';
+        // if(modalSubjectEl) modalSubjectEl.focus(); 
         if(liveStatusBar) liveStatusBar.style.opacity = '0';
     });
 }
 
-// MODAL NAPIT - TALLENNUS
+// MODAL NAPIT - PÄIVITETTY TALLENNUS (TYÖAJO/OMA AJO)
 if (btnModalSave) {
     btnModalSave.addEventListener('click', () => {
         if (tempDriveData) {
             tempDriveData.subject = modalSubjectEl ? modalSubjectEl.value : "";
             
-            // Luetaan ajotyyppi (Work/Private)
+            // LUETAAN AJOTYYPPI (Work/Private)
             const typeRadios = document.getElementsByName('save-type');
             let selectedType = 'private';
             for (const radio of typeRadios) {
@@ -226,12 +241,14 @@ if (btnModalSave) {
 
 if (btnModalCancel) {
     btnModalCancel.addEventListener('click', () => {
+        // KORVATTU SELAINCONFIRM TYYLIKKÄÄLLÄ MODAALILLA
         if(typeof openConfirmModal === 'function') {
             openConfirmModal("Hylkää ajo?", "Haluatko varmasti hylätä tämän ajon? Tietoja ei tallenneta.", () => {
                 if(saveModal) saveModal.style.display = 'none';
                 resetRecordingUI();
             });
         } else {
+            // Fallback
             if(confirm("Haluatko varmasti hylätä tämän ajon?")) {
                 if(saveModal) saveModal.style.display = 'none';
                 resetRecordingUI();
@@ -263,7 +280,7 @@ function updatePosition(position) {
 
     let currentAvg = 0;
 
-    // OSOITEHAKU (Max kerran 30s, vain jos liikutaan)
+    // OSOITEHAKU (Max kerran 30s)
     const now = Date.now();
     if (now - lastAddressFetchTime > 30000 && speedKmh > 2) {
         fetchAddress(lat, lng);
@@ -274,21 +291,16 @@ function updatePosition(position) {
 
     if (isRecording && !isPaused) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
-        
-        // Matkan laskenta
         if (lastLatLng) {
             const dist = getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng);
-            // Suodatetaan GPS-kohinaa: liikuttava yli 3km/h tai matkan oltava selkeä, mutta alle "teleporttauksen"
             if ((speedKmh > 3 || dist > 0.02) && dist < 50.0) totalDistance += dist;
         }
         
-        // Reitin tallennus
         if (speedKmh > 3 || (lastLatLng && getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng) > 0.02)) {
             routePath.push({ lat: lat, lng: lng, spd: speedKmh });
             if(realTimePolyline) realTimePolyline.addLatLng([lat, lng]);
         }
 
-        // Keskiarvon laskenta
         if (startTime) {
             const now = new Date();
             const activeTimeMs = (now - startTime) - totalPauseTime;
@@ -297,7 +309,6 @@ function updatePosition(position) {
         }
     }
     
-    // UI Päivitykset ja Kartta
     if (!lastLatLng || speedKmh > 0 || isGPSActive) {
         lastLatLng = { lat, lng };
         const newLatLng = new L.LatLng(lat, lng);
@@ -306,7 +317,7 @@ function updatePosition(position) {
         if (views.map && views.map.style.display !== 'none' && !isViewingHistory && map) {
             let targetZoom = 18; 
             if (currentCarType === 'bike') {
-                targetZoom = (speedKmh > 15) ? 17 : 19;
+                if (speedKmh > 15) targetZoom = 17; else targetZoom = 19; 
             } else {
                 if (speedKmh > 100) targetZoom = 14; 
                 else if (speedKmh > 70) targetZoom = 16;
@@ -355,9 +366,10 @@ function handleMotion(event) {
     
     const acc = event.acceleration; 
     const accG = event.accelerationIncludingGravity; 
+    
     if (!acc) return;
 
-    // G-METER Bubble
+    // G-METER
     if(gBubbleEl && accG) {
         let x = -acc.x * 5; 
         let y = acc.z * 5; 
@@ -368,10 +380,11 @@ function handleMotion(event) {
             x = (x / dist) * maxDist;
             y = (y / dist) * maxDist;
         }
+        
         gBubbleEl.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
     }
 
-    // ECO / AGGRESSIVE analyysi
+    // ECO
     if (currentCarType === 'bike') return;
     const now = Date.now();
     if (now - lastMotionTime < 500) return; 
@@ -443,13 +456,14 @@ function fetchWeather(lat, lon) {
                 const temp = Math.round(data.current.temperature_2m);
                 const code = data.current.weather_code;
                 let emoji = "☁️";
-                // Yksinkertaistettu sääkoodien tulkinta
                 if (code === 0) emoji = "☀️";
                 else if (code <= 3) emoji = "⛅";
                 else if (code <= 48) emoji = "🌫";
                 else if (code <= 67) emoji = "🌧";
-                else if (code <= 77 || code >= 85) emoji = "❄️";
-                else if (code >= 95) emoji = "⛈";
+                else if (code <= 77) emoji = "❄️";
+                else if (code <= 82) emoji = "🌧";
+                else if (code <= 86) emoji = "❄️";
+                else emoji = "⛈";
                 
                 currentDriveWeather = `${emoji} ${temp}°C`;
                 if(dashWeatherEl) dashWeatherEl.innerText = currentDriveWeather;
@@ -458,23 +472,25 @@ function fetchWeather(lat, lon) {
         .catch(e => console.error(e));
 }
 
+// OSOITEHAKU
 function fetchAddress(lat, lon) {
-    // Käytetään v6.1 User-Agentia
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
-    fetch(url, { headers: { 'User-Agent': 'AjopaivakirjaPro/6.1' } })
+    
+    fetch(url, { headers: { 'User-Agent': 'AjopaivakirjaPro/5.7' } })
         .then(res => res.json())
         .then(data => {
             if (data && data.address) {
                 const road = data.address.road || "";
                 const number = data.address.house_number || "";
                 const city = data.address.city || data.address.town || data.address.village || "";
+                
                 if (road) {
                     currentAddress = `${road} ${number}, ${city}`;
                     if(dashAddressEl) dashAddressEl.innerText = currentAddress;
                 }
             }
         })
-        .catch(e => console.log("Osoitehaku virhe:", e));
+        .catch(e => console.log("Osoitehaku ei onnistunut:", e));
 }
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
@@ -494,15 +510,18 @@ function toGeocacheFormat(deg, isLat) {
     return `${isLat?(deg>=0?"N":"S"):(deg>=0?"E":"W")} ${d}° ${m.toFixed(3)}`;
 }
 
+function getCardinalDirection(angle) {
+    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    return directions[Math.round(angle / 45) % 8];
+}
+
 function handleError(e) { 
     if(statusEl) statusEl.innerText = "GPS Virhe: " + e.message; 
 }
 
-// TALLENNUS FIREBASEEN
 function saveToFirebase(data) {
     if (currentUser) {
-        // Käytetään uutta polkua: DB_PATHS.DRIVELOG
-        db.ref(DB_PATHS.DRIVELOG + currentUser.uid).push().set(data)
+        db.ref('ajopaivakirja/' + currentUser.uid).push().set(data)
             .then(() => { 
                 console.log("Tallennus onnistui");
                 if(typeof showToast === 'function') {

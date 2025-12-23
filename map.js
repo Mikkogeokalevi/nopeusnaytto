@@ -1,197 +1,154 @@
 // =========================================================
-// MAP.JS - KARTTA, TASOT JA VÄRILLINEN REITTI (FIXED v6.6)
+// MAP.JS - KARTTA JA REITIN PIIRTO
 // =========================================================
 
-// 1. KARTTATASOJEN MÄÄRITTELY
-
-// Peruskartta (OSM)
+// 1. Määritellään karttatasot
 const streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
     maxZoom: 19, 
     attribution: '© OSM' 
 });
 
-// Satelliitti (Esri World Imagery)
 const satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { 
     attribution: 'Tiles &copy; Esri' 
 });
 
-// Maastokartta (OpenTopoMap)
 const terrainMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { 
     maxZoom: 17, 
     attribution: '© OpenTopoMap' 
 });
 
-// Tumma kartta (CartoDB Dark Matter) - Sopii yökäyttöön
-const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-	subdomains: 'abcd',
-	maxZoom: 20
-});
-
-// Merikartta (OpenSeaMap Overlay + OSM pohja)
-const openSeaMapOverlay = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
-    maxZoom: 18,
-    attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
-});
-// Yhdistetään pohjakartta ja merimerkit
-const marineMap = L.layerGroup([streetMap, openSeaMapOverlay]);
-
-
-// 2. KARTAN ALUSTUS
-// (map-muuttuja on määritelty globals.js:ssä)
-
+// 2. Luodaan kartta (map-muuttuja on määritelty globals.js:ssä)
+// Varmistetaan että elementti on olemassa ennen luontia
 if (document.getElementById('map')) {
-    // Tarkistetaan onko kartta jo alustettu, jotta ei tule "Map container is already initialized" -virhettä
-    if (map !== null) {
-        map.remove(); // Tuhotaan vanha instanssi jos sellainen on
-    }
-
     map = L.map('map', {
-        center: [64.0, 26.0], // Suomen keskipiste suurinpiirtein
-        zoom: 5, 
-        layers: [streetMap], // Oletus: Peruskartta
-        zoomControl: false   // Poistetaan oletuszoom, siirretään se
+        center: [64.0, 26.0], 
+        zoom: 16, 
+        layers: [streetMap], 
+        zoomControl: false 
     });
 
-    // Tasovalitsin (Oikea yläkulma)
-    const baseMaps = {
-        "Peruskartta": streetMap,
-        "Tumma kartta": darkMap,
-        "Satelliitti": satelliteMap,
-        "Merikartta": marineMap,
-        "Maastokartta": terrainMap
-    };
+    // Lisätään tasovalitsin
+    L.control.layers({ 
+        "Peruskartta": streetMap, 
+        "Satelliitti": satelliteMap, 
+        "Maastokartta": terrainMap 
+    }).addTo(map);
 
-    L.control.layers(baseMaps).addTo(map);
+    // Oma sijainti -merkki (sininen pallo)
+    marker = L.circleMarker([64.0, 26.0], { 
+        color: '#2979ff', 
+        fillColor: '#2979ff', 
+        fillOpacity: 0.8, 
+        radius: 8 
+    }).addTo(map);
 
-    // Zoom-napit vasempaan alareunaan (pois peukalon tieltä)
-    L.control.zoom({
-        position: 'bottomleft'
+    // Sininen viiva ajon aikaiseen "live"-piirtoon
+    realTimePolyline = L.polyline([], {
+        color: '#2979ff', 
+        weight: 5, 
+        opacity: 0.7
     }).addTo(map);
 }
 
-// 3. REAALIAIKAINEN PIIRTO (GPS.JS KUTSUU)
-// Alustetaan punainen viiva live-seurantaa varten
-if (map) {
-    realTimePolyline = L.polyline([], {color: 'red', weight: 4}).addTo(map);
+// 3. GPS Toggle Kartalla (ON/OFF)
+if (mapGpsToggle) {
+    mapGpsToggle.addEventListener('click', () => {
+        isViewingHistory = !isViewingHistory;
+        
+        if(isViewingHistory) {
+            // GPS pois päältä kartalla (katselutila)
+            mapGpsToggle.innerText = "📡 OFF";
+            mapGpsToggle.classList.add('inactive');
+        } else {
+            // GPS päälle kartalla (seurantatila)
+            mapGpsToggle.innerText = "📡 ON";
+            mapGpsToggle.classList.remove('inactive');
+            
+            // Keskitä heti, jos sijainti on tiedossa
+            if(lastLatLng && map) {
+                map.panTo([lastLatLng.lat, lastLatLng.lng]);
+            }
+        }
+    });
 }
 
-
-// 4. HISTORIAN REITIN PIIRTO (NOPEUSVÄRITYS PALAUTETTU)
+// 4. Reitin katselu historiasta (Globaali funktio)
 window.showRouteOnMap = (key) => {
-    // Etsitään ajo avaimen perusteella
+    // Haetaan ajo historiasta
     const drive = allHistoryData.find(d => d.key === key);
-    
-    if (!drive || !drive.route || drive.route.length === 0) {
-        if(typeof showToast === 'function') showToast("Ei reittitietoja.");
-        else alert("Ei reittitietoja.");
-        return;
-    }
+    if (!drive || !drive.route) { alert("Ei reittidataa."); return; }
 
-    // Tyhjennetään vanhat viivat
+    // Siivotaan edelliset viivat
     clearSavedRoute();
+    
+    // Aktivoi katselutila
+    isViewingHistory = true; 
+    if(mapGpsToggle) {
+        mapGpsToggle.innerText = "📡 OFF";
+        mapGpsToggle.classList.add('inactive');
+    }
+    if(mapLegend) mapLegend.style.display = 'flex';
 
-    // Tarkistetaan onko reitissä nopeustietoa (uusi data) vai pelkät koordinaatit (vanha data)
-    // Uusi data on muotoa [{lat:x, lng:y, spd:z}, ...]
-    // Vanha data on muotoa [[lat,lng], [lat,lng]]
-    const hasSpeedData = (drive.route[0].spd !== undefined);
+    // Tarkista formaatti (uusi vs vanha)
+    const isNewFormat = (drive.route.length > 0 && typeof drive.route[0] === 'object' && drive.route[0].lat);
 
-    if (hasSpeedData) {
-        // --- MONIVÄRINEN VIIVA (NOPEUS) ---
-        // Piirretään viiva pätkissä (segment), jotta väri voi vaihtua välillä
-        
-        // Haetaan autotyyppi väriskaalaa varten
-        let carType = 'car';
-        if (drive.carType) carType = drive.carType;
-        else if (drive.carId) {
-            // Yritetään selvittää auton tyyppi ID:n perusteella
-            const car = userCars.find(c => c.id === drive.carId);
-            if (car) carType = car.type;
-        }
-
-        // Käydään pisteet läpi
+    if (isNewFormat) {
+        // UUSI VÄRILLINEN REÏTTI (SEGMENTIT)
+        // Käydään pisteet läpi ja piirretään viivaa värien mukaan
         for (let i = 0; i < drive.route.length - 1; i++) {
             const p1 = drive.route[i];
             const p2 = drive.route[i+1];
             
-            // Haetaan väri alkupisteen nopeuden mukaan
-            const color = getSpeedColor(p1.spd, carType);
+            const color = getSpeedColor(p1.spd || 0, drive.carType);
             
-            const lineSegment = L.polyline([[p1.lat, p1.lng], [p2.lat, p2.lng]], {
-                color: color,
-                weight: 5,
-                opacity: 0.8,
-                smoothFactor: 1
+            const segment = L.polyline([[p1.lat, p1.lng], [p2.lat, p2.lng]], {
+                color: color, 
+                weight: 5, 
+                opacity: 0.8
             }).addTo(map);
             
-            savedRouteLayers.push(lineSegment);
+            savedRouteLayers.push(segment);
         }
+        // Keskitä kartta reittiin
+        const bounds = L.latLngBounds(drive.route.map(p => [p.lat, p.lng]));
+        map.fitBounds(bounds, {padding: [50, 50]});
         
-        // Lisätään selite (Legend) näkyviin kartalle
-        if(document.getElementById('map-legend')) {
-            document.getElementById('map-legend').style.display = 'flex';
-        }
-
     } else {
-        // --- YKSIVÄRINEN VIIVA (VANHA DATA) ---
-        // Jos nopeustieto puuttuu, piirretään oranssi viiva
-        // Konvertoidaan vanha formaatti [lat,lng] tarvittaessa
-        const latLngs = drive.route.map(p => {
-            if(Array.isArray(p)) return p;
-            return [p.lat, p.lng];
-        });
-        
-        savedRouteLayer = L.polyline(latLngs, {color: '#ff9100', weight: 5, opacity: 0.8}).addTo(map);
-        
-        if(document.getElementById('map-legend')) {
-            document.getElementById('map-legend').style.display = 'none';
-        }
+        // VANHA ORANSSI VIIVA (Yhteensopivuus vanhan datan kanssa)
+        savedRouteLayer = L.polyline(drive.route, {color: '#ff9100', weight: 5, opacity: 0.8}).addTo(map);
+        map.fitBounds(savedRouteLayer.getBounds(), {padding: [50, 50]});
     }
     
-    // Zoomataan reittiin
-    // Lasketaan boundsit riippumatta datamuodosta
-    const allPoints = drive.route.map(p => {
-        if(Array.isArray(p)) return p;
-        return [p.lat, p.lng];
-    });
-    
-    const bounds = L.latLngBounds(allPoints);
-    map.fitBounds(bounds, {padding: [50, 50]});
-    
-    // Vaihdetaan näkymä kartalle
+    // Vaihda näkymä kartalle (UI-funktio)
     if(typeof switchView === 'function') switchView('map');
 };
 
+// 5. Apufunktiot
 
-// 5. APUFUNKTIOT
-
-// Poistaa piirretyt viivat kartalta
+// Poistaa historian viivat kartalta
 function clearSavedRoute() {
-    // Poista moniväriset pätkät
     if(savedRouteLayers.length > 0) {
         savedRouteLayers.forEach(layer => map.removeLayer(layer));
         savedRouteLayers = [];
     }
-    // Poista yksivärinen viiva
     if(savedRouteLayer) {
         map.removeLayer(savedRouteLayer);
         savedRouteLayer = null;
     }
 }
 
-// Laskee värin nopeuden perusteella
+// Laskee värin nopeuden perusteella (PÄIVITETTY LOGIIKKA)
 function getSpeedColor(speed, type) {
+    // PYÖRÄ (Bike)
     if (type === 'bike') {
-        // PYÖRÄILY SKAALA
-        if (speed < 5) return '#2979ff';   // Sininen (Talutus/Hidas)
+        if (speed < 5) return '#2979ff';   // Sininen (Talutus/Pysähdys)
         if (speed < 20) return '#00e676';  // Vihreä (Normaali)
-        if (speed < 35) return '#ffea00';  // Keltainen (Reipas)
-        return '#ff1744';                  // Punainen (Kovaa / Alamäki)
-    } else {
-        // AUTOILY SKAALA
-        if (speed < 10) return '#2979ff';  // Sininen (Ruuhka/Pysähdys)
-        if (speed < 50) return '#00e676';  // Vihreä (Taajama)
-        if (speed < 90) return '#ffea00';  // Keltainen (Maantie)
-        return '#ff1744';                  // Punainen (Moottoritie)
+        return '#ff1744';                  // Punainen (Kova vauhti)
     }
+
+    // AUTO (Car - default)
+    if (speed < 20) return '#2979ff';  // Sininen (Ruuhka/Piha/Valot)
+    if (speed < 60) return '#00e676';  // Vihreä (Kaupunki)
+    if (speed < 90) return '#ffea00';  // Keltainen (Maantie)
+    return '#ff1744';                  // Punainen (Moottoritie/Ylinopeus)
 }

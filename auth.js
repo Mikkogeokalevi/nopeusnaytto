@@ -5,7 +5,7 @@
 // Kuunnellaan kirjautumistilan muutoksia
 auth.onAuthStateChanged((user) => {
     // Piilotetaan latausruutu viiveellä
-    if (typeof splashScreen !== 'undefined' && splashScreen) {
+    if (splashScreen) {
         setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
     }
 
@@ -13,17 +13,14 @@ auth.onAuthStateChanged((user) => {
         // --- KÄYTTÄJÄ ON KIRJAUTUNUT ---
         currentUser = user; // Asetetaan globaali muuttuja
         
-        if(typeof loginView !== 'undefined' && loginView) loginView.style.display = 'none';
-        if(typeof appContainer !== 'undefined' && appContainer) appContainer.style.display = 'flex';
+        loginView.style.display = 'none';
+        appContainer.style.display = 'flex';
         
         // Päivitetään valikon tiedot
-        if(typeof menuUserName !== 'undefined' && menuUserName) menuUserName.innerText = user.displayName || user.email;
-        if (typeof menuUserAvatar !== 'undefined' && menuUserAvatar) {
+        if(menuUserName) menuUserName.innerText = user.displayName || user.email;
+        if (menuUserAvatar) {
             menuUserAvatar.src = user.photoURL ? user.photoURL : "ajopaivakirja_logo.png";
         }
-
-        // TÄRKEÄ KORJAUS: Pakotetaan mittaristo näkyviin heti latauksessa
-        if(typeof switchView === 'function') switchView('dashboard');
 
         // TÄRKEÄÄ: Ladataan tiedot heti kun kirjaudutaan sisään
         // Tarkistetaan onko funktiot ladattu ennen kutsua
@@ -31,18 +28,18 @@ auth.onAuthStateChanged((user) => {
         if(typeof loadHistory === 'function') loadHistory(); 
         if(typeof generateCarIcons === 'function') generateCarIcons(); 
         
-        // Ladataan tankkaukset (UI päivitys hoituu history.js kautta)
-        // if(typeof loadRefuelings === 'function') loadRefuelings(); // Tämä on yhdistetty loadHistoryyn
+        // UUSI: Ladataan tankkaukset
+        if(typeof loadRefuelings === 'function') loadRefuelings();
 
         // Korjataan kartan koko jos se on piilossa lataushetkellä
-        if (typeof views !== 'undefined' && views.map && views.map.style.display !== 'none' && typeof map !== 'undefined' && map) {
+        if (views.map && views.map.style.display !== 'none' && map) {
             setTimeout(() => map.invalidateSize(), 200);
         }
     } else {
         // --- KÄYTTÄJÄ EI OLE KIRJAUTUNUT ---
         currentUser = null;
-        if (typeof appContainer !== 'undefined' && appContainer) appContainer.style.display = 'none';
-        if (typeof loginView !== 'undefined' && loginView) loginView.style.display = 'flex';
+        if (appContainer) appContainer.style.display = 'none';
+        if (loginView) loginView.style.display = 'flex';
     }
 });
 
@@ -86,14 +83,8 @@ if(btnRegisterEmail) {
 const btnLogout = document.getElementById('btn-logout');
 if(btnLogout) {
     btnLogout.addEventListener('click', () => {
-        if(typeof openConfirmModal === 'function') {
-            openConfirmModal("Kirjaudu ulos", "Haluatko varmasti kirjautua ulos?", () => {
-                auth.signOut().then(() => location.reload());
-            });
-        } else {
-            if(confirm("Haluatko varmasti kirjautua ulos?")) {
-                auth.signOut().then(() => location.reload());
-            }
+        if(confirm("Haluatko varmasti kirjautua ulos?")) {
+            auth.signOut().then(() => location.reload());
         }
     });
 }
@@ -101,27 +92,22 @@ if(btnLogout) {
 const btnLoginHelp = document.getElementById('btn-login-help');
 if(btnLoginHelp) {
     btnLoginHelp.addEventListener('click', () => {
-        if(loginView) loginView.style.display = 'none';
-        if(appContainer) appContainer.style.display = 'flex';
+        loginView.style.display = 'none';
+        appContainer.style.display = 'flex';
         if(typeof switchView === 'function') switchView('help');
         
         const controls = document.querySelector('.controls-container');
         if(controls) controls.style.display = 'none';
         
         // Lisää takaisin-nappi dynaamisesti
+        const backBtn = document.createElement('button');
+        backBtn.innerText = "← Takaisin kirjautumiseen";
+        backBtn.className = 'action-btn blue-btn';
+        backBtn.style.marginTop = "20px";
+        backBtn.onclick = () => location.reload();
+        
         const helpView = document.getElementById('help-view');
-        if (helpView) {
-            // Poista vanha jos on
-            const oldBtn = document.getElementById('temp-back-btn');
-            if(oldBtn) oldBtn.remove();
-
-            const backBtn = document.createElement('button');
-            backBtn.id = 'temp-back-btn';
-            backBtn.innerText = "← Takaisin kirjautumiseen";
-            backBtn.className = 'action-btn blue-btn';
-            backBtn.style.marginTop = "20px";
-            backBtn.onclick = () => location.reload();
-            
+        if (helpView && !helpView.querySelector('button')) {
             helpView.prepend(backBtn);
         }
     });

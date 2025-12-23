@@ -1,39 +1,21 @@
 // =========================================================
-// APP.JS - SOVELLUKSEN KÄYNNISTYS (REFACTORED v6.1)
+// APP.JS - SOVELLUKSEN KÄYNNISTYS (GLUE CODE)
 // =========================================================
 
-// 1. TEEMAN HALLINTA
-// Ladataan tallennettu teema heti käynnistyksessä
-const savedTheme = localStorage.getItem(APP_CONFIG.THEME_STORAGE_KEY);
-if (savedTheme === 'light') {
-    document.body.classList.add('light-theme');
-}
-
+// Teeman vaihto (Logiikka joka ei mahtunut muihin tai on globaali)
 const btnTheme = document.getElementById('btn-theme');
 if (btnTheme) {
     btnTheme.addEventListener('click', () => {
-        // Vaihda luokka
         document.body.classList.toggle('light-theme');
-        
-        // Tallenna uusi tila muistiin
-        const isLight = document.body.classList.contains('light-theme');
-        localStorage.setItem(APP_CONFIG.THEME_STORAGE_KEY, isLight ? 'light' : 'dark');
     });
 }
 
-// 2. SERVICE WORKER (PWA TUKI - VALINNAINEN)
-// Jos haluat ottaa PWA:n (Offline-tilan) käyttöön myöhemmin, luo sw.js tiedosto juureen.
-// Tällä hetkellä tämä pidetään passivisena.
+// Rekisteröi Service Worker jos halutaan PWA-tuki (Valinnainen)
 if ('serviceWorker' in navigator) {
     // navigator.serviceWorker.register('./sw.js')
-    // .then(() => console.log('Service Worker Registered'))
-    // .catch((err) => console.log('SW Fail:', err));
+    // .then(() => console.log('Service Worker Registered'));
 }
 
-// 3. KÄYNNISTYSLOKI
-// Varmistetaan että APP_CONFIG on ladattu (globals.js)
-if (typeof APP_CONFIG !== 'undefined') {
-    console.log(`Ajopäiväkirja Pro v${APP_CONFIG.VERSION} käynnistetty.`);
-} else {
-    console.log("Ajopäiväkirja Pro käynnistetty (Config missing).");
-}
+// Tulostetaan versio konsoliin (Hakee APP_VERSION globals.js:stä)
+const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : "Unknown";
+console.log(`Mikkokalevin Ajopäiväkirja Pro v${ver} (Modular) käynnistetty.`);
