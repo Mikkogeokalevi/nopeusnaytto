@@ -1,5 +1,5 @@
 // =========================================================
-// MAP.JS - KARTTA, TASOT JA VÄRILLINEN REITTI (v6.5)
+// MAP.JS - KARTTA, TASOT JA VÄRILLINEN REITTI (FIXED v6.6)
 // =========================================================
 
 // 1. KARTTATASOJEN MÄÄRITTELY
@@ -77,7 +77,7 @@ if (map) {
 }
 
 
-// 4. HISTORIAN REITIN PIIRTO (NOPEUSVÄRITYS)
+// 4. HISTORIAN REITIN PIIRTO (NOPEUSVÄRITYS PALAUTETTU)
 window.showRouteOnMap = (key) => {
     // Etsitään ajo avaimen perusteella
     const drive = allHistoryData.find(d => d.key === key);
@@ -92,6 +92,8 @@ window.showRouteOnMap = (key) => {
     clearSavedRoute();
 
     // Tarkistetaan onko reitissä nopeustietoa (uusi data) vai pelkät koordinaatit (vanha data)
+    // Uusi data on muotoa [{lat:x, lng:y, spd:z}, ...]
+    // Vanha data on muotoa [[lat,lng], [lat,lng]]
     const hasSpeedData = (drive.route[0].spd !== undefined);
 
     if (hasSpeedData) {
@@ -133,7 +135,12 @@ window.showRouteOnMap = (key) => {
     } else {
         // --- YKSIVÄRINEN VIIVA (VANHA DATA) ---
         // Jos nopeustieto puuttuu, piirretään oranssi viiva
-        const latLngs = drive.route.map(p => [p.lat, p.lng]);
+        // Konvertoidaan vanha formaatti [lat,lng] tarvittaessa
+        const latLngs = drive.route.map(p => {
+            if(Array.isArray(p)) return p;
+            return [p.lat, p.lng];
+        });
+        
         savedRouteLayer = L.polyline(latLngs, {color: '#ff9100', weight: 5, opacity: 0.8}).addTo(map);
         
         if(document.getElementById('map-legend')) {
@@ -142,7 +149,12 @@ window.showRouteOnMap = (key) => {
     }
     
     // Zoomataan reittiin
-    const allPoints = drive.route.map(p => [p.lat, p.lng]);
+    // Lasketaan boundsit riippumatta datamuodosta
+    const allPoints = drive.route.map(p => {
+        if(Array.isArray(p)) return p;
+        return [p.lat, p.lng];
+    });
+    
     const bounds = L.latLngBounds(allPoints);
     map.fitBounds(bounds, {padding: [50, 50]});
     
