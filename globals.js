@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - NYT VIRALLISESTI 5.95
-const APP_VERSION = "5.95"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT v6.00 (MERIKARTTA & TUMMA TEEMA)
+const APP_VERSION = "6.00"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
