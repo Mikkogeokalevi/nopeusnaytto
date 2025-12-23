@@ -1,12 +1,12 @@
 // =========================================================
-// HELP.JS - KATTAVA KÄYTTÖOPAS JA UKK (v5.9 RAAMATTU)
+// HELP.JS - KATTAVA KÄYTTÖOPAS JA UKK (v5.95 RAAMATTU)
 // =========================================================
 
 const helpContent = `
     <div style="text-align:center; margin-bottom: 30px;">
         <img src="ajopaivakirja_logo.png" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-color); margin-bottom:10px;">
         <h2 style="color:var(--accent-color); text-transform: uppercase; letter-spacing: 1px; margin:0;">Käyttöopas</h2>
-        <p style="opacity:0.7; font-size:12px;">Mikkokalevin Ajopäiväkirja Pro v${typeof APP_VERSION !== 'undefined' ? APP_VERSION : '5.9'}</p>
+        <p style="opacity:0.7; font-size:12px;">Mikkokalevin Ajopäiväkirja Pro v${typeof APP_VERSION !== 'undefined' ? APP_VERSION : '5.95'}</p>
     </div>
     
     <div class="help-section">
@@ -80,56 +80,90 @@ const helpContent = `
         <div class="help-step">
             <strong>Ajoneuvotyypit:</strong>
             <ul>
-                <li><strong>🚗 Auto:</strong> Kartta loitontaa maantienopeuksissa (Zoom 14-16). Eco-analyysi on päällä.</li>
-                <li><strong>🚲 Pyörä:</strong> Kartta pysyy aina lähikuvassa (Zoom 17-19). Eco-analyysi on pois päältä (ettei puhelimen tärinä vääristä tulosta).</li>
+                <li><strong>🚗 Auto:</strong> Kartta loitontaa maantienopeuksissa. Eco-analyysi on päällä.</li>
+                <li><strong>🚲 Pyörä:</strong> Kartta pysyy aina lähikuvassa. Eco-analyysi on pois päältä.</li>
+            </ul>
+        </div>
+
+        <div class="help-step">
+            <strong>🗄️ Arkistointi (UUSI):</strong>
+            Jos myyt auton tai palautat vuokra-auton, voit "Arkistoida" sen Asetukset-sivulta.
+            <ul>
+                <li>Arkistoitu auto ei näy tankkaus- tai aloituslistoissa (pysyy poissa tieltä).</li>
+                <li>Saat sen historian näkyviin valitsemalla yläpalkista <em>"Kaikki (sis. arkistoidut)"</em>.</li>
+                <li>Voit palauttaa auton käyttöön painamalla ♻️-nappia.</li>
             </ul>
         </div>
     </div>
 
     <div class="help-section">
-        <h3>⏱️ 4. Ajon tallennus</h3>
+        <h3>⏱️ 4. Ajon tallennus & Työajo</h3>
         
         <div class="help-step">
             <strong>🔇 Tausta-ajo (Silent Audio Hack):</strong>
-            Kun käynnistät GPS:n, sovellus alkaa toistaa "hiljaisuutta" taustalla.
-            <br><em>Miksi?</em> Useimmat puhelimet tappavat verkkosivun GPS-yhteyden heti, kun näyttö sammuu säästääkseen virtaa. Äänen toistaminen huijaa puhelimen luulemaan, että kuuntelet musiikkia (kuten Spotify), jolloin se pitää sovelluksen ja GPS:n käynnissä myös taskussa.
+            Kun käynnistät GPS:n, sovellus alkaa toistaa "hiljaisuutta" taustalla. Tämä huijaa puhelimen pitämään GPS:n päällä taskussa.
         </div>
 
         <div class="help-step">
-            <strong>Tauko (Pause):</strong>
-            Käytä aina taukoa pysähdyksissä. Jos puhelin on taskussa kaupassa käynnin ajan ilman taukoa, GPS "vaeltaa" ja kerryttää haamukilometrejä.
+            <strong>💾 Tallennus ja Työajo (UUSI):</strong>
+            Kun lopetat tallennuksen (STOP), avautuu ikkuna, jossa voit:
+            <ul>
+                <li>Kirjoittaa ajon aiheen (esim. "Kauppareissu").</li>
+                <li>Valita onko kyseessä <strong>🏠 Oma ajo</strong> vai <strong>💼 Työajo</strong>.</li>
+            </ul>
+            Tämä valinta vaikuttaa siihen, miltä ajo näyttää listassa ja CSV-raportissa.
         </div>
     </div>
 
     <div class="help-section">
-        <h3>⛽ 5. Tankkaukset ja Muokkaus</h3>
+        <h3>📝 5. Historia & Muokkaus (UUSI)</h3>
+        <p>Historia-sivu on saanut merkittäviä päivityksiä versiossa 5.95.</p>
+
+        <div class="help-step">
+            <strong>✏️ Muokkaus (Extended Edit):</strong>
+            Jos unohdit käynnistää sovelluksen ajoissa tai GPS näytti väärin, voit nyt korjata tiedot jälkikäteen.
+            <br>Paina kynä-ikonia (✏️) haluamasi ajon kohdalla. Voit muuttaa:
+            <ul>
+                <li>Päivämäärän ja kellonajan.</li>
+                <li>Ajetun matkan (km).</li>
+                <li>Ajon tyypin (Oma/Työ).</li>
+                <li>Käytetyn ajoneuvon.</li>
+            </ul>
+        </div>
+
+        <div class="help-step">
+            <strong>➕ Manuaalinen lisäys:</strong>
+            Unohditko koko sovelluksen? Paina historia-sivulla <strong>"+ Manuaalinen lisäys"</strong>.
+            <br>Voit syöttää lähtöpaikan, määränpään ja kilometrit käsin.
+        </div>
+
+        <div class="help-step">
+            <strong>📥 Raportointi (Excel/CSV):</strong>
+            Paina <strong>"Lataa CSV"</strong> -nappia. Saat tiedoston, jonka voit avata Excelissä. Se sisältää eriteltynä: Pvm, Kello, Auto, Tyyppi (Työ/Oma), Matka, Kesto, Reitti ja Selite.
+        </div>
+    </div>
+
+    <div class="help-section">
+        <h3>⛽ 6. Tankkaukset</h3>
         
         <div class="help-step">
             <strong>Lisääminen:</strong>
-            Paina mittaristossa <strong>⛽</strong>-nappia (kellon vieressä). Syötä päivä, litrat ja eurot. Sovellus laskee litrahinnan.
+            Paina mittaristossa <strong>⛽</strong>-nappia. Syötä päivä, litrat ja eurot.
         </div>
         
         <div class="help-step">
-            <strong>✏️ Muokkaaminen (UUSI):</strong>
-            Teitkö virheen? Mene <strong>Historia</strong>-sivulle -> valitse välilehti <strong>Tankkaukset</strong>.
-            <br>Paina kynä-ikonia (✏️) haluamasi tankkauksen kohdalla. Voit muuttaa kaikkia tietoja (auto, pvm, litrat, hinta).
+            <strong>Huom:</strong> Tankkausta ei voi lisätä polkupyörälle tai arkistoidulle autolle.
         </div>
     </div>
 
     <div class="help-section">
-        <h3>📊 6. Tilastot (UUSI LOGIIKKA)</h3>
-        <p>Tilastot-sivulla on nyt dynaaminen aikavälin valinta yläreunassa.</p>
-
+        <h3>📊 7. Tilastot</h3>
         <div class="help-step">
-            <strong>📅 Lyhyet aikavälit (7 pv / 30 pv):</strong>
-            Kun valitset nämä, graafien X-akseli muuttuu <strong>päiväkohtaiseksi</strong>.
-            <br><em>Esimerkki:</em> Näet pylväsdiagrammissa, että ajoit maanantaina 50km ja tiistaina 0km.
-        </div>
-
-        <div class="help-step">
-            <strong>📅 Pitkät aikavälit (Vuosi / Kaikki):</strong>
-            Kun valitset nämä, graafit niputtavat datan <strong>kuukausitasolle</strong>.
-            <br><em>Esimerkki:</em> Tammikuu 1200km, Helmikuu 950km.
+            <strong>📅 Aikavälin valinta:</strong>
+            <ul>
+                <li><strong>7 pv / 30 pv:</strong> Graafit näyttävät datan <strong>päiväkohtaisesti</strong>.</li>
+                <li><strong>Vuosi / Kaikki:</strong> Graafit näyttävät datan <strong>kuukausitasolla</strong>.</li>
+            </ul>
         </div>
     </div>
 
@@ -138,22 +172,12 @@ const helpContent = `
         
         <div class="help-step">
             <strong>K: GPS-viiva on suora ("teleporttaus")?</strong>
-            <br>V: Signaali katkesi tai virransäästö iski.
-            <ul>
-                <li>Varmista, että "Tausta-ajo" ääni pyörii (saatat nähdä mediailmoituksen).</li>
-                <li>Pidä puhelin latauksessa ajon aikana.</li>
-                <li>Tarkista puhelimen asetuksista, ettei selaimella ole "Akun optimointi" päällä.</li>
-            </ul>
+            <br>V: Signaali katkesi tai virransäästö iski. Varmista, että äänet ovat päällä selaimessa (Silent Audio).
         </div>
 
         <div class="help-step">
-            <strong>K: Nopeusmittari näyttää nollaa vaikka liikun?</strong>
-            <br>V: Sijaintilupa on ehkä estetty tai "Salli vain kerran" on vanhentunut. Päivitä sivu ja salli sijainti uudelleen.
-        </div>
-
-        <div class="help-step">
-            <strong>K: Kartta on harmaa?</strong>
-            <br>V: Olet alueella, josta ei ole ladattu karttatiiliä välimuistiin, ja nettiyhteys on heikko.
+            <strong>K: En löydä vanhaa autoani listalta?</strong>
+            <br>V: Olet todennäköisesti arkistoinut sen. Valitse yläpalkista "Kaikki (sis. arkistoidut)".
         </div>
         
         <div class="help-step">
