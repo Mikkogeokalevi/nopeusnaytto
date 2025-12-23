@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.99 FIX)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.96)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -64,14 +64,18 @@ const manualModal = document.getElementById('manual-drive-modal');
 const btnManualDrive = document.getElementById('btn-manual-drive');
 const btnManualCancel = document.getElementById('btn-manual-cancel');
 const btnManualSave = document.getElementById('btn-manual-save');
-// Määritellään calc-nappi varovasti, jos sitä ei html:ssä ole
-const btnManualCalc = document.getElementById('btn-manual-calc'); 
+// const btnManualCalc = document.getElementById('btn-manual-calc'); // POISTETTU TÄSTÄ VERSIOSTA
 const inpManualDate = document.getElementById('manual-date');
 const inpManualCar = document.getElementById('manual-car-select');
 const inpManualStart = document.getElementById('manual-start-addr');
 const inpManualEnd = document.getElementById('manual-end-addr');
 const inpManualDist = document.getElementById('manual-dist');
 const inpManualSubj = document.getElementById('manual-subject');
+
+// PREVIEW MODAL (UUSI)
+const previewModal = document.getElementById('preview-modal');
+const btnPreviewCancel = document.getElementById('btn-preview-cancel');
+const btnPreviewConfirm = document.getElementById('btn-preview-confirm');
 
 const deleteModal = document.getElementById('delete-modal');
 const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
@@ -383,7 +387,7 @@ if (btnFuelSave) {
     });
 }
 
-// --- 6. MANUAALINEN LISÄYS (KORJATTU SULKEMINEN) ---
+// --- 6. MANUAALINEN LISÄYS ---
 
 if (btnManualDrive) {
     btnManualDrive.addEventListener('click', () => {
@@ -406,7 +410,6 @@ if (btnManualCancel) {
     btnManualCancel.addEventListener('click', () => { if(manualModal) manualModal.style.display = 'none'; });
 }
 
-// KORJATTU SAVE FUNKTIO
 if (btnManualSave) {
     btnManualSave.addEventListener('click', () => {
         const dateTime = inpManualDate.value;
@@ -443,16 +446,11 @@ if (btnManualSave) {
 
             db.ref('ajopaivakirja/' + currentUser.uid).push().set(driveData)
                 .then(() => {
-                    // PALAUTA NAPPI
                     btnManualSave.disabled = false;
                     btnManualSave.innerText = origText;
-                    
-                    // SULJE IKKUNA VÄLITTÖMÄSTI
                     if(manualModal) manualModal.style.display = 'none';
-                    
                     showToast("Ajo lisätty manuaalisesti! 📝");
                     
-                    // PÄIVITÄ LISTA (Try/catch jotta ei kaada)
                     try {
                         if(window.renderHistoryList) window.renderHistoryList();
                     } catch(e) { console.error("Listan päivitys epäonnistui", e); }
@@ -466,17 +464,39 @@ if (btnManualSave) {
     });
 }
 
-// --- CSV EXPORT (HOOK) ---
+// --- CSV EXPORT & PREVIEW (UUSI) ---
+// Tässä avataan esikatseluikkuna EIKÄ ladata suoraan
 if(btnExportCsv) {
     btnExportCsv.addEventListener('click', () => {
-        if(typeof exportToCSV === 'function') exportToCSV();
-        else showToast("Virhe: Export-toiminto puuttuu.");
+        if(typeof window.populatePreviewTable === 'function') {
+            window.populatePreviewTable();
+            if(previewModal) previewModal.style.display = 'flex';
+        } else {
+            // Fallback jos history.js ei ole vielä päivittynyt
+            if(typeof exportToCSV === 'function') exportToCSV();
+        }
+    });
+}
+
+// Esikatseluikkunan napit
+if(btnPreviewCancel) {
+    btnPreviewCancel.addEventListener('click', () => {
+        if(previewModal) previewModal.style.display = 'none';
+    });
+}
+
+if(btnPreviewConfirm) {
+    btnPreviewConfirm.addEventListener('click', () => {
+        if(typeof window.exportToCSV === 'function') {
+            window.exportToCSV();
+            if(previewModal) previewModal.style.display = 'none';
+            showToast("Raportti ladattu! 📥");
+        }
     });
 }
 
 // --- 7. APUFUNKTIOT ---
 
-// PÄIVITETTY TALLENNUS (KORJATTU LUKKO JA SULKEMINEN)
 const btnEditSave2 = document.getElementById('btn-edit-save');
 if(btnEditSave2) {
     const newBtn = btnEditSave2.cloneNode(true);
@@ -497,7 +517,6 @@ if(btnEditSave2) {
         
         if (key && currentUser && carObj) {
             
-            // --- UI LUKKO ---
             const origText = newBtn.innerText;
             newBtn.disabled = true;
             newBtn.innerText = "Tallennetaan...";
@@ -515,7 +534,6 @@ if(btnEditSave2) {
 
             db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update(updates)
                 .then(() => { 
-                    // ONNISTUI
                     newBtn.disabled = false;
                     newBtn.innerText = origText;
                     
@@ -527,7 +545,6 @@ if(btnEditSave2) {
                     } catch(e) { console.error(e); }
                 })
                 .catch(err => {
-                    // VIRHE
                     newBtn.disabled = false;
                     newBtn.innerText = origText;
                     alert("Virhe tallennuksessa: " + err.message);
@@ -536,7 +553,7 @@ if(btnEditSave2) {
     });
 }
 
-// --- RESTORED TABS LOGIC (KORJATTU TÄHÄN) ---
+// --- RESTORED TABS LOGIC ---
 
 const tabDrives = document.getElementById('tab-drives');
 const tabFuel = document.getElementById('tab-fuel');
