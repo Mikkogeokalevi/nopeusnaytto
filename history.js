@@ -1,12 +1,9 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA RAPORTOINTI (FIXED v6.2)
+// HISTORY.JS - HISTORIA, SUODATUS JA UI (FULL v6.4)
 // =========================================================
 
 // --- 1. MÄÄRITELLÄÄN ELEMENTIT ---
-const filterEl = document.getElementById('history-filter'); // Tämä on nyt AIKAVÄLI-valitsin
-const customFilterContainer = document.getElementById('custom-filter-container');
-const filterStart = document.getElementById('filter-start');
-const filterEnd = document.getElementById('filter-end');
+// Huom: Osa elementeistä luodaan dynaamisesti buildHistoryToolbar-funktiossa
 const historySummaryEl = document.getElementById('history-summary');
 const statsTimeRange = document.getElementById('stats-time-range');
 
@@ -19,41 +16,18 @@ window.renderFuelStats = renderFuelStats;
 window.exportToCSV = exportToCSV;
 window.populatePreviewTable = populatePreviewTable;
 
-// Alustetaan aikavälivalikko heti
-initTimeFilterOptions();
-
-function initTimeFilterOptions() {
-    if (!filterEl) return;
-    // Tyhjennetään ja luodaan aikavälivaihtoehdot autojen sijaan
-    filterEl.innerHTML = "";
-    
-    const options = [
-        { val: '30d', text: 'Viimeiset 30 päivää' },
-        { val: '7d', text: 'Viimeiset 7 päivää' },
-        { val: 'this_year', text: 'Tämä vuosi' },
-        { val: 'all_time', text: 'Koko historia' },
-        { val: 'custom_range', text: 'Mukautettu väli...' }
-    ];
-
-    options.forEach(opt => {
-        const el = document.createElement('option');
-        el.value = opt.val;
-        el.innerText = opt.text;
-        filterEl.appendChild(el);
-    });
-    
-    // Oletusvalinta
-    filterEl.value = '30d';
-}
-
-// --- 2. HISTORIAN LATAUS ---
+// --- 2. HISTORIAN LATAUS JA UI:N RAKENNUS ---
 function loadHistory() {
     if (!currentUser) return;
 
-    // Poistetaan vanha kuuntelija
+    // 1. Rakennetaan "Siisti Toolbar" heti kun historia ladataan
+    // Tämä korvaa index.html:n vanhat napit dynaamisesti
+    buildHistoryToolbar();
+
+    // Poistetaan vanhat kuuntelijat
     db.ref(DB_PATHS.DRIVELOG + currentUser.uid).off();
     
-    // Ladataan data
+    // Haetaan data
     const historyRef = db.ref(DB_PATHS.DRIVELOG + currentUser.uid)
                          .orderByChild('startTime')
                          .limitToLast(1000); 
@@ -65,88 +39,224 @@ function loadHistory() {
         if (snapshot.exists()) {
             snapshot.forEach(child => {
                 const data = child.val();
-                if (data.type === 'refueling') {
+                // Tuki sekä vanhalle 'refuel' että uudelle 'refueling' tyypille
+                if (data.type === 'refueling' || data.type === 'refuel') { 
                     allRefuelings.push({ key: child.key, ...data });
                 } else {
                     allHistoryData.push({ key: child.key, ...data });
                 }
             });
-            // Uusin ensin
+            // Järjestetään uusin ensin
             allHistoryData.reverse();
             allRefuelings.reverse();
         }
 
-        // Päivitetään näkymät heti datan latauduttua
-        if (views.history && views.history.style.display !== 'none') {
-            renderHistoryList(); 
-            // Jos tankkaus-tabi on auki, päivitä sekin
-            const fuelList = document.getElementById('fuel-list');
-            if(fuelList && fuelList.style.display !== 'none') renderFuelList();
+        // TÄRKEÄÄ: Asetetaan oletussuodatin ja pakotetaan päivitys heti datan tultua
+        const filterEl = document.getElementById('history-filter-select');
+        if (filterEl && !filterEl.value) {
+            filterEl.value = '7d'; // Oletus: Viimeiset 7 päivää
         }
-        if (views.stats && views.stats.style.display !== 'none') {
-            renderStats();
-        }
+        
+        refreshActiveView();
     });
 }
 
-// --- 3. LISTAKSEN RENDERÖINTI ---
+function refreshActiveView() {
+    // Tarkistetaan kumpi tabi on auki (Ajot vai Tankkaukset)
+    const fuelList = document.getElementById('fuel-list');
+    const logList = document.getElementById('log-list');
+    
+    if (fuelList && fuelList.style.display !== 'none') {
+        renderFuelList();
+    } else {
+        renderHistoryList();
+    }
+    // Päivitetään myös tilastot taustalla valmiiksi
+    renderStats();
+}
+
+// --- 3. UUSI KÄYTTÖLIITTYMÄ (TOOLBAR) ---
+function buildHistoryToolbar() {
+    const historyView = document.getElementById('history-view');
+    if (!historyView) return;
+
+    // Tarkistetaan onko toolbar jo tehty, jotta ei tehdä tuplana
+    if (document.getElementById('custom-history-toolbar')) return;
+
+    // Tyhjennetään näkymän yläosa (poistaa vanhat rumat napit index.html:stä visuaalisesti)
+    // Säästetään kuitenkin itse lista-containerit
+    const logList = document.getElementById('log-list');
+    const fuelList = document.getElementById('fuel-list');
+    const summary = document.getElementById('history-summary');
+    
+    // Luodaan uusi rakenne
+    historyView.innerHTML = ""; 
+    
+    const toolbar = document.createElement('div');
+    toolbar.id = 'custom-history-toolbar';
+    toolbar.style.paddingBottom = "10px";
+    
+    toolbar.innerHTML = `
+        <h2 style="text-align:center; color:var(--accent-color); margin-top:0; margin-bottom:15px;">Ajohistoria</h2>
+        
+        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px;">
+            <button id="new-tab-drives" class="action-btn blue-btn" style="width:auto; font-size:13px; padding:8px 20px; flex:1; max-width:140px;">🏎️ Ajot</button>
+            <button id="new-tab-fuel" class="action-btn" style="width:auto; font-size:13px; padding:8px 20px; background-color: #333; flex:1; max-width:140px;">⛽ Tankkaukset</button>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; background:rgba(255,255,255,0.05); padding:10px; border-radius:12px;">
+            
+            <div style="flex:1;">
+                <select id="history-filter-select" class="subject-input" style="width: 100%; font-weight:bold; cursor:pointer;">
+                    <option value="7d">📅 7 päivää</option>
+                    <option value="30d">📅 30 päivää</option>
+                    <option value="this_year">📅 Tämä vuosi</option>
+                    <option value="all_time">📅 Kaikki</option>
+                    <option value="custom_range">📅 Oma väli...</option>
+                </select>
+            </div>
+
+            <div style="display:flex; gap:8px;">
+                <button id="new-btn-manual" class="icon-btn" style="border-color:#444; background:#333;" title="Lisää manuaalisesti">📝</button>
+                <button id="new-btn-csv" class="icon-btn" style="border-color:#00796b; background:#004d40;" title="Lataa Excel/CSV">📥</button>
+            </div>
+        </div>
+
+        <div id="custom-filter-container" style="display:none; margin-bottom: 15px; text-align: center; background:rgba(0,0,0,0.2); padding:10px; border-radius:8px;">
+            <div style="display:flex; gap:5px; align-items:center; justify-content:center;">
+                <input type="date" id="filter-start" class="date-input" style="background:#222; color:#fff; border:1px solid #444; padding:5px; border-radius:4px;">
+                <span>-</span>
+                <input type="date" id="filter-end" class="date-input" style="background:#222; color:#fff; border:1px solid #444; padding:5px; border-radius:4px;">
+            </div>
+        </div>
+    `;
+
+    historyView.appendChild(toolbar);
+    
+    // Palautetaan listat ja summary DOMiin
+    if(summary) historyView.appendChild(summary);
+    if(logList) historyView.appendChild(logList);
+    if(fuelList) historyView.appendChild(fuelList);
+
+    // --- KYTKETÄÄN TAPAHTUMAKUUNTELIJAT ---
+    
+    // 1. Tabit
+    document.getElementById('new-tab-drives').onclick = () => {
+        document.getElementById('new-tab-drives').className = "action-btn blue-btn";
+        document.getElementById('new-tab-drives').style.backgroundColor = "";
+        document.getElementById('new-tab-fuel').className = "action-btn";
+        document.getElementById('new-tab-fuel').style.backgroundColor = "#333";
+        
+        if(logList) logList.style.display = 'block';
+        if(fuelList) fuelList.style.display = 'none';
+        renderHistoryList();
+    };
+
+    document.getElementById('new-tab-fuel').onclick = () => {
+        document.getElementById('new-tab-fuel').className = "action-btn blue-btn";
+        document.getElementById('new-tab-fuel').style.backgroundColor = "";
+        document.getElementById('new-tab-drives').className = "action-btn";
+        document.getElementById('new-tab-drives').style.backgroundColor = "#333";
+        
+        if(logList) logList.style.display = 'none';
+        if(fuelList) fuelList.style.display = 'block';
+        renderFuelList();
+    };
+
+    // 2. Filtteri
+    const filterSelect = document.getElementById('history-filter-select');
+    filterSelect.onchange = () => {
+        const customCont = document.getElementById('custom-filter-container');
+        if(filterSelect.value === 'custom_range') {
+            customCont.style.display = 'block';
+        } else {
+            customCont.style.display = 'none';
+        }
+        refreshActiveView();
+    };
+
+    // 3. Päivämäärät
+    const fStart = document.getElementById('filter-start');
+    const fEnd = document.getElementById('filter-end');
+    if(fStart) fStart.onchange = refreshActiveView;
+    if(fEnd) fEnd.onchange = refreshActiveView;
+
+    // 4. Napit (Manuaalinen & CSV)
+    // Kutsutaan suoraan logiikkaa
+    document.getElementById('new-btn-manual').onclick = () => {
+        // Simuloidaan ui.js:n modaalin avausta
+        const modal = document.getElementById('manual-drive-modal');
+        if(modal) {
+            // Alustetaan päivämäärä
+            const now = new Date();
+            const inpDate = document.getElementById('manual-date');
+            if(inpDate) {
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                inpDate.value = (new Date(now - tzOffset)).toISOString().slice(0,16);
+            }
+            // Täytetään autot
+            const carSel = document.getElementById('manual-car-select');
+            if(carSel) {
+                carSel.innerHTML = "";
+                userCars.forEach(car => {
+                    if(!car.isArchived) carSel.add(new Option(car.name, car.id));
+                });
+            }
+            modal.style.display = 'flex';
+        }
+    };
+
+    document.getElementById('new-btn-csv').onclick = () => {
+        if(typeof populatePreviewTable === 'function') {
+            populatePreviewTable();
+            const modal = document.getElementById('preview-modal');
+            if(modal) modal.style.display = 'flex';
+        }
+    };
+}
+
+// --- 4. LISTAKSEN RENDERÖINTI ---
 function renderHistoryList() {
     const list = document.getElementById('log-list');
     if (!list) return;
     list.innerHTML = "";
 
-    // 1. Haetaan aikaväli (Local dropdown)
-    const timeFilter = filterEl ? filterEl.value : 'all_time';
+    const filterSelect = document.getElementById('history-filter-select');
+    const timeFilter = filterSelect ? filterSelect.value : '7d';
     
-    // Näytetäänkö mukautettu päivämäärävalinta?
-    if (timeFilter === 'custom_range') {
-        customFilterContainer.style.display = 'flex';
-    } else {
-        customFilterContainer.style.display = 'none';
-    }
-
-    // 2. SUODATUS (Global Car + Local Time)
+    // SUODATUS
     const filtered = allHistoryData.filter(d => {
-        // A) AUTO SUODATUS (Tottelee yläpalkkia)
+        // A) AUTO (Yläpalkin mukaan)
         let carMatch = false;
-        
         if (currentCarId === 'all') {
-            // Näytä kaikki paitsi arkistoidut
             const car = userCars.find(c => c.id === d.carId);
-            // Jos autoa ei löydy (poistettu), näytetään se historiassa silti, tai jos se ei ole arkistoitu
             if (!car || !car.isArchived) carMatch = true;
         } else if (currentCarId === 'all_archived') {
-            // Näytä kaikki (myös arkistoidut)
             carMatch = true;
         } else {
-            // Tietty auto valittu
             if (d.carId === currentCarId) carMatch = true;
         }
-        
         if (!carMatch) return false;
 
-        // B) AIKA SUODATUS
+        // B) AIKA (Dropdownin mukaan)
         const driveTime = new Date(d.startTime).getTime();
         const now = Date.now();
         const oneDay = 86400000;
 
-        if (timeFilter === '7d') {
-            return driveTime >= (now - (7 * oneDay));
-        } else if (timeFilter === '30d') {
-            return driveTime >= (now - (30 * oneDay));
-        } else if (timeFilter === 'this_year') {
-            const startOfYear = new Date(new Date().getFullYear(), 0, 1).getTime();
-            return driveTime >= startOfYear;
-        } else if (timeFilter === 'custom_range') {
-            const start = filterStart.value ? new Date(filterStart.value).getTime() : 0;
-            const end = filterEnd.value ? new Date(filterEnd.value).getTime() + oneDay : Infinity;
+        if (timeFilter === '7d') return driveTime >= (now - (7 * oneDay));
+        if (timeFilter === '30d') return driveTime >= (now - (30 * oneDay));
+        if (timeFilter === 'this_year') return driveTime >= new Date(new Date().getFullYear(), 0, 1).getTime();
+        if (timeFilter === 'custom_range') {
+            const sVal = document.getElementById('filter-start').value;
+            const eVal = document.getElementById('filter-end').value;
+            const start = sVal ? new Date(sVal).getTime() : 0;
+            const end = eVal ? new Date(eVal).getTime() + oneDay : Infinity;
             return driveTime >= start && driveTime < end;
         }
-        
-        return true; // 'all_time'
+        return true; // all_time
     });
 
-    // Yhteenveto (Summary Box)
+    // Yhteenveto
     calculateSummary(filtered);
 
     if (filtered.length === 0) {
@@ -238,15 +348,15 @@ function calculateSummary(data) {
     document.getElementById('sum-label-3').innerText = "KM (TYÖ)";
 }
 
-// --- 4. TANKKAUKSET (Päivitetty noudattamaan suodattimia) ---
+// --- 5. TANKKAUKSET ---
 function renderFuelList() {
     const list = document.getElementById('fuel-list');
     if(!list) return;
     list.innerHTML = "";
 
-    const timeFilter = filterEl ? filterEl.value : 'all_time';
+    const filterSelect = document.getElementById('history-filter-select');
+    const timeFilter = filterSelect ? filterSelect.value : '7d';
 
-    // Suodatus (Sama logiikka kuin ajoissa)
     const filtered = allRefuelings.filter(r => {
         // A) AUTO
         let carMatch = false;
@@ -261,7 +371,7 @@ function renderFuelList() {
         if (!carMatch) return false;
 
         // B) AIKA
-        const refTime = new Date(r.startTime).getTime();
+        const refTime = new Date(r.startTime || r.date).getTime();
         const now = Date.now();
         const oneDay = 86400000;
 
@@ -269,8 +379,10 @@ function renderFuelList() {
         if (timeFilter === '30d') return refTime >= (now - (30 * oneDay));
         if (timeFilter === 'this_year') return refTime >= new Date(new Date().getFullYear(), 0, 1).getTime();
         if (timeFilter === 'custom_range') {
-            const start = filterStart.value ? new Date(filterStart.value).getTime() : 0;
-            const end = filterEnd.value ? new Date(filterEnd.value).getTime() + oneDay : Infinity;
+            const sVal = document.getElementById('filter-start').value;
+            const eVal = document.getElementById('filter-end').value;
+            const start = sVal ? new Date(sVal).getTime() : 0;
+            const end = eVal ? new Date(eVal).getTime() + oneDay : Infinity;
             return refTime >= start && refTime < end;
         }
         return true;
@@ -278,11 +390,12 @@ function renderFuelList() {
 
     if (filtered.length === 0) {
         list.innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>Ei tankkauksia valitulla aikavälillä.</div>";
+        if(historySummaryEl) historySummaryEl.style.display = 'none'; 
         return;
     }
 
     filtered.forEach(fuel => {
-        const dateObj = new Date(fuel.startTime);
+        const dateObj = new Date(fuel.startTime || fuel.date);
         const dateStr = dateObj.toLocaleDateString('fi-FI');
         
         let carName = fuel.carName || "Tuntematon";
@@ -291,7 +404,7 @@ function renderFuelList() {
 
         const div = document.createElement('div');
         div.className = 'log-card';
-        div.style.borderLeft = "4px solid #00e676"; // Vihreä reuna tankkauksille
+        div.style.borderLeft = "4px solid #00e676";
 
         div.innerHTML = `
             <div class="log-header">
@@ -300,22 +413,24 @@ function renderFuelList() {
                     <span class="log-car-big">⛽ ${carName}</span>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:18px; font-weight:bold; color:var(--text-color);">${parseFloat(fuel.totalCost).toFixed(2)} €</div>
+                    <div style="font-size:18px; font-weight:bold; color:var(--text-color);">${parseFloat(fuel.totalCost || fuel.euros).toFixed(2)} €</div>
                     <div style="font-size:11px; color:var(--subtext-color);">${parseFloat(fuel.liters).toFixed(1)} L</div>
                 </div>
             </div>
             <div class="log-stats" style="grid-template-columns: 1fr 1fr;">
                  <div><span class="stat-label">Hinta/L</span>${parseFloat(fuel.pricePerLiter).toFixed(3)} €</div>
-                 <div><span class="stat-label">Mittari</span>${fuel.odometer || '-'} km</div>
+                 <div><span class="stat-label">Mittari</span>${fuel.odometer || fuel.odo || '-'} km</div>
             </div>
         `;
         list.appendChild(div);
     });
+
+    if(historySummaryEl) historySummaryEl.style.display = 'none';
 }
 
-// --- 5. TILASTOT (CHART.JS) ---
+// --- 6. TILASTOT (CHART.JS) ---
 function renderStats() {
-    if (document.getElementById('stats-drives-container').style.display !== 'none') {
+    if (document.getElementById('stats-drives-container') && document.getElementById('stats-drives-container').style.display !== 'none') {
         renderDriveStats();
     } else {
         renderFuelStats();
@@ -323,7 +438,6 @@ function renderStats() {
 }
 
 function renderDriveStats() {
-    // Käytetään stats-näkymän omaa aikavalitsinta, ei historian
     const range = statsTimeRange ? statsTimeRange.value : '30d';
     const now = new Date();
     let cutoff = 0;
@@ -342,7 +456,6 @@ function renderDriveStats() {
 
     const filtered = carFiltered.filter(d => new Date(d.startTime).getTime() >= cutoff);
 
-    // Datan käsittely graafeille
     const dates = {};
     const vehicleDist = {};
     const styles = {};
@@ -365,9 +478,8 @@ function renderDriveStats() {
         styles[s]++;
     });
 
-    // 1. TREND (VIIVA)
     const ctxTrend = document.getElementById('chart-drive-trend');
-    if(ctxTrend) {
+    if(ctxTrend && typeof Chart !== 'undefined') {
         if(chartInstances.trend) chartInstances.trend.destroy();
         chartInstances.trend = new Chart(ctxTrend, {
             type: 'line',
@@ -386,9 +498,8 @@ function renderDriveStats() {
         });
     }
 
-    // 2. AJONEUVOT (PIIRAKKA)
     const ctxVeh = document.getElementById('chart-drive-vehicles');
-    if(ctxVeh) {
+    if(ctxVeh && typeof Chart !== 'undefined') {
         if(chartInstances.vehicles) chartInstances.vehicles.destroy();
         chartInstances.vehicles = new Chart(ctxVeh, {
             type: 'doughnut',
@@ -403,9 +514,8 @@ function renderDriveStats() {
         });
     }
     
-    // 3. AJOTYYLI (BAR)
     const ctxStyle = document.getElementById('chart-drive-style');
-    if(ctxStyle) {
+    if(ctxStyle && typeof Chart !== 'undefined') {
         if(chartInstances.style) chartInstances.style.destroy();
         chartInstances.style = new Chart(ctxStyle, {
             type: 'bar',
@@ -423,28 +533,23 @@ function renderDriveStats() {
 }
 
 function renderFuelStats() {
-    // Placeholder myöhempää käyttöä varten, logiikka vastaava kuin yllä
+    // Placeholder (voidaan laajentaa myöhemmin)
 }
 
-// --- 6. EXPORT (CSV) ---
+// --- 7. EXPORT (CSV) & PREVIEW ---
 function exportToCSV() {
-    if(typeof populatePreviewTable === 'function') {
-        populatePreviewTable();
-        const modal = document.getElementById('preview-modal');
-        if(modal) modal.style.display = 'flex';
-    } else {
-        alert("Virhe: Esikatselufunktio puuttuu.");
-    }
+    // Fallback: Avaa esikatselun, josta voi ladata
+    populatePreviewTable();
+    const modal = document.getElementById('preview-modal');
+    if(modal) modal.style.display = 'flex';
 }
 
 function populatePreviewTable() {
     // Käytetään samaa renderHistoryList-suodatuslogiikkaa datan hakemiseen
-    // Jotta export vastaa tasan sitä mitä ruudulla näkyy
-    
-    const timeFilter = filterEl ? filterEl.value : 'all_time';
+    const filterSelect = document.getElementById('history-filter-select');
+    const timeFilter = filterSelect ? filterSelect.value : '7d';
     
     const filteredData = allHistoryData.filter(d => {
-        // A) AUTO
         let carMatch = false;
         if (currentCarId === 'all') {
             const car = userCars.find(c => c.id === d.carId);
@@ -456,7 +561,6 @@ function populatePreviewTable() {
         }
         if (!carMatch) return false;
 
-        // B) AIKA
         const driveTime = new Date(d.startTime).getTime();
         const now = Date.now();
         const oneDay = 86400000;
@@ -465,14 +569,19 @@ function populatePreviewTable() {
         if (timeFilter === '30d') return driveTime >= (now - (30 * oneDay));
         if (timeFilter === 'this_year') return driveTime >= new Date(new Date().getFullYear(), 0, 1).getTime();
         if (timeFilter === 'custom_range') {
-            const start = filterStart.value ? new Date(filterStart.value).getTime() : 0;
-            const end = filterEnd.value ? new Date(filterEnd.value).getTime() + oneDay : Infinity;
+            const sVal = document.getElementById('filter-start').value;
+            const eVal = document.getElementById('filter-end').value;
+            const start = sVal ? new Date(sVal).getTime() : 0;
+            const end = eVal ? new Date(eVal).getTime() + oneDay : Infinity;
             return driveTime >= start && driveTime < end;
         }
         return true;
     });
 
     const tbody = document.getElementById('preview-tbody');
+    const countEl = document.getElementById('preview-count');
+    const totalEl = document.getElementById('preview-total');
+    
     if(!tbody) return;
     tbody.innerHTML = "";
 
@@ -494,26 +603,28 @@ function populatePreviewTable() {
         tbody.appendChild(tr);
     });
 
-    if(document.getElementById('preview-count')) document.getElementById('preview-count').innerText = filteredData.length + " ajoa";
-    if(document.getElementById('preview-total')) document.getElementById('preview-total').innerText = totalKm.toFixed(1) + " km";
+    if(countEl) countEl.innerText = filteredData.length + " ajoa";
+    if(totalEl) totalEl.innerText = totalKm.toFixed(1) + " km";
 }
 
-// --- 7. TAPAHTUMAKUUNTELIJAT ---
-if(filterEl) filterEl.addEventListener('change', () => {
-    renderHistoryList();
-    if(document.getElementById('fuel-list').style.display !== 'none') renderFuelList();
-});
-if(filterStart) filterStart.addEventListener('change', renderHistoryList);
-if(filterEnd) filterEnd.addEventListener('change', renderHistoryList);
+// --- 8. TAPAHTUMAKUUNTELIJAT (GLOBAL HELPERS) ---
+
 if(statsTimeRange) statsTimeRange.addEventListener('change', renderStats);
 
-// Globaalit apufunktiot HTML:n onclick-kutsuille
 window.openMapForDrive = (key) => {
     const drive = allHistoryData.find(d => d.key === key);
     if(drive && drive.route) {
-        savedRouteLayer = L.polyline(drive.route.map(p => [p.lat, p.lng]), {color: '#ff9100', weight: 5}).addTo(map);
-        if(typeof switchView === 'function') switchView('map');
-        setTimeout(() => map.fitBounds(savedRouteLayer.getBounds(), {padding: [50,50]}), 200);
+        if(typeof showRouteOnMap === 'function') {
+            // Käytetään map.js:n funktiota jos se on olemassa
+            showRouteOnMap(key);
+        } else {
+            // Fallback (Vanha tyyli)
+            savedRouteLayer = L.polyline(drive.route.map(p => [p.lat, p.lng]), {color: '#ff9100', weight: 5}).addTo(map);
+            if(typeof switchView === 'function') switchView('map');
+            setTimeout(() => map.fitBounds(savedRouteLayer.getBounds(), {padding: [50,50]}), 200);
+        }
+    } else {
+        alert("Ei reittitietoja.");
     }
 };
 
