@@ -1,5 +1,5 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA UI (FULL v6.4)
+// HISTORY.JS - HISTORIA, SUODATUS JA UI (FULL v6.5 SummaryFix)
 // =========================================================
 
 // --- 1. MÄÄRITELLÄÄN ELEMENTIT ---
@@ -21,7 +21,6 @@ function loadHistory() {
     if (!currentUser) return;
 
     // 1. Rakennetaan "Siisti Toolbar" heti kun historia ladataan
-    // Tämä korvaa index.html:n vanhat napit dynaamisesti
     buildHistoryToolbar();
 
     // Poistetaan vanhat kuuntelijat
@@ -64,7 +63,6 @@ function loadHistory() {
 function refreshActiveView() {
     // Tarkistetaan kumpi tabi on auki (Ajot vai Tankkaukset)
     const fuelList = document.getElementById('fuel-list');
-    const logList = document.getElementById('log-list');
     
     if (fuelList && fuelList.style.display !== 'none') {
         renderFuelList();
@@ -80,16 +78,15 @@ function buildHistoryToolbar() {
     const historyView = document.getElementById('history-view');
     if (!historyView) return;
 
-    // Tarkistetaan onko toolbar jo tehty, jotta ei tehdä tuplana
+    // Tarkistetaan onko toolbar jo tehty
     if (document.getElementById('custom-history-toolbar')) return;
 
-    // Tyhjennetään näkymän yläosa (poistaa vanhat rumat napit index.html:stä visuaalisesti)
-    // Säästetään kuitenkin itse lista-containerit
+    // Haetaan olemassa olevat elementit talteen
     const logList = document.getElementById('log-list');
     const fuelList = document.getElementById('fuel-list');
     const summary = document.getElementById('history-summary');
     
-    // Luodaan uusi rakenne
+    // Tyhjennetään näkymä
     historyView.innerHTML = ""; 
     
     const toolbar = document.createElement('div');
@@ -182,19 +179,15 @@ function buildHistoryToolbar() {
     if(fEnd) fEnd.onchange = refreshActiveView;
 
     // 4. Napit (Manuaalinen & CSV)
-    // Kutsutaan suoraan logiikkaa
     document.getElementById('new-btn-manual').onclick = () => {
-        // Simuloidaan ui.js:n modaalin avausta
         const modal = document.getElementById('manual-drive-modal');
         if(modal) {
-            // Alustetaan päivämäärä
             const now = new Date();
             const inpDate = document.getElementById('manual-date');
             if(inpDate) {
                 const tzOffset = now.getTimezoneOffset() * 60000;
                 inpDate.value = (new Date(now - tzOffset)).toISOString().slice(0,16);
             }
-            // Täytetään autot
             const carSel = document.getElementById('manual-car-select');
             if(carSel) {
                 carSel.innerHTML = "";
@@ -215,7 +208,7 @@ function buildHistoryToolbar() {
     };
 }
 
-// --- 4. LISTAKSEN RENDERÖINTI ---
+// --- 4. LISTAKSEN RENDERÖINTI (AJOT) ---
 function renderHistoryList() {
     const list = document.getElementById('log-list');
     if (!list) return;
@@ -226,7 +219,7 @@ function renderHistoryList() {
     
     // SUODATUS
     const filtered = allHistoryData.filter(d => {
-        // A) AUTO (Yläpalkin mukaan)
+        // A) AUTO
         let carMatch = false;
         if (currentCarId === 'all') {
             const car = userCars.find(c => c.id === d.carId);
@@ -238,7 +231,7 @@ function renderHistoryList() {
         }
         if (!carMatch) return false;
 
-        // B) AIKA (Dropdownin mukaan)
+        // B) AIKA
         const driveTime = new Date(d.startTime).getTime();
         const now = Date.now();
         const oneDay = 86400000;
@@ -253,14 +246,14 @@ function renderHistoryList() {
             const end = eVal ? new Date(eVal).getTime() + oneDay : Infinity;
             return driveTime >= start && driveTime < end;
         }
-        return true; // all_time
+        return true; 
     });
 
-    // Yhteenveto
+    // PÄIVITETTY YHTEENVETO (KM OMA / KM TYÖ / KM YHT + AJAT)
     calculateSummary(filtered);
 
     if (filtered.length === 0) {
-        list.innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>Ei ajoja valitulla aikavälillä/autolla.</div>";
+        list.innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>Ei ajoja valitulla aikavälillä.</div>";
         return;
     }
 
@@ -324,31 +317,56 @@ function renderHistoryList() {
     });
 }
 
+// UUSI YHTEENVETO LASKURI
 function calculateSummary(data) {
     if (!historySummaryEl) return;
     
-    let totalKm = 0;
-    let totalWork = 0;
-    let count = data.length;
+    let privateKm = 0;
+    let workKm = 0;
+    let privateMs = 0;
+    let workMs = 0;
 
     data.forEach(d => {
         const km = parseFloat(d.distanceKm || 0);
-        totalKm += km;
-        if(d.driveType === 'work') totalWork += km;
+        const ms = d.durationMs || 0;
+        
+        if(d.driveType === 'work') {
+            workKm += km;
+            workMs += ms;
+        } else {
+            privateKm += km;
+            privateMs += ms;
+        }
     });
 
+    const totalKm = privateKm + workKm;
+    const totalMs = privateMs + workMs;
+
+    // Apufunktio ajan muotoiluun (esim. 5h 30m)
+    const fmtTime = (ms) => {
+        if (!ms) return "0min";
+        const h = Math.floor(ms / 3600000);
+        const m = Math.floor((ms % 3600000) / 60000);
+        if (h > 0) return `${h}h ${m}m`;
+        return `${m}min`;
+    };
+
     historySummaryEl.style.display = 'flex';
-    document.getElementById('sum-val-1').innerText = count;
-    document.getElementById('sum-label-1').innerText = "KPL";
 
-    document.getElementById('sum-val-2').innerText = totalKm.toFixed(0);
-    document.getElementById('sum-label-2').innerText = "KM (YHT)";
+    // 1. SARAKE: OMA
+    document.getElementById('sum-val-1').innerText = privateKm.toFixed(0) + " km";
+    document.getElementById('sum-label-1').innerText = "Oma (" + fmtTime(privateMs) + ")";
 
-    document.getElementById('sum-val-3').innerText = totalWork.toFixed(0);
-    document.getElementById('sum-label-3').innerText = "KM (TYÖ)";
+    // 2. SARAKE: TYÖ
+    document.getElementById('sum-val-2').innerText = workKm.toFixed(0) + " km";
+    document.getElementById('sum-label-2').innerText = "Työ (" + fmtTime(workMs) + ")";
+
+    // 3. SARAKE: YHTEENSÄ
+    document.getElementById('sum-val-3').innerText = totalKm.toFixed(0) + " km";
+    document.getElementById('sum-label-3').innerText = "Yht (" + fmtTime(totalMs) + ")";
 }
 
-// --- 5. TANKKAUKSET ---
+// --- 5. TANKKAUKSET LISTA & YHTEENVETO ---
 function renderFuelList() {
     const list = document.getElementById('fuel-list');
     if(!list) return;
@@ -388,9 +406,34 @@ function renderFuelList() {
         return true;
     });
 
+    // LASKETAAN TANKKAUSTEN YHTEENVETO
+    let totalEur = 0;
+    let totalLit = 0;
+    
+    filtered.forEach(f => {
+        totalEur += parseFloat(f.totalCost || f.euros || 0);
+        totalLit += parseFloat(f.liters || 0);
+    });
+    
+    let avgPrice = totalLit > 0 ? (totalEur / totalLit) : 0;
+
+    // NÄYTETÄÄN YHTEENVETOPALKKI MYÖS TANKKAUKSILLE
+    if (historySummaryEl) {
+        historySummaryEl.style.display = 'flex';
+        
+        document.getElementById('sum-val-1').innerText = totalEur.toFixed(1) + " €";
+        document.getElementById('sum-label-1').innerText = "Rahaa";
+
+        document.getElementById('sum-val-2').innerText = totalLit.toFixed(1) + " L";
+        document.getElementById('sum-label-2').innerText = "Litrat";
+
+        document.getElementById('sum-val-3').innerText = avgPrice.toFixed(3) + " €/l";
+        document.getElementById('sum-label-3').innerText = "Keskihinta";
+    }
+
     if (filtered.length === 0) {
         list.innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>Ei tankkauksia valitulla aikavälillä.</div>";
-        if(historySummaryEl) historySummaryEl.style.display = 'none'; 
+        // Jos lista on tyhjä, nollataan silti palkki, mutta pidetään näkyvissä
         return;
     }
 
@@ -424,8 +467,6 @@ function renderFuelList() {
         `;
         list.appendChild(div);
     });
-
-    if(historySummaryEl) historySummaryEl.style.display = 'none';
 }
 
 // --- 6. TILASTOT (CHART.JS) ---
@@ -533,19 +574,17 @@ function renderDriveStats() {
 }
 
 function renderFuelStats() {
-    // Placeholder (voidaan laajentaa myöhemmin)
+    // Placeholder 
 }
 
 // --- 7. EXPORT (CSV) & PREVIEW ---
 function exportToCSV() {
-    // Fallback: Avaa esikatselun, josta voi ladata
     populatePreviewTable();
     const modal = document.getElementById('preview-modal');
     if(modal) modal.style.display = 'flex';
 }
 
 function populatePreviewTable() {
-    // Käytetään samaa renderHistoryList-suodatuslogiikkaa datan hakemiseen
     const filterSelect = document.getElementById('history-filter-select');
     const timeFilter = filterSelect ? filterSelect.value : '7d';
     
@@ -615,10 +654,9 @@ window.openMapForDrive = (key) => {
     const drive = allHistoryData.find(d => d.key === key);
     if(drive && drive.route) {
         if(typeof showRouteOnMap === 'function') {
-            // Käytetään map.js:n funktiota jos se on olemassa
             showRouteOnMap(key);
         } else {
-            // Fallback (Vanha tyyli)
+            // Fallback
             savedRouteLayer = L.polyline(drive.route.map(p => [p.lat, p.lng]), {color: '#ff9100', weight: 5}).addTo(map);
             if(typeof switchView === 'function') switchView('map');
             setTimeout(() => map.fitBounds(savedRouteLayer.getBounds(), {padding: [50,50]}), 200);
