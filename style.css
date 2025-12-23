@@ -1,5 +1,5 @@
 /* =========================================================
-   STYLE.CSS - TYYLITIEDOSTO (v6.00 FIX)
+   STYLE.CSS - TYYLITIEDOSTO (v6.01 FIX)
    ========================================================= */
 
 /* BOX-SIZING FIX */
@@ -100,47 +100,89 @@ body {
     background-size: contain; opacity: 0.03; pointer-events: none; z-index: -1;
 }
 
+/* --- MITTARISTON ASETTELU (KORJATTU v6.01) --- */
+#dashboard-view { 
+    display: none; 
+    flex-direction: column;
+    /* KORJAUS: Ei space-evenly, joka levittää liikaa */
+    justify-content: center; 
+    align-items: center;
+    padding: 5px 15px; 
+    /* KORJAUS: Nostetaan vähän pohjasta jotta kello ei mene kuvan alle */
+    padding-bottom: 80px; 
+    gap: 15px; /* KORJAUS: Kiinteä väli elementtien välillä */
+    height: 100%;
+    overflow: hidden; 
+}
+
+#dashboard-view.active-view {
+    display: flex;
+}
+
 .huge-speed-container {
-    flex: 1; display: flex; flex-direction: column;
+    flex: 0 0 auto; /* Älä veny turhaan */
+    display: flex; flex-direction: column;
     justify-content: center; align-items: center;
-    position: relative; min-height: 200px;
+    position: relative;
+    margin-top: 10px;
 }
 .huge-speed {
-    font-size: 120px; font-weight: 800; line-height: 1;
+    /* KORJAUS: Palautettu px-kokoon vakauden vuoksi */
+    font-size: 120px; 
+    font-weight: 800; line-height: 1;
     font-variant-numeric: tabular-nums;
     text-shadow: 0 0 20px rgba(41, 121, 255, 0.3);
     color: var(--speed-color);
 }
 .huge-speed.three-digits { font-size: 90px; }
-.huge-unit { font-size: 24px; color: var(--subtext-color); margin-top: -10px; text-transform: uppercase; letter-spacing: 2px; }
+.huge-unit { font-size: 20px; color: var(--subtext-color); margin-top: -5px; text-transform: uppercase; letter-spacing: 2px; }
 
 .stats-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    margin-bottom: 10px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-bottom: 5px;
+    width: 100%; max-width: 450px;
 }
 .stat-card {
-    background: var(--card-bg); padding: 10px; border-radius: 12px;
+    background: var(--card-bg); padding: 8px 10px; border-radius: 12px;
     text-align: center; border: 1px solid rgba(255,255,255,0.05);
 }
-.stat-label { font-size: 11px; text-transform: uppercase; color: var(--subtext-color); display: block; margin-bottom: 2px; }
-.stat-value { font-size: 20px; font-weight: 700; color: var(--text-color); }
-.stat-unit { font-size: 12px; color: var(--subtext-color); margin-left: 2px; }
+.stat-label { font-size: 10px; text-transform: uppercase; color: var(--subtext-color); display: block; margin-bottom: 2px; }
+.stat-value { font-size: 18px; font-weight: 700; color: var(--text-color); }
+.stat-unit { font-size: 11px; color: var(--subtext-color); margin-left: 2px; }
 
 .address-container {
-    text-align: center; margin-bottom: 15px;
-    background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;
+    text-align: center; margin-bottom: 10px;
+    background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 8px;
+    max-width: 90%;
 }
-.coords-box { font-family: monospace; color: var(--subtext-color); font-size: 11px; margin-top: 2px; }
+.coords-box { font-family: monospace; color: var(--subtext-color); font-size: 10px; margin-top: 2px; }
 
 .time-weather-wrapper {
-    display: flex; justify-content: space-between; align-items: center;
+    display: flex; justify-content: center; align-items: center; gap: 20px; /* Tuodaan lähemmäs toisiaan */
     background: var(--card-bg); padding: 10px 20px; border-radius: 15px;
-    margin-bottom: 10px; position: relative;
+    margin-bottom: 0; position: relative;
+    flex-shrink: 0;
 }
-.weather-huge { font-size: 32px; }
+.weather-huge { font-size: 28px; } /* Pienennetty hieman */
 .time-right-col { text-align: right; }
 .clock-box { font-size: 24px; font-weight: bold; line-height: 1; }
 .date-box { font-size: 12px; color: var(--subtext-color); text-transform: uppercase; }
+
+/* Tankkausnapin sijainti korjattu */
+#btn-open-fuel {
+    position: absolute;
+    right: -45px; 
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px; height: 34px;
+    font-size: 18px;
+    background: transparent;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 100;
+}
 
 .controls-container {
     background-color: var(--panel-bg);
@@ -410,6 +452,10 @@ body.light-theme .light-mode-img { display: block; }
         padding: 5px 10px;
         align-content: center;
         justify-items: center;
+        /* Nollataan pystytilan säädöt vaakatasossa */
+        justify-content: unset;
+        gap: unset;
+        padding-bottom: 5px;
     }
 
     .bottom-branding { display: none; }
@@ -420,7 +466,7 @@ body.light-theme .light-mode-img { display: block; }
         justify-content: center; 
         margin: 0; 
         min-height: 20px; 
-        position: static; /* Poistettu absoluuttinen sijainti gridin tieltä */
+        position: static; 
     }
     
     .huge-speed-container { 
@@ -429,6 +475,7 @@ body.light-theme .light-mode-img { display: block; }
         margin: 0; 
         padding-left: 0;
         align-items: center;
+        justify-content: center;
     }
     .huge-speed { font-size: 35vh; }
     .huge-speed.three-digits { font-size: 26vh; }
@@ -442,7 +489,7 @@ body.light-theme .light-mode-img { display: block; }
         margin: 0;
         height: 100%;
         padding-left: 10px;
-        overflow-y: visible; /* Grid hoitaa tilan */
+        overflow-y: visible; 
     }
     
     .address-container { 
