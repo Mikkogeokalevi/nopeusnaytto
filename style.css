@@ -1,5 +1,5 @@
 /* =========================================================
-   STYLE.CSS - TYYLITIEDOSTO (v6.01 FIX)
+   STYLE.CSS - TYYLITIEDOSTO (v6.02 MENU FIX)
    ========================================================= */
 
 /* BOX-SIZING FIX */
@@ -61,12 +61,24 @@ body {
     display: flex; align-items: center; justify-content: center;
 }
 
+/* --- MENU DROPDOWN (KORJATTU v6.02) --- */
 .menu-dropdown {
-    position: absolute; top: 60px; right: 0; bottom: 0; width: 260px;
-    background-color: var(--panel-bg); border-left: 1px solid var(--border-color);
-    z-index: 200; display: flex; flex-direction: column;
-    padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+    position: absolute; 
+    top: 60px; 
+    right: 10px; /* Palautettu irtonaiseksi reunasta */
+    width: 260px;
+    /* POISTETTU bottom: 0, jotta korkeus on automaattinen */
+    background-color: var(--panel-bg); 
+    border: 1px solid var(--border-color); /* Palautettu border ympäriinsä */
+    border-radius: 12px; /* Pyöristys takaisin */
+    z-index: 3000; /* KORJATTU: Nyt varmasti kartan (z=1000) päällä */
+    display: flex; flex-direction: column;
+    padding: 20px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: slideIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+@keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
 .menu-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
 .menu-user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
 .menu-user-name { font-weight: bold; font-size: 14px; }
@@ -100,17 +112,15 @@ body {
     background-size: contain; opacity: 0.03; pointer-events: none; z-index: -1;
 }
 
-/* --- MITTARISTON ASETTELU (KORJATTU v6.01) --- */
+/* --- MITTARISTON ASETTELU (PIDETTY KORJATTUNA) --- */
 #dashboard-view { 
     display: none; 
     flex-direction: column;
-    /* KORJAUS: Ei space-evenly, joka levittää liikaa */
     justify-content: center; 
     align-items: center;
     padding: 5px 15px; 
-    /* KORJAUS: Nostetaan vähän pohjasta jotta kello ei mene kuvan alle */
     padding-bottom: 80px; 
-    gap: 15px; /* KORJAUS: Kiinteä väli elementtien välillä */
+    gap: 15px; 
     height: 100%;
     overflow: hidden; 
 }
@@ -120,14 +130,13 @@ body {
 }
 
 .huge-speed-container {
-    flex: 0 0 auto; /* Älä veny turhaan */
+    flex: 0 0 auto;
     display: flex; flex-direction: column;
     justify-content: center; align-items: center;
     position: relative;
     margin-top: 10px;
 }
 .huge-speed {
-    /* KORJAUS: Palautettu px-kokoon vakauden vuoksi */
     font-size: 120px; 
     font-weight: 800; line-height: 1;
     font-variant-numeric: tabular-nums;
@@ -158,17 +167,16 @@ body {
 .coords-box { font-family: monospace; color: var(--subtext-color); font-size: 10px; margin-top: 2px; }
 
 .time-weather-wrapper {
-    display: flex; justify-content: center; align-items: center; gap: 20px; /* Tuodaan lähemmäs toisiaan */
+    display: flex; justify-content: center; align-items: center; gap: 20px;
     background: var(--card-bg); padding: 10px 20px; border-radius: 15px;
     margin-bottom: 0; position: relative;
     flex-shrink: 0;
 }
-.weather-huge { font-size: 28px; } /* Pienennetty hieman */
+.weather-huge { font-size: 28px; }
 .time-right-col { text-align: right; }
 .clock-box { font-size: 24px; font-weight: bold; line-height: 1; }
 .date-box { font-size: 12px; color: var(--subtext-color); text-transform: uppercase; }
 
-/* Tankkausnapin sijainti korjattu */
 #btn-open-fuel {
     position: absolute;
     right: -45px; 
@@ -205,9 +213,8 @@ body {
 
 #map { width: 100%; height: 100%; }
 
-/* --- KARTTAELEMENTIT (PÄIVITETTY v6.00: Nappi Vasemmalla) --- */
+/* --- KARTTAELEMENTIT (Nappi Vasemmalla) --- */
 
-/* Nopeusnäyttö kartalla */
 .map-overlay {
     position: absolute;
     top: 10px;
@@ -224,11 +231,11 @@ body {
 #map-speed { font-size: 28px; font-weight: 800; color: var(--speed-color); }
 .small-coords { font-size: 10px; font-family: monospace; color: #ccc; margin-top: 2px; }
 
-/* GPS Nappi - SIIRRETTY VASEMPAAN REUNAAN (JA ALEMMAKSI) */
+/* GPS Nappi - Vasen reuna */
 .map-gps-btn {
     position: absolute;
-    top: 130px; /* Nopeusnäytön alla */
-    left: 10px; /* Vasen reuna */
+    top: 130px;
+    left: 10px;
     z-index: 1000;
     background-color: rgba(0, 0, 0, 0.8);
     color: #fff;
@@ -263,7 +270,7 @@ body {
     background: linear-gradient(to right, #2979ff, #ff1744);
 }
 
-/* Sivupainikkeet (Navigation Hotspots) */
+/* Sivupainikkeet */
 .side-tap-zone {
     position: absolute; top: 50%; width: 40px; height: 100px;
     transform: translateY(-50%); z-index: 800;
@@ -439,7 +446,7 @@ body.light-theme .light-mode-img { display: block; }
     .huge-speed { font-size: 200px; }
 }
 
-/* Landscape Mode Adjustments (PALAUTETTU ADVANCED GRID) */
+/* Landscape Mode Adjustments */
 @media (orientation: landscape) and (max-height: 600px) {
     #dashboard-view {
         display: grid;
