@@ -1,13 +1,14 @@
 // =========================================================
-// GARAGE.JS - AJONEUVOJEN HALLINTA (OPTIMIZED v6.1)
+// GARAGE.JS - AJONEUVOJEN HALLINTA (FIXED v6.7)
 // =========================================================
 
 // 1. AJONEUVOJEN LATAUS
 function loadCars() {
     if(!currentUser) return;
     
-    // Käytetään uutta keskitettyä polkua
-    const carsRef = db.ref(DB_PATHS.USERS + currentUser.uid + '/cars');
+    // Varmistetaan että DB_PATHS on olemassa (globals.js)
+    const dbPath = (typeof DB_PATHS !== 'undefined') ? DB_PATHS.USERS : 'users/';
+    const carsRef = db.ref(dbPath + currentUser.uid + '/cars');
     
     carsRef.on('value', (snapshot) => {
         userCars = []; 
@@ -17,19 +18,31 @@ function loadCars() {
             });
         }
         
+        // Päivitetään kaikki riippuvaiset näkymät
         updateCarSelect(); 
         
-        // Päivitetään näkymät tarvittaessa
-        if (typeof renderCarList === 'function' && views.settings && views.settings.style.display !== 'none') renderCarList();
-        if (typeof renderHistoryList === 'function' && views.history && views.history.style.display !== 'none') renderHistoryList();
-        if (typeof renderStats === 'function' && views.stats && views.stats.style.display !== 'none') renderStats();
+        // Settings-näkymän lista
+        if (document.getElementById('cars-list')) {
+            renderCarList(); 
+        }
+        
+        // Päivitetään historia ja tilastot (jos autojen nimet muuttuivat)
+        if (typeof renderHistoryList === 'function') renderHistoryList();
+        if (typeof renderStats === 'function') renderStats();
+        
+    }, (error) => {
+        console.error("Autojen lataus epäonnistui:", error);
+        const list = document.getElementById('cars-list');
+        if(list) list.innerHTML = "<div style='color:red;'>Virhe ladattaessa autoja.</div>";
     });
     
     // Palauta muistista valinta
-    const stored = localStorage.getItem(APP_CONFIG.CAR_STORAGE_KEY);
-    if (stored) {
-        currentCarId = stored;
-        updateCarTypeVariable();
+    if(typeof APP_CONFIG !== 'undefined') {
+        const stored = localStorage.getItem(APP_CONFIG.CAR_STORAGE_KEY);
+        if (stored) {
+            currentCarId = stored;
+            updateCarTypeVariable();
+        }
     }
 }
 
@@ -62,7 +75,7 @@ function updateCarSelect() {
         select.appendChild(group);
     }
 
-    // Arkistoidut (Näytetään vain jos tarve vaatii)
+    // Arkistoidut
     const currentCarIsArchived = userCars.find(c => c.id === currentCarId)?.isArchived;
     const showArchived = (currentCarId === 'all_archived' || currentCarIsArchived);
 
@@ -78,8 +91,9 @@ function updateCarSelect() {
         select.appendChild(group);
     }
 
+    // Palautetaan valinta
     select.value = targetValue;
-    if (!select.value) { // Fallback
+    if (!select.value) { 
         select.value = 'all';
         currentCarId = 'all';
     }
@@ -91,9 +105,11 @@ const carSelectElLocal = document.getElementById('car-select');
 if (carSelectElLocal) {
     carSelectElLocal.addEventListener('change', (e) => {
         currentCarId = e.target.value;
-        localStorage.setItem(APP_CONFIG.CAR_STORAGE_KEY, currentCarId);
+        if(typeof APP_CONFIG !== 'undefined') {
+            localStorage.setItem(APP_CONFIG.CAR_STORAGE_KEY, currentCarId);
+        }
         updateCarTypeVariable();
-        updateCarSelect(); // Päivitä lista (piilottaa/näyttää arkistoidut logiikan mukaan)
+        updateCarSelect(); 
         
         if (typeof renderHistoryList === 'function') renderHistoryList();
         if (typeof renderStats === 'function') renderStats();
@@ -138,7 +154,6 @@ function renderCarCard(car, container, isArchived) {
     const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
     const div = document.createElement('div');
     div.className = 'car-item' + (isArchived ? ' car-archived' : '');
-    // Tyylit on siirretty CSS:ään .car-item luokkaan, mutta pidetään inline tässä yhteensopivuuden varmistamiseksi jos CSS ei päivity heti
     div.style.cssText = `display:flex; justify-content:space-between; align-items:center; padding:15px; margin-bottom:10px; background:var(--panel-bg); border:1px solid var(--border-color); border-radius:8px; ${isArchived ? 'opacity:0.6;' : ''}`;
 
     div.innerHTML = `
@@ -196,9 +211,14 @@ function generateCarIcons(selectedIcon) {
         const div = document.createElement('div');
         div.innerText = icon;
         div.className = 'car-icon-item' + (icon === selectedIcon ? ' selected' : '');
+        // Inline tyylit varmistukseksi
+        div.style.cssText = "font-size:24px; cursor:pointer; padding:5px; border-radius:5px; border:1px solid transparent; text-align:center;";
+        if(icon === selectedIcon) div.style.backgroundColor = "rgba(255,255,255,0.1)";
+        
         div.onclick = () => {
-            document.querySelectorAll('.car-icon-item').forEach(el => el.classList.remove('selected'));
-            div.classList.add('selected');
+            // Nollataan valinnat
+            Array.from(grid.children).forEach(child => child.style.backgroundColor = "");
+            div.style.backgroundColor = "rgba(255,255,255,0.1)";
             document.getElementById('selected-car-icon').value = icon;
         };
         grid.appendChild(div);
@@ -208,9 +228,11 @@ function generateCarIcons(selectedIcon) {
 // CRUD OPERAATIOT
 function toggleCarArchive(id, shouldArchive) {
     if (!currentUser) return;
+    const dbPath = (typeof DB_PATHS !== 'undefined') ? DB_PATHS.USERS : 'users/';
     const action = shouldArchive ? "arkistoida" : "palauttaa";
+    
     if (confirm(`Haluatko varmasti ${action} tämän ajoneuvon?`)) {
-        db.ref(DB_PATHS.USERS + currentUser.uid + '/cars/' + id).update({ isArchived: shouldArchive })
+        db.ref(dbPath + currentUser.uid + '/cars/' + id).update({ isArchived: shouldArchive })
             .then(() => {
                 if (currentCarId === id && shouldArchive) {
                     currentCarId = 'all';
@@ -225,8 +247,10 @@ function toggleCarArchive(id, shouldArchive) {
 
 function deleteCar(id) {
     if (!currentUser) return;
+    const dbPath = (typeof DB_PATHS !== 'undefined') ? DB_PATHS.USERS : 'users/';
+    
     if (confirm("VAROITUS: Poistetaanko auto pysyvästi?\n(Suositus: Käytä arkistointia)")) {
-        db.ref(DB_PATHS.USERS + currentUser.uid + '/cars/' + id).remove();
+        db.ref(dbPath + currentUser.uid + '/cars/' + id).remove();
     }
 }
 
@@ -238,6 +262,7 @@ function saveCar() {
     const type = document.getElementById('car-type').value;
     const id = document.getElementById('car-id').value;
     const icon = document.getElementById('selected-car-icon').value;
+    const dbPath = (typeof DB_PATHS !== 'undefined') ? DB_PATHS.USERS : 'users/';
     
     let isArchived = false;
     if (id) {
@@ -261,16 +286,15 @@ function saveCar() {
     };
 
     if (id) {
-        db.ref(DB_PATHS.USERS + currentUser.uid + '/cars/' + id).update(carData)
+        db.ref(dbPath + currentUser.uid + '/cars/' + id).update(carData)
             .then(() => onComplete("Tiedot tallennettu! ✅"));
     } else {
-        db.ref(DB_PATHS.USERS + currentUser.uid + '/cars').push().set(carData)
+        db.ref(dbPath + currentUser.uid + '/cars').push().set(carData)
             .then(() => onComplete("Ajoneuvo lisätty! 🚗"));
     }
 }
 
-// 5. EVENT LISTENERS (INITIALIZATION)
-// Nämä ajetaan kun tiedosto latautuu, elementtien pitäisi olla DOMissa
+// 5. EVENT LISTENERS
 const gBtnAddCar = document.getElementById('btn-add-car');
 const gBtnCancelCar = document.getElementById('btn-cancel-car');
 const gBtnSaveCar = document.getElementById('btn-save-car');
