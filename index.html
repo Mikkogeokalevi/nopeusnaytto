@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v5.95</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v5.96</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -23,7 +23,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=5.9" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v5.95...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v5.96...</p>
             <p>Ladataan...</p>
         </div>
     </div>
@@ -398,7 +398,9 @@
 
             <div style="text-align:left; margin-bottom:8px;">
                 <label>Matka (km)</label>
-                <input type="number" id="manual-dist" class="subject-input" placeholder="0.0">
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="manual-dist" class="subject-input" placeholder="0.0">
+                    </div>
             </div>
 
             <div style="text-align:left; margin-bottom:8px;">
@@ -417,6 +419,37 @@
             <div style="display:flex; gap:10px; justify-content:center;">
                 <button id="btn-manual-cancel" class="action-btn" style="background-color:#555; width:auto;">Peruuta</button>
                 <button id="btn-manual-save" class="action-btn green-btn" style="width:auto;">Lisää</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="preview-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content" style="max-width: 95%; height: 85%; display:flex; flex-direction:column; padding: 15px;">
+            <h3 style="margin-top:0; color:var(--accent-color);">📋 Raportin esikatselu</h3>
+            
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px; color:var(--subtext-color);">
+                <span id="preview-count">0 ajoa</span>
+                <span id="preview-total">0 km</span>
+            </div>
+
+            <div class="table-container" style="flex:1; overflow:auto; border:1px solid var(--border-color); border-radius:8px; margin-bottom:15px; background:rgba(0,0,0,0.2);">
+                <table id="preview-table" style="width:100%; border-collapse:collapse; font-size:11px; text-align:left;">
+                    <thead style="background:rgba(255,255,255,0.1); color:var(--accent-color); position:sticky; top:0;">
+                        <tr>
+                            <th style="padding:5px;">Pvm</th>
+                            <th style="padding:5px;">Auto</th>
+                            <th style="padding:5px;">Tyyppi</th>
+                            <th style="padding:5px;">Matka</th>
+                            <th style="padding:5px;">Selite</th>
+                        </tr>
+                    </thead>
+                    <tbody id="preview-tbody"></tbody>
+                </table>
+            </div>
+
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button id="btn-preview-cancel" class="action-btn" style="background-color:#555; width:auto;">Takaisin</button>
+                <button id="btn-preview-confirm" class="action-btn green-btn" style="width:auto;">📥 Lataa Excel (.csv)</button>
             </div>
         </div>
     </div>
@@ -483,16 +516,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
-    <script src="globals.js?v=5.95"></script>
-    <script src="ui.js?v=5.95"></script>
-    <script src="auth.js?v=5.95"></script>
-    <script src="map.js?v=5.95"></script>
-    <script src="gps.js?v=5.95"></script>
-    <script src="garage.js?v=5.95"></script>
-    <script src="history.js?v=5.95"></script>
-    <script src="help.js?v=5.95"></script>
-    <script src="fuel.js?v=5.95"></script>
+    <script src="globals.js?v=5.96"></script>
+    <script src="ui.js?v=5.96"></script>
+    <script src="auth.js?v=5.96"></script>
+    <script src="map.js?v=5.96"></script>
+    <script src="gps.js?v=5.96"></script>
+    <script src="garage.js?v=5.96"></script>
+    <script src="history.js?v=5.96"></script>
+    <script src="help.js?v=5.96"></script>
+    <script src="fuel.js?v=5.96"></script>
     
-    <script src="app.js?v=5.95"></script>
+    <script src="app.js?v=5.96"></script>
 </body>
 </html>
