@@ -1,5 +1,5 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (v5.9 ARCHIVE SUPPORT)
+// HISTORY.JS - HISTORIA, SUODATUS JA TILASTOT (v5.95 EXPORT)
 // =========================================================
 
 // --- 1. MÄÄRITELLÄÄN ELEMENTIT ---
@@ -16,6 +16,7 @@ window.renderFuelList = renderFuelList;
 window.renderStats = renderStats;
 window.renderDriveStats = renderDriveStats;
 window.renderFuelStats = renderFuelStats;
+window.exportToCSV = exportToCSV; // UUSI: Raportointi
 
 // --- 2. HISTORIAN LATAUS ---
 function loadHistory() {
@@ -142,21 +143,19 @@ function renderHistoryList() {
         try {
             // --- ARKISTOINTI LOGIIKKA ---
             if (currentCarId === 'all') {
-                // "Kaikki aktiiviset" -> Piilota jos auto on arkistoitu
                 const carObj = userCars.find(c => c.id === drive.carId);
                 if (carObj && carObj.isArchived) return; 
             } else if (currentCarId === 'all_archived') {
-                // "Kaikki sis. arkistoidut" -> Näytä kaikki, älä suodata
+                // Näytä kaikki
             } else {
-                // Tietty auto valittu -> Näytä vain se
                 if (drive.carId && drive.carId !== currentCarId) return;
                 if (!drive.carId) return; 
             }
-            // -----------------------------
 
             let start = new Date(drive.startTime);
             if (isNaN(start.getTime())) return;
 
+            // Suodatus (Päivämäärä)
             if (selectedFilter !== 'all') {
                 if (selectedFilter === 'custom') {
                     const startInput = filterStart.value; const endInput = filterEnd.value;
@@ -201,6 +200,11 @@ function renderHistoryList() {
             let startH = start.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
             let endH = drive.endTime ? " - " + new Date(drive.endTime).toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'}) : "";
 
+            // AJOTYYPPI IKONI JA VÄRI
+            const typeIcon = (drive.driveType === 'work') ? "💼" : "🏠";
+            const typeLabel = (drive.driveType === 'work') ? "Työajo" : "Oma ajo";
+            const typeColor = (drive.driveType === 'work') ? "#00695c" : "#424242";
+
             const card = document.createElement('div');
             card.className = 'log-card';
             card.style.animationDelay = `${Math.min(renderCount * 0.05, 1.0)}s`;
@@ -218,6 +222,7 @@ function renderHistoryList() {
                     </div>
                 </div>
                 <div class="log-tags">
+                    <span class="tag" style="background-color: ${typeColor}; color:#fff;">${typeIcon} ${typeLabel}</span>
                     ${drive.weather ? `<span class="tag">🌡️ ${drive.weather}</span>` : ''}
                     ${drive.drivingStyle ? `<span class="tag">🏎️ ${drive.drivingStyle}</span>` : ''}
                 </div>
@@ -228,6 +233,7 @@ function renderHistoryList() {
                     <div><span class="stat-label">Ø KM/H</span>${drive.avgSpeed || "-"}</div>
                 </div>
                 <input type="text" class="subject-input" placeholder="Kirjoita aihe..." value="${drive.subject || ""}" onchange="window.updateLogSubject('${drive.key}', this.value)">
+                ${drive.startAddress ? `<div style="font-size:11px; color:#888; margin-top:5px;">${drive.startAddress} ➝ ${drive.endAddress || '?'}</div>` : ''}
             `;
             logList.appendChild(card);
             renderCount++;
@@ -249,32 +255,24 @@ function renderHistoryList() {
     }
 }
 
-// --- 5. LISTAN RENDERÖINTI (TANKKAUKSET) ---
+// ... (renderFuelList pysyy samana, mutta on osa tätä tiedostoa) ...
+// (Kopioitu suoraan edellisestä toimivasta versiosta varmuuden vuoksi)
 function renderFuelList() {
     const fuelList = document.getElementById('fuel-list');
     if(!fuelList) return;
-    
     fuelList.innerHTML = "";
+    let totalRefuelEur = 0; let totalRefuelLit = 0; let sumGas = 0; let sumDiesel = 0; let renderCount = 0;
     
-    let totalRefuelEur = 0;
-    let totalRefuelLit = 0;
-    let sumGas = 0;
-    let sumDiesel = 0;
-    let renderCount = 0;
-
     const filteredRefuelings = allRefuelings.filter(ref => {
-        // --- ARKISTOINTI LOGIIKKA ---
         if (currentCarId === 'all') {
             const carObj = userCars.find(c => c.id === ref.carId);
-            if (carObj && carObj.isArchived) return false; // Piilota arkistoidut
+            if (carObj && carObj.isArchived) return false;
         } else if (currentCarId === 'all_archived') {
-            // Näytä kaikki
         } else {
             if (ref.carId && ref.carId !== currentCarId) return false;
             if (!ref.carId) return false;
         }
         return true;
-        // -----------------------------
     });
 
     if(!filteredRefuelings || filteredRefuelings.length === 0) {
@@ -284,42 +282,23 @@ function renderFuelList() {
     }
 
     filteredRefuelings.forEach((ref, index) => {
-        const eur = parseFloat(ref.euros) || 0;
-        const lit = parseFloat(ref.liters) || 0;
-        
-        totalRefuelEur += eur;
-        totalRefuelLit += lit;
-
+        const eur = parseFloat(ref.euros) || 0; const lit = parseFloat(ref.liters) || 0;
+        totalRefuelEur += eur; totalRefuelLit += lit;
         let carObj = userCars.find(c => c.id === ref.carId);
         let fuelType = (carObj ? carObj.fuel : "").toLowerCase();
-        let displayFuel = carObj ? (carObj.fuel || "") : ""; 
-        
-        if (fuelType.includes('diesel')) {
-            sumDiesel += lit;
-        } else {
-            sumGas += lit;
-        }
-
+        let displayFuel = carObj ? (carObj.fuel || "") : "";
+        if (fuelType.includes('diesel')) sumDiesel += lit; else sumGas += lit;
         const date = new Date(ref.date);
         const dateStr = date.toLocaleDateString('fi-FI') + " " + date.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
-        
-        let carName = carObj ? carObj.name : "Tuntematon";
-        let icon = "⛽";
+        let carName = carObj ? carObj.name : "Tuntematon"; let icon = "⛽";
 
         const card = document.createElement('div');
         card.className = 'log-card';
         card.style.animationDelay = `${Math.min(index * 0.05, 1.0)}s`;
-        
         card.innerHTML = `
             <div class="log-header">
-                <div class="log-title-group">
-                    <div class="log-date-line">${dateStr}</div>
-                    <div class="log-car-big">${icon} ${carName}</div>
-                </div>
-                <div>
-                    <button class="edit-btn" onclick="window.editRefueling('${ref.key}')">✏️</button>
-                    <button class="delete-btn" onclick="window.openDeleteLogModal('${ref.key}')">🗑</button>
-                </div>
+                <div class="log-title-group"><div class="log-date-line">${dateStr}</div><div class="log-car-big">${icon} ${carName}</div></div>
+                <div><button class="edit-btn" onclick="window.editRefueling('${ref.key}')">✏️</button><button class="delete-btn" onclick="window.openDeleteLogModal('${ref.key}')">🗑</button></div>
             </div>
             <div class="log-stats" style="grid-template-columns: repeat(3, 1fr);">
                 <div><span class="stat-label">LITRAT</span>${lit.toFixed(2)} L <span style="font-size:11px; opacity:0.7; display:block;">${displayFuel}</span></div>
@@ -343,340 +322,182 @@ function renderFuelList() {
     }
 }
 
-
-// --- 6. TILASTOT (GRAAFIT - DYNAMIC + ARCHIVE) ---
+// ... (renderStats funktiot pysyvät samoina) ...
 function renderStats() {
     const statsFuelContainer = document.getElementById('stats-fuel-container');
     if (typeof Chart === 'undefined') return;
-
-    if(statsFuelContainer && statsFuelContainer.style.display !== 'none') {
-        renderFuelStats();
-    } else {
-        renderDriveStats();
-    }
+    if(statsFuelContainer && statsFuelContainer.style.display !== 'none') renderFuelStats(); else renderDriveStats();
 }
-
-// 6.1 AJOTILASTOT
 function renderDriveStats() {
     if (!allHistoryData || allHistoryData.length === 0) return;
-    
-    // Luetaan aikavalinta
     const range = statsTimeRange ? statsTimeRange.value : '30d'; 
-    
-    const timeData = {}; 
-    const vehicleData = {};
-    const styleData = { "Taloudellinen": 0, "Tasainen": 0, "Reipas": 0, "Aggressiivinen": 0 };
-    const carTimeData = {}; 
-    const speedData = {}; 
-
-    // Lasketaan alkupäivä
+    const timeData = {}; const vehicleData = {}; const styleData = { "Taloudellinen": 0, "Tasainen": 0, "Reipas": 0, "Aggressiivinen": 0 }; const carTimeData = {}; const speedData = {}; 
     const now = new Date();
     let startDate = new Date(1970, 0, 1); 
-    
     if (range === '7d') { startDate = new Date(); startDate.setDate(now.getDate() - 7); }
     else if (range === '30d') { startDate = new Date(); startDate.setDate(now.getDate() - 30); }
     else if (range === 'year') { startDate = new Date(now.getFullYear(), 0, 1); }
 
-    // Suodatetaan ja järjestetään
     const sortedDrives = [...allHistoryData]
         .filter(d => {
-            // --- ARKISTOINTI LOGIIKKA ---
-            if (currentCarId === 'all') {
-                const carObj = userCars.find(c => c.id === d.carId);
-                if (carObj && carObj.isArchived) return false; 
-            } else if (currentCarId === 'all_archived') {
-                // Näytä kaikki
-            } else {
-                if (d.carId && d.carId !== currentCarId) return false;
-            }
-            // --- AIKAVÄLI ---
+            if (currentCarId === 'all') { const carObj = userCars.find(c => c.id === d.carId); if (carObj && carObj.isArchived) return false; } 
+            else if (currentCarId === 'all_archived') {} 
+            else { if (d.carId && d.carId !== currentCarId) return false; }
             return new Date(d.startTime) >= startDate;
-        })
-        .sort((a,b) => new Date(a.startTime) - new Date(b.startTime));
+        }).sort((a,b) => new Date(a.startTime) - new Date(b.startTime));
 
     sortedDrives.forEach(d => {
-        const dist = parseFloat(d.distanceKm) || 0;
-        const avgSpd = parseFloat(d.avgSpeed) || 0;
-        const date = new Date(d.startTime);
-        
+        const dist = parseFloat(d.distanceKm) || 0; const avgSpd = parseFloat(d.avgSpeed) || 0; const date = new Date(d.startTime);
         let key = "";
-        if (range === '7d' || range === '30d') {
-            key = `${date.getDate()}.${date.getMonth()+1}.`;
-        } else {
-            key = `${date.getMonth()+1}/${date.getFullYear()}`;
-        }
-
-        if (!timeData[key]) timeData[key] = 0;
-        timeData[key] += dist;
-
-        let carObj = userCars.find(c => c.id === d.carId);
-        let carName = carObj ? carObj.name : (d.carName || "Muu");
-        
-        if (!vehicleData[carName]) vehicleData[carName] = 0;
-        vehicleData[carName] += dist;
-
-        if (!carTimeData[carName]) carTimeData[carName] = {};
-        if (!carTimeData[carName][key]) carTimeData[carName][key] = 0;
-        carTimeData[carName][key] += dist;
-
-        if(avgSpd > 0) {
-            if(!speedData[key]) speedData[key] = {sum:0, count:0};
-            speedData[key].sum += avgSpd;
-            speedData[key].count++;
-        }
-
-        if(d.drivingStyle) {
-            if(!styleData[d.drivingStyle]) styleData[d.drivingStyle] = 0;
-            styleData[d.drivingStyle]++;
-        }
+        if (range === '7d' || range === '30d') key = `${date.getDate()}.${date.getMonth()+1}.`; else key = `${date.getMonth()+1}/${date.getFullYear()}`;
+        if (!timeData[key]) timeData[key] = 0; timeData[key] += dist;
+        let carObj = userCars.find(c => c.id === d.carId); let carName = carObj ? carObj.name : (d.carName || "Muu");
+        if (!vehicleData[carName]) vehicleData[carName] = 0; vehicleData[carName] += dist;
+        if (!carTimeData[carName]) carTimeData[carName] = {}; if (!carTimeData[carName][key]) carTimeData[carName][key] = 0; carTimeData[carName][key] += dist;
+        if(avgSpd > 0) { if(!speedData[key]) speedData[key] = {sum:0, count:0}; speedData[key].sum += avgSpd; speedData[key].count++; }
+        if(d.drivingStyle) { if(!styleData[d.drivingStyle]) styleData[d.drivingStyle] = 0; styleData[d.drivingStyle]++; }
     });
 
-    const labelTrend = document.getElementById('label-drive-trend');
-    const labelTotal = document.getElementById('label-drive-total');
+    const labelTrend = document.getElementById('label-drive-trend'); const labelTotal = document.getElementById('label-drive-total');
     const unit = (range === '7d' || range === '30d') ? "(km/pv)" : "(km/kk)";
     if(labelTrend) labelTrend.innerText = `📈 Kilometrikehitys ${unit}`;
     if(labelTotal) labelTotal.innerText = `📅 Kilometrit yhteensä`;
+    const labels = Object.keys(timeData); const values = Object.values(timeData).map(v => v.toFixed(1));
 
-    const labels = Object.keys(timeData); 
-    const values = Object.values(timeData).map(v => v.toFixed(1));
-
-    // 1. Pylväs
     const canvasMonthly = document.getElementById('chart-drive-monthly');
-    if (canvasMonthly) {
-        if (chartInstanceMonthly) { chartInstanceMonthly.destroy(); }
-        chartInstanceMonthly = new Chart(canvasMonthly.getContext('2d'), {
-            type: 'bar',
-            data: { labels: labels, datasets: [{ label: 'Kilometrit', data: values, backgroundColor: 'rgba(41, 121, 255, 0.6)', borderColor: 'rgba(41, 121, 255, 1)', borderWidth: 1 }] },
-            options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
-        });
-    }
-
-    // 2. Viiva
+    if (canvasMonthly) { if (chartInstanceMonthly) { chartInstanceMonthly.destroy(); } chartInstanceMonthly = new Chart(canvasMonthly.getContext('2d'), { type: 'bar', data: { labels: labels, datasets: [{ label: 'Kilometrit', data: values, backgroundColor: 'rgba(41, 121, 255, 0.6)', borderColor: 'rgba(41, 121, 255, 1)', borderWidth: 1 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); }
     const canvasTrend = document.getElementById('chart-drive-trend');
-    if (canvasTrend) {
-        if (chartInstanceDriveTrend) { chartInstanceDriveTrend.destroy(); }
-        const trendDatasets = [];
-        const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
-        let colorIdx = 0;
-        for (const [carName, timesObj] of Object.entries(carTimeData)) {
-            const dataArr = labels.map(lbl => (timesObj[lbl] || 0));
-            trendDatasets.push({
-                label: carName,
-                data: dataArr,
-                borderColor: colors[colorIdx % colors.length],
-                tension: 0.3,
-                fill: false
-            });
-            colorIdx++;
-        }
-        chartInstanceDriveTrend = new Chart(canvasTrend.getContext('2d'), {
-            type: 'line',
-            data: { labels: labels, datasets: trendDatasets },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-    }
-
-    // 3. Nopeus
+    if (canvasTrend) { if (chartInstanceDriveTrend) { chartInstanceDriveTrend.destroy(); } const trendDatasets = []; const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']; let colorIdx = 0; for (const [carName, timesObj] of Object.entries(carTimeData)) { const dataArr = labels.map(lbl => (timesObj[lbl] || 0)); trendDatasets.push({ label: carName, data: dataArr, borderColor: colors[colorIdx % colors.length], tension: 0.3, fill: false }); colorIdx++; } chartInstanceDriveTrend = new Chart(canvasTrend.getContext('2d'), { type: 'line', data: { labels: labels, datasets: trendDatasets }, options: { responsive: true, scales: { y: { beginAtZero: true } } } }); }
     const canvasSpeed = document.getElementById('chart-drive-speed');
-    if (canvasSpeed) {
-        if (chartInstanceDriveSpeed) { chartInstanceDriveSpeed.destroy(); }
-        const speedValues = labels.map(k => {
-            if(speedData[k] && speedData[k].count > 0) return (speedData[k].sum / speedData[k].count).toFixed(1);
-            return 0;
-        });
-        chartInstanceDriveSpeed = new Chart(canvasSpeed.getContext('2d'), {
-            type: 'line',
-            data: { 
-                labels: labels, 
-                datasets: [{ label: 'Ø Nopeus', data: speedValues, borderColor: '#00e676', backgroundColor: 'rgba(0, 230, 118, 0.1)', fill: true, tension: 0.4 }] 
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-    }
-
-    // 4. Autojakauma
+    if (canvasSpeed) { if (chartInstanceDriveSpeed) { chartInstanceDriveSpeed.destroy(); } const speedValues = labels.map(k => { if(speedData[k] && speedData[k].count > 0) return (speedData[k].sum / speedData[k].count).toFixed(1); return 0; }); chartInstanceDriveSpeed = new Chart(canvasSpeed.getContext('2d'), { type: 'line', data: { labels: labels, datasets: [{ label: 'Ø Nopeus', data: speedValues, borderColor: '#00e676', backgroundColor: 'rgba(0, 230, 118, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } }); }
     const canvasVehicles = document.getElementById('chart-drive-vehicles');
-    if (canvasVehicles) {
-        if (chartInstanceVehicles) { chartInstanceVehicles.destroy(); }
-        chartInstanceVehicles = new Chart(canvasVehicles.getContext('2d'), {
-            type: 'doughnut',
-            data: { labels: Object.keys(vehicleData), datasets: [{ data: Object.values(vehicleData).map(v => v.toFixed(1)), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'], borderWidth: 1 }] }
-        });
-    }
-
-    // 5. Ajotyyli
+    if (canvasVehicles) { if (chartInstanceVehicles) { chartInstanceVehicles.destroy(); } chartInstanceVehicles = new Chart(canvasVehicles.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(vehicleData), datasets: [{ data: Object.values(vehicleData).map(v => v.toFixed(1)), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'], borderWidth: 1 }] } }); }
     const canvasStyle = document.getElementById('chart-drive-style');
-    if (canvasStyle) {
-        if (chartInstanceStyle) { chartInstanceStyle.destroy(); }
-        const filteredStyle = Object.entries(styleData).filter(([k,v]) => v > 0);
-        chartInstanceStyle = new Chart(canvasStyle.getContext('2d'), {
-            type: 'pie',
-            data: { 
-                labels: filteredStyle.map(x => x[0]), 
-                datasets: [{ data: filteredStyle.map(x => x[1]), backgroundColor: ['#00c853', '#2979ff', '#fbc02d', '#ff1744'] }] 
-            }
-        });
-    }
+    if (canvasStyle) { if (chartInstanceStyle) { chartInstanceStyle.destroy(); } const filteredStyle = Object.entries(styleData).filter(([k,v]) => v > 0); chartInstanceStyle = new Chart(canvasStyle.getContext('2d'), { type: 'pie', data: { labels: filteredStyle.map(x => x[0]), datasets: [{ data: filteredStyle.map(x => x[1]), backgroundColor: ['#00c853', '#2979ff', '#fbc02d', '#ff1744'] }] } }); }
 }
-
-// 6.2 TANKKAUSTILASTOT
 function renderFuelStats() {
     if (!allRefuelings || allRefuelings.length === 0) return;
-    
     const range = statsTimeRange ? statsTimeRange.value : '30d';
-    
-    let totalRefuelEur = 0;
-    let sumGas = 0; let sumDiesel = 0; 
-    const timeCosts = {};
-    const trendGas = []; const trendDiesel = [];
-    const carCosts = {};
-    const fuelTypeData = {}; 
-
-    // Lasketaan alkupäivä
-    const now = new Date();
-    let startDate = new Date(1970, 0, 1);
-    
-    if (range === '7d') { startDate = new Date(); startDate.setDate(now.getDate() - 7); }
-    else if (range === '30d') { startDate = new Date(); startDate.setDate(now.getDate() - 30); }
-    else if (range === 'year') { startDate = new Date(now.getFullYear(), 0, 1); }
-
-    const sortedRefs = [...allRefuelings]
-        .filter(r => {
-             // --- ARKISTOINTI LOGIIKKA ---
-             if (currentCarId === 'all') {
-                const carObj = userCars.find(c => c.id === r.carId);
-                if (carObj && carObj.isArchived) return false;
-            } else if (currentCarId === 'all_archived') {
-                // Näytä kaikki
-            } else {
-                if (r.carId && r.carId !== currentCarId) return false;
-            }
-            // --- AIKAVÄLI ---
-            return new Date(r.date) >= startDate;
-        })
-        .sort((a,b) => new Date(a.date) - new Date(b.date));
-
+    let totalRefuelEur = 0; let sumGas = 0; let sumDiesel = 0; const timeCosts = {}; const trendGas = []; const trendDiesel = []; const carCosts = {}; const fuelTypeData = {}; 
+    const now = new Date(); let startDate = new Date(1970, 0, 1);
+    if (range === '7d') { startDate = new Date(); startDate.setDate(now.getDate() - 7); } else if (range === '30d') { startDate = new Date(); startDate.setDate(now.getDate() - 30); } else if (range === 'year') { startDate = new Date(now.getFullYear(), 0, 1); }
+    const sortedRefs = [...allRefuelings].filter(r => {
+             if (currentCarId === 'all') { const carObj = userCars.find(c => c.id === r.carId); if (carObj && carObj.isArchived) return false; } 
+             else if (currentCarId === 'all_archived') {} 
+             else { if (r.carId && r.carId !== currentCarId) return false; }
+             return new Date(r.date) >= startDate;
+        }).sort((a,b) => new Date(a.date) - new Date(b.date));
     sortedRefs.forEach(ref => {
-        const eur = parseFloat(ref.euros) || 0;
-        const lit = parseFloat(ref.liters) || 0;
-        const price = parseFloat(ref.pricePerLiter) || 0;
-        const date = new Date(ref.date);
-        
-        const dateStr = date.toLocaleDateString('fi-FI');
-
+        const eur = parseFloat(ref.euros) || 0; const lit = parseFloat(ref.liters) || 0; const price = parseFloat(ref.pricePerLiter) || 0; const date = new Date(ref.date); const dateStr = date.toLocaleDateString('fi-FI');
         totalRefuelEur += eur;
-        
-        const car = userCars.find(c => c.id === ref.carId);
-        const fuelType = (car ? car.fuel : "Muu").toLowerCase();
-        
-        if(fuelType.includes('bensiini') || fuelType.includes('gas')) {
-             sumGas += lit;
-             fuelTypeData['Bensiini'] = (fuelTypeData['Bensiini'] || 0) + lit;
-             if(price > 0) trendGas.push({ x: dateStr, y: price });
-        } else if(fuelType.includes('diesel')) {
-             sumDiesel += lit;
-             fuelTypeData['Diesel'] = (fuelTypeData['Diesel'] || 0) + lit;
-             if(price > 0) trendDiesel.push({ x: dateStr, y: price });
-        } else {
-             fuelTypeData['Muu'] = (fuelTypeData['Muu'] || 0) + lit;
-        }
-
-        let key = "";
-        if (range === '7d' || range === '30d') {
-            key = `${date.getDate()}.${date.getMonth()+1}.`;
-        } else {
-            key = `${date.getMonth()+1}/${date.getFullYear()}`;
-        }
-
-        if(!timeCosts[key]) timeCosts[key] = 0;
-        timeCosts[key] += eur;
-
-        const carName = car ? car.name : "Tuntematon";
-        if(!carCosts[carName]) carCosts[carName] = 0;
-        carCosts[carName] += eur;
+        const car = userCars.find(c => c.id === ref.carId); const fuelType = (car ? car.fuel : "Muu").toLowerCase();
+        if(fuelType.includes('bensiini') || fuelType.includes('gas')) { sumGas += lit; fuelTypeData['Bensiini'] = (fuelTypeData['Bensiini'] || 0) + lit; if(price > 0) trendGas.push({ x: dateStr, y: price }); } 
+        else if(fuelType.includes('diesel')) { sumDiesel += lit; fuelTypeData['Diesel'] = (fuelTypeData['Diesel'] || 0) + lit; if(price > 0) trendDiesel.push({ x: dateStr, y: price }); } 
+        else { fuelTypeData['Muu'] = (fuelTypeData['Muu'] || 0) + lit; }
+        let key = ""; if (range === '7d' || range === '30d') key = `${date.getDate()}.${date.getMonth()+1}.`; else key = `${date.getMonth()+1}/${date.getFullYear()}`;
+        if(!timeCosts[key]) timeCosts[key] = 0; timeCosts[key] += eur;
+        const carName = car ? car.name : "Tuntematon"; if(!carCosts[carName]) carCosts[carName] = 0; carCosts[carName] += eur;
     });
-
-    const statFuelEur = document.getElementById('stat-fuel-eur');
-    const statFuelGas = document.getElementById('stat-fuel-gas');
-    const statFuelDiesel = document.getElementById('stat-fuel-diesel');
-    
-    if(statFuelEur) statFuelEur.innerText = totalRefuelEur.toFixed(2) + " €";
-    if(statFuelGas) statFuelGas.innerText = sumGas.toFixed(1) + " L";
-    if(statFuelDiesel) statFuelDiesel.innerText = sumDiesel.toFixed(1) + " L";
-
-    // 1. Polttoainejakauma
-    const canvasFuelType = document.getElementById('chart-fuel-type');
-    if (canvasFuelType) {
-        if (chartInstanceFuelType) { chartInstanceFuelType.destroy(); }
-        chartInstanceFuelType = new Chart(canvasFuelType.getContext('2d'), {
-            type: 'doughnut',
-            data: { labels: Object.keys(fuelTypeData), datasets: [{ data: Object.values(fuelTypeData).map(v => v.toFixed(1)), backgroundColor: ['#4caf50', '#2196f3', '#9e9e9e'] }] }
-        });
-    }
-
-    // 2. Kulut aikavälillä
-    const canvasMonthly = document.getElementById('chart-fuel-monthly');
-    if (canvasMonthly) {
-        if (chartInstanceFuelMonthly) { chartInstanceFuelMonthly.destroy(); }
-        chartInstanceFuelMonthly = new Chart(canvasMonthly.getContext('2d'), {
-            type: 'bar',
-            data: { labels: Object.keys(timeCosts), datasets: [{ label: 'Euroa (€)', data: Object.values(timeCosts), backgroundColor: '#fbc02d', borderColor: '#fbc02d', borderWidth: 1 }] },
-            options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
-        });
-    }
-
-    // 3. Litrahintatrendi
-    const canvasTrend = document.getElementById('chart-fuel-trend');
-    if (canvasTrend) {
-        if (chartInstanceFuelTrend) { chartInstanceFuelTrend.destroy(); }
-        const allDates = [...new Set([...trendGas.map(d=>d.x), ...trendDiesel.map(d=>d.x)])];
-        chartInstanceFuelTrend = new Chart(canvasTrend.getContext('2d'), {
-            type: 'line',
-            data: { 
-                labels: allDates, 
-                datasets: [
-                    { label: 'Bensiini (€)', data: trendGas, borderColor: '#00e676', tension: 0.3, pointRadius: 3 },
-                    { label: 'Diesel (€)', data: trendDiesel, borderColor: '#212121', backgroundColor: 'rgba(0,0,0,0.5)', tension: 0.3, pointRadius: 3 }
-                ] 
-            },
-            options: { responsive: true }
-        });
-    }
-
-    // 4. Kulut per auto
-    const canvasCar = document.getElementById('chart-fuel-car');
-    if (canvasCar) {
-        if (chartInstanceFuelCar) { chartInstanceFuelCar.destroy(); }
-        chartInstanceFuelCar = new Chart(canvasCar.getContext('2d'), {
-            type: 'doughnut',
-            data: { labels: Object.keys(carCosts), datasets: [{ data: Object.values(carCosts).map(v => v.toFixed(2)), backgroundColor: ['#36A2EB', '#FF6384', '#4BC0C0', '#FF9F40'] }] }
-        });
-    }
+    const statFuelEur = document.getElementById('stat-fuel-eur'); const statFuelGas = document.getElementById('stat-fuel-gas'); const statFuelDiesel = document.getElementById('stat-fuel-diesel');
+    if(statFuelEur) statFuelEur.innerText = totalRefuelEur.toFixed(2) + " €"; if(statFuelGas) statFuelGas.innerText = sumGas.toFixed(1) + " L"; if(statFuelDiesel) statFuelDiesel.innerText = sumDiesel.toFixed(1) + " L";
+    const canvasFuelType = document.getElementById('chart-fuel-type'); if (canvasFuelType) { if (chartInstanceFuelType) { chartInstanceFuelType.destroy(); } chartInstanceFuelType = new Chart(canvasFuelType.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(fuelTypeData), datasets: [{ data: Object.values(fuelTypeData).map(v => v.toFixed(1)), backgroundColor: ['#4caf50', '#2196f3', '#9e9e9e'] }] } }); }
+    const canvasMonthly = document.getElementById('chart-fuel-monthly'); if (canvasMonthly) { if (chartInstanceFuelMonthly) { chartInstanceFuelMonthly.destroy(); } chartInstanceFuelMonthly = new Chart(canvasMonthly.getContext('2d'), { type: 'bar', data: { labels: Object.keys(timeCosts), datasets: [{ label: 'Euroa (€)', data: Object.values(timeCosts), backgroundColor: '#fbc02d', borderColor: '#fbc02d', borderWidth: 1 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } }); }
+    const canvasTrend = document.getElementById('chart-fuel-trend'); if (canvasTrend) { if (chartInstanceFuelTrend) { chartInstanceFuelTrend.destroy(); } const allDates = [...new Set([...trendGas.map(d=>d.x), ...trendDiesel.map(d=>d.x)])]; chartInstanceFuelTrend = new Chart(canvasTrend.getContext('2d'), { type: 'line', data: { labels: allDates, datasets: [ { label: 'Bensiini (€)', data: trendGas, borderColor: '#00e676', tension: 0.3, pointRadius: 3 }, { label: 'Diesel (€)', data: trendDiesel, borderColor: '#212121', backgroundColor: 'rgba(0,0,0,0.5)', tension: 0.3, pointRadius: 3 } ] }, options: { responsive: true } }); }
+    const canvasCar = document.getElementById('chart-fuel-car'); if (canvasCar) { if (chartInstanceFuelCar) { chartInstanceFuelCar.destroy(); } chartInstanceFuelCar = new Chart(canvasCar.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(carCosts), datasets: [{ data: Object.values(carCosts).map(v => v.toFixed(2)), backgroundColor: ['#36A2EB', '#FF6384', '#4BC0C0', '#FF9F40'] }] } }); }
 }
 
 
 // --- 7. APUFUNKTIOT ---
+
+// CSV EXPORT (UUSI)
+function exportToCSV() {
+    if (!allHistoryData || allHistoryData.length === 0) {
+        if(typeof showToast === 'function') showToast("Ei dataa ladattavaksi.");
+        return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    // Otsikot
+    csvContent += "Pvm,Kello,Ajoneuvo,Tyyppi,Matka (km),Kesto (min),Aihe,Lähtö,Määränpää\n";
+
+    allHistoryData.forEach(drive => {
+        const d = new Date(drive.startTime);
+        const dateStr = d.toLocaleDateString('fi-FI');
+        const timeStr = d.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+        const typeStr = (drive.driveType === 'work') ? "Työajo" : "Oma ajo";
+        const durMin = Math.floor((drive.durationMs || 0) / 60000);
+        
+        // CSV-turvalliset merkkijonot (vältä pilkkuja tekstissä)
+        const safeSubj = (drive.subject || "").replace(/,/g, " ");
+        const safeStart = (drive.startAddress || "").replace(/,/g, " ");
+        const safeEnd = (drive.endAddress || "").replace(/,/g, " ");
+
+        const row = `${dateStr},${timeStr},${drive.carName},${typeStr},${drive.distanceKm},${durMin},${safeSubj},${safeStart},${safeEnd}`;
+        csvContent += row + "\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    const now = new Date().toISOString().slice(0,10);
+    link.setAttribute("download", `ajopaivakirja_${now}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Muokkausikkunan täyttö (PÄIVITETTY)
 window.openEditLogModal = (key) => {
     const drive = allHistoryData.find(d => d.key === key);
     if (!drive) return;
-    if(editKeyEl) editKeyEl.value = key;
-    if(editSubjectEl) editSubjectEl.value = drive.subject || "";
-    if(editCarSelectEl) {
-        editCarSelectEl.innerHTML = "";
+    
+    // Täytä piilokenttä ID:llä
+    const keyEl = document.getElementById('edit-key');
+    if(keyEl) keyEl.value = key;
+
+    // Täytä pvm
+    const dateEl = document.getElementById('edit-datetime');
+    if(dateEl && drive.startTime) {
+        // datetime-local vaatii muodon YYYY-MM-DDTHH:mm
+        const d = new Date(drive.startTime);
+        // Huomioi aikavyöhyke (ruma hack mutta toimii yleensä selaimessa)
+        const tzOffset = d.getTimezoneOffset() * 60000; 
+        const localISOTime = (new Date(d - tzOffset)).toISOString().slice(0, 16);
+        dateEl.value = localISOTime;
+    }
+
+    // Täytä matka
+    const distEl = document.getElementById('edit-distance');
+    if(distEl) distEl.value = drive.distanceKm || "";
+
+    // Täytä aihe
+    const subjEl = document.getElementById('edit-subject');
+    if(subjEl) subjEl.value = drive.subject || "";
+
+    // Täytä ajotyyppi
+    const typeEls = document.getElementsByName('edit-type');
+    const targetType = drive.driveType || 'private';
+    for(let r of typeEls) {
+        if(r.value === targetType) r.checked = true;
+    }
+
+    // Täytä autovalikko
+    const carSel = document.getElementById('edit-car-select');
+    if(carSel) {
+        carSel.innerHTML = "";
         userCars.forEach(car => {
-            // Lisää valikkoon myös arkistoidut autot jos muokataan vanhaa ajoa
-            // Mutta merkitään ne selkeästi
             const opt = document.createElement('option');
             opt.value = car.id;
             const icon = car.icon || (car.type === 'bike' ? "🚲" : "🚗");
             const archivedLabel = car.isArchived ? " (Arkistoitu)" : "";
             opt.text = `${icon} ${car.name}${archivedLabel}`;
-            
             if(drive.carId === car.id) opt.selected = true;
-            editCarSelectEl.appendChild(opt);
+            carSel.appendChild(opt);
         });
     }
-    if(editModal) editModal.style.display = 'flex';
+
+    const modal = document.getElementById('edit-modal');
+    if(modal) modal.style.display = 'flex';
 };
 
 window.openDeleteLogModal = (key) => {
@@ -692,15 +513,8 @@ window.updateLogSubject = (key, text) => {
 const btnEditCancel2 = document.getElementById('btn-edit-cancel');
 if(btnEditCancel2) btnEditCancel2.addEventListener('click', () => { if(editModal) editModal.style.display = 'none'; });
 
-const btnEditSave2 = document.getElementById('btn-edit-save');
-if(btnEditSave2) btnEditSave2.addEventListener('click', () => {
-    const key = editKeyEl.value;
-    const newCarId = editCarSelectEl.value;
-    const carObj = userCars.find(c => c.id === newCarId);
-    if (key && currentUser && carObj) {
-        db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: editSubjectEl.value, carId: carObj.id, carName: carObj.name, carIcon: carObj.icon || "🚗", carType: carObj.type }).then(() => { if(editModal) editModal.style.display = 'none'; });
-    }
-});
+// btnEditSave2 siirretty UI.js:ään jotta se ei duplikoidu, mutta pidetään varmuuden vuoksi tyhjä referenssi tässä ettei kaadu
+// (UI.js hoitaa nyt tallennuksen)
 
 const btnDeleteCancel2 = document.getElementById('btn-delete-cancel');
 if(btnDeleteCancel2) btnDeleteCancel2.addEventListener('click', () => { if(deleteModal) deleteModal.style.display = 'none'; deleteKey = null; });
