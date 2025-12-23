@@ -1,15 +1,14 @@
 // =========================================================
-// GLOBALS.JS - ASETUKSET, TILA JA VAKIOT (REFACTORED v6.1)
+// GLOBALS.JS - ASETUKSET, TILA JA VAKIOT (FIXED v6.6)
 // =========================================================
 
 // 1. KONFIGURAATIO JA VERSIO
 const APP_CONFIG = {
-    VERSION: "6.10", // Refactor-versio
-    THEME_STORAGE_KEY: "app_theme", // Mihin teema tallennetaan localStoragessa
-    CAR_STORAGE_KEY: "selectedCarId" // Mihin valittu auto tallennetaan
+    VERSION: "6.60",
+    THEME_STORAGE_KEY: "app_theme",
+    CAR_STORAGE_KEY: "selectedCarId"
 };
 
-// Yhteensopivuus vanhan koodin kanssa (tulostusta varten)
 const APP_VERSION = APP_CONFIG.VERSION;
 
 // 2. FIREBASE ALUSTUS
@@ -30,17 +29,15 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 const auth = firebase.auth(); 
 
-// 3. TIETOKANTAPOLUT (KESKITETTY HALLINTA)
-// Käytä näitä aina, älä kirjoita polkuja käsin ("users/" jne.) muihin tiedostoihin!
+// 3. TIETOKANTAPOLUT (TÄRKEÄ: NÄITÄ KÄYTETÄÄN KAIKKIALLA)
 const DB_PATHS = {
     USERS: 'users/',
     DRIVELOG: 'ajopaivakirja/' 
-    // Tulevaisuudessa helppo muuttaa esim. 'trips/' jos halutaan
 };
 
 // 4. SOVELLUKSEN TILA (GLOBAL STATE)
 
-// Käyttäjä ja UI tila
+// Käyttäjä ja UI
 var currentUser = null; 
 var isViewingHistory = false; 
 
@@ -51,10 +48,10 @@ var isRecording = false;
 var isPaused = false; 
 var wakeLock = null;
 
-// Osoitehaku ja Sijainti
+// Osoitehaku
 var lastAddressFetchTime = 0;
 var currentAddress = "Odottaa sijaintia...";
-var lastLatLng = null; // { lat, lng }
+var lastLatLng = null; 
 
 // Ajanotto
 var startTime = null;
@@ -62,21 +59,21 @@ var pauseStartTime = null;
 var totalPauseTime = 0;    
 var timerInterval = null;
 
-// Väliaikaiset tallennustiedot (ennen Firebaseen menoa)
+// Väliaikaiset tallennustiedot
 var tempDriveData = null; 
 var deleteKey = null;
 
-// Ajodata (Live - päivittyy ajon aikana)
+// Ajodata (Live)
 var maxSpeed = 0;
 var totalDistance = 0;
 
 // Reitit ja Karttaobjektit
-var routePath = []; // Tallentaa koordinaatit ajon aikana
-var realTimePolyline = null; // Piirtää viivaa kartalle livenä
-var savedRouteLayers = []; // Historian reittiviivat
-var savedRouteLayer = null; // Vanha yhteensopivuus
-var marker = null; // Sijainti-marker
-var map = null; // Leaflet-karttaolio
+var routePath = []; 
+var realTimePolyline = null; 
+var savedRouteLayers = []; 
+var savedRouteLayer = null; 
+var marker = null; 
+var map = null; 
 
 // Sää ja Ajotapa
 var currentDriveWeather = ""; 
@@ -84,18 +81,17 @@ var aggressiveEvents = 0;
 var lastMotionTime = 0;
 var styleResetTimer = null; 
 
-// Historia ja Data (Ladattu Firebasesta)
+// Historia ja Data
 var allHistoryData = []; 
 var allRefuelings = [];
 
-// Autotalli (Ladattu Firebasesta)
+// Autotalli
 var userCars = [];
 var currentCarId = "all"; 
 var currentCarType = "car"; 
 var currentRefuelingCarId = null;
 
 // Tilastograafit (Chart.js instanssit)
-// Pidetään muistissa jotta ne voidaan tuhota ennen uuden luontia
 var chartInstances = {
     monthly: null,
     vehicles: null,
