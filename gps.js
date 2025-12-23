@@ -1,5 +1,5 @@
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (PREMIUM UI v5.9)
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (PREMIUM UI v5.95)
 // =========================================================
 
 // --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
@@ -41,8 +41,7 @@ if (btnActivate) {
 // ALOITA TALLENNUS
 if (btnStartRec) {
     btnStartRec.addEventListener('click', () => {
-        // --- UUSI TARKISTUS: Estä aloitus jos autoa ei ole valittu ---
-        // Nyt estetään myös jos valittuna on "Kaikki (sis. arkistoidut)"
+        // --- TARKISTUS: Estä aloitus jos autoa ei ole valittu ---
         if (currentCarId === 'all' || currentCarId === 'all_archived') {
             if(typeof showToast === 'function') {
                 showToast("Valitse ajoneuvo ennen aloitusta! ⚠️");
@@ -73,7 +72,7 @@ if (btnStartRec) {
         isPaused = false;
         isViewingHistory = false;
         
-        // Varmistetaan että ääni soi (jos se ei lähtenyt käyntiin activate-napista)
+        // Varmistetaan että ääni soi
         if (silentAudio.paused) {
             silentAudio.play().catch(e => console.warn(e));
         }
@@ -211,17 +210,28 @@ if (btnStopRec) {
         if(modalCarNameEl) modalCarNameEl.innerText = selectedCarName; 
 
         if(saveModal) saveModal.style.display = 'flex';
-        // Varmista ettei näppäimistö hyppää heti silmille
         // if(modalSubjectEl) modalSubjectEl.focus(); 
         if(liveStatusBar) liveStatusBar.style.opacity = '0';
     });
 }
 
-// MODAL NAPIT
+// MODAL NAPIT - PÄIVITETTY TALLENNUS (TYÖAJO/OMA AJO)
 if (btnModalSave) {
     btnModalSave.addEventListener('click', () => {
         if (tempDriveData) {
             tempDriveData.subject = modalSubjectEl ? modalSubjectEl.value : "";
+            
+            // LUETAAN AJOTYYPPI (Work/Private)
+            const typeRadios = document.getElementsByName('save-type');
+            let selectedType = 'private';
+            for (const radio of typeRadios) {
+                if (radio.checked) {
+                    selectedType = radio.value;
+                    break;
+                }
+            }
+            tempDriveData.driveType = selectedType;
+
             saveToFirebase(tempDriveData);
         }
         if(saveModal) saveModal.style.display = 'none';
@@ -238,7 +248,7 @@ if (btnModalCancel) {
                 resetRecordingUI();
             });
         } else {
-            // Fallback jos ei jostain syystä toimi
+            // Fallback
             if(confirm("Haluatko varmasti hylätä tämän ajon?")) {
                 if(saveModal) saveModal.style.display = 'none';
                 resetRecordingUI();
@@ -344,7 +354,6 @@ function stopGPSAndRec() {
     if(watchId) navigator.geolocation.clearWatch(watchId);
     window.removeEventListener('devicemotion', handleMotion);
     
-    // Pysäytä taustaääni
     if(silentAudio) {
         silentAudio.pause();
         silentAudio.currentTime = 0;
@@ -419,7 +428,6 @@ function resetRecordingUI() {
     if(liveStatusBar) liveStatusBar.style.opacity = '0'; 
     if(dashAddressEl) dashAddressEl.innerText = "Odottaa sijaintia...";
     
-    // Varmistetaan että ääni pysähtyy myös tässä tilanteessa
     if(silentAudio) {
         silentAudio.pause();
         silentAudio.currentTime = 0;
@@ -516,7 +524,6 @@ function saveToFirebase(data) {
         db.ref('ajopaivakirja/' + currentUser.uid).push().set(data)
             .then(() => { 
                 console.log("Tallennus onnistui");
-                // KORVATTU CONSOLE LOG TOASTILLA
                 if(typeof showToast === 'function') {
                     showToast("Ajo tallennettu onnistuneesti! 🏁");
                 }
