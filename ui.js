@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.97 FIX)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.98 FIX)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -64,7 +64,8 @@ const manualModal = document.getElementById('manual-drive-modal');
 const btnManualDrive = document.getElementById('btn-manual-drive');
 const btnManualCancel = document.getElementById('btn-manual-cancel');
 const btnManualSave = document.getElementById('btn-manual-save');
-const btnManualCalc = document.getElementById('btn-manual-calc');
+// Määritellään calc-nappi varovasti, jos sitä ei html:ssä ole
+const btnManualCalc = document.getElementById('btn-manual-calc'); 
 const inpManualDate = document.getElementById('manual-date');
 const inpManualCar = document.getElementById('manual-car-select');
 const inpManualStart = document.getElementById('manual-start-addr');
@@ -382,65 +383,7 @@ if (btnFuelSave) {
     });
 }
 
-// --- 6. MANUAALINEN LISÄYS + AUTO CALC ---
-
-async function getCoords(addr) {
-    try {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}&limit=1`;
-        const res = await fetch(url, { headers: { 'User-Agent': 'AjopaivakirjaPro/5.96' } });
-        const data = await res.json();
-        if (data && data.length > 0) {
-            return { lat: data[0].lat, lon: data[0].lon };
-        }
-        return null;
-    } catch(e) { console.error(e); return null; }
-}
-
-async function getRouteDistance(startCoords, endCoords) {
-    try {
-        const url = `https://router.project-osrm.org/route/v1/driving/${startCoords.lon},${startCoords.lat};${endCoords.lon},${endCoords.lat}?overview=false`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if(data.code === 'Ok' && data.routes && data.routes.length > 0) {
-            return data.routes[0].distance; 
-        }
-        return null;
-    } catch(e) { console.error(e); return null; }
-}
-
-if(btnManualCalc) {
-    btnManualCalc.addEventListener('click', async () => {
-        const startAddr = inpManualStart.value;
-        const endAddr = inpManualEnd.value;
-        
-        if(!startAddr || !endAddr) {
-            showToast("Syötä lähtö ja määränpää ensin!");
-            return;
-        }
-        
-        btnManualCalc.disabled = true;
-        btnManualCalc.innerText = "⏳";
-        
-        const c1 = await getCoords(startAddr);
-        const c2 = await getCoords(endAddr);
-        
-        if(c1 && c2) {
-            const distMeters = await getRouteDistance(c1, c2);
-            if(distMeters !== null) {
-                const distKm = (distMeters / 1000).toFixed(1);
-                inpManualDist.value = distKm;
-                showToast(`Matka laskettu: ${distKm} km 🎯`);
-            } else {
-                showToast("Reitin laskenta epäonnistui. ⚠️");
-            }
-        } else {
-            showToast("Osoitetta ei löytynyt. Tarkista kirjoitusasu. ⚠️");
-        }
-        
-        btnManualCalc.disabled = false;
-        btnManualCalc.innerText = "📍 Laske";
-    });
-}
+// --- 6. MANUAALINEN LISÄYS (KORJATTU SULKEMINEN) ---
 
 if (btnManualDrive) {
     btnManualDrive.addEventListener('click', () => {
@@ -463,6 +406,7 @@ if (btnManualCancel) {
     btnManualCancel.addEventListener('click', () => { if(manualModal) manualModal.style.display = 'none'; });
 }
 
+// KORJATTU SAVE FUNKTIO
 if (btnManualSave) {
     btnManualSave.addEventListener('click', () => {
         const dateTime = inpManualDate.value;
@@ -499,11 +443,19 @@ if (btnManualSave) {
 
             db.ref('ajopaivakirja/' + currentUser.uid).push().set(driveData)
                 .then(() => {
+                    // PALAUTA NAPPI
                     btnManualSave.disabled = false;
                     btnManualSave.innerText = origText;
+                    
+                    // SULJE IKKUNA VÄLITTÖMÄSTI
                     if(manualModal) manualModal.style.display = 'none';
+                    
                     showToast("Ajo lisätty manuaalisesti! 📝");
-                    if(window.renderHistoryList) window.renderHistoryList();
+                    
+                    // PÄIVITÄ LISTA (Try/catch jotta ei kaada)
+                    try {
+                        if(window.renderHistoryList) window.renderHistoryList();
+                    } catch(e) { console.error("Listan päivitys epäonnistui", e); }
                 })
                 .catch(err => {
                     btnManualSave.disabled = false;
@@ -514,7 +466,7 @@ if (btnManualSave) {
     });
 }
 
-// --- CSV EXPORT ---
+// --- CSV EXPORT (HOOK) ---
 if(btnExportCsv) {
     btnExportCsv.addEventListener('click', () => {
         if(typeof exportToCSV === 'function') exportToCSV();
@@ -570,7 +522,9 @@ if(btnEditSave2) {
                     if(editModal) editModal.style.display = 'none'; 
                     showToast("Muutokset tallennettu! ✅");
                     
-                    if(window.renderHistoryList) window.renderHistoryList();
+                    try {
+                        if(window.renderHistoryList) window.renderHistoryList();
+                    } catch(e) { console.error(e); }
                 })
                 .catch(err => {
                     // VIRHE
