@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.98 FIX)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.99 FIX)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -533,6 +533,54 @@ if(btnEditSave2) {
                     alert("Virhe tallennuksessa: " + err.message);
                 });
         }
+    });
+}
+
+// --- RESTORED TABS LOGIC (KORJATTU TÄHÄN) ---
+
+const tabDrives = document.getElementById('tab-drives');
+const tabFuel = document.getElementById('tab-fuel');
+const historyDrivesList = document.getElementById('log-list');
+const historyFuelList = document.getElementById('fuel-list');
+
+if(tabDrives && tabFuel) {
+    tabDrives.addEventListener('click', () => {
+        tabDrives.classList.add('blue-btn'); tabDrives.style.backgroundColor = '';
+        tabFuel.classList.remove('blue-btn'); tabFuel.style.backgroundColor = '#333';
+        historyDrivesList.style.display = 'block';
+        historyFuelList.style.display = 'none';
+        if(window.renderHistoryList) window.renderHistoryList();
+    });
+
+    tabFuel.addEventListener('click', () => {
+        tabFuel.classList.add('blue-btn'); tabFuel.style.backgroundColor = '';
+        tabDrives.classList.remove('blue-btn'); tabDrives.style.backgroundColor = '#333';
+        historyDrivesList.style.display = 'none';
+        historyFuelList.style.display = 'block';
+        if(window.renderFuelList) window.renderFuelList();
+    });
+}
+
+const statTabDrives = document.getElementById('stat-tab-drives');
+const statTabFuel = document.getElementById('stat-tab-fuel');
+const statsDrivesCont = document.getElementById('stats-drives-container');
+const statsFuelCont = document.getElementById('stats-fuel-container');
+
+if(statTabDrives && statTabFuel) {
+    statTabDrives.addEventListener('click', () => {
+        statTabDrives.classList.add('blue-btn'); statTabDrives.style.backgroundColor = '';
+        statTabFuel.classList.remove('blue-btn'); statTabFuel.style.backgroundColor = '#333';
+        statsDrivesCont.style.display = 'block';
+        statsFuelCont.style.display = 'none';
+        if(window.renderDriveStats) window.renderDriveStats();
+    });
+
+    statTabFuel.addEventListener('click', () => {
+        statTabFuel.classList.add('blue-btn'); statTabFuel.style.backgroundColor = '';
+        statTabDrives.classList.remove('blue-btn'); statTabDrives.style.backgroundColor = '#333';
+        statsDrivesCont.style.display = 'none';
+        statsFuelCont.style.display = 'block';
+        if(window.renderFuelStats) window.renderFuelStats();
     });
 }
 
