@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.97)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.98)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -16,7 +16,7 @@ const menuUserAvatar = document.getElementById('user-photo');
 const appLogo = document.getElementById('app-logo'); 
 
 // Yläpalkin napit
-const btnHud = document.getElementById('btn-hud'); // UUSI HUD NAPPI
+const btnHud = document.getElementById('btn-hud'); // HUD NAPPI
 
 // Versio
 const splashVersionEl = document.getElementById('splash-version-el');
@@ -75,7 +75,7 @@ const inpManualEnd = document.getElementById('manual-end-addr');
 const inpManualDist = document.getElementById('manual-dist');
 const inpManualSubj = document.getElementById('manual-subject');
 
-// PREVIEW MODAL (UUSI)
+// PREVIEW MODAL
 const previewModal = document.getElementById('preview-modal');
 const btnPreviewCancel = document.getElementById('btn-preview-cancel');
 const btnPreviewConfirm = document.getElementById('btn-preview-confirm');
@@ -259,12 +259,27 @@ if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('sta
 if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
-// --- HUD NAPPI & LOGIIKKA (UUSI) ---
+// --- HUD NAPPI & LOGIIKKA (LUKITUS PÄIVITETTY) ---
 if (btnHud) {
     btnHud.addEventListener('click', () => {
-        document.body.classList.toggle('hud-mode');
-        if (document.body.classList.contains('hud-mode')) {
+        // Vaihdetaan tilaa (toggle class)
+        const isHudOn = document.body.classList.toggle('hud-mode');
+        
+        if (isHudOn) {
             showToast("HUD-tila päällä! Napauta ruutua poistuaksesi. 🕶️");
+            
+            // YRITETÄÄN LUKITA NÄYTTÖ PYSTYYN (Android/Chrome)
+            // Tämä estää näytön pyörimisen kojelaudalla vaikka fyysinen lukitus pettäisi
+            if (screen.orientation && typeof screen.orientation.lock === 'function') {
+                screen.orientation.lock('portrait').catch(err => {
+                    console.log("Suunnan lukitus ei onnistunut (ei tuettu laitteessa):", err);
+                });
+            }
+        } else {
+            // VAPAUTETAAN LUKITUS
+            if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+                screen.orientation.unlock();
+            }
         }
     });
 }
@@ -272,10 +287,15 @@ if (btnHud) {
 // Poistu HUD-tilasta napauttamalla ruutua
 document.body.addEventListener('click', (e) => {
     if (document.body.classList.contains('hud-mode')) {
-        // Estä poistuminen jos juuri painettiin nappia (bubbling)
+        // Estä poistuminen jos juuri painettiin nappia (bubbling check)
         if (e.target.id === 'btn-hud' || e.target.parentElement?.id === 'btn-hud') return;
         
         document.body.classList.remove('hud-mode');
+        
+        // Vapautetaan lukitus myös tässä
+        if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+            screen.orientation.unlock();
+        }
     }
 });
 
@@ -487,7 +507,7 @@ if (btnManualSave) {
     });
 }
 
-// --- CSV EXPORT & PREVIEW (UUSI) ---
+// --- CSV EXPORT & PREVIEW ---
 // Tässä avataan esikatseluikkuna EIKÄ ladata suoraan
 if(btnExportCsv) {
     btnExportCsv.addEventListener('click', () => {
