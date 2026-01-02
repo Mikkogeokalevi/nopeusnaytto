@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - NYT 5.97 (Crash Recovery Update)
-const APP_VERSION = "5.97"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT 5.98 (HUD-tila)
+const APP_VERSION = "5.98"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -84,7 +84,6 @@ var allRefuelings = [];
 var currentFuelCarId = null; 
 
 // Tilastografiikat (Chart.js instanssit)
-// Nämä tarvitaan, jotta vanhat graafit voidaan tuhota ennen uuden piirtoa
 var chartDriveTrend = null;
 var chartDriveMonthly = null;
 var chartDriveSpeed = null;
