@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - NYT VIRALLISESTI 5.95
-const APP_VERSION = "5.95"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT 5.97 (Crash Recovery Update)
+const APP_VERSION = "5.97"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -81,16 +81,17 @@ var currentCarType = "car";
 
 // Tankkausdata
 var allRefuelings = [];
-var currentRefuelingCarId = null;
+var currentFuelCarId = null; 
 
-// Tilastograafit
-var chartInstanceMonthly = null;
-var chartInstanceVehicles = null;
-var chartInstanceStyle = null; 
-var chartInstanceDriveTrend = null;
-var chartInstanceDriveSpeed = null;
+// Tilastografiikat (Chart.js instanssit)
+// Nämä tarvitaan, jotta vanhat graafit voidaan tuhota ennen uuden piirtoa
+var chartDriveTrend = null;
+var chartDriveMonthly = null;
+var chartDriveSpeed = null;
+var chartDriveVehicles = null;
+var chartDriveStyle = null;
 
-var chartInstanceFuelMonthly = null; 
-var chartInstanceFuelTrend = null;   
-var chartInstanceFuelCar = null;     
-var chartInstanceFuelType = null;
+var chartFuelType = null;
+var chartFuelMonthly = null;
+var chartFuelTrend = null;
+var chartFuelCar = null;
