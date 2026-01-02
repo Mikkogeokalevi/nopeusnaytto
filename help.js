@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v5.96 FULL BIBLE)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v5.97 CRASH RECOVERY)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -137,8 +137,12 @@ const helpData = {
                     <p><strong>Huom:</strong> Tankkausta ei voi lisätä polkupyörälle tai arkistoidulle autolle. Syötä litrat ja eurot saadaksesi litrahinnan.</p>`
             },
             {
-                title: "❓ Ongelmatilanteet (UKK)",
+                title: "❓ 7. Ongelmatilanteet (UKK)",
                 content: `
+                    <div class="help-step">
+                        <strong>🆘 Ajo keskeytyi itsestään (Crash Recovery):</strong>
+                        <br>Jos sovellus sammuu taustalla (esim. puhelun aikana), avaa sovellus uudelleen. Se kysyy automaattisesti: <em>"Ajo keskeytyi! Haluatko palauttaa tilanteen?"</em>. Vastaa <strong>Kyllä</strong>, niin matka ja reitti palautuvat.
+                    </div>
                     <div class="help-step">
                         <strong>K: GPS-viiva on suora ("teleporttaus")?</strong>
                         <br>V: Signaali katkesi tai virransäästö iski. Varmista, että "hiljainen ääni" saa soida taustalla.
@@ -287,8 +291,12 @@ const helpData = {
                     <p><strong>Note:</strong> Cannot add fuel for bikes or archived cars. Enter liters and euros to get price/liter.</p>`
             },
             {
-                title: "❓ FAQ",
+                title: "❓ 7. FAQ & Troubleshooting",
                 content: `
+                    <div class="help-step">
+                        <strong>🆘 Drive crashed/stopped (Crash Recovery):</strong>
+                        <br>If the app is killed in the background (e.g., during a call), reopen it. It will ask: <em>"Drive interrupted! Restore?"</em>. Tap <strong>Yes</strong> to recover distance and route.
+                    </div>
                     <div class="help-step">
                         <strong>Q: Straight line on map ("teleporting")?</strong>
                         <br>A: Signal lost or battery saver killed the app. Ensure "silent audio" is allowed to play.
@@ -437,8 +445,12 @@ const helpData = {
                     <p><strong>Lưu ý:</strong> Không thể thêm xăng cho xe đạp hoặc xe đã lưu trữ. Nhập số lít và số tiền để tính giá/lít.</p>`
             },
             {
-                title: "❓ FAQ (Câu hỏi thường gặp)",
+                title: "❓ 7. FAQ (Câu hỏi thường gặp)",
                 content: `
+                    <div class="help-step">
+                        <strong>🆘 Khôi phục sự cố (Crash Recovery):</strong>
+                        <br>Nếu ứng dụng bị tắt ngầm, hãy mở lại. Nó sẽ hỏi: <em>"Chuyến đi bị gián đoạn! Khôi phục?"</em>. Chọn <strong>Có</strong> để lấy lại quãng đường.
+                    </div>
                     <div class="help-step">
                         <strong>H: Bản đồ hiện đường thẳng tắp ("Dịch chuyển tức thời")?</strong>
                         <br>Đ: Mất tín hiệu hoặc chế độ tiết kiệm pin đã tắt ứng dụng. Hãy đảm bảo "âm thanh im lặng" được phép phát.
@@ -470,7 +482,7 @@ window.renderHelp = function(lang) {
     const data = helpData[lang] || helpData['fi'];
     
     // Haetaan versionumero turvallisesti
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '5.96';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '5.97';
 
     // 1. Kielinapit
     const buttons = `
