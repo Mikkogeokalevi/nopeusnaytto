@@ -1,483 +1,199 @@
 // =========================================================
-// HELP.JS - TRILINGUAL USER GUIDE (FI/EN/VI) v5.96 FIX
+// HELP.JS - KATTAVA KÄYTTÖOPAS JA UKK (v5.95 RAAMATTU)
 // =========================================================
 
-// --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
-const helpData = {
-    fi: {
-        title: "Käyttöopas",
-        version: "Versio",
-        sections: [
-            {
-                title: "🚀 1. Asennus (Tärkeä!)",
-                content: `
-                    <p>Tämä on verkkosovellus (PWA). Jotta se toimii kuin oikea sovellus, asenna se kotinäytölle.</p>
-                    <div class="help-step">
-                        <strong>🍎 iPhone / iPad (Safari):</strong>
-                        <ol>
-                            <li>Avaa sivu <strong>Safarilla</strong>.</li>
-                            <li>Paina alareunan <strong>Jaa-painiketta</strong> (Neliö, josta nuoli ylös <span style="font-size:16px">share</span>).</li>
-                            <li>Valitse <strong>"Lisää Koti-valikkoon"</strong> (Add to Home Screen).</li>
-                            <li>Paina "Lisää".</li>
-                        </ol>
-                    </div>
-                    <div class="help-step">
-                        <strong>🤖 Android (Chrome):</strong>
-                        <ol>
-                            <li>Paina yläkulman kolmea pistettä (⋮).</li>
-                            <li>Valitse <strong>"Asenna sovellus"</strong> tai <strong>"Lisää aloitusnäytölle"</strong>.</li>
-                        </ol>
-                    </div>`
-            },
-            {
-                title: "⚠️ Luvat ja Asetukset",
-                content: `
-                    <p>Sovellus vaatii toimiakseen:</p>
-                    <ul>
-                        <li>📍 <strong>Sijainti (Location):</strong> "Salli aina" tai "Käytettäessä".</li>
-                        <li>📱 <strong>Liikeanturit (Motion):</strong> (iOS) G-voimamittaria varten.</li>
-                        <li>🔊 <strong>Ääni (Audio):</strong> Tausta-ajoa varten (GPS pysyy päällä taskussa).</li>
-                    </ul>`
-            },
-            {
-                title: "🏎️ Mittaristo",
-                content: `
-                    <p><strong>Pystynäkymä:</strong> Nopeus ylhäällä, tilastot keskellä.</p>
-                    <p><strong>Vaakanäkymä:</strong> Käännä puhelin sivuttain.</p>
-                    <p><strong>G-Voima:</strong> "Pallo" näyttää kiihdytykset. Punainen = aggressiivinen.</p>`
-            },
-            {
-                title: "💾 Tallennus & Työajo",
-                content: `
-                    <p>Lopetuksessa (STOP) valitse:</p>
-                    <ul>
-                        <li><strong>🏠 Oma ajo:</strong> Omat menot.</li>
-                        <li><strong>💼 Työajo:</strong> Työmatkat (eritelty raportissa).</li>
-                    </ul>`
-            },
-            {
-                title: "📝 Historia & Raportit",
-                content: `
-                    <p><strong>Muokkaus:</strong> Paina kynä-ikonia (✏️) listassa.</p>
-                    <p><strong>Excel/CSV:</strong> Paina "Lataa CSV" saadaksesi raportin.</p>
-                    <p><strong>Manuaalinen:</strong> Lisää ajo käsin "+ Manuaalinen lisäys" -napista.</p>`
-            }
-        ]
-    },
-    en: {
-        title: "User Guide",
-        version: "Version",
-        sections: [
-            {
-                title: "🚀 1. Installation (Important!)",
-                content: `
-                    <p>For the best experience, add this PWA to your home screen.</p>
-                    <div class="help-step">
-                        <strong>🍎 iPhone / iPad (Safari):</strong>
-                        <ol>
-                            <li>Open in <strong>Safari</strong>.</li>
-                            <li>Tap <strong>Share</strong> (Square with arrow up <span style="font-size:16px">share</span>).</li>
-                            <li>Select <strong>"Add to Home Screen"</strong>.</li>
-                            <li>Tap "Add".</li>
-                        </ol>
-                    </div>
-                    <div class="help-step">
-                        <strong>🤖 Android (Chrome):</strong>
-                        <ol>
-                            <li>Tap menu dots (⋮).</li>
-                            <li>Select <strong>"Install App"</strong> or <strong>"Add to Home screen"</strong>.</li>
-                        </ol>
-                    </div>`
-            },
-            {
-                title: "⚠️ Permissions",
-                content: `
-                    <ul>
-                        <li>📍 <strong>Location:</strong> "Allow while using" for speedometer.</li>
-                        <li>📱 <strong>Motion:</strong> (iOS) For G-force meter.</li>
-                        <li>🔊 <strong>Audio:</strong> Keeps GPS active in background.</li>
-                    </ul>`
-            },
-            {
-                title: "🏎️ Dashboard",
-                content: `
-                    <p><strong>Portrait/Landscape:</strong> Rotates automatically.</p>
-                    <p><strong>G-Force:</strong> Bubble shows braking/acceleration. Red = Aggressive.</p>`
-            },
-            {
-                title: "💾 Saving & Work",
-                content: `
-                    <p>When stopping, choose:</p>
-                    <ul>
-                        <li><strong>🏠 Private:</strong> Personal drives.</li>
-                        <li><strong>💼 Work:</strong> Business trips.</li>
-                    </ul>`
-            },
-            {
-                title: "📝 Reports",
-                content: `
-                    <p><strong>Edit:</strong> Use pencil icon (✏️).</p>
-                    <p><strong>CSV:</strong> Download Excel-compatible file.</p>`
-            }
-        ]
-    },
-    vi: {
-        title: "Hướng dẫn sử dụng",
-        version: "Phiên bản",
-        sections: [
-            {
-                title: "🚀 1. Cài đặt (Quan trọng!)",
-                content: `
-                    <p>Cài đặt vào màn hình chính để sử dụng tốt nhất.</p>
-                    <div class="help-step">
-                        <strong>🍎 iPhone / iPad (Safari):</strong>
-                        <ol>
-                            <li>Mở bằng <strong>Safari</strong>.</li>
-                            <li>Nhấn nút <strong>Chia sẻ (Share)</strong> (Hình vuông có mũi tên lên <span style="font-size:16px">share</span>).</li>
-                            <li>Chọn <strong>"Thêm vào MH chính" (Add to Home Screen)</strong>.</li>
-                            <li>Nhấn "Thêm" (Add).</li>
-                        </ol>
-                    </div>
-                    <div class="help-step">
-                        <strong>🤖 Android (Chrome):</strong>
-                        <ol>
-                            <li>Nhấn dấu ba chấm (⋮).</li>
-                            <li>Chọn <strong>"Cài đặt ứng dụng"</strong> hoặc <strong>"Thêm vào màn hình chính"</strong>.</li>
-                        </ol>
-                    </div>`
-            },
-            {
-                title: "⚠️ Quyền truy cập",
-                content: `
-                    <ul>
-                        <li>📍 <strong>Vị trí (Location):</strong> Để đo tốc độ.</li>
-                        <li>📱 <strong>Cảm biến (Motion):</strong> (iOS) Để đo lực G.</li>
-                        <li>🔊 <strong>Âm thanh:</strong> Giữ GPS chạy ngầm.</li>
-                    </ul>`
-            },
-            {
-                title: "🏎️ Bảng điều khiển",
-                content: `
-                    <p><strong>Xoay màn hình:</strong> Hỗ trợ ngang và dọc.</p>
-                    <p><strong>Lực G:</strong> Bong bóng hiển thị gia tốc. Màu đỏ = Lái xe gắt.</p>`
-            },
-            {
-                title: "💾 Lưu & Công tác",
-                content: `
-                    <p>Khi dừng lại, chọn:</p>
-                    <ul>
-                        <li><strong>🏠 Cá nhân (Private):</strong> Xe riêng.</li>
-                        <li><strong>💼 Công việc (Work):</strong> Đi công tác.</li>
-                    </ul>`
-            },
-            {
-                title: "📝 Báo cáo",
-                content: `
-                    <p><strong>Sửa:</strong> Nhấn biểu tượng bút chì (✏️).</p>
-                    <p><strong>CSV:</strong> Tải file cho Excel.</p>`
-            }
-        ]
-    }
-};
-
-// --- LOGIIKKA / LOGIC ---
-
-// Määritellään funktio globaalisti window-objektiin
-window.renderHelp = function(lang) {
-    const container = document.getElementById('help-view');
-    if (!container) {
-        console.warn("Help container not found!");
-        return;
-    }
-
-    // Varmistetaan että data löytyy, fallback 'fi'
-    const data = helpData[lang] || helpData['fi'];
+const helpContent = `
+    <div style="text-align:center; margin-bottom: 30px;">
+        <img src="ajopaivakirja_logo.png" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-color); margin-bottom:10px;">
+        <h2 style="color:var(--accent-color); text-transform: uppercase; letter-spacing: 1px; margin:0;">Käyttöopas</h2>
+        <p style="opacity:0.7; font-size:12px;">Mikkokalevin Ajopäiväkirja Pro v${typeof APP_VERSION !== 'undefined' ? APP_VERSION : '5.95'}</p>
+    </div>
     
-    // Haetaan versionumero turvallisesti
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '5.96';
-
-    // 1. Kielinapit
-    const buttons = `
-        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
-            <button onclick="window.renderHelp('fi')" class="action-btn" style="width:auto; padding:5px 15px; background-color:${lang==='fi'?'var(--accent-color)':'#333'};">🇫🇮 Suomi</button>
-            <button onclick="window.renderHelp('en')" class="action-btn" style="width:auto; padding:5px 15px; background-color:${lang==='en'?'var(--accent-color)':'#333'};">🇬🇧 English</button>
-            <button onclick="window.renderHelp('vi')" class="action-btn" style="width:auto; padding:5px 15px; background-color:${lang==='vi'?'var(--accent-color)':'#333'};">🇻🇳 Tiếng Việt</button>
+    <div class="help-section">
+        <h3>🚀 1. Käyttöönotto ja Luvat</h3>
+        <p>Tämä sovellus on suunniteltu toimimaan suoraan selaimessa, mutta se vaatii tietyt oikeudet toimiakseen "natiivin" sovelluksen tavoin.</p>
+        
+        <div class="help-step">
+            <strong>⚠️ Vaaditut luvat:</strong>
+            <ul>
+                <li>📍 <strong>Sijainti (Location):</strong> "Salli aina" tai "Salli käytettäessä". Ilman tätä nopeus ja matka eivät päivity.</li>
+                <li>📱 <strong>Liikeanturit (Motion):</strong> Safari (iOS) vaatii erillisen luvan kiihtyvyysantureille. Tämä mahdollistaa G-voimamittarin ja Eco-analyysin.</li>
+                <li>🔊 <strong>Automaattinen toisto (Audio):</strong> Sovellus soittaa äänetöntä raitaa taustalla pitääkseen GPS:n hengissä näytön ollessa kiinni. Salli äänen toisto, jos selain kysyy.</li>
+            </ul>
         </div>
-    `;
 
-    // 2. Otsikko
-    let contentHtml = buttons + `
-        <div style="text-align:center; margin-bottom: 30px;">
-            <img src="ajopaivakirja_logo.png" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-color); margin-bottom:10px;">
-            <h2 style="color:var(--accent-color); text-transform: uppercase; letter-spacing: 1px; margin:0;">${data.title}</h2>
-            <p style="opacity:0.7; font-size:12px;">Mikkokalevin Ajo Pro v${ver}</p>
+        <div class="help-step">
+            <strong>📲 Asennus (PWA):</strong>
+            Jotta osoitepalkit eivät vie tilaa ja sovellus pysyy paremmin käynnissä:
+            <ul>
+                <li><strong>iPhone (Safari):</strong> Paina Jaa-nappia (neliö ja nuoli ylös) -> "Lisää Koti-valikkoon" (Add to Home Screen).</li>
+                <li><strong>Android (Chrome):</strong> Paina kolmea pistettä -> "Asenna sovellus" tai "Lisää aloitusnäytölle".</li>
+            </ul>
         </div>
-    `;
+    </div>
 
-    // 3. Osiot
-    data.sections.forEach(section => {
-        contentHtml += `
-            <div class="help-section">
-                <h3>${section.title}</h3>
-                ${section.content}
-            </div>
-        `;
-    });
-
-    // 4. Footer
-    contentHtml += `
-        <div style="text-align: center; margin-top: 50px; color: #888; font-size: 11px; padding-bottom: 30px;">
-            Designed for drivers.
+    <div class="help-section">
+        <h3>🏎️ 2. Mittaristo (Dashboard)</h3>
+        <p>Näkymä mukautuu automaattisesti puhelimen asennon mukaan.</p>
+        
+        <div class="help-step">
+            <strong>📱 Pystynäkymä (Portrait):</strong>
+            Järjestys ylhäältä alas:
+            <ol>
+                <li><strong>Nopeus:</strong> Iso numero keskellä.</li>
+                <li><strong>Tilastot:</strong> 6 ruudun ristikko (Huippu, Matka, Aika, Ø Nopeus, Suunta, Korkeus).</li>
+                <li><strong>Osoite:</strong> Katuosoite ja koordinaatit näkyvät <em>tilastoruudukon alapuolella</em>, mutta kellon yläpuolella.</li>
+                <li><strong>Aika & Sää:</strong> Alimpana kellonaika, päivämäärä ja sääikoni.</li>
+            </ol>
         </div>
-    `;
 
-    // Asetetaan sisältö
-    container.innerHTML = contentHtml;
-};
-
-// SUORITETAAN HETI (Ei odoteta DOMContentLoaded, koska skripti on bodyn lopussa)
-window.renderHelp('fi');{
-type: uploaded file
-fileName: help.js
-fullContent:
-// =========================================================
-// HELP.JS - TRILINGUAL USER GUIDE (FI/EN/VI) v5.96 FIX
-// =========================================================
-
-// --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
-const helpData = {
-    fi: {
-        title: "Käyttöopas",
-        version: "Versio",
-        sections: [
-            {
-                title: "🚀 1. Asennus (Tärkeä!)",
-                content: `
-                    <p>Tämä on verkkosovellus (PWA). Jotta se toimii kuin oikea sovellus, asenna se kotinäytölle.</p>
-                    <div class="help-step">
-                        <strong>🍎 iPhone / iPad (Safari):</strong>
-                        <ol>
-                            <li>Avaa sivu <strong>Safarilla</strong>.</li>
-                            <li>Paina alareunan <strong>Jaa-painiketta</strong> (Neliö, josta nuoli ylös <span style="font-size:16px">share</span>).</li>
-                            <li>Valitse <strong>"Lisää Koti-valikkoon"</strong> (Add to Home Screen).</li>
-                            <li>Paina "Lisää".</li>
-                        </ol>
-                    </div>
-                    <div class="help-step">
-                        <strong>🤖 Android (Chrome):</strong>
-                        <ol>
-                            <li>Paina yläkulman kolmea pistettä (⋮).</li>
-                            <li>Valitse <strong>"Asenna sovellus"</strong> tai <strong>"Lisää aloitusnäytölle"</strong>.</li>
-                        </ol>
-                    </div>`
-            },
-            {
-                title: "⚠️ Luvat ja Asetukset",
-                content: `
-                    <p>Sovellus vaatii toimiakseen:</p>
-                    <ul>
-                        <li>📍 <strong>Sijainti (Location):</strong> "Salli aina" tai "Käytettäessä".</li>
-                        <li>📱 <strong>Liikeanturit (Motion):</strong> (iOS) G-voimamittaria varten.</li>
-                        <li>🔊 <strong>Ääni (Audio):</strong> Tausta-ajoa varten (GPS pysyy päällä taskussa).</li>
-                    </ul>`
-            },
-            {
-                title: "🏎️ Mittaristo",
-                content: `
-                    <p><strong>Pystynäkymä:</strong> Nopeus ylhäällä, tilastot keskellä.</p>
-                    <p><strong>Vaakanäkymä:</strong> Käännä puhelin sivuttain.</p>
-                    <p><strong>G-Voima:</strong> "Pallo" näyttää kiihdytykset. Punainen = aggressiivinen.</p>`
-            },
-            {
-                title: "💾 Tallennus & Työajo",
-                content: `
-                    <p>Lopetuksessa (STOP) valitse:</p>
-                    <ul>
-                        <li><strong>🏠 Oma ajo:</strong> Omat menot.</li>
-                        <li><strong>💼 Työajo:</strong> Työmatkat (eritelty raportissa).</li>
-                    </ul>`
-            },
-            {
-                title: "📝 Historia & Raportit",
-                content: `
-                    <p><strong>Muokkaus:</strong> Paina kynä-ikonia (✏️) listassa.</p>
-                    <p><strong>Excel/CSV:</strong> Paina "Lataa CSV" saadaksesi raportin.</p>
-                    <p><strong>Manuaalinen:</strong> Lisää ajo käsin "+ Manuaalinen lisäys" -napista.</p>`
-            }
-        ]
-    },
-    en: {
-        title: "User Guide",
-        version: "Version",
-        sections: [
-            {
-                title: "🚀 1. Installation (Important!)",
-                content: `
-                    <p>For the best experience, add this PWA to your home screen.</p>
-                    <div class="help-step">
-                        <strong>🍎 iPhone / iPad (Safari):</strong>
-                        <ol>
-                            <li>Open in <strong>Safari</strong>.</li>
-                            <li>Tap <strong>Share</strong> (Square with arrow up <span style="font-size:16px">share</span>).</li>
-                            <li>Select <strong>"Add to Home Screen"</strong>.</li>
-                            <li>Tap "Add".</li>
-                        </ol>
-                    </div>
-                    <div class="help-step">
-                        <strong>🤖 Android (Chrome):</strong>
-                        <ol>
-                            <li>Tap menu dots (⋮).</li>
-                            <li>Select <strong>"Install App"</strong> or <strong>"Add to Home screen"</strong>.</li>
-                        </ol>
-                    </div>`
-            },
-            {
-                title: "⚠️ Permissions",
-                content: `
-                    <ul>
-                        <li>📍 <strong>Location:</strong> "Allow while using" for speedometer.</li>
-                        <li>📱 <strong>Motion:</strong> (iOS) For G-force meter.</li>
-                        <li>🔊 <strong>Audio:</strong> Keeps GPS active in background.</li>
-                    </ul>`
-            },
-            {
-                title: "🏎️ Dashboard",
-                content: `
-                    <p><strong>Portrait/Landscape:</strong> Rotates automatically.</p>
-                    <p><strong>G-Force:</strong> Bubble shows braking/acceleration. Red = Aggressive.</p>`
-            },
-            {
-                title: "💾 Saving & Work",
-                content: `
-                    <p>When stopping, choose:</p>
-                    <ul>
-                        <li><strong>🏠 Private:</strong> Personal drives.</li>
-                        <li><strong>💼 Work:</strong> Business trips.</li>
-                    </ul>`
-            },
-            {
-                title: "📝 Reports",
-                content: `
-                    <p><strong>Edit:</strong> Use pencil icon (✏️).</p>
-                    <p><strong>CSV:</strong> Download Excel-compatible file.</p>`
-            }
-        ]
-    },
-    vi: {
-        title: "Hướng dẫn sử dụng",
-        version: "Phiên bản",
-        sections: [
-            {
-                title: "🚀 1. Cài đặt (Quan trọng!)",
-                content: `
-                    <p>Cài đặt vào màn hình chính để sử dụng tốt nhất.</p>
-                    <div class="help-step">
-                        <strong>🍎 iPhone / iPad (Safari):</strong>
-                        <ol>
-                            <li>Mở bằng <strong>Safari</strong>.</li>
-                            <li>Nhấn nút <strong>Chia sẻ (Share)</strong> (Hình vuông có mũi tên lên <span style="font-size:16px">share</span>).</li>
-                            <li>Chọn <strong>"Thêm vào MH chính" (Add to Home Screen)</strong>.</li>
-                            <li>Nhấn "Thêm" (Add).</li>
-                        </ol>
-                    </div>
-                    <div class="help-step">
-                        <strong>🤖 Android (Chrome):</strong>
-                        <ol>
-                            <li>Nhấn dấu ba chấm (⋮).</li>
-                            <li>Chọn <strong>"Cài đặt ứng dụng"</strong> hoặc <strong>"Thêm vào màn hình chính"</strong>.</li>
-                        </ol>
-                    </div>`
-            },
-            {
-                title: "⚠️ Quyền truy cập",
-                content: `
-                    <ul>
-                        <li>📍 <strong>Vị trí (Location):</strong> Để đo tốc độ.</li>
-                        <li>📱 <strong>Cảm biến (Motion):</strong> (iOS) Để đo lực G.</li>
-                        <li>🔊 <strong>Âm thanh:</strong> Giữ GPS chạy ngầm.</li>
-                    </ul>`
-            },
-            {
-                title: "🏎️ Bảng điều khiển",
-                content: `
-                    <p><strong>Xoay màn hình:</strong> Hỗ trợ ngang và dọc.</p>
-                    <p><strong>Lực G:</strong> Bong bóng hiển thị gia tốc. Màu đỏ = Lái xe gắt.</p>`
-            },
-            {
-                title: "💾 Lưu & Công tác",
-                content: `
-                    <p>Khi dừng lại, chọn:</p>
-                    <ul>
-                        <li><strong>🏠 Cá nhân (Private):</strong> Xe riêng.</li>
-                        <li><strong>💼 Công việc (Work):</strong> Đi công tác.</li>
-                    </ul>`
-            },
-            {
-                title: "📝 Báo cáo",
-                content: `
-                    <p><strong>Sửa:</strong> Nhấn biểu tượng bút chì (✏️).</p>
-                    <p><strong>CSV:</strong> Tải file cho Excel.</p>`
-            }
-        ]
-    }
-};
-
-// --- LOGIIKKA / LOGIC ---
-
-// Määritellään funktio globaalisti window-objektiin
-window.renderHelp = function(lang) {
-    const container = document.getElementById('help-view');
-    if (!container) {
-        console.warn("Help container not found!");
-        return;
-    }
-
-    // Varmistetaan että data löytyy, fallback 'fi'
-    const data = helpData[lang] || helpData['fi'];
-    
-    // Haetaan versionumero turvallisesti
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '5.96';
-
-    // 1. Kielinapit
-    const buttons = `
-        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
-            <button onclick="window.renderHelp('fi')" class="action-btn" style="width:auto; padding:5px 15px; background-color:${lang==='fi'?'var(--accent-color)':'#333'};">🇫🇮 Suomi</button>
-            <button onclick="window.renderHelp('en')" class="action-btn" style="width:auto; padding:5px 15px; background-color:${lang==='en'?'var(--accent-color)':'#333'};">🇬🇧 English</button>
-            <button onclick="window.renderHelp('vi')" class="action-btn" style="width:auto; padding:5px 15px; background-color:${lang==='vi'?'var(--accent-color)':'#333'};">🇻🇳 Tiếng Việt</button>
+        <div class="help-step">
+            <strong>🔄 Vaakanäkymä (Landscape):</strong>
+            Kun käännät puhelimen sivuttain:
+            <ul>
+                <li><strong>Vasen reuna:</strong> Iso nopeuslukema.</li>
+                <li><strong>Oikea reuna:</strong> Tilastoruudukko.</li>
+                <li><strong>Oikea alanurkka:</strong> Osoite ja koordinaatit siirtyvät <em>tilastoruudukon alle</em>.</li>
+            </ul>
         </div>
-    `;
 
-    // 2. Otsikko
-    let contentHtml = buttons + `
-        <div style="text-align:center; margin-bottom: 30px;">
-            <img src="ajopaivakirja_logo.png" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-color); margin-bottom:10px;">
-            <h2 style="color:var(--accent-color); text-transform: uppercase; letter-spacing: 1px; margin:0;">${data.title}</h2>
-            <p style="opacity:0.7; font-size:12px;">Mikkokalevin Ajo Pro v${ver}</p>
+        <div class="help-step">
+            <strong>🎯 G-Voimamittari (Bubble):</strong>
+            Oikeassa yläkulmassa (pystynäytöllä) oleva "tähtäin".
+            <ul>
+                <li><strong>Keskellä:</strong> Taloudellinen ajo.</li>
+                <li><strong>Reunalla:</strong> Voimakas kiihdytys/jarrutus -> "Aggressiivinen".</li>
+            </ul>
         </div>
-    `;
+    </div>
 
-    // 3. Osiot
-    data.sections.forEach(section => {
-        contentHtml += `
-            <div class="help-section">
-                <h3>${section.title}</h3>
-                ${section.content}
-            </div>
-        `;
-    });
-
-    // 4. Footer
-    contentHtml += `
-        <div style="text-align: center; margin-top: 50px; color: #888; font-size: 11px; padding-bottom: 30px;">
-            Designed for drivers.
+    <div class="help-section">
+        <h3>🚗 3. Autotalli ja Valinnat</h3>
+        <p>Sovellus tallentaa ajot aina tietylle ajoneuvolle.</p>
+        
+        <div class="help-step">
+            <strong>Valinta ennen ajoa:</strong>
+            Yläpalkin alasvetovalikosta valitaan käytettävä auto.
+            <br><span style="color:#ff4444; font-weight:bold;">HUOM:</span> Tallennusta ei voi aloittaa, jos valintana on "Kaikki ajoneuvot". Valitse jokin auto listalta.
         </div>
-    `;
 
-    // Asetetaan sisältö
-    container.innerHTML = contentHtml;
-};
+        <div class="help-step">
+            <strong>Ajoneuvotyypit:</strong>
+            <ul>
+                <li><strong>🚗 Auto:</strong> Kartta loitontaa maantienopeuksissa. Eco-analyysi on päällä.</li>
+                <li><strong>🚲 Pyörä:</strong> Kartta pysyy aina lähikuvassa. Eco-analyysi on pois päältä.</li>
+            </ul>
+        </div>
 
-// SUORITETAAN HETI (Ei odoteta DOMContentLoaded, koska skripti on bodyn lopussa)
-window.renderHelp('fi');
+        <div class="help-step">
+            <strong>🗄️ Arkistointi (UUSI):</strong>
+            Jos myyt auton tai palautat vuokra-auton, voit "Arkistoida" sen Asetukset-sivulta.
+            <ul>
+                <li>Arkistoitu auto ei näy tankkaus- tai aloituslistoissa (pysyy poissa tieltä).</li>
+                <li>Saat sen historian näkyviin valitsemalla yläpalkista <em>"Kaikki (sis. arkistoidut)"</em>.</li>
+                <li>Voit palauttaa auton käyttöön painamalla ♻️-nappia.</li>
+            </ul>
+        </div>
+    </div>
 
+    <div class="help-section">
+        <h3>⏱️ 4. Ajon tallennus & Työajo</h3>
+        
+        <div class="help-step">
+            <strong>🔇 Tausta-ajo (Silent Audio Hack):</strong>
+            Kun käynnistät GPS:n, sovellus alkaa toistaa "hiljaisuutta" taustalla. Tämä huijaa puhelimen pitämään GPS:n päällä taskussa.
+        </div>
+
+        <div class="help-step">
+            <strong>💾 Tallennus ja Työajo (UUSI):</strong>
+            Kun lopetat tallennuksen (STOP), avautuu ikkuna, jossa voit:
+            <ul>
+                <li>Kirjoittaa ajon aiheen (esim. "Kauppareissu").</li>
+                <li>Valita onko kyseessä <strong>🏠 Oma ajo</strong> vai <strong>💼 Työajo</strong>.</li>
+            </ul>
+            Tämä valinta vaikuttaa siihen, miltä ajo näyttää listassa ja CSV-raportissa.
+        </div>
+    </div>
+
+    <div class="help-section">
+        <h3>📝 5. Historia & Muokkaus (UUSI)</h3>
+        <p>Historia-sivu on saanut merkittäviä päivityksiä versiossa 5.95.</p>
+
+        <div class="help-step">
+            <strong>✏️ Muokkaus (Extended Edit):</strong>
+            Jos unohdit käynnistää sovelluksen ajoissa tai GPS näytti väärin, voit nyt korjata tiedot jälkikäteen.
+            <br>Paina kynä-ikonia (✏️) haluamasi ajon kohdalla. Voit muuttaa:
+            <ul>
+                <li>Päivämäärän ja kellonajan.</li>
+                <li>Ajetun matkan (km).</li>
+                <li>Ajon tyypin (Oma/Työ).</li>
+                <li>Käytetyn ajoneuvon.</li>
+            </ul>
+        </div>
+
+        <div class="help-step">
+            <strong>➕ Manuaalinen lisäys:</strong>
+            Unohditko koko sovelluksen? Paina historia-sivulla <strong>"+ Manuaalinen lisäys"</strong>.
+            <br>Voit syöttää lähtöpaikan, määränpään ja kilometrit käsin.
+        </div>
+
+        <div class="help-step">
+            <strong>📥 Raportointi (Excel/CSV):</strong>
+            Paina <strong>"Lataa CSV"</strong> -nappia. Saat tiedoston, jonka voit avata Excelissä. Se sisältää eriteltynä: Pvm, Kello, Auto, Tyyppi (Työ/Oma), Matka, Kesto, Reitti ja Selite.
+        </div>
+    </div>
+
+    <div class="help-section">
+        <h3>⛽ 6. Tankkaukset</h3>
+        
+        <div class="help-step">
+            <strong>Lisääminen:</strong>
+            Paina mittaristossa <strong>⛽</strong>-nappia. Syötä päivä, litrat ja eurot.
+        </div>
+        
+        <div class="help-step">
+            <strong>Huom:</strong> Tankkausta ei voi lisätä polkupyörälle tai arkistoidulle autolle.
+        </div>
+    </div>
+
+    <div class="help-section">
+        <h3>📊 7. Tilastot</h3>
+        <div class="help-step">
+            <strong>📅 Aikavälin valinta:</strong>
+            <ul>
+                <li><strong>7 pv / 30 pv:</strong> Graafit näyttävät datan <strong>päiväkohtaisesti</strong>.</li>
+                <li><strong>Vuosi / Kaikki:</strong> Graafit näyttävät datan <strong>kuukausitasolla</strong>.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="help-section">
+        <h3>❓ Ongelmatilanteet (UKK)</h3>
+        
+        <div class="help-step">
+            <strong>K: GPS-viiva on suora ("teleporttaus")?</strong>
+            <br>V: Signaali katkesi tai virransäästö iski. Varmista, että äänet ovat päällä selaimessa (Silent Audio).
+        </div>
+
+        <div class="help-step">
+            <strong>K: En löydä vanhaa autoani listalta?</strong>
+            <br>V: Olet todennäköisesti arkistoinut sen. Valitse yläpalkista "Kaikki (sis. arkistoidut)".
+        </div>
+        
+        <div class="help-step">
+            <strong>K: Miten saan tumman teeman pois?</strong>
+            <br>V: Paina yläpalkin aurinko/kuu -ikonia (☀/☾).
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 50px; color: #888; font-size: 11px; padding-bottom: 30px;">
+        Mikkokalevin Ajopäiväkirja Pro v${APP_VERSION}<br>
+        Kehitetty intohimolla ajamista varten.
+    </div>
+`;
+
+// Ladataan sisältö
+const helpContainer = document.getElementById('help-view');
+if (helpContainer) {
+    helpContainer.innerHTML = helpContent;
 }
