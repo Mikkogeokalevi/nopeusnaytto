@@ -259,26 +259,40 @@ if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('sta
 if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
-// --- HUD NAPPI & LOGIIKKA (LUKITUS PÄIVITETTY) ---
+// --- HUD NAPPI & LOGIIKKA (FULLSCREEN + LOCK FIX) ---
 if (btnHud) {
-    btnHud.addEventListener('click', () => {
-        // Vaihdetaan tilaa (toggle class)
+    btnHud.addEventListener('click', async () => {
         const isHudOn = document.body.classList.toggle('hud-mode');
         
         if (isHudOn) {
-            showToast("HUD-tila päällä! Napauta ruutua poistuaksesi. 🕶️");
+            showToast("HUD-tila (Koko näyttö). Napauta ruutua poistuaksesi. 🕶️");
             
-            // YRITETÄÄN LUKITA NÄYTTÖ PYSTYYN (Android/Chrome)
-            // Tämä estää näytön pyörimisen kojelaudalla vaikka fyysinen lukitus pettäisi
-            if (screen.orientation && typeof screen.orientation.lock === 'function') {
-                screen.orientation.lock('portrait').catch(err => {
-                    console.log("Suunnan lukitus ei onnistunut (ei tuettu laitteessa):", err);
-                });
+            // 1. PYYDETÄÄN KOKO NÄYTÖN TILA (Vaaditaan monissa selaimissa lukitukseen)
+            if (document.documentElement.requestFullscreen) {
+                try {
+                    await document.documentElement.requestFullscreen();
+                } catch(e) { console.log("Fullscreen request failed", e); }
             }
+            
+            // 2. LUKITAAN NÄYTTÖ PYSTYYN
+            if (screen.orientation && typeof screen.orientation.lock === 'function') {
+                try {
+                    // Pieni viive varmuuden vuoksi, että fullscreen on ehtinyt aktivoitua
+                    setTimeout(() => {
+                        screen.orientation.lock('portrait').catch(err => {
+                            console.log("Suunnan lukitus ei onnistunut:", err);
+                        });
+                    }, 200);
+                } catch(e) { console.log(e); }
+            }
+            
         } else {
-            // VAPAUTETAAN LUKITUS
+            // VAPAUTETAAN LUKITUS & POISTUTAAN FULLSCREENISTÄ
             if (screen.orientation && typeof screen.orientation.unlock === 'function') {
                 screen.orientation.unlock();
+            }
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(e => console.log(e));
             }
         }
     });
@@ -287,14 +301,17 @@ if (btnHud) {
 // Poistu HUD-tilasta napauttamalla ruutua
 document.body.addEventListener('click', (e) => {
     if (document.body.classList.contains('hud-mode')) {
-        // Estä poistuminen jos juuri painettiin nappia (bubbling check)
+        // Estä poistuminen jos juuri painettiin nappia
         if (e.target.id === 'btn-hud' || e.target.parentElement?.id === 'btn-hud') return;
         
         document.body.classList.remove('hud-mode');
         
-        // Vapautetaan lukitus myös tässä
+        // Vapautetaan lukitus ja poistutaan fullscreenistä
         if (screen.orientation && typeof screen.orientation.unlock === 'function') {
             screen.orientation.unlock();
+        }
+        if (document.exitFullscreen && document.fullscreenElement) {
+            document.exitFullscreen().catch(e => console.log(e));
         }
     }
 });
