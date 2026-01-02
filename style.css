@@ -1,5 +1,5 @@
 /* =========================================================
-   STYLE.CSS - KORJATTU LAYOUT & NÄKYVÄ ALAKUVA (v5.98 FIX)
+   STYLE.CSS - LAYOUT RESTORED & HUD (v5.98 FIX 2)
    ========================================================= */
 
 /* BOX-SIZING FIX */
@@ -201,6 +201,8 @@ body {
     left: 0;
     overflow: hidden;
     background-color: var(--bg-color);
+    /* TÄRKEÄ: Annetaan taustan olla, mutta varmistetaan että sisältö nousee sen päälle */
+    z-index: 0;
 }
 
 .watermark-bg {
@@ -219,6 +221,7 @@ body.light-theme .watermark-bg {
 /* DASHBOARD LAYOUT (PORTRAIT) */
 #dashboard-view {
     display: grid;
+    /* Palautetaan tarkka grid-jako */
     grid-template-rows: auto 1fr auto auto auto;
     grid-template-areas:
         "status"
@@ -228,6 +231,7 @@ body.light-theme .watermark-bg {
         "meta";
     padding: 10px;
     gap: 10px;
+    height: 100%; /* Varmistetaan että täyttää tilan */
 }
 
 .status-bar {
@@ -236,6 +240,7 @@ body.light-theme .watermark-bg {
     justify-content: center;
     height: 30px;
     transition: opacity 0.3s;
+    z-index: 2; /* Nostetaan tekstielementit */
 }
 
 .style-badge {
@@ -294,6 +299,7 @@ body.light-theme .watermark-bg {
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
+    z-index: 2;
 }
 
 .stat-card {
@@ -331,6 +337,7 @@ body.light-theme .watermark-bg {
     padding: 5px;
     background-color: rgba(0,0,0,0.2);
     border-radius: 8px;
+    z-index: 2;
 }
 
 .coords-box {
@@ -346,6 +353,7 @@ body.light-theme .watermark-bg {
     justify-content: space-between;
     align-items: flex-end;
     padding: 0 10px;
+    z-index: 2;
 }
 
 .weather-huge { font-size: 32px; }
@@ -353,14 +361,14 @@ body.light-theme .watermark-bg {
 .clock-box { font-size: 28px; font-weight: bold; line-height: 1; }
 .date-box { font-size: 12px; color: var(--subtext-color); }
 
-/* KORJAUS TÄSSÄ: Z-INDEX 1 VARMISTAA ETTÄ KUVA NÄKYY */
+/* KORJATTU ALAKUVAN ASEMOINTI */
 .bottom-branding {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
     height: auto;
-    z-index: 1; 
+    z-index: 0; /* Nostetaan -1:stä 0:aan jotta ei jää taustan alle */
     opacity: 0.4;
     pointer-events: none;
 }
