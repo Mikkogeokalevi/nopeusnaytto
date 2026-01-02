@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.96)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.97)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -14,6 +14,9 @@ const mainMenu = document.getElementById('main-menu');
 const menuUserName = document.getElementById('user-name');
 const menuUserAvatar = document.getElementById('user-photo');
 const appLogo = document.getElementById('app-logo'); 
+
+// Yläpalkin napit
+const btnHud = document.getElementById('btn-hud'); // UUSI HUD NAPPI
 
 // Versio
 const splashVersionEl = document.getElementById('splash-version-el');
@@ -255,6 +258,26 @@ if (navBtns.history) navBtns.history.addEventListener('click', () => switchView(
 if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('stats'));
 if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
+
+// --- HUD NAPPI & LOGIIKKA (UUSI) ---
+if (btnHud) {
+    btnHud.addEventListener('click', () => {
+        document.body.classList.toggle('hud-mode');
+        if (document.body.classList.contains('hud-mode')) {
+            showToast("HUD-tila päällä! Napauta ruutua poistuaksesi. 🕶️");
+        }
+    });
+}
+
+// Poistu HUD-tilasta napauttamalla ruutua
+document.body.addEventListener('click', (e) => {
+    if (document.body.classList.contains('hud-mode')) {
+        // Estä poistuminen jos juuri painettiin nappia (bubbling)
+        if (e.target.id === 'btn-hud' || e.target.parentElement?.id === 'btn-hud') return;
+        
+        document.body.classList.remove('hud-mode');
+    }
+});
 
 
 // --- 5. TANKKAUS (TALLENNUSLUKKO) ---
