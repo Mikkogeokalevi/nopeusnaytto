@@ -1,3 +1,7 @@
+/* =========================================================
+   STYLE.CSS - KORJATTU LAYOUT & NÄKYVÄ ALAKUVA (v5.98 FIX)
+   ========================================================= */
+
 /* BOX-SIZING FIX */
 *, *::before, *::after {
     box-sizing: border-box;
@@ -349,13 +353,14 @@ body.light-theme .watermark-bg {
 .clock-box { font-size: 28px; font-weight: bold; line-height: 1; }
 .date-box { font-size: 12px; color: var(--subtext-color); }
 
+/* KORJAUS TÄSSÄ: Z-INDEX 1 VARMISTAA ETTÄ KUVA NÄKYY */
 .bottom-branding {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
     height: auto;
-    z-index: -1;
+    z-index: 1; 
     opacity: 0.4;
     pointer-events: none;
 }
@@ -738,7 +743,7 @@ body.light-theme .dark-mode-img { display: none; }
 }
 
 /* ========================================= */
-/* HUD MODE (HEAD-UP DISPLAY) - NEW FEATURE  */
+/* HUD MODE (HEAD-UP DISPLAY) */
 /* ========================================= */
 
 body.hud-mode {
