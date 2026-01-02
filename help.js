@@ -1,7 +1,3 @@
-{
-type: uploaded file
-fileName: help.js
-fullContent:
 // =========================================================
 // HELP.JS - TRILINGUAL MASTER GUIDE (v5.96 FULL BIBLE)
 // =========================================================
@@ -51,7 +47,7 @@ const helpData = {
 
                     <div class="help-step">
                         <strong>🔄 Vaakanäkymä (Landscape):</strong>
-                        Käännä puhelin sivuttain saadaksesi laajan näkymän:
+                        Käännä puhelimen sivuttain saadaksesi laajan näkymän:
                         <ul>
                             <li><strong>Vasen reuna:</strong> Jättimäinen nopeuslukema.</li>
                             <li><strong>Oikea reuna:</strong> Tilastoruudukko.</li>
@@ -515,7 +511,5 @@ window.renderHelp = function(lang) {
     container.innerHTML = contentHtml;
 };
 
-// SUORITETAAN HETI (Ei odoteta DOMContentLoaded, koska skripti on bodyn lopussa)
+// SUORITETAAN HETI
 window.renderHelp('fi');
-
-}
