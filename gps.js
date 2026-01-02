@@ -1,12 +1,15 @@
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (PREMIUM UI v5.95)
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v5.96 CRASH RECOVERY)
 // =========================================================
 
 // --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
 // Tämä pitää selaimen prosessin hengissä vaikka näyttö sammuisi.
-const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
+const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
 silentAudio.loop = true;
 silentAudio.volume = 0.01; // Hyvin hiljainen varmuuden vuoksi
+
+// CRASH RECOVERY KEY
+const RECOVERY_KEY = 'ajopro_crash_recovery_v1';
 
 // 1. KONTROLLIPAINIKKEET JA LOGIIKKA
 
@@ -133,6 +136,7 @@ if (btnPause) {
             statusEl.innerText = "⏸ TAUKO";
             statusEl.style.color = "#fbc02d";
         }
+        saveCrashData(); // Tallenna tila myös tauolla
     });
 }
 
@@ -210,7 +214,6 @@ if (btnStopRec) {
         if(modalCarNameEl) modalCarNameEl.innerText = selectedCarName; 
 
         if(saveModal) saveModal.style.display = 'flex';
-        // if(modalSubjectEl) modalSubjectEl.focus(); 
         if(liveStatusBar) liveStatusBar.style.opacity = '0';
     });
 }
@@ -241,7 +244,6 @@ if (btnModalSave) {
 
 if (btnModalCancel) {
     btnModalCancel.addEventListener('click', () => {
-        // KORVATTU SELAINCONFIRM TYYLIKKÄÄLLÄ MODAALILLA
         if(typeof openConfirmModal === 'function') {
             openConfirmModal("Hylkää ajo?", "Haluatko varmasti hylätä tämän ajon? Tietoja ei tallenneta.", () => {
                 if(saveModal) saveModal.style.display = 'none';
@@ -307,6 +309,9 @@ function updatePosition(position) {
             const durationHrs = activeTimeMs / (1000 * 60 * 60);
             if (durationHrs > 0) currentAvg = totalDistance / durationHrs;
         }
+
+        // --- CRASH RECOVERY: TALLENNA TILA ---
+        saveCrashData();
     }
     
     if (!lastLatLng || speedKmh > 0 || isGPSActive) {
@@ -416,6 +421,8 @@ function resetRecordingUI() {
     tempDriveData = null;
     routePath = [];
     if(realTimePolyline) realTimePolyline.setLatLngs([]);
+    
+    clearCrashData(); // PUHDISTA VÄLIMUISTI KUN AJO ON PÄÄTTYNYT
 
     if(btnStartRec) btnStartRec.style.display = 'inline-block';
     if(activeRecBtns) activeRecBtns.style.display = 'none';
@@ -541,3 +548,124 @@ document.addEventListener('visibilitychange', async () => {
 async function requestWakeLock() {
     try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
 }
+
+// =========================================================
+// 4. CRASH RECOVERY LOGIIKKA (UUSI)
+// =========================================================
+
+function saveCrashData() {
+    if (!isRecording) return;
+    
+    const crashData = {
+        startTime: startTime ? startTime.toISOString() : null,
+        totalPauseTime: totalPauseTime,
+        maxSpeed: maxSpeed,
+        totalDistance: totalDistance,
+        routePath: routePath,
+        aggressiveEvents: aggressiveEvents,
+        currentCarId: currentCarId,
+        currentCarType: currentCarType,
+        isPaused: isPaused,
+        pauseStartTime: (isPaused && pauseStartTime) ? pauseStartTime.toISOString() : null
+    };
+    
+    localStorage.setItem(RECOVERY_KEY, JSON.stringify(crashData));
+}
+
+function clearCrashData() {
+    localStorage.removeItem(RECOVERY_KEY);
+}
+
+function checkCrashRecovery() {
+    const saved = localStorage.getItem(RECOVERY_KEY);
+    if (!saved) return;
+    
+    const data = JSON.parse(saved);
+    
+    // Tarkistetaan onko data vanhaa (esim. yli 24h vanhaa dataa ei kannata palauttaa)
+    const savedTime = new Date(data.startTime);
+    const now = new Date();
+    const hoursDiff = Math.abs(now - savedTime) / 36e5;
+    
+    if (hoursDiff > 24) {
+        console.log("Recovery data too old, clearing.");
+        clearCrashData();
+        return;
+    }
+
+    // Kysytään käyttäjältä
+    if (typeof openConfirmModal === 'function') {
+        openConfirmModal(
+            "⚠️ Ajo keskeytyi!",
+            "Havaittiin odottamatta katkennut ajo. Haluatko palauttaa tilanteen ja jatkaa tallennusta?",
+            () => restoreDrive(data) // YES callback
+        );
+        // Lisätään "EI" callbackille datan poisto, ettei kysytä ikuisesti
+        const btnNo = document.getElementById('btn-confirm-no');
+        if(btnNo) {
+            // Poistetaan vanhat kuuntelijat kloonaamalla (quick hack) tai lisätään uusi
+            // Koska ui.js hoitaa sulkemisen, lisätään vain poisto
+            const clearHandler = () => { clearCrashData(); btnNo.removeEventListener('click', clearHandler); };
+            btnNo.addEventListener('click', clearHandler);
+        }
+    }
+}
+
+function restoreDrive(data) {
+    console.log("Restoring drive...", data);
+    
+    // 1. Palauta muuttujat
+    startTime = new Date(data.startTime);
+    totalPauseTime = data.totalPauseTime || 0;
+    maxSpeed = data.maxSpeed || 0;
+    totalDistance = data.totalDistance || 0;
+    routePath = data.routePath || [];
+    aggressiveEvents = data.aggressiveEvents || 0;
+    currentCarId = data.currentCarId || 'all';
+    currentCarType = data.currentCarType || 'car';
+    
+    // 2. Päivitä UI vastaamaan valittua autoa
+    const carSelect = document.getElementById('car-select');
+    if (carSelect) carSelect.value = currentCarId;
+    if (typeof updateCarTypeVariable === 'function') updateCarTypeVariable();
+    
+    // 3. Käynnistä GPS
+    startGPS(); // Tämä käynnistää watchPositionin
+    
+    // 4. Käynnistä "Silent Audio" (Tämä vaatii user interactionin, ja se saadaan MODALIN KYLLÄ-NAPISTA!)
+    silentAudio.play().then(() => console.log("Audio restored")).catch(e => console.error("Audio restore fail", e));
+
+    // 5. Aseta tallennustila päälle
+    isRecording = true;
+    isViewingHistory = false;
+    
+    // UI-päivitykset
+    if(btnActivate) btnActivate.style.display = 'none';
+    if(document.getElementById('rec-controls')) document.getElementById('rec-controls').style.display = 'flex';
+    if(activeRecBtns) activeRecBtns.style.display = 'flex';
+    if(btnStartRec) btnStartRec.style.display = 'none';
+    
+    if (data.isPaused) {
+        isPaused = true;
+        pauseStartTime = data.pauseStartTime ? new Date(data.pauseStartTime) : new Date();
+        if(btnPause) btnPause.style.display = 'none';
+        if(btnResume) btnResume.style.display = 'inline-block';
+        if(statusEl) { statusEl.innerText = "⏸ TAUKO (PALAUTETTU)"; statusEl.style.color = "#fbc02d"; }
+    } else {
+        isPaused = false;
+        if(btnPause) btnPause.style.display = 'inline-block';
+        if(btnResume) btnResume.style.display = 'none';
+        if(statusEl) { statusEl.innerText = "🔴 TALLENNETAAN (PALAUTETTU)"; statusEl.style.color = "#ff4444"; }
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+    
+    // Palauta reitti kartalle
+    if(realTimePolyline && routePath.length > 0) {
+        routePath.forEach(pt => realTimePolyline.addLatLng([pt.lat, pt.lng]));
+    }
+    
+    showToast("Ajo palautettu onnistuneesti! ♻️");
+}
+
+// Suorita tarkistus kun scripti on ladattu (pienellä viiveellä jotta UI on valmis)
+setTimeout(checkCrashRecovery, 1000);
