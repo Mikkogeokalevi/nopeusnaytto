@@ -1,5 +1,5 @@
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v5.96 CRASH RECOVERY)
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v5.97 CRASH RECOVERY FIX)
 // =========================================================
 
 // --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
@@ -51,25 +51,17 @@ if (btnStartRec) {
             } else {
                 alert("Valitse ajoneuvo ennen aloitusta!");
             }
-            // Välkytetään valikkoa huomion herättämiseksi
             const carSelect = document.getElementById('car-select');
             if(carSelect) {
                 carSelect.style.borderColor = 'red';
                 setTimeout(() => carSelect.style.borderColor = '', 2000);
             }
-            return; // Keskeytetään suoritus tähän
+            return;
         }
         // -------------------------------------------------------------
 
-        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-            DeviceMotionEvent.requestPermission().then(response => {
-                if (response === 'granted') {
-                    window.addEventListener('devicemotion', handleMotion);
-                }
-            }).catch(console.error);
-        } else {
-            window.addEventListener('devicemotion', handleMotion);
-        }
+        // Liikeanturien aktivointi
+        activateMotionSensors();
 
         isRecording = true;
         isPaused = false;
@@ -218,13 +210,12 @@ if (btnStopRec) {
     });
 }
 
-// MODAL NAPIT - PÄIVITETTY TALLENNUS (TYÖAJO/OMA AJO)
+// MODAL NAPIT
 if (btnModalSave) {
     btnModalSave.addEventListener('click', () => {
         if (tempDriveData) {
             tempDriveData.subject = modalSubjectEl ? modalSubjectEl.value : "";
             
-            // LUETAAN AJOTYYPPI (Work/Private)
             const typeRadios = document.getElementsByName('save-type');
             let selectedType = 'private';
             for (const radio of typeRadios) {
@@ -250,7 +241,6 @@ if (btnModalCancel) {
                 resetRecordingUI();
             });
         } else {
-            // Fallback
             if(confirm("Haluatko varmasti hylätä tämän ajon?")) {
                 if(saveModal) saveModal.style.display = 'none';
                 resetRecordingUI();
@@ -282,7 +272,6 @@ function updatePosition(position) {
 
     let currentAvg = 0;
 
-    // OSOITEHAKU (Max kerran 30s)
     const now = Date.now();
     if (now - lastAddressFetchTime > 30000 && speedKmh > 2) {
         fetchAddress(lat, lng);
@@ -310,7 +299,6 @@ function updatePosition(position) {
             if (durationHrs > 0) currentAvg = totalDistance / durationHrs;
         }
 
-        // --- CRASH RECOVERY: TALLENNA TILA ---
         saveCrashData();
     }
     
@@ -342,7 +330,6 @@ function updatePosition(position) {
     
     if(dashCoordsEl) dashCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
     
-    // KOMPASSI
     if (heading !== null && !isNaN(heading)) {
         if(dashHeadingEl) dashHeadingEl.innerText = `${Math.round(heading)}°`;
         if(compassArrowEl) compassArrowEl.style.transform = `rotate(${heading}deg)`;
@@ -365,7 +352,19 @@ function stopGPSAndRec() {
     }
 }
 
-// G-VOIMA JA ECO
+// APUFUNKTIO: Liikeanturien aktivointi
+function activateMotionSensors() {
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission().then(response => {
+            if (response === 'granted') {
+                window.addEventListener('devicemotion', handleMotion);
+            }
+        }).catch(console.error);
+    } else {
+        window.addEventListener('devicemotion', handleMotion);
+    }
+}
+
 function handleMotion(event) {
     if (!isRecording || isPaused) return;
     
@@ -374,7 +373,6 @@ function handleMotion(event) {
     
     if (!acc) return;
 
-    // G-METER
     if(gBubbleEl && accG) {
         let x = -acc.x * 5; 
         let y = acc.z * 5; 
@@ -389,7 +387,6 @@ function handleMotion(event) {
         gBubbleEl.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
     }
 
-    // ECO
     if (currentCarType === 'bike') return;
     const now = Date.now();
     if (now - lastMotionTime < 500) return; 
@@ -422,7 +419,7 @@ function resetRecordingUI() {
     routePath = [];
     if(realTimePolyline) realTimePolyline.setLatLngs([]);
     
-    clearCrashData(); // PUHDISTA VÄLIMUISTI KUN AJO ON PÄÄTTYNYT
+    clearCrashData(); 
 
     if(btnStartRec) btnStartRec.style.display = 'inline-block';
     if(activeRecBtns) activeRecBtns.style.display = 'none';
@@ -479,10 +476,8 @@ function fetchWeather(lat, lon) {
         .catch(e => console.error(e));
 }
 
-// OSOITEHAKU
 function fetchAddress(lat, lon) {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
-    
     fetch(url, { headers: { 'User-Agent': 'AjopaivakirjaPro/5.7' } })
         .then(res => res.json())
         .then(data => {
@@ -490,7 +485,6 @@ function fetchAddress(lat, lon) {
                 const road = data.address.road || "";
                 const number = data.address.house_number || "";
                 const city = data.address.city || data.address.town || data.address.village || "";
-                
                 if (road) {
                     currentAddress = `${road} ${number}, ${city}`;
                     if(dashAddressEl) dashAddressEl.innerText = currentAddress;
@@ -550,12 +544,11 @@ async function requestWakeLock() {
 }
 
 // =========================================================
-// 4. CRASH RECOVERY LOGIIKKA (UUSI)
+// 4. CRASH RECOVERY LOGIIKKA
 // =========================================================
 
 function saveCrashData() {
     if (!isRecording) return;
-    
     const crashData = {
         startTime: startTime ? startTime.toISOString() : null,
         totalPauseTime: totalPauseTime,
@@ -568,7 +561,6 @@ function saveCrashData() {
         isPaused: isPaused,
         pauseStartTime: (isPaused && pauseStartTime) ? pauseStartTime.toISOString() : null
     };
-    
     localStorage.setItem(RECOVERY_KEY, JSON.stringify(crashData));
 }
 
@@ -581,8 +573,6 @@ function checkCrashRecovery() {
     if (!saved) return;
     
     const data = JSON.parse(saved);
-    
-    // Tarkistetaan onko data vanhaa (esim. yli 24h vanhaa dataa ei kannata palauttaa)
     const savedTime = new Date(data.startTime);
     const now = new Date();
     const hoursDiff = Math.abs(now - savedTime) / 36e5;
@@ -593,18 +583,14 @@ function checkCrashRecovery() {
         return;
     }
 
-    // Kysytään käyttäjältä
     if (typeof openConfirmModal === 'function') {
         openConfirmModal(
             "⚠️ Ajo keskeytyi!",
             "Havaittiin odottamatta katkennut ajo. Haluatko palauttaa tilanteen ja jatkaa tallennusta?",
-            () => restoreDrive(data) // YES callback
+            () => restoreDrive(data) 
         );
-        // Lisätään "EI" callbackille datan poisto, ettei kysytä ikuisesti
         const btnNo = document.getElementById('btn-confirm-no');
         if(btnNo) {
-            // Poistetaan vanhat kuuntelijat kloonaamalla (quick hack) tai lisätään uusi
-            // Koska ui.js hoitaa sulkemisen, lisätään vain poisto
             const clearHandler = () => { clearCrashData(); btnNo.removeEventListener('click', clearHandler); };
             btnNo.addEventListener('click', clearHandler);
         }
@@ -614,7 +600,6 @@ function checkCrashRecovery() {
 function restoreDrive(data) {
     console.log("Restoring drive...", data);
     
-    // 1. Palauta muuttujat
     startTime = new Date(data.startTime);
     totalPauseTime = data.totalPauseTime || 0;
     maxSpeed = data.maxSpeed || 0;
@@ -624,22 +609,19 @@ function restoreDrive(data) {
     currentCarId = data.currentCarId || 'all';
     currentCarType = data.currentCarType || 'car';
     
-    // 2. Päivitä UI vastaamaan valittua autoa
     const carSelect = document.getElementById('car-select');
     if (carSelect) carSelect.value = currentCarId;
     if (typeof updateCarTypeVariable === 'function') updateCarTypeVariable();
     
-    // 3. Käynnistä GPS
-    startGPS(); // Tämä käynnistää watchPositionin
+    startGPS(); 
     
-    // 4. Käynnistä "Silent Audio" (Tämä vaatii user interactionin, ja se saadaan MODALIN KYLLÄ-NAPISTA!)
+    // TÄRKEÄ: Aktivoidaan ääni ja anturit käyttäjän "Kyllä"-painalluksesta
     silentAudio.play().then(() => console.log("Audio restored")).catch(e => console.error("Audio restore fail", e));
+    activateMotionSensors(); // KORJAUS: Kutsutaan antureiden aktivointia tässä!
 
-    // 5. Aseta tallennustila päälle
     isRecording = true;
     isViewingHistory = false;
     
-    // UI-päivitykset
     if(btnActivate) btnActivate.style.display = 'none';
     if(document.getElementById('rec-controls')) document.getElementById('rec-controls').style.display = 'flex';
     if(activeRecBtns) activeRecBtns.style.display = 'flex';
@@ -659,7 +641,6 @@ function restoreDrive(data) {
         timerInterval = setInterval(updateTimer, 1000);
     }
     
-    // Palauta reitti kartalle
     if(realTimePolyline && routePath.length > 0) {
         routePath.forEach(pt => realTimePolyline.addLatLng([pt.lat, pt.lng]));
     }
@@ -667,5 +648,4 @@ function restoreDrive(data) {
     showToast("Ajo palautettu onnistuneesti! ♻️");
 }
 
-// Suorita tarkistus kun scripti on ladattu (pienellä viiveellä jotta UI on valmis)
 setTimeout(checkCrashRecovery, 1000);
