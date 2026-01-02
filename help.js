@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v5.97 CRASH RECOVERY)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v5.98 HUD EDITION)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -137,12 +137,40 @@ const helpData = {
                     <p><strong>Huom:</strong> Tankkausta ei voi lisätä polkupyörälle tai arkistoidulle autolle. Syötä litrat ja eurot saadaksesi litrahinnan.</p>`
             },
             {
-                title: "❓ 7. Ongelmatilanteet (UKK)",
+                title: "🆘 7. Crash Recovery (Palautus)",
                 content: `
                     <div class="help-step">
-                        <strong>🆘 Ajo keskeytyi itsestään (Crash Recovery):</strong>
-                        <br>Jos sovellus sammuu taustalla (esim. puhelun aikana), avaa sovellus uudelleen. Se kysyy automaattisesti: <em>"Ajo keskeytyi! Haluatko palauttaa tilanteen?"</em>. Vastaa <strong>Kyllä</strong>, niin matka ja reitti palautuvat.
+                        <strong>Jos sovellus kaatuu tai sammuu:</strong>
+                        <br>Esimerkiksi puhelun aikana puhelin voi sammuttaa selaimen taustalta. Kun avaat sovelluksen uudelleen:
+                        <ul>
+                            <li>Sovellus kysyy: <em>"Ajo keskeytyi! Haluatko palauttaa tilanteen?"</em></li>
+                            <li>Vastaa <strong>Kyllä</strong>.</li>
+                            <li>Matka, reitti ja kello palautuvat siihen hetkeen mihin ne jäivät.</li>
+                        </ul>
+                    </div>`
+            },
+            {
+                title: "🕶️ 8. HUD-tila (Yönäkö)",
+                content: `
+                    <p>Uusi ominaisuus pimeäajoon! HUD (Head-Up Display) kääntää näytön peilikuvaksi ja lisää kontrastia, jolloin se heijastuu tuulilasiin oikein päin.</p>
+                    
+                    <div class="help-step">
+                        <strong>Käyttö:</strong>
+                        <ol>
+                            <li>Paina yläpalkin <strong>HUD</strong>-nappia.</li>
+                            <li>Aseta puhelin kojelaudalle näyttö ylöspäin (säädä kirkkaus täysille).</li>
+                            <li>Näet nopeusmittarin heijastuksena tuulilasissa.</li>
+                        </ol>
                     </div>
+
+                    <div class="help-step">
+                        <strong>Poistuminen:</strong>
+                        Napauta mihin tahansa kohtaan ruutua palataksesi normaaliin tilaan.
+                    </div>`
+            },
+            {
+                title: "❓ 9. Ongelmatilanteet (UKK)",
+                content: `
                     <div class="help-step">
                         <strong>K: GPS-viiva on suora ("teleporttaus")?</strong>
                         <br>V: Signaali katkesi tai virransäästö iski. Varmista, että "hiljainen ääni" saa soida taustalla.
@@ -291,12 +319,40 @@ const helpData = {
                     <p><strong>Note:</strong> Cannot add fuel for bikes or archived cars. Enter liters and euros to get price/liter.</p>`
             },
             {
-                title: "❓ 7. FAQ & Troubleshooting",
+                title: "🆘 7. Crash Recovery",
                 content: `
                     <div class="help-step">
-                        <strong>🆘 Drive crashed/stopped (Crash Recovery):</strong>
-                        <br>If the app is killed in the background (e.g., during a call), reopen it. It will ask: <em>"Drive interrupted! Restore?"</em>. Tap <strong>Yes</strong> to recover distance and route.
+                        <strong>If the app stops unexpectedly:</strong>
+                        <br>For example, if a phone call kills the browser process. When you reopen the app:
+                        <ul>
+                            <li>It will ask: <em>"Drive interrupted! Restore?"</em></li>
+                            <li>Tap <strong>Yes</strong>.</li>
+                            <li>Distance, route, and timers will be restored to where they left off.</li>
+                        </ul>
+                    </div>`
+            },
+            {
+                title: "🕶️ 8. HUD Mode (Night Vision)",
+                content: `
+                    <p>New feature for night driving! HUD (Head-Up Display) mirrors the screen and boosts contrast, reflecting it correctly on the windshield.</p>
+                    
+                    <div class="help-step">
+                        <strong>How to use:</strong>
+                        <ol>
+                            <li>Tap the <strong>HUD</strong> button in the top bar.</li>
+                            <li>Place phone on the dashboard, screen facing up (set brightness to max).</li>
+                            <li>The speedometer will reflect on the windshield.</li>
+                        </ol>
                     </div>
+
+                    <div class="help-step">
+                        <strong>Exit:</strong>
+                        Tap anywhere on the screen to return to normal mode.
+                    </div>`
+            },
+            {
+                title: "❓ 9. FAQ & Troubleshooting",
+                content: `
                     <div class="help-step">
                         <strong>Q: Straight line on map ("teleporting")?</strong>
                         <br>A: Signal lost or battery saver killed the app. Ensure "silent audio" is allowed to play.
@@ -445,12 +501,40 @@ const helpData = {
                     <p><strong>Lưu ý:</strong> Không thể thêm xăng cho xe đạp hoặc xe đã lưu trữ. Nhập số lít và số tiền để tính giá/lít.</p>`
             },
             {
-                title: "❓ 7. FAQ (Câu hỏi thường gặp)",
+                title: "🆘 7. Khôi phục sự cố (Crash Recovery)",
                 content: `
                     <div class="help-step">
-                        <strong>🆘 Khôi phục sự cố (Crash Recovery):</strong>
-                        <br>Nếu ứng dụng bị tắt ngầm, hãy mở lại. Nó sẽ hỏi: <em>"Chuyến đi bị gián đoạn! Khôi phục?"</em>. Chọn <strong>Có</strong> để lấy lại quãng đường.
+                        <strong>Nếu ứng dụng tắt đột ngột:</strong>
+                        <br>Ví dụ khi có cuộc gọi đến. Khi mở lại:
+                        <ul>
+                            <li>Ứng dụng hỏi: <em>"Chuyến đi bị gián đoạn! Khôi phục?"</em></li>
+                            <li>Chọn <strong>Có (Yes)</strong>.</li>
+                            <li>Quãng đường và thời gian sẽ được khôi phục.</li>
+                        </ul>
+                    </div>`
+            },
+            {
+                title: "🕶️ 8. Chế độ HUD (Ban đêm)",
+                content: `
+                    <p>Tính năng mới cho lái xe đêm! HUD (Head-Up Display) lật ngược màn hình và tăng độ tương phản để phản chiếu lên kính lái.</p>
+                    
+                    <div class="help-step">
+                        <strong>Cách dùng:</strong>
+                        <ol>
+                            <li>Nhấn nút <strong>HUD</strong> ở thanh trên cùng.</li>
+                            <li>Đặt điện thoại lên taplo, màn hình hướng lên (chỉnh độ sáng tối đa).</li>
+                            <li>Đồng hồ tốc độ sẽ phản chiếu lên kính lái đúng chiều.</li>
+                        </ol>
                     </div>
+
+                    <div class="help-step">
+                        <strong>Thoát:</strong>
+                        Chạm vào bất kỳ đâu trên màn hình để trở lại bình thường.
+                    </div>`
+            },
+            {
+                title: "❓ 9. FAQ (Câu hỏi thường gặp)",
+                content: `
                     <div class="help-step">
                         <strong>H: Bản đồ hiện đường thẳng tắp ("Dịch chuyển tức thời")?</strong>
                         <br>Đ: Mất tín hiệu hoặc chế độ tiết kiệm pin đã tắt ứng dụng. Hãy đảm bảo "âm thanh im lặng" được phép phát.
@@ -481,8 +565,8 @@ window.renderHelp = function(lang) {
     // Varmistetaan että data löytyy, fallback 'fi'
     const data = helpData[lang] || helpData['fi'];
     
-    // Haetaan versionumero turvallisesti
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '5.97';
+    // Haetaan versionumero turvallisesti (Globals.js:stä)
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '5.98';
 
     // 1. Kielinapit
     const buttons = `
