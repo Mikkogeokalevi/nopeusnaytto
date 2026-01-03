@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v5.99 COMPLETE)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v5.99 FINAL)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -183,6 +183,16 @@ const helpData = {
                             <li>Tämä pakottaa sovelluksen tallentamaan uusimman version muistiin.</li>
                             <li>Kokeile laittaa lentokonetila päälle ja avaa sovellus testiksi.</li>
                         </ol>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>🗺️ Tärkeää kartoista:</strong>
+                        <br>Sovellus <strong>EI lataa</strong> koko maan karttoja offline-tilaan (kuten Google Maps).
+                        <ul>
+                            <li>Jos ajat alueella, jota et ole aiemmin selannut, kartta näkyy <strong>harmaana ruudukkona</strong>.</li>
+                            <li><strong>Älä huoli!</strong> Reitti ja kilometrit tallentuvat silti oikein tyhjälle pohjalle.</li>
+                            <li>Kun pääset taas nettiin, reitti piirtyy oikean kartan päälle.</li>
+                        </ul>
                     </div>
 
                     <div class="help-step">
@@ -404,6 +414,16 @@ const helpData = {
                     </div>
 
                     <div class="help-step">
+                        <strong>🗺️ Note on Maps:</strong>
+                        <br>The app <strong>does NOT download</strong> full country maps for offline use.
+                        <ul>
+                            <li>If you drive in a new area without internet, the map will show a <strong>gray grid</strong>.</li>
+                            <li><strong>Don't worry!</strong> The route and distance are still recorded correctly on a blank background.</li>
+                            <li>When you get back online, the route will appear on the map.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-step">
                         <strong>Saving offline:</strong>
                         Drives are saved to phone memory first.
                         <ul>
@@ -419,6 +439,7 @@ const helpData = {
                             <li>Tap the yellow button: <strong>"📡 Sync pending drives"</strong>.</li>
                             <li>Drives are uploaded to the cloud.</li>
                         </ol>
+                        <br><em>Note: Offline drives cannot be edited before syncing.</em>
                     </div>`
             },
             {
@@ -636,6 +657,7 @@ const helpData = {
                             <li>Nhấn nút vàng: <strong>"📡 Gửi dữ liệu chờ"</strong>.</li>
                             <li>Dữ liệu sẽ được lưu lên đám mây an toàn.</li>
                         </ol>
+                        <br><em>Lưu ý: Không thể sửa chuyến đi offline trước khi đồng bộ.</em>
                     </div>`
             },
             {
