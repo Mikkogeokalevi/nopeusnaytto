@@ -40,7 +40,7 @@ function loadCars() {
     }
 }
 
-// 2. VALIKKOJEN PÄIVITYS (YLÄPALKKI - NYT ÄLYKÄS)
+// 2. VALIKKOJEN PÄIVITYS (YLÄPALKKI - NYT [A/M/P] MERKINNÖILLÄ)
 function updateCarSelect() {
     const select = document.getElementById('car-select');
     if (!select) return;
@@ -60,6 +60,7 @@ function updateCarSelect() {
     const optAllArchived = document.createElement('option');
     optAllArchived.value = "all_archived";
     optAllArchived.text = "Kaikki (sis. arkistoidut)";
+    // Huom: Värit eivät toimi kaikissa mobiiliselaimissa select-optioissa, mutta yritetään
     optAllArchived.style.color = "#888"; 
     select.appendChild(optAllArchived);
 
@@ -74,8 +75,19 @@ function updateCarSelect() {
         activeCars.forEach(car => {
             const opt = document.createElement('option');
             opt.value = car.id;
-            const icon = car.icon || (car.type === 'bike' ? "🚲" : (car.type === 'motorcycle' ? "🏍️" : "🚗"));
-            opt.text = `${icon} ${car.name}`;
+            
+            // Ikonin määritys
+            let defaultIcon = "🚗";
+            if (car.type === 'bike') defaultIcon = "🚲";
+            if (car.type === 'motorcycle') defaultIcon = "🏍️";
+            const icon = car.icon || defaultIcon;
+
+            // Tyyppikirjain (Koska HTML-select ei tue värejä/tyylejä tekstin seassa)
+            let typeMark = " [A]"; 
+            if (car.type === 'bike') typeMark = " [P]";
+            else if (car.type === 'motorcycle') typeMark = " [M]";
+
+            opt.text = `${icon} ${car.name}${typeMark}`;
             groupActive.appendChild(opt);
         });
         select.appendChild(groupActive);
@@ -98,8 +110,17 @@ function updateCarSelect() {
         archivedCars.forEach(car => {
             const opt = document.createElement('option');
             opt.value = car.id;
-            const icon = car.icon || (car.type === 'bike' ? "🚲" : (car.type === 'motorcycle' ? "🏍️" : "🚗"));
-            opt.text = `🗄️ ${icon} ${car.name}`;
+            
+            let defaultIcon = "🚗";
+            if (car.type === 'bike') defaultIcon = "🚲";
+            if (car.type === 'motorcycle') defaultIcon = "🏍️";
+            const icon = car.icon || defaultIcon;
+
+            let typeMark = " [A]"; 
+            if (car.type === 'bike') typeMark = " [P]";
+            else if (car.type === 'motorcycle') typeMark = " [M]";
+
+            opt.text = `🗄️ ${icon} ${car.name}${typeMark}`;
             opt.style.color = "#888";
             groupArchived.appendChild(opt);
         });
@@ -177,7 +198,7 @@ function renderCarCard(car, container, isArchived) {
     
     const icon = car.icon || defaultIcon;
     
-    // Määritellään Badge (A/P/M)
+    // Määritellään Badge (A/P/M) - Täällä voimme käyttää HTML-värejä
     let typeBadge = "";
     if (car.type === 'bike') typeBadge = "<span style='font-size:10px; font-weight:bold; background:#555; color:#fff; padding:2px 6px; border-radius:4px; margin-left:8px;'>P</span>";
     else if (car.type === 'motorcycle') typeBadge = "<span style='font-size:10px; font-weight:bold; background:#ff9800; color:#000; padding:2px 6px; border-radius:4px; margin-left:8px;'>M</span>";
