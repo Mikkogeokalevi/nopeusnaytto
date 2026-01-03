@@ -1,15 +1,15 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v5.99c
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v5.99-FIXED
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v5.99-final';
+const CACHE_NAME = 'ajopro-v5.99-offline-cache';
 const urlsToCache = [
     './',
     './index.html',
     './manifest.json',
     './style.css',
     
-    // Javascript-tiedostot
+    // Javascript-moduulit (Sinun tiedostosi)
     './globals.js',
     './ui.js',
     './auth.js',
@@ -21,17 +21,18 @@ const urlsToCache = [
     './fuel.js',
     './app.js',
 
-    // Kuvat (Tärkeät!)
+    // Kuvat ja ikonit
     './ajopaivakirja_logo.png',
     './ajopaivakirja_logo_mu.png',
     './alareunakuva.png',
     './alareunakuva_mu.png',
 
-    // Ulkoiset kirjastot (Nämä pitää myös tallentaa, jotta toimii ilman nettiä)
+    // Ulkoiset kirjastot (Leaflet & Chart.js)
     'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
     'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
     'https://cdn.jsdelivr.net/npm/chart.js',
-    // Firebase-kirjastot (Core)
+    
+    // Firebase kirjastot (Nämä kannattaa yrittää cachettaa, jotta appi aukeaa)
     'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
     'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
     'https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js'
@@ -39,19 +40,18 @@ const urlsToCache = [
 
 // 1. ASENNUS: Ladataan tiedostot välimuistiin
 self.addEventListener('install', (event) => {
-    console.log('[ServiceWorker] Asennetaan...');
+    console.log('[ServiceWorker] Asennetaan ja ladataan tiedostoja...');
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('[ServiceWorker] Ladataan tiedostot välimuistiin');
                 return cache.addAll(urlsToCache);
             })
-            .catch(err => console.error('[ServiceWorker] Välimuistin lataus epäonnistui:', err))
+            .catch(err => console.error('[ServiceWorker] Välimuistin latausvirhe:', err))
     );
     self.skipWaiting();
 });
 
-// 2. AKTIVOINTI: Siivotaan vanhat versiot pois
+// 2. AKTIVOINTI: Poistetaan vanhat versiot välimuistista
 self.addEventListener('activate', (event) => {
     console.log('[ServiceWorker] Aktivoidaan...');
     event.waitUntil(
@@ -69,9 +69,9 @@ self.addEventListener('activate', (event) => {
     return self.clients.claim();
 });
 
-// 3. HAKU: Palvellaan tiedostot muistista, jos nettiä ei ole
+// 3. HAKU (FETCH): Palvellaan tiedostot muistista
 self.addEventListener('fetch', (event) => {
-    // Vain http/https pyynnöt
+    // Ohitetaan muut kuin http-pyynnöt
     if (!event.request.url.startsWith('http')) return;
 
     event.respondWith(
@@ -84,7 +84,7 @@ self.addEventListener('fetch', (event) => {
                 // Ei löytynyt -> Hae netistä
                 return fetch(event.request).catch(() => {
                     // Jos netti ei toimi EIKÄ tiedostoa ole muistissa
-                    console.log("[ServiceWorker] Offline, puuttuva tiedosto: ", event.request.url);
+                    console.log("[ServiceWorker] Offline-virhe, puuttuva tiedosto: ", event.request.url);
                 });
             })
     );
