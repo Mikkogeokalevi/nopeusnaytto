@@ -10,10 +10,17 @@ if (btnTheme) {
     });
 }
 
-// Rekisteröi Service Worker jos halutaan PWA-tuki (Valinnainen)
+// Rekisteröi Service Worker (TÄMÄ ON NYT KORJATTU JA AKTIVOITU)
 if ('serviceWorker' in navigator) {
-    // navigator.serviceWorker.register('./sw.js')
-    // .then(() => console.log('Service Worker Registered'));
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+                console.log('ServiceWorker rekisteröity onnistuneesti:', registration.scope);
+            })
+            .catch(err => {
+                console.log('ServiceWorker rekisteröinti epäonnistui:', err);
+            });
+    });
 }
 
 // Tulostetaan versio konsoliin (Hakee APP_VERSION globals.js:stä)
