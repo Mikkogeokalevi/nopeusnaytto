@@ -1,5 +1,5 @@
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v5.97 CRASH RECOVERY FIX)
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v5.99 SAFE SAVE FIX)
 // =========================================================
 
 // --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
@@ -520,16 +520,24 @@ function handleError(e) {
     if(statusEl) statusEl.innerText = "GPS Virhe: " + e.message; 
 }
 
+// MUUTOS: Käytä uutta saveDriveSafely-funktiota history.js:stä
 function saveToFirebase(data) {
     if (currentUser) {
-        db.ref('ajopaivakirja/' + currentUser.uid).push().set(data)
-            .then(() => { 
-                console.log("Tallennus onnistui");
-                if(typeof showToast === 'function') {
-                    showToast("Ajo tallennettu onnistuneesti! 🏁");
-                }
-            })
-            .catch((error) => { alert("VIRHE: " + error.message); });
+        // Jos history.js on ladattu ja funktio löytyy, käytä sitä
+        if (typeof window.saveDriveSafely === 'function') {
+            window.saveDriveSafely(data).then(() => {
+                console.log("Safe save initiated");
+            });
+        } else {
+            // Fallback vanhaan jos jotain outoa tapahtuu
+            db.ref('ajopaivakirja/' + currentUser.uid).push().set(data)
+                .then(() => { 
+                    if(typeof showToast === 'function') {
+                        showToast("Ajo tallennettu onnistuneesti! 🏁");
+                    }
+                })
+                .catch((error) => { alert("VIRHE: " + error.message); });
+        }
     } else {
         alert("Virhe: Et ole kirjautunut sisään!");
     }
