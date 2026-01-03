@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - NYT 5.98 (HUD-tila)
-const APP_VERSION = "5.98"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT 5.99 (Offline & Moto)
+const APP_VERSION = "5.99"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -73,6 +73,7 @@ var styleResetTimer = null;
 
 // Historia ja Data
 var allHistoryData = []; 
+var pendingDrives = []; // UUSI: Offline-ajot, jotka odottavat lähetystä
 
 // Autotalli
 var userCars = [];
