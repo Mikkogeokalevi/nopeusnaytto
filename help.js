@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v5.98 HUD EDITION)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v5.99 OFFLINE & MOTO)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -79,6 +79,7 @@ const helpData = {
                         <strong>Ajoneuvotyypit:</strong>
                         <ul>
                             <li><strong>🚗 Auto:</strong> Kartta loitontaa maantienopeuksissa. Eco-analyysi on päällä.</li>
+                            <li><strong>🏍️ Moottoripyörä:</strong> Kuin auto, mutta omalla ikonilla. Eco-analyysi päällä.</li>
                             <li><strong>🚲 Pyörä:</strong> Kartta pysyy aina lähikuvassa. Eco-analyysi on pois päältä.</li>
                         </ul>
                     </div>
@@ -169,7 +170,31 @@ const helpData = {
                     </div>`
             },
             {
-                title: "❓ 9. Ongelmatilanteet (UKK)",
+                title: "📡 9. Offline-tila (Ulkomaat)",
+                content: `
+                    <p>Voit käyttää sovellusta ilman nettiyhteyttä (esim. roaming estetty).</p>
+                    
+                    <div class="help-step">
+                        <strong>Tallennus ilman nettiä:</strong>
+                        Kun tallennat ajon ilman verkkoa, se menee puhelimen välimuistiin.
+                        <ul>
+                            <li>Ajokortti historiassa saa keltaisen reunan: <em>"⚠️ Odottaa lähetystä"</em>.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>Synkronointi (Sync):</strong>
+                        Kun pääset verkkoon (esim. WiFi):
+                        <ol>
+                            <li>Avaa <strong>Historia</strong>-välilehti.</li>
+                            <li>Paina ylhäältä keltaista nappia: <strong>"📡 Lähetä odottavat ajot"</strong>.</li>
+                            <li>Ajot siirtyvät pilveen ja muuttuvat pysyviksi.</li>
+                        </ol>
+                        <br><em>Huom: Offline-ajoja ei voi muokata ennen synkronointia.</em>
+                    </div>`
+            },
+            {
+                title: "❓ 10. Ongelmatilanteet (UKK)",
                 content: `
                     <div class="help-step">
                         <strong>K: GPS-viiva on suora ("teleporttaus")?</strong>
@@ -261,6 +286,7 @@ const helpData = {
                         <strong>Vehicle Types:</strong>
                         <ul>
                             <li><strong>🚗 Car:</strong> Map zooms out at highway speeds. Eco-analysis is ON.</li>
+                            <li><strong>🏍️ Motorcycle:</strong> Like a car, but with a specific icon. Eco-analysis ON.</li>
                             <li><strong>🚲 Bike:</strong> Map stays zoomed in. Eco-analysis is OFF.</li>
                         </ul>
                     </div>
@@ -351,7 +377,30 @@ const helpData = {
                     </div>`
             },
             {
-                title: "❓ 9. FAQ & Troubleshooting",
+                title: "📡 9. Offline Mode (Roaming)",
+                content: `
+                    <p>You can use the app without an internet connection.</p>
+                    
+                    <div class="help-step">
+                        <strong>Saving offline:</strong>
+                        Drives are saved to phone memory first.
+                        <ul>
+                            <li>In History, the drive card gets a yellow border: <em>"⚠️ Pending Sync"</em>.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>Syncing:</strong>
+                        When you are online (e.g., WiFi):
+                        <ol>
+                            <li>Go to <strong>History</strong>.</li>
+                            <li>Tap the yellow button: <strong>"📡 Sync pending drives"</strong>.</li>
+                            <li>Drives are uploaded to the cloud.</li>
+                        </ol>
+                    </div>`
+            },
+            {
+                title: "❓ 10. FAQ & Troubleshooting",
                 content: `
                     <div class="help-step">
                         <strong>Q: Straight line on map ("teleporting")?</strong>
@@ -443,6 +492,7 @@ const helpData = {
                         <strong>Loại xe:</strong>
                         <ul>
                             <li><strong>🚗 Ô tô (Car):</strong> Bản đồ thu nhỏ khi chạy nhanh. Phân tích Eco BẬT.</li>
+                            <li><strong>🏍️ Xe máy (Motorcycle):</strong> Giống ô tô, có icon riêng. Phân tích Eco BẬT.</li>
                             <li><strong>🚲 Xe đạp (Bike):</strong> Bản đồ luôn phóng to. Phân tích Eco TẮT.</li>
                         </ul>
                     </div>
@@ -533,7 +583,30 @@ const helpData = {
                     </div>`
             },
             {
-                title: "❓ 9. FAQ (Câu hỏi thường gặp)",
+                title: "📡 9. Chế độ Offline (Không mạng)",
+                content: `
+                    <p>Lái xe khi không có internet.</p>
+                    
+                    <div class="help-step">
+                        <strong>Lưu offline:</strong>
+                        Dữ liệu được lưu vào bộ nhớ tạm.
+                        <ul>
+                            <li>Trong Lịch sử, thẻ chuyến đi sẽ có viền vàng: <em>"⚠️ Chờ đồng bộ"</em>.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>Đồng bộ (Sync):</strong>
+                        Khi có mạng (WiFi):
+                        <ol>
+                            <li>Vào <strong>Lịch sử</strong>.</li>
+                            <li>Nhấn nút vàng: <strong>"📡 Gửi dữ liệu chờ"</strong>.</li>
+                            <li>Dữ liệu sẽ được lưu lên đám mây an toàn.</li>
+                        </ol>
+                    </div>`
+            },
+            {
+                title: "❓ 10. FAQ (Câu hỏi thường gặp)",
                 content: `
                     <div class="help-step">
                         <strong>H: Bản đồ hiện đường thẳng tắp ("Dịch chuyển tức thời")?</strong>
@@ -566,7 +639,7 @@ window.renderHelp = function(lang) {
     const data = helpData[lang] || helpData['fi'];
     
     // Haetaan versionumero turvallisesti (Globals.js:stä)
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '5.98';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '5.99';
 
     // 1. Kielinapit
     const buttons = `
