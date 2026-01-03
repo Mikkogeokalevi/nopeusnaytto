@@ -1,8 +1,127 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA RAPORTOINTI (v5.96 FULL)
+// HISTORY.JS - HISTORIA, SUODATUS JA RAPORTOINTI (v5.99 OFFLINE & MOTO)
 // =========================================================
 
-// --- 1. MÄÄRITELLÄÄN ELEMENTIT ---
+// --- 0. OFFLINE MANAGER (UUSI) ---
+
+// Ladataan odottavat ajot heti käynnistyksessä
+function initOfflineManager() {
+    const stored = localStorage.getItem('pendingDrives');
+    if (stored) {
+        try {
+            pendingDrives = JSON.parse(stored);
+            console.log(`[OfflineManager] Ladattiin ${pendingDrives.length} odottavaa ajoa muistista.`);
+        } catch (e) {
+            console.error("Virhe offline-datan latauksessa", e);
+            pendingDrives = [];
+        }
+    }
+    // Päivitetään synkronointinappi näkyviin jos tarve (pienellä viiveellä että DOM on valmis)
+    setTimeout(updateSyncButton, 1000);
+}
+
+// Turvallinen tallennus (Kutsutaan GPS.js:stä)
+window.saveDriveSafely = function(driveData) {
+    if (navigator.onLine) {
+        return db.ref('ajopaivakirja/' + currentUser.uid).push().set(driveData)
+            .then(() => {
+                if(typeof showToast === 'function') showToast("Tallennettu pilveen! ☁️");
+                return true;
+            })
+            .catch((err) => {
+                console.warn("Pilvitallennus epäonnistui, tallennetaan paikallisesti.", err);
+                saveLocally(driveData);
+                return true;
+            });
+    } else {
+        saveLocally(driveData);
+        return Promise.resolve(true);
+    }
+};
+
+function saveLocally(data) {
+    data.tempId = Date.now().toString(); 
+    data.isPending = true; 
+    
+    pendingDrives.push(data);
+    localStorage.setItem('pendingDrives', JSON.stringify(pendingDrives));
+    
+    if(typeof showToast === 'function') showToast("Ei nettiä. Tallennettu laitteen muistiin! 💾");
+    updateSyncButton();
+    // Päivitetään lista heti jos ollaan historiasivulla
+    if(typeof renderHistoryList === 'function') renderHistoryList();
+}
+
+window.syncOfflineDrives = function() {
+    if (pendingDrives.length === 0) return;
+    if (!navigator.onLine) {
+        if(typeof showToast === 'function') showToast("Ei nettiyhteyttä. Yritä myöhemmin. 🚫");
+        return;
+    }
+
+    const btn = document.getElementById('btn-sync-drives');
+    if(btn) { btn.disabled = true; btn.innerText = "Lähetetään..."; }
+
+    const promises = pendingDrives.map(drive => {
+        const driveToSend = { ...drive };
+        delete driveToSend.tempId;
+        delete driveToSend.isPending;
+        return db.ref('ajopaivakirja/' + currentUser.uid).push().set(driveToSend);
+    });
+
+    Promise.all(promises)
+        .then(() => {
+            if(typeof showToast === 'function') showToast(`${pendingDrives.length} ajoa synkronoitu! ✅`);
+            pendingDrives = []; 
+            localStorage.removeItem('pendingDrives');
+            updateSyncButton();
+            if(typeof renderHistoryList === 'function') renderHistoryList();
+        })
+        .catch(err => {
+            if(typeof showToast === 'function') showToast("Virhe synkronoinnissa.");
+            console.error(err);
+        })
+        .finally(() => {
+            if(btn) { btn.disabled = false; }
+        });
+};
+
+function updateSyncButton() {
+    // Yritetään löytää paikka napille. Paras paikka on 'log-list' yläpuolella.
+    let container = document.getElementById('sync-container');
+    
+    if (!container) {
+        const list = document.getElementById('log-list');
+        // Varmistetaan että list-elementti on olemassa (ollaan historia-näkymässä)
+        if (list && list.parentNode) {
+            container = document.createElement('div');
+            container.id = 'sync-container';
+            container.style.padding = "10px";
+            container.style.textAlign = "center";
+            list.parentNode.insertBefore(container, list);
+        } else {
+            return; // Ei voida piirtää nappia vielä
+        }
+    }
+
+    if (pendingDrives.length > 0) {
+        container.innerHTML = `
+            <button id="btn-sync-drives" class="action-btn yellow-btn" onclick="window.syncOfflineDrives()" style="margin-bottom:15px; border: 2px solid #fff;">
+                📡 Lähetä ${pendingDrives.length} odottavaa ajoa pilveen
+            </button>
+        `;
+        container.style.display = 'block';
+    } else {
+        container.style.display = 'none';
+        container.innerHTML = "";
+    }
+}
+
+// Alustetaan heti
+initOfflineManager();
+
+
+// --- 1. MÄÄRITELLÄÄN ELEMENTIT (ALKUPEÄINEN KOODI JATKUU TÄSTÄ) ---
 const filterEl = document.getElementById('history-filter');
 const customFilterContainer = document.getElementById('custom-filter-container');
 const filterStart = document.getElementById('filter-start');
@@ -30,7 +149,8 @@ function loadHistory() {
                          .limitToLast(1000); 
 
     historyRef.on('value', (snapshot) => {
-        allHistoryData = [];
+        // TÄSSÄ MUUTOS: Nollataan pilvidata väliaikaiseen listaan, ei suoraan allHistoryDataan
+        let cloudHistory = [];
         allRefuelings = [];
         
         if (snapshot.exists()) {
@@ -39,10 +159,13 @@ function loadHistory() {
                 if (data.type === 'refuel') {
                     allRefuelings.push({ key: child.key, ...data });
                 } else {
-                    allHistoryData.push({ key: child.key, ...data });
+                    cloudHistory.push({ key: child.key, ...data, isPending: false });
                 }
             });
         }
+        
+        // YHDISTETÄÄN PENDING JA CLOUD
+        allHistoryData = [...pendingDrives, ...cloudHistory];
         
         // Järjestetään (uusin ensin)
         allHistoryData.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
@@ -53,6 +176,9 @@ function loadHistory() {
         // Päivitetään se lista, kumpi onkaan näkyvissä
         const logList = document.getElementById('log-list');
         const fuelList = document.getElementById('fuel-list');
+        
+        // Varmistetaan Sync-nappi
+        updateSyncButton();
         
         if (logList && logList.style.display !== 'none') {
             renderHistoryList();
@@ -123,6 +249,9 @@ function renderHistoryList() {
     
     logList.innerHTML = ""; 
     
+    // TÄRKEÄ: Näytetään sync-nappi
+    updateSyncButton();
+    
     if (allHistoryData.length === 0) {
         logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
         if(historySummaryEl) historySummaryEl.style.display = 'none';
@@ -191,7 +320,12 @@ function renderHistoryList() {
             }
             
             let carObj = userCars.find(c => c.id === drive.carId);
-            let icon = carObj ? (carObj.icon || (carObj.type==='bike'?"🚲":"🚗")) : (drive.carIcon || (drive.carType==='bike'?"🚲":"🚗"));
+            // Ikonilogiikka (Moto-päivitys)
+            let defaultIcon = "🚗";
+            if(drive.carType === 'bike') defaultIcon = "🚲";
+            if(drive.carType === 'motorcycle') defaultIcon = "🏍️";
+            
+            let icon = carObj ? (carObj.icon || defaultIcon) : (drive.carIcon || defaultIcon);
             let carName = carObj ? carObj.name : (drive.carName || "Muu");
             
             let dateStr = start.toLocaleDateString('fi-FI');
@@ -203,20 +337,33 @@ function renderHistoryList() {
             const typeLabel = (drive.driveType === 'work') ? "Työajo" : "Oma ajo";
             const typeColor = (drive.driveType === 'work') ? "#00695c" : "#424242";
 
+            // OFFLINE VISUAALIT
+            let cardStyle = "";
+            let syncBadge = "";
+            if (drive.isPending) {
+                cardStyle = "border: 1px dashed #ffd600;";
+                syncBadge = `<span style="color:#ffd600; font-weight:bold; font-size:12px; margin-left:5px;">⚠️ Offline</span>`;
+            }
+
             const card = document.createElement('div');
             card.className = 'log-card';
+            card.style.cssText = cardStyle;
             card.style.animationDelay = `${Math.min(renderCount * 0.05, 1.0)}s`;
 
             card.innerHTML = `
                 <div class="log-header">
                     <div class="log-title-group">
                         <div class="log-date-line">${dateStr} (${startH}${endH})</div>
-                        <div class="log-car-big">${icon} ${carName}</div>
+                        <div class="log-car-big">${icon} ${carName} ${syncBadge}</div>
                     </div>
                     <div style="display:flex; align-items:center;">
-                        ${mapBtn}
-                        <button class="edit-btn" onclick="window.openEditLogModal('${drive.key}')">✏️</button>
-                        <button class="delete-btn" onclick="window.openDeleteLogModal('${drive.key}')">🗑</button>
+                        ${!drive.isPending ? `
+                            ${mapBtn}
+                            <button class="edit-btn" onclick="window.openEditLogModal('${drive.key}')">✏️</button>
+                            <button class="delete-btn" onclick="window.openDeleteLogModal('${drive.key}')">🗑</button>
+                        ` : `
+                            <button class="delete-btn" onclick="window.deleteOfflineDrive('${drive.tempId}')">🗑</button>
+                        `}
                     </div>
                 </div>
                 <div class="log-tags">
@@ -230,7 +377,11 @@ function renderHistoryList() {
                     <div><span class="stat-label">MAX</span>${drive.maxSpeed || "0"}</div>
                     <div><span class="stat-label">Ø KM/H</span>${drive.avgSpeed || "-"}</div>
                 </div>
+                ${!drive.isPending ? `
                 <input type="text" class="subject-input" placeholder="Kirjoita aihe..." value="${drive.subject || ""}" onchange="window.updateLogSubject('${drive.key}', this.value)">
+                ` : `
+                <div style="font-style:italic; color:#888; font-size:12px; padding:5px;">${drive.subject || "Ei aihetta"} (Muokkaa synkronoinnin jälkeen)</div>
+                `}
                 ${drive.startAddress ? `<div style="font-size:11px; color:#888; margin-top:5px;">${drive.startAddress} ➝ ${drive.endAddress || '?'}</div>` : ''}
             `;
             logList.appendChild(card);
@@ -822,6 +973,16 @@ window.openEditLogModal = (key) => {
 window.openDeleteLogModal = (key) => {
     deleteKey = key;
     if(deleteModal) deleteModal.style.display = 'flex';
+};
+
+window.deleteOfflineDrive = function(tempId) {
+    if(confirm("Poistetaanko tämä tallentamaton ajo puhelimen muistista?")) {
+        pendingDrives = pendingDrives.filter(d => d.tempId !== tempId);
+        localStorage.setItem('pendingDrives', JSON.stringify(pendingDrives));
+        // Päivitä lista
+        if(typeof renderHistoryList === 'function') renderHistoryList();
+        updateSyncButton();
+    }
 };
 
 window.updateLogSubject = (key, text) => { 
