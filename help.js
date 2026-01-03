@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v5.99 OFFLINE & MOTO)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v5.99 COMPLETE)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -174,6 +174,17 @@ const helpData = {
                 content: `
                     <p>Voit käyttää sovellusta ilman nettiyhteyttä (esim. roaming estetty).</p>
                     
+                    <div class="help-step" style="border-left: 4px solid #ffd600; padding-left: 10px;">
+                        <strong>⚠️ Tärkeä ensiasennus:</strong>
+                        Jotta Offline-tila toimii varmasti, tee näin <strong>ennen matkaa</strong>:
+                        <ol>
+                            <li>Avaa sovellus puhelimella verkkoyhteyden ollessa päällä.</li>
+                            <li><strong>Päivitä sivu</strong> kerran tai kaksi (vedä alas tai paina refresh).</li>
+                            <li>Tämä pakottaa sovelluksen tallentamaan uusimman version muistiin.</li>
+                            <li>Kokeile laittaa lentokonetila päälle ja avaa sovellus testiksi.</li>
+                        </ol>
+                    </div>
+
                     <div class="help-step">
                         <strong>Tallennus ilman nettiä:</strong>
                         Kun tallennat ajon ilman verkkoa, se menee puhelimen välimuistiin.
@@ -381,6 +392,17 @@ const helpData = {
                 content: `
                     <p>You can use the app without an internet connection.</p>
                     
+                    <div class="help-step" style="border-left: 4px solid #ffd600; padding-left: 10px;">
+                        <strong>⚠️ Important Setup:</strong>
+                        To ensure Offline mode works, do this <strong>before your trip</strong>:
+                        <ol>
+                            <li>Open the app while you have internet.</li>
+                            <li><strong>Refresh the page</strong> once or twice.</li>
+                            <li>This forces the app to save the latest version to memory.</li>
+                            <li>Test it by switching to Airplane mode.</li>
+                        </ol>
+                    </div>
+
                     <div class="help-step">
                         <strong>Saving offline:</strong>
                         Drives are saved to phone memory first.
@@ -587,6 +609,17 @@ const helpData = {
                 content: `
                     <p>Lái xe khi không có internet.</p>
                     
+                    <div class="help-step" style="border-left: 4px solid #ffd600; padding-left: 10px;">
+                        <strong>⚠️ Cài đặt quan trọng:</strong>
+                        Để đảm bảo chế độ Offline hoạt động, hãy làm điều này <strong>trước chuyến đi</strong>:
+                        <ol>
+                            <li>Mở ứng dụng khi có kết nối mạng.</li>
+                            <li><strong>Tải lại trang (Refresh)</strong> một hoặc hai lần.</li>
+                            <li>Điều này buộc ứng dụng lưu phiên bản mới nhất vào bộ nhớ.</li>
+                            <li>Thử bật chế độ máy bay để kiểm tra.</li>
+                        </ol>
+                    </div>
+
                     <div class="help-step">
                         <strong>Lưu offline:</strong>
                         Dữ liệu được lưu vào bộ nhớ tạm.
