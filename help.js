@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.00 WALKING UPDATE)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.01 FULL)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -13,11 +13,12 @@ const helpData = {
                 content: `
                     <p>Tämä sovellus on PWA (Progressive Web App). Jotta se toimii vakaasti taustalla ja osoitepalkit eivät vie tilaa, seuraa näitä ohjeita.</p>
                     
-                    <div class="help-step">
-                        <strong>Uutta versiossa 6.00:</strong>
+                    <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
+                        <strong>Uutta versiossa 6.01:</strong>
                         <ul>
-                            <li>🚶 <strong>Kävely-tila:</strong> Seuraa lenkkejäsi! Valitse autotallista "Kävely". G-voimamittari on tällöin pois päältä.</li>
-                            <li>💾 <strong>Offline-tila:</strong> Ajot tallentuvat laitteen muistiin, jos verkkoa ei ole.</li>
+                            <li><strong>👁️ Yksinkertaistettu tila:</strong> Paina mittariston silmä-ikonia piilottaaksesi kaiken paitsi nopeuden.</li>
+                            <li><strong>🎨 Ulkoasu:</strong> Vaihda teemaväri ja ota käyttöön alapalkki Asetuksista.</li>
+                            <li><strong>🚶 Kävely-tila:</strong> Valitse autotallista "Kävely". Ei G-voimamittaria, tarkempi kartta.</li>
                         </ul>
                     </div>
 
@@ -64,6 +65,11 @@ const helpData = {
                     </div>
 
                     <div class="help-step">
+                        <strong>👁️ Yksinkertaistettu tila (Minimalist Mode):</strong>
+                        Paina vasemman yläkulman silmä-ikonia. Tämä piilottaa kaiken paitsi nopeusmittarin. Hyödyllinen yöajossa tai jos haluat keskittyä ajamiseen.
+                    </div>
+
+                    <div class="help-step">
                         <strong>🎯 G-Voimamittari (Bubble):</strong>
                         Pieni "tähtäin" ruudulla.
                         <ul>
@@ -73,7 +79,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🚗 3. Autotalli ja Valinnat",
+                title: "🚗 3. Autotalli ja Asetukset",
                 content: `
                     <p>Sovellus tallentaa ajot aina tietylle ajoneuvolle.</p>
                     
@@ -89,7 +95,16 @@ const helpData = {
                             <li><strong>🚗 Auto:</strong> Kartta loitontaa maantienopeuksissa. Eco-analyysi on päällä.</li>
                             <li><strong>🏍️ Moottoripyörä:</strong> Kuin auto, mutta omalla ikonilla. Eco-analyysi päällä.</li>
                             <li><strong>🚲 Pyörä:</strong> Kartta pysyy aina lähikuvassa. Eco-analyysi on pois päältä.</li>
-                            <li><strong>🚶 Kävely:</strong> UUSI! Kartta pysyy lähellä, ei G-voimamittaria, ei tankkausta.</li>
+                            <li><strong>🚶 Kävely (Uusi):</strong> Kartta pysyy lähellä, G-voimamittari pois päältä, ei tankkauksia.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>🎨 Ulkoasuasetukset:</strong>
+                        Asetukset-sivulta voit nyt:
+                        <ul>
+                            <li>Valita korostusvärin (Sininen, Oranssi, Vihreä...).</li>
+                            <li>Kytkeä päälle "Tiivistetyn historian" nähdäksesi enemmän rivejä kerralla.</li>
                         </ul>
                     </div>
 
@@ -250,11 +265,12 @@ const helpData = {
                 content: `
                     <p>This is a PWA (Progressive Web App). To make it work reliably in the background and remove address bars, please follow these steps.</p>
                     
-                    <div class="help-step">
-                        <strong>New in v6.00:</strong>
+                    <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
+                        <strong>New in v6.01:</strong>
                         <ul>
-                            <li>🚶 <strong>Walking Mode:</strong> Track your walks! Select "Walking" from Garage. No G-force alerts.</li>
-                            <li>💾 <strong>Offline Mode:</strong> Drives are saved locally if no internet is available.</li>
+                            <li><strong>👁️ Minimalist Mode:</strong> Tap the eye icon on the dashboard to hide distractions.</li>
+                            <li><strong>🎨 Appearance:</strong> Change accent color and toggle Compact History in Settings.</li>
+                            <li><strong>🚶 Walking Mode:</strong> Track your walks! No G-force alerts.</li>
                         </ul>
                     </div>
 
@@ -301,6 +317,11 @@ const helpData = {
                     </div>
 
                     <div class="help-step">
+                        <strong>👁️ Minimalist Mode:</strong>
+                        Tap the eye icon in the top left. This hides everything except the speedometer. Useful for night driving or focus.
+                    </div>
+
+                    <div class="help-step">
                         <strong>🎯 G-Force Meter (Bubble):</strong>
                         Small "crosshair" on screen.
                         <ul>
@@ -327,6 +348,15 @@ const helpData = {
                             <li><strong>🏍️ Motorcycle:</strong> Like a car, but with a specific icon. Eco-analysis ON.</li>
                             <li><strong>🚲 Bike:</strong> Map stays zoomed in. Eco-analysis is OFF.</li>
                             <li><strong>🚶 Walking:</strong> NEW! Map stays close, no G-force meter, no fuel.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>🎨 Appearance Settings:</strong>
+                        From Settings page you can now:
+                        <ul>
+                            <li>Change the Accent Color.</li>
+                            <li>Enable "Compact History" to see more rows at once.</li>
                         </ul>
                     </div>
 
@@ -479,7 +509,7 @@ const helpData = {
         ]
     },
     vi: {
-        title: "Hướng dẫn sử dụng",
+        title: "Hướng Dẫn Sử Dụng",
         version: "Phiên bản",
         sections: [
             {
@@ -487,11 +517,12 @@ const helpData = {
                 content: `
                     <p>Đây là ứng dụng PWA. Để hoạt động ổn định trong nền và không bị thanh địa chỉ che khuất, hãy làm theo các bước sau.</p>
                     
-                    <div class="help-step">
-                        <strong>Mới trong v6.00:</strong>
+                    <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
+                        <strong>Mới trong v6.01:</strong>
                         <ul>
-                            <li>🚶 <strong>Chế độ Đi bộ:</strong> Theo dõi các chuyến đi bộ của bạn!</li>
-                            <li>💾 <strong>Chế độ Offline:</strong> Dữ liệu được lưu trên máy khi không có mạng.</li>
+                            <li><strong>👁️ Chế độ Tối giản:</strong> Nhấn biểu tượng con mắt để ẩn thông số phụ.</li>
+                            <li><strong>🎨 Giao diện:</strong> Đổi màu và dùng lịch sử thu gọn.</li>
+                            <li><strong>🚶 Chế độ Đi bộ:</strong> Theo dõi các chuyến đi bộ!</li>
                         </ul>
                     </div>
 
@@ -538,6 +569,11 @@ const helpData = {
                     </div>
 
                     <div class="help-step">
+                        <strong>👁️ Chế độ Tối giản:</strong>
+                        Nhấn biểu tượng con mắt ở góc trên bên trái. Chỉ hiện tốc độ. Dùng khi lái xe ban đêm.
+                    </div>
+
+                    <div class="help-step">
                         <strong>🎯 Đồng hồ lực G (Bubble):</strong>
                         "Tâm ngắm" nhỏ trên màn hình.
                         <ul>
@@ -564,6 +600,15 @@ const helpData = {
                             <li><strong>🏍️ Xe máy (Motorcycle):</strong> Giống ô tô, có icon riêng. Phân tích Eco BẬT.</li>
                             <li><strong>🚲 Xe đạp (Bike):</strong> Bản đồ luôn phóng to. Phân tích Eco TẮT.</li>
                             <li><strong>🚶 Đi bộ (Walking):</strong> MỚI! Bản đồ phóng to, không đo lực G, không đổ xăng.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>🎨 Cài đặt Giao diện:</strong>
+                        Trong trang Cài đặt, bạn có thể:
+                        <ul>
+                            <li>Đổi màu chủ đạo.</li>
+                            <li>Bật "Lịch sử thu gọn" để xem danh sách gọn hơn.</li>
                         </ul>
                     </div>
 
@@ -709,7 +754,6 @@ const helpData = {
 
 // --- LOGIIKKA / LOGIC ---
 
-// Määritellään funktio globaalisti window-objektiin
 window.renderHelp = function(lang) {
     const container = document.getElementById('help-view');
     if (!container) {
@@ -717,11 +761,8 @@ window.renderHelp = function(lang) {
         return;
     }
 
-    // Varmistetaan että data löytyy, fallback 'fi'
     const data = helpData[lang] || helpData['fi'];
-    
-    // Haetaan versionumero turvallisesti (Globals.js:stä)
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.00';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.01';
 
     // 1. Kielinapit
     const buttons = `
@@ -735,7 +776,7 @@ window.renderHelp = function(lang) {
     // 2. Otsikko
     let contentHtml = buttons + `
         <div style="text-align:center; margin-bottom: 30px;">
-            <img src="ajopaivakirja_logo.png" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-color); margin-bottom:10px;">
+            <img src="ajopaivakirja_logo.png?v=6.01" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-color); margin-bottom:10px;">
             <h2 style="color:var(--accent-color); text-transform: uppercase; letter-spacing: 1px; margin:0;">${data.title}</h2>
             <p style="opacity:0.7; font-size:12px;">Mikkokalevin Ajo Pro v${ver}</p>
         </div>
@@ -758,7 +799,6 @@ window.renderHelp = function(lang) {
         </div>
     `;
 
-    // Asetetaan sisältö
     container.innerHTML = contentHtml;
 };
 
