@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (v6.00 UI UPDATE)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (v6.01 LOGIC)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -16,7 +16,10 @@ const menuUserAvatar = document.getElementById('user-photo');
 const appLogo = document.getElementById('app-logo'); 
 
 // Yläpalkin napit
-const btnHud = document.getElementById('btn-hud'); // HUD NAPPI
+const btnHud = document.getElementById('btn-hud'); 
+
+// UUSI: Minimalistinen tila -nappi mittaristossa
+const btnDashMinimal = document.getElementById('btn-dashboard-minimal');
 
 // Versio
 const splashVersionEl = document.getElementById('splash-version-el');
@@ -36,7 +39,7 @@ const views = {
     help: document.getElementById('help-view')
 };
 
-// Navigaatio (Vanha ylävalikko + Uusi alapalkki)
+// Navigaatio (Ylävalikko)
 const navBtns = {
     dashboard: document.getElementById('nav-dashboard'),
     map: document.getElementById('nav-map'),
@@ -76,7 +79,6 @@ const manualModal = document.getElementById('manual-drive-modal');
 const btnManualDrive = document.getElementById('btn-manual-drive');
 const btnManualCancel = document.getElementById('btn-manual-cancel');
 const btnManualSave = document.getElementById('btn-manual-save');
-// const btnManualCalc = document.getElementById('btn-manual-calc'); // POISTETTU TÄSTÄ VERSIOSTA
 const inpManualDate = document.getElementById('manual-date');
 const inpManualCar = document.getElementById('manual-car-select');
 const inpManualStart = document.getElementById('manual-start-addr');
@@ -102,7 +104,7 @@ const confirmTitle = document.getElementById('confirm-title');
 const confirmMsg = document.getElementById('confirm-msg');
 const btnConfirmYes = document.getElementById('btn-confirm-yes');
 const btnConfirmNo = document.getElementById('btn-confirm-no');
-let confirmCallback = null; // Callback funktiolle
+let confirmCallback = null; 
 
 // TANKKAUS ELEMENTIT
 const fuelModal = document.getElementById('fuel-modal');
@@ -195,12 +197,11 @@ if(btnConfirmYes) {
 }
 
 
-// --- 3. UI LOGIIKKA (PÄIVITETTY V6.00: Alapalkki tuki) ---
+// --- 3. UI LOGIIKKA ---
 
 function switchView(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
     
-    // Piilotetaan kaikki näkymät
     Object.values(views).forEach(el => {
         if(el) {
             el.classList.remove('active-view');
@@ -208,27 +209,22 @@ function switchView(viewName) {
         }
     });
     
-    // Nollataan ylävalikon aktiivisuus
+    // Nollataan valikoiden aktiivisuus
     Object.values(navBtns).forEach(btn => {
         if(btn) btn.classList.remove('active-menu');
     });
-
-    // Nollataan alapalkin aktiivisuus
     Object.values(botNavBtns).forEach(btn => {
         if(btn) btn.classList.remove('active');
     });
 
-    // Näytetään valittu näkymä
     const targetEl = views[viewName];
     if (targetEl) {
         targetEl.style.display = ''; 
         targetEl.classList.add('active-view');
     }
     
-    // Aktivoidaan ylävalikon nappi
+    // Aktivoidaan napit (ylä ja ala)
     if(navBtns[viewName]) navBtns[viewName].classList.add('active-menu');
-
-    // Aktivoidaan alapalkin nappi (jos olemassa)
     if(botNavBtns[viewName]) botNavBtns[viewName].classList.add('active');
 
     if (viewName !== 'map') {
@@ -282,7 +278,7 @@ if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('sta
 if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
 
-// UUSI: Alapalkki
+// Alapalkki
 if (botNavBtns.dashboard) botNavBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
 if (botNavBtns.map) botNavBtns.map.addEventListener('click', () => switchView('map'));
 if (botNavBtns.history) botNavBtns.history.addEventListener('click', () => switchView('history'));
@@ -290,60 +286,32 @@ if (botNavBtns.stats) botNavBtns.stats.addEventListener('click', () => switchVie
 if (botNavBtns.settings) botNavBtns.settings.addEventListener('click', () => switchView('settings'));
 
 
-// --- HUD NAPPI & LOGIIKKA (FULLSCREEN + LOCK FIX) ---
+// --- HUD NAPPI & LOGIIKKA ---
 if (btnHud) {
     btnHud.addEventListener('click', async () => {
         const isHudOn = document.body.classList.toggle('hud-mode');
         
         if (isHudOn) {
             showToast("HUD-tila (Koko näyttö). Napauta ruutua poistuaksesi. 🕶️");
-            
-            // 1. PYYDETÄÄN KOKO NÄYTÖN TILA (Vaaditaan monissa selaimissa lukitukseen)
             if (document.documentElement.requestFullscreen) {
-                try {
-                    await document.documentElement.requestFullscreen();
-                } catch(e) { console.log("Fullscreen request failed", e); }
+                try { await document.documentElement.requestFullscreen(); } catch(e) { console.log(e); }
             }
-            
-            // 2. LUKITAAN NÄYTTÖ PYSTYYN
             if (screen.orientation && typeof screen.orientation.lock === 'function') {
-                try {
-                    // Pieni viive varmuuden vuoksi, että fullscreen on ehtinyt aktivoitua
-                    setTimeout(() => {
-                        screen.orientation.lock('portrait').catch(err => {
-                            console.log("Suunnan lukitus ei onnistunut:", err);
-                        });
-                    }, 200);
-                } catch(e) { console.log(e); }
+                try { setTimeout(() => { screen.orientation.lock('portrait').catch(err => console.log(err)); }, 200); } catch(e) {}
             }
-            
         } else {
-            // VAPAUTETAAN LUKITUS & POISTUTAAN FULLSCREENISTÄ
-            if (screen.orientation && typeof screen.orientation.unlock === 'function') {
-                screen.orientation.unlock();
-            }
-            if (document.exitFullscreen) {
-                document.exitFullscreen().catch(e => console.log(e));
-            }
+            if (screen.orientation && typeof screen.orientation.unlock === 'function') screen.orientation.unlock();
+            if (document.exitFullscreen) document.exitFullscreen().catch(e => console.log(e));
         }
     });
 }
 
-// Poistu HUD-tilasta napauttamalla ruutua
 document.body.addEventListener('click', (e) => {
     if (document.body.classList.contains('hud-mode')) {
-        // Estä poistuminen jos juuri painettiin nappia
         if (e.target.id === 'btn-hud' || e.target.parentElement?.id === 'btn-hud') return;
-        
         document.body.classList.remove('hud-mode');
-        
-        // Vapautetaan lukitus ja poistutaan fullscreenistä
-        if (screen.orientation && typeof screen.orientation.unlock === 'function') {
-            screen.orientation.unlock();
-        }
-        if (document.exitFullscreen && document.fullscreenElement) {
-            document.exitFullscreen().catch(e => console.log(e));
-        }
+        if (screen.orientation && typeof screen.orientation.unlock === 'function') screen.orientation.unlock();
+        if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen().catch(e => console.log(e));
     }
 });
 
@@ -353,7 +321,6 @@ document.body.addEventListener('click', (e) => {
 function populateFuelCarSelect(selectedId, selectElement = inpFuelCarSelect) {
     if(!selectElement) return;
     selectElement.innerHTML = "";
-    // SUODATETAAN POIS PYÖRÄ JA KÄVELY
     const validCars = userCars.filter(c => c.type !== 'bike' && c.type !== 'walking' && !c.isArchived);
     if(validCars.length === 0) {
         const opt = document.createElement('option');
@@ -373,15 +340,8 @@ function populateFuelCarSelect(selectedId, selectElement = inpFuelCarSelect) {
 
 if (btnOpenFuel) {
     btnOpenFuel.addEventListener('click', () => {
-        // ESTETÄÄN JOS PYÖRÄ TAI KÄVELY
-        if (currentCarType === 'bike') {
-            showToast("Polkupyörää ei voi tankata! 🚲🚫");
-            return;
-        }
-        if (currentCarType === 'walking') {
-            showToast("Kävelyä ei voi tankata! 🚶🚫");
-            return;
-        }
+        if (currentCarType === 'bike') { showToast("Polkupyörää ei voi tankata! 🚲🚫"); return; }
+        if (currentCarType === 'walking') { showToast("Kävelyä ei voi tankata! 🚶🚫"); return; }
 
         const now = new Date();
         if(inpFuelDate) inpFuelDate.value = now.toISOString().split('T')[0];
@@ -497,16 +457,12 @@ if (btnManualDrive) {
         if(inpManualDist) inpManualDist.value = "";
         if(inpManualSubj) inpManualSubj.value = "";
         
-        if(inpManualCar) {
-            populateFuelCarSelect(null, inpManualCar);
-        }
+        if(inpManualCar) populateFuelCarSelect(null, inpManualCar);
         if(manualModal) manualModal.style.display = 'flex';
     });
 }
 
-if (btnManualCancel) {
-    btnManualCancel.addEventListener('click', () => { if(manualModal) manualModal.style.display = 'none'; });
-}
+if (btnManualCancel) btnManualCancel.addEventListener('click', () => { if(manualModal) manualModal.style.display = 'none'; });
 
 if (btnManualSave) {
     btnManualSave.addEventListener('click', () => {
@@ -548,10 +504,7 @@ if (btnManualSave) {
                     btnManualSave.innerText = origText;
                     if(manualModal) manualModal.style.display = 'none';
                     showToast("Ajo lisätty manuaalisesti! 📝");
-                    
-                    try {
-                        if(window.renderHistoryList) window.renderHistoryList();
-                    } catch(e) { console.error("Listan päivitys epäonnistui", e); }
+                    if(typeof window.renderHistoryList === 'function') window.renderHistoryList();
                 })
                 .catch(err => {
                     btnManualSave.disabled = false;
@@ -563,25 +516,18 @@ if (btnManualSave) {
 }
 
 // --- CSV EXPORT & PREVIEW ---
-// Tässä avataan esikatseluikkuna EIKÄ ladata suoraan
 if(btnExportCsv) {
     btnExportCsv.addEventListener('click', () => {
         if(typeof window.populatePreviewTable === 'function') {
             window.populatePreviewTable();
             if(previewModal) previewModal.style.display = 'flex';
         } else {
-            // Fallback jos history.js ei ole vielä päivittynyt
             if(typeof exportToCSV === 'function') exportToCSV();
         }
     });
 }
 
-// Esikatseluikkunan napit
-if(btnPreviewCancel) {
-    btnPreviewCancel.addEventListener('click', () => {
-        if(previewModal) previewModal.style.display = 'none';
-    });
-}
+if(btnPreviewCancel) btnPreviewCancel.addEventListener('click', () => { if(previewModal) previewModal.style.display = 'none'; });
 
 if(btnPreviewConfirm) {
     btnPreviewConfirm.addEventListener('click', () => {
@@ -614,7 +560,6 @@ if(btnEditSave2) {
         const carObj = userCars.find(c => c.id === newCarId);
         
         if (key && currentUser && carObj) {
-            
             const origText = newBtn.innerText;
             newBtn.disabled = true;
             newBtn.innerText = "Tallennetaan...";
@@ -634,13 +579,9 @@ if(btnEditSave2) {
                 .then(() => { 
                     newBtn.disabled = false;
                     newBtn.innerText = origText;
-                    
                     if(editModal) editModal.style.display = 'none'; 
                     showToast("Muutokset tallennettu! ✅");
-                    
-                    try {
-                        if(window.renderHistoryList) window.renderHistoryList();
-                    } catch(e) { console.error(e); }
+                    if(window.renderHistoryList) window.renderHistoryList();
                 })
                 .catch(err => {
                     newBtn.disabled = false;
@@ -652,7 +593,6 @@ if(btnEditSave2) {
 }
 
 // --- RESTORED TABS LOGIC ---
-
 const tabDrives = document.getElementById('tab-drives');
 const tabFuel = document.getElementById('tab-fuel');
 const historyDrivesList = document.getElementById('log-list');
@@ -700,7 +640,7 @@ if(statTabDrives && statTabFuel) {
 }
 
 // ==========================================
-// UUSI LOGIIKKA: ULKOASUASETUKSET (v6.00)
+// UUSI LOGIIKKA: ULKOASUASETUKSET (v6.01)
 // ==========================================
 
 // 1. VÄRIVALINTA
@@ -708,34 +648,45 @@ const colorOptions = document.querySelectorAll('.color-option');
 if (colorOptions.length > 0) {
     colorOptions.forEach(opt => {
         opt.addEventListener('click', () => {
-            // Poista vanha valinta
             document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
-            // Lisää uusi
             opt.classList.add('selected');
-            
-            // Vaihda väri
             const newColor = opt.getAttribute('data-color');
             document.documentElement.style.setProperty('--accent-color', newColor);
             document.documentElement.style.setProperty('--speed-color', newColor);
-            
-            // Tallenna
             localStorage.setItem('accentColor', newColor);
             showToast("Väriteema vaihdettu! 🎨");
         });
     });
 }
 
-// 2. MINIMALISTINEN TILA
+// 2. MINIMALISTINEN TILA (SETTINGS & DASHBOARD BUTTON)
 const toggleMinimal = document.getElementById('toggle-minimalist');
+
+// Funktio, joka vaihtaa tilaa ja päivittää napit
+function setMinimalistMode(enable) {
+    if (enable) {
+        document.body.classList.add('minimalist-mode');
+        if(toggleMinimal) toggleMinimal.checked = true;
+    } else {
+        document.body.classList.remove('minimalist-mode');
+        if(toggleMinimal) toggleMinimal.checked = false;
+    }
+    localStorage.setItem('minimalistMode', enable ? 'true' : 'false');
+}
+
+// Kuuntelija asetuksille
 if (toggleMinimal) {
     toggleMinimal.addEventListener('change', (e) => {
-        if (e.target.checked) {
-            document.body.classList.add('minimalist-mode');
-            localStorage.setItem('minimalistMode', 'true');
-        } else {
-            document.body.classList.remove('minimalist-mode');
-            localStorage.setItem('minimalistMode', 'false');
-        }
+        setMinimalistMode(e.target.checked);
+    });
+}
+
+// Kuuntelija uudelle napille mittaristossa
+if (btnDashMinimal) {
+    btnDashMinimal.addEventListener('click', () => {
+        const isMin = document.body.classList.contains('minimalist-mode');
+        setMinimalistMode(!isMin); // Käänteinen tila
+        showToast(!isMin ? "Yksinkertaistettu tila: PÄÄLLÄ" : "Yksinkertaistettu tila: POIS");
     });
 }
 
@@ -771,7 +722,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (savedColor) {
         document.documentElement.style.setProperty('--accent-color', savedColor);
         document.documentElement.style.setProperty('--speed-color', savedColor);
-        // Päivitä valinta UI:ssa
         const opts = document.querySelectorAll('.color-option');
         opts.forEach(o => {
             o.classList.remove('selected');
@@ -782,8 +732,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Minimalist
     const savedMinimal = localStorage.getItem('minimalistMode');
     if (savedMinimal === 'true') {
-        document.body.classList.add('minimalist-mode');
-        if(toggleMinimal) toggleMinimal.checked = true;
+        setMinimalistMode(true);
     }
     
     // Compact History
