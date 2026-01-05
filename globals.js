@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - NYT 6.03 (Walking Metrics)
-const APP_VERSION = "6.03"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT 6.04 (Fuel Consumption)
+const APP_VERSION = "6.04"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
