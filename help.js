@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v5.99 FINAL)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.00 WALKING UPDATE)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -13,6 +13,14 @@ const helpData = {
                 content: `
                     <p>Tämä sovellus on PWA (Progressive Web App). Jotta se toimii vakaasti taustalla ja osoitepalkit eivät vie tilaa, seuraa näitä ohjeita.</p>
                     
+                    <div class="help-step">
+                        <strong>Uutta versiossa 6.00:</strong>
+                        <ul>
+                            <li>🚶 <strong>Kävely-tila:</strong> Seuraa lenkkejäsi! Valitse autotallista "Kävely". G-voimamittari on tällöin pois päältä.</li>
+                            <li>💾 <strong>Offline-tila:</strong> Ajot tallentuvat laitteen muistiin, jos verkkoa ei ole.</li>
+                        </ul>
+                    </div>
+
                     <div class="help-step">
                         <strong>📲 Asennus (Tärkeä!):</strong>
                         <ul>
@@ -81,6 +89,7 @@ const helpData = {
                             <li><strong>🚗 Auto:</strong> Kartta loitontaa maantienopeuksissa. Eco-analyysi on päällä.</li>
                             <li><strong>🏍️ Moottoripyörä:</strong> Kuin auto, mutta omalla ikonilla. Eco-analyysi päällä.</li>
                             <li><strong>🚲 Pyörä:</strong> Kartta pysyy aina lähikuvassa. Eco-analyysi on pois päältä.</li>
+                            <li><strong>🚶 Kävely:</strong> UUSI! Kartta pysyy lähellä, ei G-voimamittaria, ei tankkausta.</li>
                         </ul>
                     </div>
 
@@ -135,7 +144,7 @@ const helpData = {
                 title: "⛽ 6. Tankkaukset",
                 content: `
                     <p>Paina mittaristossa <strong>⛽</strong>-nappia lisätäksesi tankkauksen.</p>
-                    <p><strong>Huom:</strong> Tankkausta ei voi lisätä polkupyörälle tai arkistoidulle autolle. Syötä litrat ja eurot saadaksesi litrahinnan.</p>`
+                    <p><strong>Huom:</strong> Tankkausta ei voi lisätä polkupyörälle, kävelylle tai arkistoidulle autolle. Syötä litrat ja eurot saadaksesi litrahinnan.</p>`
             },
             {
                 title: "🆘 7. Crash Recovery (Palautus)",
@@ -242,6 +251,14 @@ const helpData = {
                     <p>This is a PWA (Progressive Web App). To make it work reliably in the background and remove address bars, please follow these steps.</p>
                     
                     <div class="help-step">
+                        <strong>New in v6.00:</strong>
+                        <ul>
+                            <li>🚶 <strong>Walking Mode:</strong> Track your walks! Select "Walking" from Garage. No G-force alerts.</li>
+                            <li>💾 <strong>Offline Mode:</strong> Drives are saved locally if no internet is available.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-step">
                         <strong>📲 Installation (Important!):</strong>
                         <ul>
                             <li><strong>🍎 iPhone (Safari):</strong> Tap the <strong>Share button</strong> at the bottom (Square with arrow up <span style="font-size:16px">share</span>). Scroll and select <strong>"Add to Home Screen"</strong>.</li>
@@ -309,6 +326,7 @@ const helpData = {
                             <li><strong>🚗 Car:</strong> Map zooms out at highway speeds. Eco-analysis is ON.</li>
                             <li><strong>🏍️ Motorcycle:</strong> Like a car, but with a specific icon. Eco-analysis ON.</li>
                             <li><strong>🚲 Bike:</strong> Map stays zoomed in. Eco-analysis is OFF.</li>
+                            <li><strong>🚶 Walking:</strong> NEW! Map stays close, no G-force meter, no fuel.</li>
                         </ul>
                     </div>
 
@@ -363,7 +381,7 @@ const helpData = {
                 title: "⛽ 6. Refueling",
                 content: `
                     <p>Tap the <strong>⛽</strong> button on the dashboard to add a refueling.</p>
-                    <p><strong>Note:</strong> Cannot add fuel for bikes or archived cars. Enter liters and euros to get price/liter.</p>`
+                    <p><strong>Note:</strong> Cannot add fuel for bikes, walking or archived cars. Enter liters and euros to get price/liter.</p>`
             },
             {
                 title: "🆘 7. Crash Recovery",
@@ -470,6 +488,14 @@ const helpData = {
                     <p>Đây là ứng dụng PWA. Để hoạt động ổn định trong nền và không bị thanh địa chỉ che khuất, hãy làm theo các bước sau.</p>
                     
                     <div class="help-step">
+                        <strong>Mới trong v6.00:</strong>
+                        <ul>
+                            <li>🚶 <strong>Chế độ Đi bộ:</strong> Theo dõi các chuyến đi bộ của bạn!</li>
+                            <li>💾 <strong>Chế độ Offline:</strong> Dữ liệu được lưu trên máy khi không có mạng.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-step">
                         <strong>📲 Cài đặt (Quan trọng!):</strong>
                         <ul>
                             <li><strong>🍎 iPhone (Safari):</strong> Nhấn nút <strong>Chia sẻ</strong> ở dưới cùng (Hình vuông có mũi tên lên <span style="font-size:16px">share</span>). Cuộn và chọn <strong>"Thêm vào MH chính"</strong> (Add to Home Screen).</li>
@@ -537,6 +563,7 @@ const helpData = {
                             <li><strong>🚗 Ô tô (Car):</strong> Bản đồ thu nhỏ khi chạy nhanh. Phân tích Eco BẬT.</li>
                             <li><strong>🏍️ Xe máy (Motorcycle):</strong> Giống ô tô, có icon riêng. Phân tích Eco BẬT.</li>
                             <li><strong>🚲 Xe đạp (Bike):</strong> Bản đồ luôn phóng to. Phân tích Eco TẮT.</li>
+                            <li><strong>🚶 Đi bộ (Walking):</strong> MỚI! Bản đồ phóng to, không đo lực G, không đổ xăng.</li>
                         </ul>
                     </div>
 
@@ -591,7 +618,7 @@ const helpData = {
                 title: "⛽ 6. Đổ xăng",
                 content: `
                     <p>Nhấn nút <strong>⛽</strong> trên bảng điều khiển để thêm lần đổ xăng.</p>
-                    <p><strong>Lưu ý:</strong> Không thể thêm xăng cho xe đạp hoặc xe đã lưu trữ. Nhập số lít và số tiền để tính giá/lít.</p>`
+                    <p><strong>Lưu ý:</strong> Không thể thêm xăng cho xe đạp, đi bộ hoặc xe đã lưu trữ. Nhập số lít và số tiền để tính giá/lít.</p>`
             },
             {
                 title: "🆘 7. Khôi phục sự cố (Crash Recovery)",
@@ -694,7 +721,7 @@ window.renderHelp = function(lang) {
     const data = helpData[lang] || helpData['fi'];
     
     // Haetaan versionumero turvallisesti (Globals.js:stä)
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '5.99';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.00';
 
     // 1. Kielinapit
     const buttons = `
