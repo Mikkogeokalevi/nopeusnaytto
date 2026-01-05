@@ -1,15 +1,15 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v5.99-CLEAN
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.00
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v5.99-clean';
+const CACHE_NAME = 'ajopro-v6.00'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
     './manifest.json',
     './style.css',
     
-    // Javascript-moduulit (HUOM: fuel.js POISTETTU)
+    // Javascript-moduulit
     './globals.js',
     './ui.js',
     './auth.js',
@@ -57,14 +57,19 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
-    return self.clients.claim();
+    self.clients.claim();
 });
 
-// 3. HAKU
+// 3. FETCH (VERKKO PYYNNÖT)
 self.addEventListener('fetch', (event) => {
-    if (!event.request.url.startsWith('http')) return;
     event.respondWith(
         caches.match(event.request)
-            .then((response) => response || fetch(event.request).catch(() => console.log("Offline")))
+            .then((response) => {
+                // Palauta välimuistista jos löytyy, muuten hae verkosta
+                if (response) {
+                    return response;
+                }
+                return fetch(event.request);
+            })
     );
 });
