@@ -322,7 +322,8 @@ document.body.addEventListener('click', (e) => {
 function populateFuelCarSelect(selectedId, selectElement = inpFuelCarSelect) {
     if(!selectElement) return;
     selectElement.innerHTML = "";
-    const validCars = userCars.filter(c => c.type !== 'bike' && !c.isArchived);
+    // SUODATETAAN POIS PYÖRÄ JA KÄVELY
+    const validCars = userCars.filter(c => c.type !== 'bike' && c.type !== 'walking' && !c.isArchived);
     if(validCars.length === 0) {
         const opt = document.createElement('option');
         opt.text = "Ei tankattavia ajoneuvoja";
@@ -341,10 +342,16 @@ function populateFuelCarSelect(selectedId, selectElement = inpFuelCarSelect) {
 
 if (btnOpenFuel) {
     btnOpenFuel.addEventListener('click', () => {
+        // ESTETÄÄN JOS PYÖRÄ TAI KÄVELY
         if (currentCarType === 'bike') {
             showToast("Polkupyörää ei voi tankata! 🚲🚫");
             return;
         }
+        if (currentCarType === 'walking') {
+            showToast("Kävelyä ei voi tankata! 🚶🚫");
+            return;
+        }
+
         const now = new Date();
         if(inpFuelDate) inpFuelDate.value = now.toISOString().split('T')[0];
         if(inpFuelTime) inpFuelTime.value = now.toTimeString().split(' ')[0].substring(0,5);
