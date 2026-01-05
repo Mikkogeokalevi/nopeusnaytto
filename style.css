@@ -640,20 +640,31 @@ body.minimalist-mode #dashboard-view .huge-speed-container {
     box-shadow: 0 0 10px currentColor;
 }
 
-/* 4. KOMPAKTI HISTORIA - KORJATTU VALITSIN #log-list.compact */
-/* Piilotetaan elementit kokonaan */
-#log-list.compact .log-stats,
-#log-list.compact .log-tags,
-#log-list.compact .subject-input,
-#log-list.compact .map-btn,
-#log-list.compact .log-title-group div:last-child { 
+/* 4. KOMPAKTI HISTORIA - LAAJENNETTAVA */
+
+/* Piilotetaan elementit VAIN JOS kortti EI ole avattu (.expanded) */
+#log-list.compact .log-card:not(.expanded) .log-stats,
+#log-list.compact .log-card:not(.expanded) .log-tags,
+#log-list.compact .log-card:not(.expanded) .subject-input,
+#log-list.compact .log-card:not(.expanded) .map-btn,
+#log-list.compact .log-card:not(.expanded) .log-title-group div:last-child { 
     display: none !important; 
 }
 
-/* Tiivistetään kortti */
+/* Tiivistetään kortti (oletus) */
 #log-list.compact .log-card {
     padding: 12px 15px !important;
     margin-bottom: 8px !important;
+    cursor: pointer; /* Osoittaa että voi klikata */
+    transition: all 0.2s ease-in-out;
+}
+
+/* Kun kortti on avattu (.expanded), palautetaan padding ja marginaali */
+#log-list.compact .log-card.expanded {
+    padding: 18px !important;
+    margin-bottom: 15px !important;
+    background-color: var(--panel-bg); /* Hieman korostettu tausta */
+    border: 1px solid var(--accent-color);
 }
 
 #log-list.compact .log-header {
@@ -662,7 +673,14 @@ body.minimalist-mode #dashboard-view .huge-speed-container {
     padding-bottom: 0 !important;
 }
 
-/* Asetellaan otsikko uudelleen */
+/* Kun avattu, palauta headerin välit */
+#log-list.compact .log-card.expanded .log-header {
+    margin-bottom: 12px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    padding-bottom: 10px !important;
+}
+
+/* Asetellaan otsikko uudelleen (kompaktissa tilassa riville) */
 #log-list.compact .log-title-group {
     display: flex !important;
     flex-direction: row !important;
@@ -671,9 +689,36 @@ body.minimalist-mode #dashboard-view .huge-speed-container {
     width: 100% !important;
 }
 
-/* Pienempi teksti päivämäärälle */
+/* Kun avattu, palauta otsikko normaaliksi (allekkain) */
+#log-list.compact .log-card.expanded .log-title-group {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+}
+
+/* Pienempi teksti päivämäärälle (kompaktissa) */
 #log-list.compact .log-date-line {
     font-size: 13px !important;
     color: var(--text-color) !important;
     margin-right: 10px;
+}
+
+/* Visuaalinen nuoli (Chevron) indikoimaan avaamista */
+#log-list.compact .log-card::after {
+    content: "▼";
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    font-size: 10px;
+    color: var(--subtext-color);
+    transition: transform 0.3s;
+}
+
+#log-list.compact .log-card.expanded::after {
+    transform: rotate(180deg);
+}
+
+/* Piilota nuoli jos ei olla kompaktissa tilassa */
+#log-list:not(.compact) .log-card::after {
+    display: none;
 }
