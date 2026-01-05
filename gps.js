@@ -91,7 +91,8 @@ if (btnStartRec) {
         
         if(typeof updateDashboardUI === 'function') updateDashboardUI(0, 0, 0, 0, 0, 0);
         
-        if (currentCarType === 'bike') {
+        // Päivitetty: Piilota statusbar myös kävelyssä
+        if (currentCarType === 'bike' || currentCarType === 'walking') {
             if(liveStatusBar) liveStatusBar.style.opacity = '0';
         } else {
             if(liveStatusBar) liveStatusBar.style.opacity = '1'; 
@@ -165,7 +166,8 @@ if (btnStopRec) {
         let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
 
         let styleLabel = "";
-        if (currentCarType !== 'bike') {
+        // Päivitetty: Ohita tyylipisteytys myös kävelyssä
+        if (currentCarType !== 'bike' && currentCarType !== 'walking') {
             styleLabel = "Tasainen";
             if (aggressiveEvents > 5) styleLabel = "Reipas";
             if (aggressiveEvents > 15) styleLabel = "Aggressiivinen";
@@ -178,6 +180,8 @@ if (btnStopRec) {
             if(c) {
                 selectedCarName = c.name;
                 selectedCarIcon = c.icon || (c.type === 'bike' ? "🚲" : "🚗");
+                // Kävelyn oletusikoni
+                if (c.type === 'walking' && (!c.icon || c.icon === '🚗')) selectedCarIcon = "🚶";
             }
         }
 
@@ -309,7 +313,8 @@ function updatePosition(position) {
         
         if (views.map && views.map.style.display !== 'none' && !isViewingHistory && map) {
             let targetZoom = 18; 
-            if (currentCarType === 'bike') {
+            // Päivitetty: Kävely pidetään lähellä (kuten pyöräily)
+            if (currentCarType === 'bike' || currentCarType === 'walking') {
                 if (speedKmh > 15) targetZoom = 17; else targetZoom = 19; 
             } else {
                 if (speedKmh > 100) targetZoom = 14; 
@@ -387,7 +392,9 @@ function handleMotion(event) {
         gBubbleEl.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
     }
 
-    if (currentCarType === 'bike') return;
+    // Päivitetty: Ohita myös kävelyssä (estää väärät aggressiiviset hälytykset)
+    if (currentCarType === 'bike' || currentCarType === 'walking') return;
+    
     const now = Date.now();
     if (now - lastMotionTime < 500) return; 
     lastMotionTime = now;
