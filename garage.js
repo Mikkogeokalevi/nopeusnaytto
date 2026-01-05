@@ -1,5 +1,5 @@
 // =========================================================
-// GARAGE.JS - AJONEUVOJEN HALLINTA JA ARKISTOINTI (v5.99 MOTO & BADGES)
+// GARAGE.JS - AJONEUVOJEN HALLINTA JA ARKISTOINTI (v5.99 MOTO & WALKING)
 // =========================================================
 
 // 1. AJONEUVOJEN LATAUS
@@ -40,7 +40,7 @@ function loadCars() {
     }
 }
 
-// 2. VALIKKOJEN PÄIVITYS (YLÄPALKKI - NYT [A/M/P] MERKINNÖILLÄ)
+// 2. VALIKKOJEN PÄIVITYS (YLÄPALKKI - NYT [A/M/P/K] MERKINNÖILLÄ)
 function updateCarSelect() {
     const select = document.getElementById('car-select');
     if (!select) return;
@@ -80,12 +80,14 @@ function updateCarSelect() {
             let defaultIcon = "🚗";
             if (car.type === 'bike') defaultIcon = "🚲";
             if (car.type === 'motorcycle') defaultIcon = "🏍️";
+            if (car.type === 'walking') defaultIcon = "🚶";
             const icon = car.icon || defaultIcon;
 
             // Tyyppikirjain (Koska HTML-select ei tue värejä/tyylejä tekstin seassa)
             let typeMark = " [A]"; 
             if (car.type === 'bike') typeMark = " [P]";
             else if (car.type === 'motorcycle') typeMark = " [M]";
+            else if (car.type === 'walking') typeMark = " [K]";
 
             opt.text = `${icon} ${car.name}${typeMark}`;
             groupActive.appendChild(opt);
@@ -114,11 +116,13 @@ function updateCarSelect() {
             let defaultIcon = "🚗";
             if (car.type === 'bike') defaultIcon = "🚲";
             if (car.type === 'motorcycle') defaultIcon = "🏍️";
+            if (car.type === 'walking') defaultIcon = "🚶";
             const icon = car.icon || defaultIcon;
 
             let typeMark = " [A]"; 
             if (car.type === 'bike') typeMark = " [P]";
             else if (car.type === 'motorcycle') typeMark = " [M]";
+            else if (car.type === 'walking') typeMark = " [K]";
 
             opt.text = `🗄️ ${icon} ${car.name}${typeMark}`;
             opt.style.color = "#888";
@@ -195,13 +199,15 @@ function renderCarCard(car, container, isArchived) {
     let defaultIcon = "🚗";
     if (car.type === 'bike') defaultIcon = "🚲";
     if (car.type === 'motorcycle') defaultIcon = "🏍️";
+    if (car.type === 'walking') defaultIcon = "🚶";
     
     const icon = car.icon || defaultIcon;
     
-    // Määritellään Badge (A/P/M) - Täällä voimme käyttää HTML-värejä
+    // Määritellään Badge (A/P/M/K) - Täällä voimme käyttää HTML-värejä
     let typeBadge = "";
     if (car.type === 'bike') typeBadge = "<span style='font-size:10px; font-weight:bold; background:#555; color:#fff; padding:2px 6px; border-radius:4px; margin-left:8px;'>P</span>";
     else if (car.type === 'motorcycle') typeBadge = "<span style='font-size:10px; font-weight:bold; background:#ff9800; color:#000; padding:2px 6px; border-radius:4px; margin-left:8px;'>M</span>";
+    else if (car.type === 'walking') typeBadge = "<span style='font-size:10px; font-weight:bold; background:#8bc34a; color:#000; padding:2px 6px; border-radius:4px; margin-left:8px;'>K</span>";
     else typeBadge = "<span style='font-size:10px; font-weight:bold; background:#2979ff; color:#fff; padding:2px 6px; border-radius:4px; margin-left:8px;'>A</span>";
 
     const div = document.createElement('div');
@@ -259,7 +265,8 @@ function renderCarCard(car, container, isArchived) {
 window.toggleCarFields = () => {
     const type = document.getElementById('car-type').value;
     const fields = document.getElementById('car-specific-fields');
-    if (type === 'bike') fields.style.display = 'none';
+    // Piilota kentät Pyörältä JA Kävelyltä
+    if (type === 'bike' || type === 'walking') fields.style.display = 'none';
     else fields.style.display = 'block'; // Auto ja Moottoripyörä
 };
 
@@ -285,11 +292,24 @@ function openEditCar(car) {
         opt.innerText = '🏍️ Moottoripyörä';
         typeSel.appendChild(opt);
     }
+    
+    // Varmistetaan että Kävely on valittavissa (UUSI)
+    let hasWalk = false;
+    for(let i=0; i<typeSel.options.length; i++) {
+        if(typeSel.options[i].value === 'walking') hasWalk = true;
+    }
+    if(!hasWalk) {
+        const opt = document.createElement('option');
+        opt.value = 'walking';
+        opt.innerText = '🚶 Kävely';
+        typeSel.appendChild(opt);
+    }
+
     typeSel.value = car.type || 'car'; // Aseta arvo uudelleen
 
     window.toggleCarFields();
     
-    if (car.type !== 'bike') {
+    if (car.type !== 'bike' && car.type !== 'walking') {
         document.getElementById('car-plate').value = car.plate || "";
         document.getElementById('car-fuel').value = car.fuel || "Bensiini";
         document.getElementById('car-tank').value = car.tank || "";
@@ -304,8 +324,8 @@ function generateCarIcons(selectedIcon) {
     if(!grid) return;
     grid.innerHTML = "";
     
-    // Lisätty moottoripyörä-ikonit
-    const icons = ["🚗","🚙","🏎️","🚕","🚓","🚌","🚐","🛻","🚚","🚜","🚲","🛵","🏍️","🛴"];
+    // Lisätty moottoripyörä-ikonit ja kävely-ikonit
+    const icons = ["🚗","🚙","🏎️","🚕","🚓","🚌","🚐","🛻","🚚","🚜","🚲","🛵","🏍️","🛴","🚶","🏃","🎒","🥾"];
     
     icons.forEach(icon => {
         const div = document.createElement('div');
@@ -374,6 +394,18 @@ if(gBtnAddCar) {
             opt.innerText = '🏍️ Moottoripyörä';
             typeSel.appendChild(opt);
         }
+
+        // Varmistetaan Kävely-optio lisäyksessäkin (UUSI)
+        let hasWalk = false;
+        for(let i=0; i<typeSel.options.length; i++) {
+            if(typeSel.options[i].value === 'walking') hasWalk = true;
+        }
+        if(!hasWalk) {
+            const opt = document.createElement('option');
+            opt.value = 'walking';
+            opt.innerText = '🚶 Kävely';
+            typeSel.appendChild(opt);
+        }
         
         generateCarIcons("🚗");
         window.toggleCarFields();
@@ -402,14 +434,17 @@ if(gBtnSaveCar) {
             if(existing) isArchived = existing.isArchived || false;
         }
 
+        // Tallenna lisäkentät vain jos EI ole pyörä EIKÄ kävely
+        const isLightVehicle = (type === 'bike' || type === 'walking');
+
         const carData = {
             name: name,
             type: type,
             icon: icon,
             isArchived: isArchived,
-            plate: (type !== 'bike') ? document.getElementById('car-plate').value : "",
-            fuel: (type !== 'bike') ? document.getElementById('car-fuel').value : "",
-            tank: (type !== 'bike') ? document.getElementById('car-tank').value : ""
+            plate: (!isLightVehicle) ? document.getElementById('car-plate').value : "",
+            fuel: (!isLightVehicle) ? document.getElementById('car-fuel').value : "",
+            tank: (!isLightVehicle) ? document.getElementById('car-tank').value : ""
         };
         
         if (id) {
