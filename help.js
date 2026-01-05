@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.01 FULL)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.03 FULL BIBLE)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -14,11 +14,11 @@ const helpData = {
                     <p>Tämä sovellus on PWA (Progressive Web App). Jotta se toimii vakaasti taustalla ja osoitepalkit eivät vie tilaa, seuraa näitä ohjeita.</p>
                     
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>Uutta versiossa 6.01:</strong>
+                        <strong>Uutta versiossa 6.03:</strong>
                         <ul>
-                            <li><strong>👁️ Yksinkertaistettu tila:</strong> Paina mittariston silmä-ikonia piilottaaksesi kaiken paitsi nopeuden.</li>
-                            <li><strong>🎨 Ulkoasu:</strong> Vaihda teemaväri ja ota käyttöön alapalkki Asetuksista.</li>
-                            <li><strong>🚶 Kävely-tila:</strong> Valitse autotallista "Kävely". Ei G-voimamittaria, tarkempi kartta.</li>
+                            <li><strong>🚶 Kävely-tila:</strong> Mittaristo näyttää nyt askeleet, tahdin (min/km) ja kalorit!</li>
+                            <li><strong>📋 Kompakti historia:</strong> Voit nyt klikata tiivistettyä riviä avataksesi kaikki tiedot.</li>
+                            <li><strong>👁️ Yksinkertaistettu tila:</strong> Silmä-ikoni piilottaa kaiken paitsi nopeuden.</li>
                         </ul>
                     </div>
 
@@ -45,33 +45,27 @@ const helpData = {
                     <p>Näkymä mukautuu automaattisesti puhelimen asennon mukaan.</p>
                     
                     <div class="help-step">
-                        <strong>📱 Pystynäkymä (Portrait):</strong>
-                        <ol>
-                            <li><strong>Nopeus:</strong> Iso numero keskellä.</li>
-                            <li><strong>Tilastot:</strong> 6 ruudun ristikko (Huippu, Matka, Aika, Ø Nopeus, Suunta, Korkeus).</li>
-                            <li><strong>Osoite:</strong> Katuosoite ja koordinaatit näkyvät tilastojen alla.</li>
-                            <li><strong>Aika & Sää:</strong> Alimpana kellonaika, päivämäärä ja sääikoni.</li>
-                        </ol>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>🔄 Vaakanäkymä (Landscape):</strong>
-                        Käännä puhelimen sivuttain saadaksesi laajan näkymän:
+                        <strong>Toiminnot:</strong>
                         <ul>
-                            <li><strong>Vasen reuna:</strong> Jättimäinen nopeuslukema.</li>
-                            <li><strong>Oikea reuna:</strong> Tilastoruudukko.</li>
-                            <li><strong>Alareuna:</strong> Osoite ja koordinaatit siirtyvät sivuun.</li>
+                            <li><strong>START GPS:</strong> Aloittaa tallennuksen ja matkamittauksen.</li>
+                            <li><strong>HUD:</strong> Kääntää näytön peilikuvaksi (yöajo).</li>
+                            <li><strong>👁️ Silmä-ikoni:</strong> Yksinkertaistettu tila. Piilottaa kaiken paitsi nopeuslukeman.</li>
                         </ul>
                     </div>
 
                     <div class="help-step">
-                        <strong>👁️ Yksinkertaistettu tila (Minimalist Mode):</strong>
-                        Paina vasemman yläkulman silmä-ikonia. Tämä piilottaa kaiken paitsi nopeusmittarin. Hyödyllinen yöajossa tai jos haluat keskittyä ajamiseen.
+                        <strong>🚶 Kävely-tilan mittaristo (UUSI):</strong>
+                        Kun valitset autotallista "Kävely", näet:
+                        <ul>
+                            <li><strong>Askeleet:</strong> Arvioitu matkan perusteella (n. 1312 askelta/km).</li>
+                            <li><strong>Tahti:</strong> Nopeus muodossa <em>min/km</em> (esim. 10:30).</li>
+                            <li><strong>Kalorit:</strong> Arvioitu kulutus.</li>
+                        </ul>
                     </div>
 
                     <div class="help-step">
                         <strong>🎯 G-Voimamittari (Bubble):</strong>
-                        Pieni "tähtäin" ruudulla.
+                        Pieni "tähtäin" ruudulla (ei näy kävely-tilassa).
                         <ul>
                             <li><strong>Keskellä:</strong> Taloudellinen ajo (Eco).</li>
                             <li><strong>Reunalla (Punainen):</strong> Voimakas kiihdytys/jarrutus -> "Aggressiivinen" ajotapa.</li>
@@ -79,7 +73,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🚗 3. Autotalli ja Asetukset",
+                title: "🚗 3. Autotalli ja Valinnat",
                 content: `
                     <p>Sovellus tallentaa ajot aina tietylle ajoneuvolle.</p>
                     
@@ -95,16 +89,17 @@ const helpData = {
                             <li><strong>🚗 Auto:</strong> Kartta loitontaa maantienopeuksissa. Eco-analyysi on päällä.</li>
                             <li><strong>🏍️ Moottoripyörä:</strong> Kuin auto, mutta omalla ikonilla. Eco-analyysi päällä.</li>
                             <li><strong>🚲 Pyörä:</strong> Kartta pysyy aina lähikuvassa. Eco-analyysi on pois päältä.</li>
-                            <li><strong>🚶 Kävely (Uusi):</strong> Kartta pysyy lähellä, G-voimamittari pois päältä, ei tankkauksia.</li>
+                            <li><strong>🚶 Kävely:</strong> Kartta pysyy lähellä, G-voimamittari pois päältä, ei tankkauksia. Mittaristo näyttää askeleet.</li>
                         </ul>
                     </div>
 
                     <div class="help-step">
                         <strong>🎨 Ulkoasuasetukset:</strong>
-                        Asetukset-sivulta voit nyt:
+                        Asetukset-sivulta voit:
                         <ul>
-                            <li>Valita korostusvärin (Sininen, Oranssi, Vihreä...).</li>
-                            <li>Kytkeä päälle "Tiivistetyn historian" nähdäksesi enemmän rivejä kerralla.</li>
+                            <li>Vaihtaa korostusvärin.</li>
+                            <li>Kytkeä päälle "Tiivistetyn historian".</li>
+                            <li>Ottaa käyttöön Yksinkertaistetun mittariston.</li>
                         </ul>
                     </div>
 
@@ -139,6 +134,11 @@ const helpData = {
             {
                 title: "📝 5. Historia & Raportit",
                 content: `
+                    <div class="help-step">
+                        <strong>📋 Listan käyttö (UUSI):</strong>
+                        Jos käytät tiivistettyä näkymää, <strong>klikkaa riviä</strong> avataksesi sen. Näet silloin tarkemmat tiedot, sään ja muokkausnapit. Klikkaa uudestaan sulkeaksesi.
+                    </div>
+
                     <div class="help-step">
                         <strong>✏️ Muokkaus (Extended Edit):</strong>
                         Unohditko käynnistää ajoissa? Paina kynä-ikonia (✏️) listassa.
@@ -266,11 +266,11 @@ const helpData = {
                     <p>This is a PWA (Progressive Web App). To make it work reliably in the background and remove address bars, please follow these steps.</p>
                     
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>New in v6.01:</strong>
+                        <strong>New in v6.03:</strong>
                         <ul>
-                            <li><strong>👁️ Minimalist Mode:</strong> Tap the eye icon on the dashboard to hide distractions.</li>
-                            <li><strong>🎨 Appearance:</strong> Change accent color and toggle Compact History in Settings.</li>
-                            <li><strong>🚶 Walking Mode:</strong> Track your walks! No G-force alerts.</li>
+                            <li><strong>🚶 Walking Mode:</strong> Dashboard now shows Steps, Pace (min/km) and Calories!</li>
+                            <li><strong>📋 Expandable History:</strong> Tap a compact row to see full details.</li>
+                            <li><strong>👁️ Minimalist Mode:</strong> Tap eye icon to hide distractions.</li>
                         </ul>
                     </div>
 
@@ -297,28 +297,22 @@ const helpData = {
                     <p>The view adapts automatically based on phone orientation.</p>
                     
                     <div class="help-step">
-                        <strong>📱 Portrait View:</strong>
-                        <ol>
-                            <li><strong>Speed:</strong> Big number in the center.</li>
-                            <li><strong>Stats:</strong> 6-grid (Max, Dist, Time, Ø Speed, Heading, Altitude).</li>
-                            <li><strong>Address:</strong> Street address and coordinates below the stats.</li>
-                            <li><strong>Time & Weather:</strong> Clock, date, and weather icon at the bottom.</li>
-                        </ol>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>🔄 Landscape View:</strong>
-                        Turn phone sideways for a wide view:
+                        <strong>Features:</strong>
                         <ul>
-                            <li><strong>Left:</strong> Huge speed reading.</li>
-                            <li><strong>Right:</strong> Stats grid.</li>
-                            <li><strong>Bottom:</strong> Address and coordinates move to the side.</li>
+                            <li><strong>START GPS:</strong> Starts recording track and distance.</li>
+                            <li><strong>HUD:</strong> Mirrors screen for windshield reflection (Night mode).</li>
+                            <li><strong>👁️ Eye Icon:</strong> Toggles Minimalist Mode (Speed only).</li>
                         </ul>
                     </div>
 
                     <div class="help-step">
-                        <strong>👁️ Minimalist Mode:</strong>
-                        Tap the eye icon in the top left. This hides everything except the speedometer. Useful for night driving or focus.
+                        <strong>🚶 Walking Mode Metrics (NEW):</strong>
+                        When "Walking" is selected in Garage:
+                        <ul>
+                            <li><strong>Steps:</strong> Estimated based on distance (approx 1312 steps/km).</li>
+                            <li><strong>Pace:</strong> Shown as <em>min/km</em> (e.g., 10:30).</li>
+                            <li><strong>Calories:</strong> Estimated burn.</li>
+                        </ul>
                     </div>
 
                     <div class="help-step">
@@ -391,6 +385,11 @@ const helpData = {
             {
                 title: "📝 5. History & Reports",
                 content: `
+                    <div class="help-step">
+                        <strong>📋 Using the List (NEW):</strong>
+                        If using Compact Mode, <strong>tap a row</strong> to expand it and see full details (Weather, Avg Speed etc.). Tap again to close.
+                    </div>
+
                     <div class="help-step">
                         <strong>✏️ Editing (Extended Edit):</strong>
                         Forgot to start? Tap the pencil icon (✏️) in the list.
@@ -518,11 +517,11 @@ const helpData = {
                     <p>Đây là ứng dụng PWA. Để hoạt động ổn định trong nền và không bị thanh địa chỉ che khuất, hãy làm theo các bước sau.</p>
                     
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>Mới trong v6.01:</strong>
+                        <strong>Mới trong v6.03:</strong>
                         <ul>
+                            <li><strong>🚶 Chế độ Đi bộ:</strong> Bảng điều khiển hiện Số bước, Tốc độ (phút/km), Calo.</li>
+                            <li><strong>📋 Lịch sử mở rộng:</strong> Chạm vào dòng để xem chi tiết.</li>
                             <li><strong>👁️ Chế độ Tối giản:</strong> Nhấn biểu tượng con mắt để ẩn thông số phụ.</li>
-                            <li><strong>🎨 Giao diện:</strong> Đổi màu và dùng lịch sử thu gọn.</li>
-                            <li><strong>🚶 Chế độ Đi bộ:</strong> Theo dõi các chuyến đi bộ!</li>
                         </ul>
                     </div>
 
@@ -571,6 +570,16 @@ const helpData = {
                     <div class="help-step">
                         <strong>👁️ Chế độ Tối giản:</strong>
                         Nhấn biểu tượng con mắt ở góc trên bên trái. Chỉ hiện tốc độ. Dùng khi lái xe ban đêm.
+                    </div>
+
+                    <div class="help-step">
+                        <strong>🚶 Chế độ Đi bộ (MỚI):</strong>
+                        Khi chọn "Đi bộ", bạn sẽ thấy:
+                        <ul>
+                            <li><strong>Số bước:</strong> Ước tính theo quãng đường.</li>
+                            <li><strong>Tốc độ:</strong> Hiển thị <em>phút/km</em>.</li>
+                            <li><strong>Calo:</strong> Ước tính năng lượng tiêu thụ.</li>
+                        </ul>
                     </div>
 
                     <div class="help-step">
@@ -643,6 +652,11 @@ const helpData = {
             {
                 title: "📝 5. Lịch sử & Báo cáo",
                 content: `
+                    <div class="help-step">
+                        <strong>📋 Lịch sử mở rộng (MỚI):</strong>
+                        Nếu đang dùng chế độ thu gọn, hãy <strong>chạm vào dòng</strong> chuyến đi để mở rộng và xem chi tiết (thời tiết, tốc độ...). Chạm lại để đóng.
+                    </div>
+
                     <div class="help-step">
                         <strong>✏️ Chỉnh sửa (Extended Edit):</strong>
                         Quên bật ứng dụng? Nhấn biểu tượng bút chì (✏️) trong danh sách.
@@ -762,7 +776,7 @@ window.renderHelp = function(lang) {
     }
 
     const data = helpData[lang] || helpData['fi'];
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.01';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.03';
 
     // 1. Kielinapit
     const buttons = `
@@ -776,7 +790,7 @@ window.renderHelp = function(lang) {
     // 2. Otsikko
     let contentHtml = buttons + `
         <div style="text-align:center; margin-bottom: 30px;">
-            <img src="ajopaivakirja_logo.png?v=6.01" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-color); margin-bottom:10px;">
+            <img src="ajopaivakirja_logo.png?v=6.03" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-color); margin-bottom:10px;">
             <h2 style="color:var(--accent-color); text-transform: uppercase; letter-spacing: 1px; margin:0;">${data.title}</h2>
             <p style="opacity:0.7; font-size:12px;">Mikkokalevin Ajo Pro v${ver}</p>
         </div>
@@ -795,7 +809,7 @@ window.renderHelp = function(lang) {
     // 4. Footer
     contentHtml += `
         <div style="text-align: center; margin-top: 50px; color: #888; font-size: 11px; padding-bottom: 30px;">
-            Designed for drivers.
+            Designed for drivers & walkers.
         </div>
     `;
 
