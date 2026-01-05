@@ -568,7 +568,8 @@ body.hud-mode .top-bar-container,
 body.hud-mode .bottom-branding,
 body.hud-mode .controls-container,
 body.hud-mode .side-tap-zone, 
-body.hud-mode #btn-open-fuel {
+body.hud-mode #btn-open-fuel,
+body.hud-mode .bottom-nav { /* Piilota myös uusi alapalkki HUD-tilassa */
     display: none !important;
 }
 
@@ -591,4 +592,103 @@ body.hud-mode .stat-value {
 }
 body.hud-mode .stat-card {
     border: 2px solid #004400;
+}
+
+/* ========================================= */
+/* UUDET UI-OMINAISUUDET (V6.00 PÄIVITYS)    */
+/* ========================================= */
+
+/* 1. BOTTOM NAVIGATION (ALAPALKKI) */
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; width: 100%;
+    background-color: var(--panel-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 0;
+    /* IPHONE FIX: Safe area alareunaan */
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    z-index: 4000;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+}
+
+.bottom-nav-item {
+    background: none; border: none; color: var(--subtext-color);
+    font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    cursor: pointer; flex: 1; transition: color 0.2s;
+}
+
+.bottom-nav-item.active {
+    color: var(--accent-color);
+}
+
+.bottom-nav-icon {
+    font-size: 20px; margin-bottom: 2px;
+}
+
+/* 2. MINIMALISTINEN DASHBOARD */
+body.minimalist-mode #dashboard-view .stats-grid,
+body.minimalist-mode #dashboard-view .address-container,
+body.minimalist-mode #dashboard-view .g-force-wrapper,
+body.minimalist-mode #dashboard-view .side-tap-zone,
+body.minimalist-mode #dashboard-view .status-bar {
+    display: none !important;
+}
+
+body.minimalist-mode #dashboard-view .huge-speed-container {
+    transform: scale(1.5);
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+/* 3. VÄRIVALITSIN ASETUKSISSA */
+.color-picker-container {
+    display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center;
+}
+.color-option {
+    width: 35px; height: 35px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: transform 0.2s, box-shadow 0.2s;
+}
+.color-option:hover { transform: scale(1.1); }
+.color-option.selected {
+    border-color: #fff;
+    box-shadow: 0 0 10px currentColor;
+}
+
+/* 4. KOMPAKTI HISTORIA */
+.log-list.compact .log-card {
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.log-list.compact .log-header {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+    width: 100%;
+}
+
+/* Piilotetaan turhat osat kompaktissa tilassa */
+.log-list.compact .log-stats,
+.log-list.compact .log-tags,
+.log-list.compact .subject-input,
+.log-list.compact .map-btn, 
+.log-list.compact .log-title-group div:last-child { /* Piilota auton nimi jos liian pitkä */
+    display: none; 
+}
+
+/* Näytetään vain tärkeimmät kompaktissa tilassa */
+.log-list.compact .log-title-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.log-list.compact .log-date-line {
+    font-size: 14px;
+    color: var(--text-color);
 }
