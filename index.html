@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.00</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.01</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,27 +11,27 @@
     <meta name="theme-color" content="#1e1e1e">
     
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="ajopaivakirja_logo.png?v=6.00">
-    <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.00">
+    <link rel="icon" type="image/png" href="ajopaivakirja_logo.png?v=6.01">
+    <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.00"> 
+    <link rel="stylesheet" href="style.css?v=6.01"> 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
     <div id="splash-screen">
         <div class="splash-content">
-            <img src="ajopaivakirja_logo_mu.png?v=6.00" alt="Logo" class="splash-logo">
+            <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.00...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.01...</p>
             <p>Ladataan...</p>
         </div>
     </div>
 
     <div id="login-view" style="display:none;">
         <div class="login-content">
-            <img src="ajopaivakirja_logo.png?v=6.00" alt="Logo" class="login-logo">
+            <img src="ajopaivakirja_logo.png?v=6.01" alt="Logo" class="login-logo">
             <h2>Tervetuloa</h2>
             <p>Kirjaudu sisään tallentaaksesi ajot.</p>
             
@@ -61,7 +61,7 @@
         
         <div class="top-bar-container">
             <div style="display:flex; align-items:center; gap:10px;">
-                <img src="ajopaivakirja_logo.png?v=6.00" class="header-logo" id="app-logo" alt="App Logo" title="Palaa mittaristoon">
+                <img src="ajopaivakirja_logo.png?v=6.01" class="header-logo" id="app-logo" alt="App Logo" title="Palaa mittaristoon">
                 <select id="car-select" class="top-car-select">
                     <option value="all">Kaikki ajoneuvot</option>
                 </select>
@@ -76,7 +76,7 @@
 
         <div id="main-menu" class="menu-dropdown" style="display: none;">
             <div class="menu-header">
-                <img id="user-photo" class="menu-user-avatar" src="ajopaivakirja_logo.png?v=6.00" alt="User">
+                <img id="user-photo" class="menu-user-avatar" src="ajopaivakirja_logo.png?v=6.01" alt="User">
                 <div>
                     <span id="user-name" class="menu-user-name">Käyttäjä</span>
                     <div id="menu-version-el" style="font-size:10px; opacity:0.7;">Mikkokalevin Ajopäiväkirja Pro</div>
@@ -108,6 +108,10 @@
                         <div id="g-bubble" class="g-bubble"></div>
                     </div>
                 </div>
+
+                <button id="btn-dashboard-minimal" class="dashboard-toggle-btn" style="position: absolute; top: 80px; left: 20px; z-index: 100;" title="Yksinkertaistettu tila">
+                    👁️
+                </button>
 
                 <div class="huge-speed-container">
                     <span id="dash-speed" class="huge-speed">0.0</span>
@@ -165,8 +169,8 @@
                  </div>
 
                  <div class="bottom-branding">
-                     <img src="alareunakuva_mu.png?v=6.00" class="footer-img dark-mode-img" alt="Footer Dark">
-                     <img src="alareunakuva.png?v=6.00" class="footer-img light-mode-img" alt="Footer Light">
+                     <img src="alareunakuva_mu.png?v=6.01" class="footer-img dark-mode-img" alt="Footer Dark">
+                     <img src="alareunakuva.png?v=6.01" class="footer-img light-mode-img" alt="Footer Light">
                  </div>
             </div>
 
@@ -565,15 +569,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
-    <script src="globals.js?v=6.00"></script>
-    <script src="ui.js?v=6.00"></script>
-    <script src="auth.js?v=6.00"></script>
-    <script src="map.js?v=6.00"></script>
-    <script src="gps.js?v=6.00"></script>
-    <script src="garage.js?v=6.00"></script>
-    <script src="history.js?v=6.00"></script>
-    <script src="help.js?v=6.00"></script>
+    <script src="globals.js?v=6.01"></script>
+    <script src="ui.js?v=6.01"></script>
+    <script src="auth.js?v=6.01"></script>
+    <script src="map.js?v=6.01"></script>
+    <script src="gps.js?v=6.01"></script>
+    <script src="garage.js?v=6.01"></script>
+    <script src="history.js?v=6.01"></script>
+    <script src="help.js?v=6.01"></script>
     
-    <script src="app.js?v=6.00"></script>
+    <script src="app.js?v=6.01"></script>
 </body>
 </html>
