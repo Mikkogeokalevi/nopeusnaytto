@@ -1,5 +1,5 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA RAPORTOINTI (v6.02 FIXED STATS)
+// HISTORY.JS - HISTORIA, SUODATUS JA RAPORTOINTI (v6.04 FUEL CONS)
 // =========================================================
 
 // --- 0. OFFLINE MANAGER ---
@@ -345,12 +345,9 @@ function renderHistoryList() {
             card.style.cssText = cardStyle;
             card.style.animationDelay = `${Math.min(renderCount * 0.05, 1.0)}s`;
 
-            // LISÄTTY: Klikkauskuuntelija laajennukselle
+            // Klikkauskuuntelija laajennukselle
             card.onclick = (e) => {
-                // Älä laajenna jos painetaan nappia (input, button)
                 if (e.target.closest('button') || e.target.closest('input')) return;
-                
-                // Vain jos kompakti tila on päällä
                 const list = document.getElementById('log-list');
                 if (list && list.classList.contains('compact')) {
                     card.classList.toggle('expanded');
@@ -411,7 +408,7 @@ function renderHistoryList() {
     }
 }
 
-// --- 5. TANKKAUKSET LISTA ---
+// --- 5. TANKKAUKSET LISTA (PÄIVITETTY V6.04) ---
 function renderFuelList() {
     const fuelList = document.getElementById('fuel-list');
     if(!fuelList) return;
@@ -465,6 +462,33 @@ function renderFuelList() {
         let carName = carObj ? carObj.name : "Tuntematon";
         let icon = "⛽";
 
+        // --- KULUTUSLASKENTA (v6.04) ---
+        let consumptionInfo = "";
+        let consumptionVal = null;
+        
+        // Etsitään edellinen tankkaus TÄLLE autolle
+        // allRefuelings on järjestetty uusin ensin. 
+        // Etsitään listasta seuraava (eli vanhempi) tankkaus samalle autolle.
+        const currentRefDate = new Date(ref.date);
+        const prevRef = allRefuelings.find(r => 
+            r.carId === ref.carId && 
+            new Date(r.date) < currentRefDate &&
+            r.odo // Varmistetaan että edellisessäkin on mittarilukema
+        );
+
+        if (prevRef && ref.odo && prevRef.odo) {
+            const dist = parseFloat(ref.odo) - parseFloat(prevRef.odo);
+            const l = parseFloat(ref.liters);
+            if (dist > 0 && l > 0) {
+                consumptionVal = (l / dist) * 100;
+                // Varmistetaan järkevä lukema (esim alle 50l/100km)
+                if (consumptionVal < 100) {
+                    consumptionInfo = `<span style="color:#00e676; font-weight:bold; margin-left:8px;">Ø ${consumptionVal.toFixed(1)} l/100km</span>`;
+                }
+            }
+        }
+        // -------------------------------
+
         const card = document.createElement('div');
         card.className = 'log-card';
         card.style.animationDelay = `${Math.min(index * 0.05, 1.0)}s`;
@@ -485,7 +509,9 @@ function renderFuelList() {
                 <div><span class="stat-label">HINTA</span>${eur.toFixed(2)} €</div>
                 <div><span class="stat-label">€ / L</span>${ref.pricePerLiter}</div>
             </div>
-            <div style="font-size:12px; color:#888; text-align:center; margin-top:5px;">Mittarilukema: ${ref.odo || "-"} km</div>
+            <div style="font-size:12px; color:#888; text-align:center; margin-top:5px; border-top:1px solid rgba(255,255,255,0.05); padding-top:5px;">
+                Mittarilukema: ${ref.odo || "-"} km ${consumptionInfo}
+            </div>
         `;
         fuelList.appendChild(card);
         renderCount++;
@@ -968,7 +994,7 @@ window.openEditLogModal = (key) => {
             opt.value = car.id;
             // --- MODIFIKAATIO: LISÄTTY WALKING IKONI LOGIIKKA ---
             let defIcon = "🚗";
-            if(car.type === 'bike') defaultIcon = "🚲";
+            if(car.type === 'bike') defIcon = "🚲";
             if(car.type === 'walking') defIcon = "🚶";
             if(car.type === 'motorcycle') defIcon = "🏍️";
             const icon = car.icon || defIcon;
