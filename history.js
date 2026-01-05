@@ -345,6 +345,18 @@ function renderHistoryList() {
             card.style.cssText = cardStyle;
             card.style.animationDelay = `${Math.min(renderCount * 0.05, 1.0)}s`;
 
+            // LISÄTTY: Klikkauskuuntelija laajennukselle
+            card.onclick = (e) => {
+                // Älä laajenna jos painetaan nappia (input, button)
+                if (e.target.closest('button') || e.target.closest('input')) return;
+                
+                // Vain jos kompakti tila on päällä
+                const list = document.getElementById('log-list');
+                if (list && list.classList.contains('compact')) {
+                    card.classList.toggle('expanded');
+                }
+            };
+
             card.innerHTML = `
                 <div class="log-header">
                     <div class="log-title-group">
@@ -575,7 +587,7 @@ function renderDriveStats() {
     const labels = Object.keys(timeData); 
     const values = Object.values(timeData).map(v => v.toFixed(1));
 
-    // KORJATTU: Käytetään globals.js muuttujia
+    // 1. Pylväs
     const canvasMonthly = document.getElementById('chart-drive-monthly');
     if (canvasMonthly) {
         if (chartDriveMonthly) { chartDriveMonthly.destroy(); }
@@ -595,6 +607,7 @@ function renderDriveStats() {
         });
     }
 
+    // 2. Viiva
     const canvasTrend = document.getElementById('chart-drive-trend');
     if (canvasTrend) {
         if (chartDriveTrend) { chartDriveTrend.destroy(); }
@@ -619,6 +632,7 @@ function renderDriveStats() {
         });
     }
 
+    // 3. Nopeus
     const canvasSpeed = document.getElementById('chart-drive-speed');
     if (canvasSpeed) {
         if (chartDriveSpeed) { chartDriveSpeed.destroy(); }
@@ -636,6 +650,7 @@ function renderDriveStats() {
         });
     }
 
+    // 4. Ajoneuvojakauma
     const canvasVehicles = document.getElementById('chart-drive-vehicles');
     if (canvasVehicles) {
         if (chartDriveVehicles) { chartDriveVehicles.destroy(); }
@@ -645,6 +660,7 @@ function renderDriveStats() {
         });
     }
 
+    // 5. Ajotyyli
     const canvasStyle = document.getElementById('chart-drive-style');
     if (canvasStyle) {
         if (chartDriveStyle) { chartDriveStyle.destroy(); }
@@ -952,7 +968,7 @@ window.openEditLogModal = (key) => {
             opt.value = car.id;
             // --- MODIFIKAATIO: LISÄTTY WALKING IKONI LOGIIKKA ---
             let defIcon = "🚗";
-            if(car.type === 'bike') defIcon = "🚲";
+            if(car.type === 'bike') defaultIcon = "🚲";
             if(car.type === 'walking') defIcon = "🚶";
             if(car.type === 'motorcycle') defIcon = "🏍️";
             const icon = car.icon || defIcon;
