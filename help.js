@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.03 FULL BIBLE)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.04 FUEL CONS UPDATE)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,33 +9,20 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Käyttöönotto ja Luvat",
+                title: "🚀 1. Uutta versiossa 6.04",
                 content: `
-                    <p>Tämä sovellus on PWA (Progressive Web App). Jotta se toimii vakaasti taustalla ja osoitepalkit eivät vie tilaa, seuraa näitä ohjeita.</p>
-                    
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>Uutta versiossa 6.03:</strong>
+                        <strong>⛽ Keskikulutus (l/100km):</strong>
                         <ul>
-                            <li><strong>🚶 Kävely-tila:</strong> Mittaristo näyttää nyt askeleet, tahdin (min/km) ja kalorit!</li>
-                            <li><strong>📋 Kompakti historia:</strong> Voit nyt klikata tiivistettyä riviä avataksesi kaikki tiedot.</li>
-                            <li><strong>👁️ Yksinkertaistettu tila:</strong> Silmä-ikoni piilottaa kaiken paitsi nopeuden.</li>
+                            <li>Tankkaushistoria näyttää nyt keskikulutuksen! (Vaatii vähintään 2 tankkausta samalle autolle).</li>
                         </ul>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>📲 Asennus (Tärkeä!):</strong>
+                        <strong>🚶 Kävely-tila:</strong>
                         <ul>
-                            <li><strong>🍎 iPhone (Safari):</strong> Paina alareunan <strong>Jaa-painiketta</strong> (Neliö, josta nuoli ylös <span style="font-size:16px">share</span>). Selaa valikkoa ja valitse <strong>"Lisää Koti-valikkoon"</strong> (Add to Home Screen).</li>
-                            <li><strong>🤖 Android (Chrome):</strong> Paina yläkulman kolmea pistettä (⋮) ja valitse <strong>"Asenna sovellus"</strong> tai <strong>"Lisää aloitusnäytölle"</strong>.</li>
+                            <li>Mittaristo näyttää askeleet, tahdin ja kalorit.</li>
                         </ul>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>⚠️ Vaaditut luvat:</strong>
+                        <strong>🎨 Ulkoasu:</strong>
                         <ul>
-                            <li>📍 <strong>Sijainti (Location):</strong> Valitse "Salli aina" tai "Salli käytettäessä". Ilman tätä nopeusmittari ei toimi.</li>
-                            <li>📱 <strong>Liikeanturit (Motion):</strong> (Vain iOS) Safari vaatii erillisen luvan kiihtyvyysantureille. Tämä mahdollistaa G-voimamittarin ja Eco-analyysin.</li>
-                            <li>🔊 <strong>Automaattinen toisto (Audio):</strong> Sovellus soittaa äänetöntä raitaa taustalla pitääkseen GPS:n hengissä puhelimen ollessa taskussa. Salli äänen toisto, jos selain kysyy.</li>
+                            <li>Silmä-ikoni (yksinkertaistettu tila) ja klikattava historia.</li>
                         </ul>
                     </div>`
             },
@@ -54,11 +41,11 @@ const helpData = {
                     </div>
 
                     <div class="help-step">
-                        <strong>🚶 Kävely-tilan mittaristo (UUSI):</strong>
+                        <strong>🚶 Kävely-tilan mittaristo:</strong>
                         Kun valitset autotallista "Kävely", näet:
                         <ul>
-                            <li><strong>Askeleet:</strong> Arvioitu matkan perusteella (n. 1312 askelta/km).</li>
-                            <li><strong>Tahti:</strong> Nopeus muodossa <em>min/km</em> (esim. 10:30).</li>
+                            <li><strong>Askeleet:</strong> Arvioitu matkan perusteella.</li>
+                            <li><strong>Tahti:</strong> Nopeus muodossa <em>min/km</em>.</li>
                             <li><strong>Kalorit:</strong> Arvioitu kulutus.</li>
                         </ul>
                     </div>
@@ -68,19 +55,19 @@ const helpData = {
                         Pieni "tähtäin" ruudulla (ei näy kävely-tilassa).
                         <ul>
                             <li><strong>Keskellä:</strong> Taloudellinen ajo (Eco).</li>
-                            <li><strong>Reunalla (Punainen):</strong> Voimakas kiihdytys/jarrutus -> "Aggressiivinen" ajotapa.</li>
+                            <li><strong>Reunalla (Punainen):</strong> Voimakas kiihdytys/jarrutus.</li>
                         </ul>
                     </div>`
             },
             {
                 title: "🚗 3. Autotalli ja Valinnat",
                 content: `
-                    <p>Sovellus tallentaa ajot aina tietylle ajoneuvolle.</p>
+                    <p>Hallitse kalustoa <strong>Asetukset</strong>-välilehdellä.</p>
                     
                     <div class="help-step">
                         <strong>Valinta ennen ajoa:</strong>
-                        Yläpalkin valikosta valitaan käytettävä auto.
-                        <br><span style="color:#ff4444; font-weight:bold;">HUOM:</span> Tallennusta ei voi aloittaa "Kaikki ajoneuvot" -tilassa. Valitse tietty auto.
+                        Yläpalkin valikosta valitaan käytettävä kulkuneuvo.
+                        <br><span style="color:#ff4444; font-weight:bold;">HUOM:</span> Tallennusta ei voi aloittaa "Kaikki ajoneuvot" -tilassa.
                     </div>
 
                     <div class="help-step">
@@ -89,7 +76,7 @@ const helpData = {
                             <li><strong>🚗 Auto:</strong> Kartta loitontaa maantienopeuksissa. Eco-analyysi on päällä.</li>
                             <li><strong>🏍️ Moottoripyörä:</strong> Kuin auto, mutta omalla ikonilla. Eco-analyysi päällä.</li>
                             <li><strong>🚲 Pyörä:</strong> Kartta pysyy aina lähikuvassa. Eco-analyysi on pois päältä.</li>
-                            <li><strong>🚶 Kävely:</strong> Kartta pysyy lähellä, G-voimamittari pois päältä, ei tankkauksia. Mittaristo näyttää askeleet.</li>
+                            <li><strong>🚶 Kävely:</strong> Kartta pysyy lähellä, G-voimamittari pois päältä, ei tankkauksia.</li>
                         </ul>
                     </div>
 
@@ -135,14 +122,13 @@ const helpData = {
                 title: "📝 5. Historia & Raportit",
                 content: `
                     <div class="help-step">
-                        <strong>📋 Listan käyttö (UUSI):</strong>
+                        <strong>📋 Listan käyttö:</strong>
                         Jos käytät tiivistettyä näkymää, <strong>klikkaa riviä</strong> avataksesi sen. Näet silloin tarkemmat tiedot, sään ja muokkausnapit. Klikkaa uudestaan sulkeaksesi.
                     </div>
 
                     <div class="help-step">
-                        <strong>✏️ Muokkaus (Extended Edit):</strong>
-                        Unohditko käynnistää ajoissa? Paina kynä-ikonia (✏️) listassa.
-                        Voit muuttaa jälkikäteen: Päivämäärän, Matkan (km), Tyypin ja Auton.
+                        <strong>✏️ Muokkaus:</strong>
+                        Paina kynä-ikonia (✏️) muokataksesi tietoja jälkikäteen.
                     </div>
 
                     <div class="help-step">
@@ -159,7 +145,23 @@ const helpData = {
                 title: "⛽ 6. Tankkaukset",
                 content: `
                     <p>Paina mittaristossa <strong>⛽</strong>-nappia lisätäksesi tankkauksen.</p>
-                    <p><strong>Huom:</strong> Tankkausta ei voi lisätä polkupyörälle, kävelylle tai arkistoidulle autolle. Syötä litrat ja eurot saadaksesi litrahinnan.</p>`
+                    
+                    <div class="help-step">
+                        <strong>📉 Keskikulutus (l/100km):</strong>
+                        <br>Sovellus laskee automaattisesti keskikulutuksen ja näyttää sen tankkauskortin alareunassa.
+                        <ul>
+                            <li><strong>Huom:</strong> Lukema vaatii vähintään kaksi peräkkäistä tankkausta samalle autolle (jotta ajettu matka voidaan laskea).</li>
+                            <li>Ensimmäisessä tankkauksessa lukemaa ei vielä näy.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>Muuta:</strong>
+                        <ul>
+                            <li>Tankkausta ei voi lisätä polkupyörälle tai kävelylle.</li>
+                            <li>Syötä litrat ja eurot saadaksesi litrahinnan.</li>
+                        </ul>
+                    </div>`
             },
             {
                 title: "🆘 7. Crash Recovery (Palautus)",
@@ -266,11 +268,11 @@ const helpData = {
                     <p>This is a PWA (Progressive Web App). To make it work reliably in the background and remove address bars, please follow these steps.</p>
                     
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>New in v6.03:</strong>
+                        <strong>New in v6.04:</strong>
                         <ul>
+                            <li><strong>⛽ Avg Consumption:</strong> Refueling history now shows l/100km (needs 2 refuels).</li>
                             <li><strong>🚶 Walking Mode:</strong> Dashboard now shows Steps, Pace (min/km) and Calories!</li>
                             <li><strong>📋 Expandable History:</strong> Tap a compact row to see full details.</li>
-                            <li><strong>👁️ Minimalist Mode:</strong> Tap eye icon to hide distractions.</li>
                         </ul>
                     </div>
 
@@ -306,11 +308,11 @@ const helpData = {
                     </div>
 
                     <div class="help-step">
-                        <strong>🚶 Walking Mode Metrics (NEW):</strong>
+                        <strong>🚶 Walking Mode Metrics:</strong>
                         When "Walking" is selected in Garage:
                         <ul>
-                            <li><strong>Steps:</strong> Estimated based on distance (approx 1312 steps/km).</li>
-                            <li><strong>Pace:</strong> Shown as <em>min/km</em> (e.g., 10:30).</li>
+                            <li><strong>Steps:</strong> Estimated based on distance.</li>
+                            <li><strong>Pace:</strong> Shown as <em>min/km</em>.</li>
                             <li><strong>Calories:</strong> Estimated burn.</li>
                         </ul>
                     </div>
@@ -386,7 +388,7 @@ const helpData = {
                 title: "📝 5. History & Reports",
                 content: `
                     <div class="help-step">
-                        <strong>📋 Using the List (NEW):</strong>
+                        <strong>📋 Using the List:</strong>
                         If using Compact Mode, <strong>tap a row</strong> to expand it and see full details (Weather, Avg Speed etc.). Tap again to close.
                     </div>
 
@@ -410,7 +412,15 @@ const helpData = {
                 title: "⛽ 6. Refueling",
                 content: `
                     <p>Tap the <strong>⛽</strong> button on the dashboard to add a refueling.</p>
-                    <p><strong>Note:</strong> Cannot add fuel for bikes, walking or archived cars. Enter liters and euros to get price/liter.</p>`
+                    
+                    <div class="help-step">
+                        <strong>📉 Avg Consumption (l/100km):</strong>
+                        <br>The app automatically calculates consumption based on mileage.
+                        <ul>
+                            <li><strong>Note:</strong> Requires at least two refuelings for the same car to calculate distance traveled.</li>
+                            <li>It won't show up on the very first entry.</li>
+                        </ul>
+                    </div>`
             },
             {
                 title: "🆘 7. Crash Recovery",
@@ -517,11 +527,11 @@ const helpData = {
                     <p>Đây là ứng dụng PWA. Để hoạt động ổn định trong nền và không bị thanh địa chỉ che khuất, hãy làm theo các bước sau.</p>
                     
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>Mới trong v6.03:</strong>
+                        <strong>Mới trong v6.04:</strong>
                         <ul>
-                            <li><strong>🚶 Chế độ Đi bộ:</strong> Bảng điều khiển hiện Số bước, Tốc độ (phút/km), Calo.</li>
-                            <li><strong>📋 Lịch sử mở rộng:</strong> Chạm vào dòng để xem chi tiết.</li>
-                            <li><strong>👁️ Chế độ Tối giản:</strong> Nhấn biểu tượng con mắt để ẩn thông số phụ.</li>
+                            <li><strong>⛽ Tiêu thụ nhiên liệu:</strong> Hiện l/100km (cần 2 lần đổ).</li>
+                            <li><strong>🚶 Chế độ Đi bộ:</strong> Bảng điều khiển hiện Số bước, Tốc độ, Calo.</li>
+                            <li><strong>📋 Lịch sử:</strong> Chạm vào dòng để xem chi tiết.</li>
                         </ul>
                     </div>
 
@@ -573,7 +583,7 @@ const helpData = {
                     </div>
 
                     <div class="help-step">
-                        <strong>🚶 Chế độ Đi bộ (MỚI):</strong>
+                        <strong>🚶 Chế độ Đi bộ:</strong>
                         Khi chọn "Đi bộ", bạn sẽ thấy:
                         <ul>
                             <li><strong>Số bước:</strong> Ước tính theo quãng đường.</li>
@@ -653,7 +663,7 @@ const helpData = {
                 title: "📝 5. Lịch sử & Báo cáo",
                 content: `
                     <div class="help-step">
-                        <strong>📋 Lịch sử mở rộng (MỚI):</strong>
+                        <strong>📋 Lịch sử mở rộng:</strong>
                         Nếu đang dùng chế độ thu gọn, hãy <strong>chạm vào dòng</strong> chuyến đi để mở rộng và xem chi tiết (thời tiết, tốc độ...). Chạm lại để đóng.
                     </div>
 
@@ -677,7 +687,14 @@ const helpData = {
                 title: "⛽ 6. Đổ xăng",
                 content: `
                     <p>Nhấn nút <strong>⛽</strong> trên bảng điều khiển để thêm lần đổ xăng.</p>
-                    <p><strong>Lưu ý:</strong> Không thể thêm xăng cho xe đạp, đi bộ hoặc xe đã lưu trữ. Nhập số lít và số tiền để tính giá/lít.</p>`
+                    
+                    <div class="help-step">
+                        <strong>📉 Tiêu thụ (l/100km):</strong>
+                        <br>Ứng dụng tự động tính mức tiêu thụ.
+                        <ul>
+                            <li><strong>Lưu ý:</strong> Cần ít nhất 2 lần đổ xăng liên tiếp để tính.</li>
+                        </ul>
+                    </div>`
             },
             {
                 title: "🆘 7. Khôi phục sự cố (Crash Recovery)",
@@ -776,7 +793,7 @@ window.renderHelp = function(lang) {
     }
 
     const data = helpData[lang] || helpData['fi'];
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.03';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.04';
 
     // 1. Kielinapit
     const buttons = `
