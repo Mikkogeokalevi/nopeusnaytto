@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - NYT 5.99 (Offline & Moto)
-const APP_VERSION = "5.99"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT v6.00 (Walking Update)
+const APP_VERSION = "6.00"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -80,18 +80,5 @@ var userCars = [];
 var currentCarId = "all"; 
 var currentCarType = "car"; 
 
-// Tankkausdata
-var allRefuelings = [];
-var currentFuelCarId = null; 
-
-// Tilastografiikat (Chart.js instanssit)
-var chartDriveTrend = null;
-var chartDriveMonthly = null;
-var chartDriveSpeed = null;
-var chartDriveVehicles = null;
-var chartDriveStyle = null;
-
-var chartFuelType = null;
-var chartFuelMonthly = null;
-var chartFuelTrend = null;
-var chartFuelCar = null;
+// Tankkausmuisti (Apumuuttuja)
+var editingRefuelKey = null;
