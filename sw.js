@@ -1,4 +1,78 @@
 // =========================================================
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.04
+// =========================================================
+
+const CACHE_NAME = 'ajopro-v6.04'; // Versionosto pakottaa päivityksen
+const urlsToCache = [
+    './',
+    './index.html',
+    './manifest.json',
+    './style.css',
+    
+    // Javascript-moduulit
+    './globals.js',
+    './ui.js',
+    './auth.js',
+    './map.js',
+    './gps.js',
+    './garage.js',
+    './history.js',
+    './help.js',
+    './app.js',
+
+    // Kuvat ja ikonit
+    './ajopaivakirja_logo.png',
+    './ajopaivakirja_logo_mu.png',
+    './alareunakuva.png',
+    './alareunakuva_mu.png',
+
+    // Ulkoiset kirjastot
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+    'https://cdn.jsdelivr.net/npm/chart.js',
+    'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+    'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
+    'https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js'
+];
+
+// 1. ASENNUS
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => cache.addAll(urlsToCache))
+    );
+    self.skipWaiting();
+});
+
+// 2. AKTIVOINTI (Poistaa vanhat välimuistit)
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    if (cacheName !== CACHE_NAME) {
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
+    self.clients.claim();
+});
+
+// 3. FETCH (VERKKO PYYNNÖT)
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        caches.match(event.request)
+            .then((response) => {
+                // Palauta välimuistista jos löytyy, muuten hae verkosta
+                if (response) {
+                    return response;
+                }
+                return fetch(event.request);
+            })
+    );
+});// =========================================================
 // SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.03
 // =========================================================
 
