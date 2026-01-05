@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (v6.01 LOGIC)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (v6.03 WALKING METRICS)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -197,7 +197,7 @@ if(btnConfirmYes) {
 }
 
 
-// --- 3. UI LOGIIKKA ---
+// --- 3. UI LOGIIKKA (UPDATED v6.03: Walking Metrics) ---
 
 function switchView(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
@@ -248,10 +248,94 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         if (spd >= 120) dashSpeedEl.style.color = '#ff1744'; 
         else dashSpeedEl.style.color = ''; 
     }
-    if(dashMaxSpeedEl) dashMaxSpeedEl.innerText = max.toFixed(1);
+
+    // --- KÄVELY-TILA (Walking Mode) ---
+    // Vaihdetaan tietyt ruudut näyttämään askeleita, tahtia ja kaloreita
+    if (currentCarType === 'walking') {
+        
+        // 1. Max Speed -> Askeleet (Arvio: 1312 askelta / km)
+        const steps = Math.floor(dist * 1312);
+        if(dashMaxSpeedEl) {
+            dashMaxSpeedEl.innerText = steps;
+            // Etsitään label ja unit
+            const label = dashMaxSpeedEl.previousElementSibling;
+            const unit = dashMaxSpeedEl.nextElementSibling;
+            if(label) label.innerText = "Askeleet";
+            if(unit) unit.innerText = "kpl (arvio)";
+        }
+
+        // 2. Avg Speed -> Tahti (min/km)
+        let pace = 0;
+        if (spd > 0.5) { // Vältetään ääretöntä arvoa kun ollaan paikallaan
+            pace = 60 / spd;
+        }
+        if(dashAvgEl) {
+            // Muotoillaan min:sek
+            const pMin = Math.floor(pace);
+            const pSec = Math.round((pace - pMin) * 60);
+            const pSecStr = pSec < 10 ? "0"+pSec : pSec;
+            dashAvgEl.innerText = (pMin > 99) ? "--:--" : `${pMin}:${pSecStr}`;
+            
+            const label = dashAvgEl.previousElementSibling;
+            const unit = dashAvgEl.nextElementSibling;
+            if(label) label.innerText = "Tahti";
+            if(unit) unit.innerText = "min/km";
+        }
+
+        // 3. Suunta -> Kalorit (Arvio: 55 kcal / km)
+        const cals = Math.floor(dist * 55);
+        if(dashHeadingEl) {
+            dashHeadingEl.innerText = cals;
+            // Koska suunta-ruudussa on nuoli, piilotetaan se
+            if(compassArrowEl) compassArrowEl.style.display = 'none';
+            dashHeadingEl.style.fontSize = "20px"; // Palautetaan fonttikoko
+
+            // Etsitään label (Suunta-ruudun rakenne on erilainen)
+            // .stat-card -> .stat-label
+            const card = dashHeadingEl.closest('.stat-card');
+            if(card) {
+                const label = card.querySelector('.stat-label');
+                if(label) label.innerText = "Kalorit";
+            }
+        }
+
+    } else {
+        // --- AUTO-TILA (Palautetaan normaalit) ---
+        
+        // 1. Max Speed
+        if(dashMaxSpeedEl) {
+            dashMaxSpeedEl.innerText = max.toFixed(1);
+            const label = dashMaxSpeedEl.previousElementSibling;
+            const unit = dashMaxSpeedEl.nextElementSibling;
+            if(label) label.innerText = "Huippu";
+            if(unit) unit.innerText = "km/h";
+        }
+
+        // 2. Avg Speed
+        if(dashAvgEl) {
+            if(avg !== undefined) dashAvgEl.innerText = avg.toFixed(1);
+            const label = dashAvgEl.previousElementSibling;
+            const unit = dashAvgEl.nextElementSibling;
+            if(label) label.innerText = "Ø Nopeus";
+            if(unit) unit.innerText = "km/h";
+        }
+
+        // 3. Suunta
+        if(dashHeadingEl) {
+            // Suunnan päivitys hoidetaan gps.js:ssä, mutta varmistetaan elementit
+            if(compassArrowEl) compassArrowEl.style.display = 'inline-block';
+            
+            const card = dashHeadingEl.closest('.stat-card');
+            if(card) {
+                const label = card.querySelector('.stat-label');
+                if(label) label.innerText = "Suunta";
+            }
+        }
+    }
+
+    // Muut (Matka, Aika, Korkeus) ovat yhteisiä
     if(dashDistEl) dashDistEl.innerText = dist.toFixed(2); 
     if(dashAltEl) dashAltEl.innerText = Math.round(alt);
-    if(avg !== undefined && dashAvgEl) dashAvgEl.innerText = avg.toFixed(1);
 }
 
 function updateClockAndDate() {
@@ -640,7 +724,7 @@ if(statTabDrives && statTabFuel) {
 }
 
 // ==========================================
-// UUSI LOGIIKKA: ULKOASUASETUKSET (v6.01)
+// UUSI LOGIIKKA: ULKOASUASETUKSET
 // ==========================================
 
 // 1. VÄRIVALINTA
@@ -659,10 +743,9 @@ if (colorOptions.length > 0) {
     });
 }
 
-// 2. MINIMALISTINEN TILA (SETTINGS & DASHBOARD BUTTON)
+// 2. MINIMALISTINEN TILA
 const toggleMinimal = document.getElementById('toggle-minimalist');
 
-// Funktio, joka vaihtaa tilaa ja päivittää napit
 function setMinimalistMode(enable) {
     if (enable) {
         document.body.classList.add('minimalist-mode');
@@ -674,18 +757,16 @@ function setMinimalistMode(enable) {
     localStorage.setItem('minimalistMode', enable ? 'true' : 'false');
 }
 
-// Kuuntelija asetuksille
 if (toggleMinimal) {
     toggleMinimal.addEventListener('change', (e) => {
         setMinimalistMode(e.target.checked);
     });
 }
 
-// Kuuntelija uudelle napille mittaristossa
 if (btnDashMinimal) {
     btnDashMinimal.addEventListener('click', () => {
         const isMin = document.body.classList.contains('minimalist-mode');
-        setMinimalistMode(!isMin); // Käänteinen tila
+        setMinimalistMode(!isMin); 
         showToast(!isMin ? "Yksinkertaistettu tila: PÄÄLLÄ" : "Yksinkertaistettu tila: POIS");
     });
 }
@@ -717,7 +798,6 @@ if (toggleCompact) {
 window.addEventListener('DOMContentLoaded', () => {
     switchView('dashboard');
     
-    // Väri
     const savedColor = localStorage.getItem('accentColor');
     if (savedColor) {
         document.documentElement.style.setProperty('--accent-color', savedColor);
@@ -729,13 +809,11 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Minimalist
     const savedMinimal = localStorage.getItem('minimalistMode');
     if (savedMinimal === 'true') {
         setMinimalistMode(true);
     }
     
-    // Compact History
     const savedCompact = localStorage.getItem('compactHistory');
     if (savedCompact === 'true') {
         const logList = document.getElementById('log-list');
