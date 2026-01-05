@@ -1,5 +1,5 @@
 /* =========================================================
-   STYLE.CSS - IPHONE LAYOUT FIX (v5.98 iOS)
+   STYLE.CSS - IPHONE LAYOUT FIX (v6.01 FIXED LAYOUT)
    ========================================================= */
 
 /* BOX-SIZING FIX */
@@ -383,18 +383,18 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .summary-val { font-size: 24px; font-weight: 800; color: var(--accent-color); text-shadow: 0 0 10px rgba(41, 121, 255, 0.2); }
 .summary-sep { color: var(--border-color); font-size: 24px; font-weight: 100; opacity: 0.3; }
 
-/* CONTROLS - IPHONE FIX: Safe area bottom padding */
+/* CONTROLS - KORJATTU: Napeille tilaa alapalkin yläpuolelle */
 .controls-container { 
     background-color: var(--panel-bg); 
     padding: 10px 15px; 
     
-    /* IPHONE FIX: Tärkeä lisäys - turva-alue alareunaan */
-    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    /* FIX: Lisätty reilu padding alas, jotta alapalkki (fixed) ei peitä nappeja */
+    padding-bottom: max(85px, env(safe-area-inset-bottom));
     
     text-align: center; 
     border-top: 1px solid var(--border-color); 
     z-index: 2000; 
-    flex-shrink: 0; /* Älä anna tämän kutistua */
+    flex-shrink: 0; 
     width: 100%; 
     box-shadow: 0 -5px 20px rgba(0,0,0,0.2); 
 }
@@ -412,7 +412,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .splash-logo { width: 100px; height: 100px; border-radius: 50%; box-shadow: 0 0 30px rgba(41, 121, 255, 0.4); margin-bottom: 20px; animation: pulse 2s infinite; }
 @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0.4); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(41, 121, 255, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0); } }
 
-/* --- MODALS (KORJATTU: NOUSEE YLÖS NÄPPÄIMISTÖÄ KARKUUN) --- */
+/* --- MODALS --- */
 .modal-overlay { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     background-color: rgba(0, 0, 0, 0.85); z-index: 9000; 
@@ -458,7 +458,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     transform: translateX(-50%) translateY(-10px);
 }
 
-/* ALAREUNAKUVA - IPHONE FIX: flex-shrink, jotta kuva pienenee tarvittaessa */
+/* ALAREUNAKUVA */
 .bottom-branding { 
     width: 100%; 
     display: flex; 
@@ -468,7 +468,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     padding-top: 5px; 
     padding-bottom: 0px; 
     z-index: 10; 
-    flex-shrink: 1; /* SALLI KUTISTUMINEN */
+    flex-shrink: 1; 
 }
 .footer-img { max-width: 55%; max-height: 15vh; height: auto; object-fit: contain; border-radius: 20px; opacity: 0.8; }
 .light-mode-img { display: none; }
@@ -483,7 +483,6 @@ body.light-theme .light-mode-img { display: block; }
 #compass-arrow { display: inline-block; transition: transform 0.3s cubic-bezier(0.4, 2.5, 0.5, 0.5); }
 
 /* --- VAAKATASO (LANDSCAPE) TUKI --- */
-/* NÄYTÄ GRID VAIN KUN LUOKKA 'active-view' ON PÄÄLLÄ JA NÄYTTÖ VAAKA */
 @media screen and (orientation: landscape) and (max-height: 500px) {
     #dashboard-view.active-view {
         display: grid;
@@ -499,9 +498,7 @@ body.light-theme .light-mode-img { display: block; }
     }
 
     .bottom-branding { display: none; }
-    
     .status-bar { grid-area: status; width: 100%; justify-content: center; margin: 0; min-height: 20px; }
-    
     .huge-speed-container { grid-area: speed; align-self: center; margin: 0; }
     .huge-speed { font-size: 35vh; }
     .huge-speed.three-digits { font-size: 26vh; }
@@ -516,9 +513,7 @@ body.light-theme .light-mode-img { display: block; }
         height: 100%;
         padding-left: 10px;
     }
-    
     .address-container { display: block; grid-area: address; width: 100%; text-align: center; padding-top: 5px; z-index: 60; }
-    
     .time-weather-wrapper {
         grid-area: meta;
         flex-direction: row;
@@ -535,7 +530,7 @@ body.light-theme .light-mode-img { display: block; }
         position: absolute;
         top: auto; 
         bottom: 10px; 
-        left: 35%; /* Säädä tarvittaessa */
+        left: 35%;
         right: auto;
         width: 40px;
         height: 40px;
@@ -545,54 +540,43 @@ body.light-theme .light-mode-img { display: block; }
 }
 
 /* ========================================= */
-/* HUD MODE (HEAD-UP DISPLAY) - NEW FEATURE  */
+/* HUD MODE (HEAD-UP DISPLAY) */
 /* ========================================= */
 
 body.hud-mode {
-    /* Pakotetaan musta tausta ja neon-vihreä teksti */
     --bg-color: #000000 !important;
     --panel-bg: #000000 !important;
-    --text-color: #00ff00 !important; /* Kirkas vihreä */
+    --text-color: #00ff00 !important; 
     --speed-color: #00ff00 !important;
     --accent-color: #00ff00 !important;
     --subtext-color: #00cc00 !important;
     --card-bg: #000000 !important;
     --border-color: #004400 !important;
-    
-    /* Estetään skrollaus HUD-tilassa */
     overflow: hidden; 
 }
 
-/* Piilotetaan kaikki "turha" HUD-tilassa heijastusten vähentämiseksi */
 body.hud-mode .top-bar-container,
 body.hud-mode .bottom-branding,
 body.hud-mode .controls-container,
 body.hud-mode .side-tap-zone, 
 body.hud-mode #btn-open-fuel,
-body.hud-mode .bottom-nav { /* Piilota myös uusi alapalkki HUD-tilassa */
+body.hud-mode .bottom-nav,
+body.hud-mode .g-force-wrapper,
+body.hud-mode .time-right-col button { 
     display: none !important;
 }
 
-/* KÄÄNNETÄÄN DASHBOARD PEILIKUVAKSI */
 body.hud-mode #dashboard-view {
-    transform: scaleY(-1); /* Peilaus pystysuunnassa */
-    height: 100vh; /* Täysi korkeus */
-    padding-top: 50px; /* Tilaa, ettei osu reunaan */
-    border: 4px solid #00ff00; /* Reunus indikoimaan tilaa */
-    box-shadow: inset 0 0 50px #00ff00; /* Cool glow effect */
+    transform: scaleY(-1); 
+    height: 100vh; 
+    padding-top: 50px; 
+    border: 4px solid #00ff00; 
+    box-shadow: inset 0 0 50px #00ff00; 
 }
 
-/* Suurennetaan fontteja HUD-tilassa luettavuuden parantamiseksi */
-body.hud-mode .huge-speed {
-    text-shadow: 0 0 10px #00ff00;
-}
-body.hud-mode .stat-value {
-    font-size: 26px;
-    font-weight: 900;
-}
-body.hud-mode .stat-card {
-    border: 2px solid #004400;
-}
+body.hud-mode .huge-speed { text-shadow: 0 0 10px #00ff00; }
+body.hud-mode .stat-value { font-size: 26px; font-weight: 900; }
+body.hud-mode .stat-card { border: 2px solid #004400; }
 
 /* ========================================= */
 /* UUDET UI-OMINAISUUDET (V6.00 PÄIVITYS)    */
@@ -640,6 +624,19 @@ body.minimalist-mode #dashboard-view .huge-speed-container {
     margin-bottom: 50px;
 }
 
+/* UUSI NAPPI MITTARISTOON (MINIMALIST-TOGGLE) */
+.dashboard-toggle-btn {
+    font-size: 20px;
+    background: transparent;
+    border: none;
+    color: var(--subtext-color);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.dashboard-toggle-btn:active, .dashboard-toggle-btn.active {
+    color: var(--accent-color);
+}
+
 /* 3. VÄRIVALITSIN ASETUKSISSA */
 .color-picker-container {
     display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center;
@@ -654,41 +651,40 @@ body.minimalist-mode #dashboard-view .huge-speed-container {
     box-shadow: 0 0 10px currentColor;
 }
 
-/* 4. KOMPAKTI HISTORIA */
-.log-list.compact .log-card {
-    padding: 10px 15px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.log-list.compact .log-header {
-    margin-bottom: 0;
-    border-bottom: none;
-    padding-bottom: 0;
-    width: 100%;
-}
-
-/* Piilotetaan turhat osat kompaktissa tilassa */
+/* 4. KOMPAKTI HISTORIA - KORJATTU !important:lla */
+/* Piilotetaan elementit kokonaan */
 .log-list.compact .log-stats,
 .log-list.compact .log-tags,
 .log-list.compact .subject-input,
-.log-list.compact .map-btn, 
-.log-list.compact .log-title-group div:last-child { /* Piilota auton nimi jos liian pitkä */
-    display: none; 
+.log-list.compact .map-btn,
+.log-list.compact .log-title-group div:last-child { 
+    display: none !important; 
 }
 
-/* Näytetään vain tärkeimmät kompaktissa tilassa */
+/* Tiivistetään kortti */
+.log-list.compact .log-card {
+    padding: 12px 15px !important;
+    margin-bottom: 8px !important;
+}
+
+.log-list.compact .log-header {
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+/* Asetellaan otsikko uudelleen */
 .log-list.compact .log-title-group {
-    flex-direction: row;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-    justify-content: space-between;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
 }
 
+/* Pienempi teksti päivämäärälle */
 .log-list.compact .log-date-line {
-    font-size: 14px;
-    color: var(--text-color);
+    font-size: 13px !important;
+    color: var(--text-color) !important;
+    margin-right: 10px;
 }
