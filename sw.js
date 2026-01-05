@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.00
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.01
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.00'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.01'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
@@ -44,7 +44,7 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// 2. AKTIVOINTI
+// 2. AKTIVOINTI (Poistaa vanhat välimuistit)
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
