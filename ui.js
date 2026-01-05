@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (PREMIUM UI v5.98)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (v6.00 UI UPDATE)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -36,7 +36,7 @@ const views = {
     help: document.getElementById('help-view')
 };
 
-// Navigaatio
+// Navigaatio (Vanha ylävalikko + Uusi alapalkki)
 const navBtns = {
     dashboard: document.getElementById('nav-dashboard'),
     map: document.getElementById('nav-map'),
@@ -44,6 +44,15 @@ const navBtns = {
     stats: document.getElementById('nav-stats'),
     settings: document.getElementById('nav-settings'),
     help: document.getElementById('nav-help')
+};
+
+// UUSI: Alapalkin napit
+const botNavBtns = {
+    dashboard: document.getElementById('bot-nav-dashboard'),
+    map: document.getElementById('bot-nav-map'),
+    history: document.getElementById('bot-nav-history'),
+    stats: document.getElementById('bot-nav-stats'),
+    settings: document.getElementById('bot-nav-settings')
 };
 
 // Modaalit
@@ -186,28 +195,41 @@ if(btnConfirmYes) {
 }
 
 
-// --- 3. UI LOGIIKKA ---
+// --- 3. UI LOGIIKKA (PÄIVITETTY V6.00: Alapalkki tuki) ---
 
 function switchView(viewName) {
     if(mainMenu) mainMenu.style.display = 'none';
     
+    // Piilotetaan kaikki näkymät
     Object.values(views).forEach(el => {
         if(el) {
             el.classList.remove('active-view');
             el.style.display = 'none'; 
         }
     });
+    
+    // Nollataan ylävalikon aktiivisuus
     Object.values(navBtns).forEach(btn => {
         if(btn) btn.classList.remove('active-menu');
     });
 
+    // Nollataan alapalkin aktiivisuus
+    Object.values(botNavBtns).forEach(btn => {
+        if(btn) btn.classList.remove('active');
+    });
+
+    // Näytetään valittu näkymä
     const targetEl = views[viewName];
     if (targetEl) {
         targetEl.style.display = ''; 
         targetEl.classList.add('active-view');
     }
     
+    // Aktivoidaan ylävalikon nappi
     if(navBtns[viewName]) navBtns[viewName].classList.add('active-menu');
+
+    // Aktivoidaan alapalkin nappi (jos olemassa)
+    if(botNavBtns[viewName]) botNavBtns[viewName].classList.add('active');
 
     if (viewName !== 'map') {
         if (typeof clearSavedRoute === 'function') clearSavedRoute();
@@ -252,12 +274,21 @@ if (appLogo) appLogo.addEventListener('click', () => switchView('dashboard'));
 if (sideTapLeft) sideTapLeft.addEventListener('click', () => switchView('map'));
 if (mapReturnBtn) mapReturnBtn.addEventListener('click', () => switchView('dashboard'));
 
+// Ylävalikko
 if (navBtns.dashboard) navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
 if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
 if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
 if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('stats'));
 if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
 if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
+
+// UUSI: Alapalkki
+if (botNavBtns.dashboard) botNavBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
+if (botNavBtns.map) botNavBtns.map.addEventListener('click', () => switchView('map'));
+if (botNavBtns.history) botNavBtns.history.addEventListener('click', () => switchView('history'));
+if (botNavBtns.stats) botNavBtns.stats.addEventListener('click', () => switchView('stats'));
+if (botNavBtns.settings) botNavBtns.settings.addEventListener('click', () => switchView('settings'));
+
 
 // --- HUD NAPPI & LOGIIKKA (FULLSCREEN + LOCK FIX) ---
 if (btnHud) {
@@ -668,6 +699,61 @@ if(statTabDrives && statTabFuel) {
     });
 }
 
+// ==========================================
+// UUSI LOGIIKKA: ULKOASUASETUKSET (v6.00)
+// ==========================================
+
+// 1. VÄRIVALINTA
+const colorOptions = document.querySelectorAll('.color-option');
+if (colorOptions.length > 0) {
+    colorOptions.forEach(opt => {
+        opt.addEventListener('click', () => {
+            // Poista vanha valinta
+            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+            // Lisää uusi
+            opt.classList.add('selected');
+            
+            // Vaihda väri
+            const newColor = opt.getAttribute('data-color');
+            document.documentElement.style.setProperty('--accent-color', newColor);
+            document.documentElement.style.setProperty('--speed-color', newColor);
+            
+            // Tallenna
+            localStorage.setItem('accentColor', newColor);
+            showToast("Väriteema vaihdettu! 🎨");
+        });
+    });
+}
+
+// 2. MINIMALISTINEN TILA
+const toggleMinimal = document.getElementById('toggle-minimalist');
+if (toggleMinimal) {
+    toggleMinimal.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            document.body.classList.add('minimalist-mode');
+            localStorage.setItem('minimalistMode', 'true');
+        } else {
+            document.body.classList.remove('minimalist-mode');
+            localStorage.setItem('minimalistMode', 'false');
+        }
+    });
+}
+
+// 3. KOMPAKTI HISTORIA
+const toggleCompact = document.getElementById('toggle-compact-history');
+if (toggleCompact) {
+    toggleCompact.addEventListener('change', (e) => {
+        const logList = document.getElementById('log-list');
+        if (e.target.checked) {
+            if(logList) logList.classList.add('compact');
+            localStorage.setItem('compactHistory', 'true');
+        } else {
+            if(logList) logList.classList.remove('compact');
+            localStorage.setItem('compactHistory', 'false');
+        }
+    });
+}
+
 // --- 6. ALUSTUS ---
 (function updateVersionText() {
     if(typeof APP_VERSION !== 'undefined') {
@@ -676,6 +762,35 @@ if(statTabDrives && statTabFuel) {
     }
 })();
 
+// LATAA TALLENNETUT ASETUKSET
 window.addEventListener('DOMContentLoaded', () => {
     switchView('dashboard');
+    
+    // Väri
+    const savedColor = localStorage.getItem('accentColor');
+    if (savedColor) {
+        document.documentElement.style.setProperty('--accent-color', savedColor);
+        document.documentElement.style.setProperty('--speed-color', savedColor);
+        // Päivitä valinta UI:ssa
+        const opts = document.querySelectorAll('.color-option');
+        opts.forEach(o => {
+            o.classList.remove('selected');
+            if (o.getAttribute('data-color') === savedColor) o.classList.add('selected');
+        });
+    }
+    
+    // Minimalist
+    const savedMinimal = localStorage.getItem('minimalistMode');
+    if (savedMinimal === 'true') {
+        document.body.classList.add('minimalist-mode');
+        if(toggleMinimal) toggleMinimal.checked = true;
+    }
+    
+    // Compact History
+    const savedCompact = localStorage.getItem('compactHistory');
+    if (savedCompact === 'true') {
+        const logList = document.getElementById('log-list');
+        if(logList) logList.classList.add('compact');
+        if(toggleCompact) toggleCompact.checked = true;
+    }
 });
