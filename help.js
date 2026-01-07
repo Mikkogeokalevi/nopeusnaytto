@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.04 FUEL CONS UPDATE)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.05 CONTINUE DRIVE)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,20 +9,24 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta versiossa 6.04",
+                title: "🚀 1. Uutta versiossa 6.05",
                 content: `
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>⛽ Keskikulutus (l/100km):</strong>
+                        <strong>⏯️ Jatka ajoa (Continue Drive):</strong>
                         <ul>
-                            <li>Tankkaushistoria näyttää nyt keskikulutuksen! (Vaatii vähintään 2 tankkausta samalle autolle).</li>
+                            <li>Voit nyt jatkaa aiempaa ajoa historiasta!</li>
+                            <li>Täydellinen esim. kätköilyyn, jakeluajoon tai Lapin matkalle.</li>
+                            <li>Ajoaika ei kulu, kun auto on parkissa "pätkien" välissä.</li>
                         </ul>
+                    </div>
+                    <div class="help-step">
                         <strong>🚶 Kävely-tila:</strong>
                         <ul>
                             <li>Mittaristo näyttää askeleet, tahdin ja kalorit.</li>
                         </ul>
-                        <strong>🎨 Ulkoasu:</strong>
+                        <strong>⛽ Keskikulutus:</strong>
                         <ul>
-                            <li>Silmä-ikoni (yksinkertaistettu tila) ja klikattava historia.</li>
+                            <li>Näkyy tankkaushistoriassa (vaatii 2 tankkausta).</li>
                         </ul>
                     </div>`
             },
@@ -122,8 +126,18 @@ const helpData = {
                 title: "📝 5. Historia & Raportit",
                 content: `
                     <div class="help-step">
+                        <strong>⏯️ Jatka ajoa (UUSI):</strong>
+                        Voit jatkaa vanhaa ajoa (esim. kätköilypäivä tai usean päivän reissu):
+                        <ol>
+                            <li>Etsi ajo historiasta (alle 48h vanha).</li>
+                            <li>Paina vihreää ⏯️-nappia.</li>
+                            <li>Ajo jatkuu siitä mihin jäit. Välissä kulunut aika merkitään tauoksi.</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
                         <strong>📋 Listan käyttö:</strong>
-                        Jos käytät tiivistettyä näkymää, <strong>klikkaa riviä</strong> avataksesi sen. Näet silloin tarkemmat tiedot, sään ja muokkausnapit. Klikkaa uudestaan sulkeaksesi.
+                        Jos käytät tiivistettyä näkymää, <strong>klikkaa riviä</strong> avataksesi sen. Näet silloin tarkemmat tiedot.
                     </div>
 
                     <div class="help-step">
@@ -132,13 +146,8 @@ const helpData = {
                     </div>
 
                     <div class="help-step">
-                        <strong>➕ Manuaalinen lisäys:</strong>
-                        Unohditko koko sovelluksen? Paina historia-sivulla <strong>"+ Manuaalinen lisäys"</strong> lisätäksesi ajon käsin.
-                    </div>
-
-                    <div class="help-step">
                         <strong>📥 Raportointi (Excel/CSV):</strong>
-                        Paina <strong>"Lataa CSV"</strong>. Saat tiedoston, jonka voi avata Excelissä. Se sisältää sarakkeet: Pvm, Kello, Auto, Tyyppi (Työ/Oma), Matka, Kesto, Reitti ja Selite.
+                        Paina <strong>"Lataa CSV"</strong>. Saat tiedoston, jonka voi avata Excelissä.
                     </div>`
             },
             {
@@ -150,16 +159,7 @@ const helpData = {
                         <strong>📉 Keskikulutus (l/100km):</strong>
                         <br>Sovellus laskee automaattisesti keskikulutuksen ja näyttää sen tankkauskortin alareunassa.
                         <ul>
-                            <li><strong>Huom:</strong> Lukema vaatii vähintään kaksi peräkkäistä tankkausta samalle autolle (jotta ajettu matka voidaan laskea).</li>
-                            <li>Ensimmäisessä tankkauksessa lukemaa ei vielä näy.</li>
-                        </ul>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>Muuta:</strong>
-                        <ul>
-                            <li>Tankkausta ei voi lisätä polkupyörälle tai kävelylle.</li>
-                            <li>Syötä litrat ja eurot saadaksesi litrahinnan.</li>
+                            <li><strong>Huom:</strong> Lukema vaatii vähintään kaksi peräkkäistä tankkausta samalle autolle.</li>
                         </ul>
                     </div>`
             },
@@ -213,11 +213,10 @@ const helpData = {
 
                     <div class="help-step">
                         <strong>🗺️ Tärkeää kartoista:</strong>
-                        <br>Sovellus <strong>EI lataa</strong> koko maan karttoja offline-tilaan (kuten Google Maps).
+                        <br>Sovellus <strong>EI lataa</strong> koko maan karttoja offline-tilaan.
                         <ul>
                             <li>Jos ajat alueella, jota et ole aiemmin selannut, kartta näkyy <strong>harmaana ruudukkona</strong>.</li>
                             <li><strong>Älä huoli!</strong> Reitti ja kilometrit tallentuvat silti oikein tyhjälle pohjalle.</li>
-                            <li>Kun pääset taas nettiin, reitti piirtyy oikean kartan päälle.</li>
                         </ul>
                     </div>
 
@@ -237,7 +236,6 @@ const helpData = {
                             <li>Paina ylhäältä keltaista nappia: <strong>"📡 Lähetä odottavat ajot"</strong>.</li>
                             <li>Ajot siirtyvät pilveen ja muuttuvat pysyviksi.</li>
                         </ol>
-                        <br><em>Huom: Offline-ajoja ei voi muokata ennen synkronointia.</em>
                     </div>`
             },
             {
@@ -253,7 +251,7 @@ const helpData = {
                     </div>
                     <div class="help-step">
                         <strong>K: Miten saan tumman teeman pois?</strong>
-                        <br>V: Paina yläpalkin aurinko/kuu -ikonia (☀/☾).
+                        <br>V: Paina yläpalkin aurinko/kuu -ikonia (☀/☾) tai muuta asetuksista.
                     </div>`
             }
         ]
@@ -268,11 +266,11 @@ const helpData = {
                     <p>This is a PWA (Progressive Web App). To make it work reliably in the background and remove address bars, please follow these steps.</p>
                     
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>New in v6.04:</strong>
+                        <strong>New in v6.05:</strong>
                         <ul>
-                            <li><strong>⛽ Avg Consumption:</strong> Refueling history now shows l/100km (needs 2 refuels).</li>
-                            <li><strong>🚶 Walking Mode:</strong> Dashboard now shows Steps, Pace (min/km) and Calories!</li>
-                            <li><strong>📋 Expandable History:</strong> Tap a compact row to see full details.</li>
+                            <li><strong>⏯️ Continue Drive:</strong> Resume a previous drive from History! Great for multi-stop trips.</li>
+                            <li><strong>🚶 Walking Mode:</strong> Dashboard shows Steps, Pace (min/km) and Calories.</li>
+                            <li><strong>⛽ Avg Consumption:</strong> Refueling history shows l/100km.</li>
                         </ul>
                     </div>
 
@@ -388,6 +386,16 @@ const helpData = {
                 title: "📝 5. History & Reports",
                 content: `
                     <div class="help-step">
+                        <strong>⏯️ Continue Drive (NEW):</strong>
+                        To continue a previous trip (e.g., multi-stop):
+                        <ol>
+                            <li>Find the drive in History (must be recent).</li>
+                            <li>Tap the green ⏯️ button.</li>
+                            <li>Recording resumes. Time between drives is counted as pause.</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
                         <strong>📋 Using the List:</strong>
                         If using Compact Mode, <strong>tap a row</strong> to expand it and see full details (Weather, Avg Speed etc.). Tap again to close.
                     </div>
@@ -418,7 +426,6 @@ const helpData = {
                         <br>The app automatically calculates consumption based on mileage.
                         <ul>
                             <li><strong>Note:</strong> Requires at least two refuelings for the same car to calculate distance traveled.</li>
-                            <li>It won't show up on the very first entry.</li>
                         </ul>
                     </div>`
             },
@@ -476,7 +483,6 @@ const helpData = {
                         <ul>
                             <li>If you drive in a new area without internet, the map will show a <strong>gray grid</strong>.</li>
                             <li><strong>Don't worry!</strong> The route and distance are still recorded correctly on a blank background.</li>
-                            <li>When you get back online, the route will appear on the map.</li>
                         </ul>
                     </div>
 
@@ -496,7 +502,6 @@ const helpData = {
                             <li>Tap the yellow button: <strong>"📡 Sync pending drives"</strong>.</li>
                             <li>Drives are uploaded to the cloud.</li>
                         </ol>
-                        <br><em>Note: Offline drives cannot be edited before syncing.</em>
                     </div>`
             },
             {
@@ -527,11 +532,11 @@ const helpData = {
                     <p>Đây là ứng dụng PWA. Để hoạt động ổn định trong nền và không bị thanh địa chỉ che khuất, hãy làm theo các bước sau.</p>
                     
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>Mới trong v6.04:</strong>
+                        <strong>Mới trong v6.05:</strong>
                         <ul>
+                            <li><strong>⏯️ Tiếp tục lái (Continue Drive):</strong> Nối tiếp chuyến đi trước đó!</li>
                             <li><strong>⛽ Tiêu thụ nhiên liệu:</strong> Hiện l/100km (cần 2 lần đổ).</li>
                             <li><strong>🚶 Chế độ Đi bộ:</strong> Bảng điều khiển hiện Số bước, Tốc độ, Calo.</li>
-                            <li><strong>📋 Lịch sử:</strong> Chạm vào dòng để xem chi tiết.</li>
                         </ul>
                     </div>
 
@@ -663,8 +668,18 @@ const helpData = {
                 title: "📝 5. Lịch sử & Báo cáo",
                 content: `
                     <div class="help-step">
+                        <strong>⏯️ Tiếp tục lái (MỚI):</strong>
+                        Để nối tiếp chuyến đi trước:
+                        <ol>
+                            <li>Tìm chuyến đi trong lịch sử.</li>
+                            <li>Nhấn nút ⏯️ màu xanh.</li>
+                            <li>Thời gian nghỉ sẽ được tính là tạm dừng.</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
                         <strong>📋 Lịch sử mở rộng:</strong>
-                        Nếu đang dùng chế độ thu gọn, hãy <strong>chạm vào dòng</strong> chuyến đi để mở rộng và xem chi tiết (thời tiết, tốc độ...). Chạm lại để đóng.
+                        Nếu đang dùng chế độ thu gọn, hãy <strong>chạm vào dòng</strong> chuyến đi để mở rộng và xem chi tiết. Chạm lại để đóng.
                     </div>
 
                     <div class="help-step">
@@ -760,7 +775,6 @@ const helpData = {
                             <li>Nhấn nút vàng: <strong>"📡 Gửi dữ liệu chờ"</strong>.</li>
                             <li>Dữ liệu sẽ được lưu lên đám mây an toàn.</li>
                         </ol>
-                        <br><em>Lưu ý: Không thể sửa chuyến đi offline trước khi đồng bộ.</em>
                     </div>`
             },
             {
@@ -793,7 +807,7 @@ window.renderHelp = function(lang) {
     }
 
     const data = helpData[lang] || helpData['fi'];
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.04';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.05';
 
     // 1. Kielinapit
     const buttons = `
@@ -807,7 +821,7 @@ window.renderHelp = function(lang) {
     // 2. Otsikko
     let contentHtml = buttons + `
         <div style="text-align:center; margin-bottom: 30px;">
-            <img src="ajopaivakirja_logo.png?v=6.03" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-color); margin-bottom:10px;">
+            <img src="ajopaivakirja_logo.png?v=6.05" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent-color); margin-bottom:10px;">
             <h2 style="color:var(--accent-color); text-transform: uppercase; letter-spacing: 1px; margin:0;">${data.title}</h2>
             <p style="opacity:0.7; font-size:12px;">Mikkokalevin Ajo Pro v${ver}</p>
         </div>
