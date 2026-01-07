@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - NYT 6.04 (Fuel Consumption)
-const APP_VERSION = "6.04"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT 6.05 (Continue Drive Feature)
+const APP_VERSION = "6.05"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -51,6 +51,7 @@ var timerInterval = null;
 // Väliaikaiset tallennustiedot
 var tempDriveData = null; 
 var deleteKey = null;
+var currentDriveId = null; // UUSI: Tieto siitä, jatketaanko vanhaa ajoa (ID) vai onko uusi (null)
 
 // Ajodata (Live)
 var maxSpeed = 0;
