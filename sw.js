@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.04
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.05
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.04'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.05'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
