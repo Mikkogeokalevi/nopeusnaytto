@@ -1,5 +1,5 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, SUODATUS JA RAPORTOINTI (v6.04 FUEL CONS)
+// HISTORY.JS - HISTORIA, SUODATUS JA RAPORTOINTI (v6.05 CONTINUE DRIVE)
 // =========================================================
 
 // --- 0. OFFLINE MANAGER ---
@@ -21,19 +21,36 @@ function initOfflineManager() {
 }
 
 // Turvallinen tallennus (Kutsutaan GPS.js:stä)
-window.saveDriveSafely = function(driveData) {
+window.saveDriveSafely = function(driveData, updateKey = null) {
     if (navigator.onLine) {
-        return db.ref('ajopaivakirja/' + currentUser.uid).push().set(driveData)
-            .then(() => {
-                if(typeof showToast === 'function') showToast("Tallennettu pilveen! ☁️");
-                return true;
-            })
-            .catch((err) => {
-                console.warn("Pilvitallennus epäonnistui, tallennetaan paikallisesti.", err);
-                saveLocally(driveData);
-                return true;
-            });
+        // Jos updateKey on annettu, päivitetään olemassa olevaa
+        if (updateKey) {
+            return db.ref('ajopaivakirja/' + currentUser.uid + '/' + updateKey).update(driveData)
+                .then(() => {
+                    if(typeof showToast === 'function') showToast("Ajo päivitetty pilveen! ☁️");
+                    return true;
+                })
+                .catch((err) => {
+                    alert("Virhe päivityksessä: " + err.message);
+                    return false;
+                });
+        } 
+        // Muuten luodaan uusi
+        else {
+            return db.ref('ajopaivakirja/' + currentUser.uid).push().set(driveData)
+                .then(() => {
+                    if(typeof showToast === 'function') showToast("Tallennettu pilveen! ☁️");
+                    return true;
+                })
+                .catch((err) => {
+                    console.warn("Pilvitallennus epäonnistui, tallennetaan paikallisesti.", err);
+                    saveLocally(driveData);
+                    return true;
+                });
+        }
     } else {
+        // Offline ei tue päivitystä samalla tavalla vielä (liian monimutkainen konflikti),
+        // joten offline-tilassa luodaan aina uusi merkintä turvallisuuden vuoksi.
         saveLocally(driveData);
         return Promise.resolve(true);
     }
@@ -87,12 +104,10 @@ window.syncOfflineDrives = function() {
 };
 
 function updateSyncButton() {
-    // Yritetään löytää paikka napille. Paras paikka on 'log-list' yläpuolella.
     let container = document.getElementById('sync-container');
     
     if (!container) {
         const list = document.getElementById('log-list');
-        // Varmistetaan että list-elementti on olemassa (ollaan historia-näkymässä)
         if (list && list.parentNode) {
             container = document.createElement('div');
             container.id = 'sync-container';
@@ -100,7 +115,7 @@ function updateSyncButton() {
             container.style.textAlign = "center";
             list.parentNode.insertBefore(container, list);
         } else {
-            return; // Ei voida piirtää nappia vielä
+            return;
         }
     }
 
@@ -259,6 +274,10 @@ function renderHistoryList() {
     let renderCount = 0;
     let totalKm = 0;
     let totalMs = 0;
+    
+    // Lasketaan 48h raja (ms)
+    const now = new Date().getTime();
+    const recentLimit = 48 * 60 * 60 * 1000; 
 
     allHistoryData.forEach((drive) => {
         try {
@@ -315,6 +334,15 @@ function renderHistoryList() {
                 mapBtn = `<button class="map-btn" onclick="window.showRouteOnMap('${drive.key}')" title="Näytä reitti">🗺️</button>`;
             }
             
+            // --- JATKA AJOA -LOGIIKKA ---
+            let continueBtn = "";
+            // Tarkistetaan onko ajo tarpeeksi tuore (alle 48h lopetuksesta tai aloituksesta)
+            const endTime = drive.endTime ? new Date(drive.endTime).getTime() : start.getTime();
+            if (!drive.isPending && (now - endTime) < recentLimit) {
+                continueBtn = `<button class="map-btn" style="color:#00e676;" onclick="window.prepareContinueDrive('${drive.key}')" title="Jatka tätä ajoa">⏯️</button>`;
+            }
+            // ----------------------------
+            
             let carObj = userCars.find(c => c.id === drive.carId);
             
             let defaultIcon = "🚗";
@@ -362,6 +390,7 @@ function renderHistoryList() {
                     </div>
                     <div style="display:flex; align-items:center;">
                         ${!drive.isPending ? `
+                            ${continueBtn}
                             ${mapBtn}
                             <button class="edit-btn" onclick="window.openEditLogModal('${drive.key}')">✏️</button>
                             <button class="delete-btn" onclick="window.openDeleteLogModal('${drive.key}')">🗑</button>
@@ -408,7 +437,45 @@ function renderHistoryList() {
     }
 }
 
-// --- 5. TANKKAUKSET LISTA (PÄIVITETTY V6.04) ---
+// UUSI FUNKTIO: VALMISTELE AJON JATKAMINEN
+window.prepareContinueDrive = function(key) {
+    const drive = allHistoryData.find(d => d.key === key);
+    if (!drive) {
+        alert("Ajoa ei löydy!");
+        return;
+    }
+
+    // Tarkista auton vastaavuus
+    const driveCarId = drive.carId;
+    
+    // Jos nykyinen valinta on "Kaikki", tai eri auto
+    if (currentCarId === 'all' || (currentCarId !== 'all_archived' && currentCarId !== driveCarId)) {
+        const targetCar = userCars.find(c => c.id === driveCarId);
+        const carName = targetCar ? targetCar.name : "Tuntematon auto";
+        
+        if (confirm(`Tämä ajo on ajettu ajoneuvolla: ${carName}.\nHaluatko vaihtaa ajoneuvon ja jatkaa ajoa?`)) {
+            // Vaihda auto valikossa
+            const select = document.getElementById('car-select');
+            if (select) {
+                select.value = driveCarId;
+                // Simuloidaan change event jotta kaikki päivittyy
+                const event = new Event('change');
+                select.dispatchEvent(event);
+            }
+        } else {
+            return; // Peruutettu
+        }
+    }
+
+    // Kutsutaan gps.js:n funktiota
+    if (typeof window.continueDrive === 'function') {
+        window.continueDrive(drive);
+    } else {
+        alert("GPS-moduuli ei ole valmis.");
+    }
+};
+
+// --- 5. TANKKAUKSET LISTA ---
 function renderFuelList() {
     const fuelList = document.getElementById('fuel-list');
     if(!fuelList) return;
@@ -462,18 +529,15 @@ function renderFuelList() {
         let carName = carObj ? carObj.name : "Tuntematon";
         let icon = "⛽";
 
-        // --- KULUTUSLASKENTA (v6.04) ---
+        // --- KULUTUSLASKENTA ---
         let consumptionInfo = "";
         let consumptionVal = null;
         
-        // Etsitään edellinen tankkaus TÄLLE autolle
-        // allRefuelings on järjestetty uusin ensin. 
-        // Etsitään listasta seuraava (eli vanhempi) tankkaus samalle autolle.
         const currentRefDate = new Date(ref.date);
         const prevRef = allRefuelings.find(r => 
             r.carId === ref.carId && 
             new Date(r.date) < currentRefDate &&
-            r.odo // Varmistetaan että edellisessäkin on mittarilukema
+            r.odo 
         );
 
         if (prevRef && ref.odo && prevRef.odo) {
@@ -481,13 +545,12 @@ function renderFuelList() {
             const l = parseFloat(ref.liters);
             if (dist > 0 && l > 0) {
                 consumptionVal = (l / dist) * 100;
-                // Varmistetaan järkevä lukema (esim alle 50l/100km)
                 if (consumptionVal < 100) {
                     consumptionInfo = `<span style="color:#00e676; font-weight:bold; margin-left:8px;">Ø ${consumptionVal.toFixed(1)} l/100km</span>`;
                 }
             }
         }
-        // -------------------------------
+        // -----------------------
 
         const card = document.createElement('div');
         card.className = 'log-card';
@@ -994,7 +1057,7 @@ window.openEditLogModal = (key) => {
             opt.value = car.id;
             // --- MODIFIKAATIO: LISÄTTY WALKING IKONI LOGIIKKA ---
             let defIcon = "🚗";
-            if(car.type === 'bike') defIcon = "🚲";
+            if(car.type === 'bike') defaultIcon = "🚲";
             if(car.type === 'walking') defIcon = "🚶";
             if(car.type === 'motorcycle') defIcon = "🏍️";
             const icon = car.icon || defIcon;
