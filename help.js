@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.08 INSTALL GUIDE FIX)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.12 FINAL)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,21 +9,23 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta versiossa 6.08",
+                title: "🚀 1. Uutta versiossa 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>👋 Tervetuloa-opastus:</strong>
+                        <strong>🛡️ Tietoturvapäivitys:</strong>
                         <ul>
-                            <li>Sovellus avaa ohjeet automaattisesti päivityksen jälkeen.</li>
+                            <li>Sovellus on nyt täysin lukittu kirjautumattomilta käyttäjiltä.</li>
+                            <li>Kirjautumisruudun "Ohjeet"-nappi avaa vain ohjeet, eikä päästä valikoihin.</li>
                         </ul>
-                        <strong>⏯️ Aloitusnapit (v6.07):</strong>
+                        <strong>📊 Uusi Raportointi (Pro):</strong>
                         <ul>
-                            <li><strong>🔴 ALOITA:</strong> Uusi ajo.</li>
-                            <li><strong>⏯ JATKA:</strong> Jatka vanhaa ajoa historiasta.</li>
+                            <li><strong>"Luo Raportti"</strong> -nappi Historiassa.</li>
+                            <li>Voit suodattaa ajot kuukauden, auton tai tyypin mukaan.</li>
+                            <li>Automaattinen <strong>Kilometrikorvauslaskuri (€)</strong>.</li>
                         </ul>
-                        <strong>🔧 iPhone-korjaus:</strong>
+                        <strong>📍 Tarkemmat osoitteet:</strong>
                         <ul>
-                            <li>Kirjautumisongelmat korjattu.</li>
+                            <li>Sovellus nappaa tarkan lähtö- ja loppuosoitteen (esim. "Kotikatu 1") tallennushetkellä.</li>
                         </ul>
                     </div>`
             },
@@ -143,7 +145,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "📝 6. Historia & Raportit",
+                title: "📝 6. Historia & Muokkaus",
                 content: `
                     <div class="help-step">
                         <strong>⏯️ Jatka ajoa:</strong>
@@ -163,11 +165,6 @@ const helpData = {
                     <div class="help-step">
                         <strong>✏️ Muokkaus:</strong>
                         Paina kynä-ikonia (✏️) muokataksesi tietoja jälkikäteen.
-                    </div>
-
-                    <div class="help-step">
-                        <strong>📥 Raportointi (Excel/CSV):</strong>
-                        Paina <strong>"Lataa CSV"</strong>. Saat tiedoston, jonka voi avata Excelissä.
                     </div>`
             },
             {
@@ -273,6 +270,38 @@ const helpData = {
                         <strong>K: Miten saan tumman teeman pois?</strong>
                         <br>V: Paina yläpalkin aurinko/kuu -ikonia (☀/☾) tai muuta asetuksista.
                     </div>`
+            },
+            {
+                title: "📊 12. Pro-Raportointi & Eurot",
+                content: `
+                    <p>Uusi työkalu veroilmoitusta ja laskutusta varten.</p>
+                    
+                    <div class="help-step">
+                        <strong>💰 Kilometrikorvauksen asetus:</strong>
+                        <ol>
+                            <li>Mene raportointi-ikkunaan (Historia -> Luo Raportti).</li>
+                            <li>Aseta hinta kohtaan <strong>"Hinta (€/km)"</strong> (oletus 0.57€).</li>
+                            <li>Tieto tallentuu muistiin seuraavaa kertaa varten.</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>📄 Raportin luonti:</strong>
+                        <ol>
+                            <li>Avaa <strong>Historia</strong> ja paina <strong>"📄 Luo Raportti"</strong>.</li>
+                            <li>Valitse <strong>Aikaväli:</strong> (esim. "Viime kuu").</li>
+                            <li>Valitse <strong>Tyyppi:</strong> (esim. "Vain Työajot").</li>
+                            <li>Näet heti yhteenvedon ja arvioidun rahasumman ruudulla.</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>📥 Lataus (Excel/CSV):</strong>
+                        Paina "Lataa CSV" raportti-ikkunassa. Tiedosto sisältää sarakkeet:
+                        <ul>
+                            <li>Pvm, Auto, Matka, <strong>Korvaus (€)</strong>, Lähtöosoite, Loppuosoite, Selite.</li>
+                        </ul>
+                    </div>`
             }
         ]
     },
@@ -281,17 +310,22 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New in v6.08",
+                title: "🚀 1. New in v6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>👋 Auto-Help:</strong>
+                        <strong>🛡️ Security Update:</strong>
                         <ul>
-                            <li>The app now automatically shows this guide after an update.</li>
+                            <li>App is now fully locked for non-logged-in users.</li>
                         </ul>
-                        <strong>⏯️ Start Buttons:</strong>
+                        <strong>📊 New Reporting (Pro):</strong>
                         <ul>
-                            <li><strong>🔴 START:</strong> New Drive.</li>
-                            <li><strong>⏯ CONTINUE:</strong> Resume from History.</li>
+                            <li><strong>"Create Report"</strong> button in History.</li>
+                            <li>Filter by Month, Car, or Type.</li>
+                            <li>Automatic <strong>Mileage Allowance (€)</strong> calculation.</li>
+                        </ul>
+                        <strong>📍 Precise Addresses:</strong>
+                        <ul>
+                            <li>Captures exact Start and End addresses (e.g. "Main Street 1") upon saving.</li>
                         </ul>
                     </div>`
             },
@@ -368,7 +402,7 @@ const helpData = {
                             <li><strong>🚗 Car:</strong> Map zooms out at highway speeds. Eco-analysis is ON.</li>
                             <li><strong>🏍️ Motorcycle:</strong> Like a car, but with a specific icon. Eco-analysis ON.</li>
                             <li><strong>🚲 Bike:</strong> Map stays zoomed in. Eco-analysis is OFF.</li>
-                            <li><strong>🚶 Walking:</strong> NEW! Map stays close, no G-force meter, no fuel.</li>
+                            <li><strong>🚶 Walking:</strong> Map stays close, no G-force meter, no fuel.</li>
                         </ul>
                     </div>
 
@@ -410,7 +444,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "📝 6. History & Reports",
+                title: "📝 6. History & Edit",
                 content: `
                     <div class="help-step">
                         <strong>⏯️ Continue Drive:</strong>
@@ -431,16 +465,6 @@ const helpData = {
                         <strong>✏️ Editing (Extended Edit):</strong>
                         Forgot to start? Tap the pencil icon (✏️) in the list.
                         You can later change: Date, Distance (km), Type, and Car.
-                    </div>
-
-                    <div class="help-step">
-                        <strong>➕ Manual Entry:</strong>
-                        Forgot the app entirely? Tap <strong>"+ Manual Entry"</strong> on the history page to add a drive by hand.
-                    </div>
-
-                    <div class="help-step">
-                        <strong>📥 Reporting (Excel/CSV):</strong>
-                        Tap <strong>"Download CSV"</strong>. You get a file compatible with Excel. Columns: Date, Time, Car, Type (Work/Private), Dist, Duration, Route, Subject.
                     </div>`
             },
             {
@@ -546,6 +570,38 @@ const helpData = {
                         <strong>Q: How to disable dark mode?</strong>
                         <br>A: Tap the sun/moon icon (☀/☾) in the top bar.
                     </div>`
+            },
+            {
+                title: "📊 12. Pro-Reporting & Euro",
+                content: `
+                    <p>New tool for tax returns and invoicing.</p>
+                    
+                    <div class="help-step">
+                        <strong>💰 Set Mileage Allowance:</strong>
+                        <ol>
+                            <li>Open the Report window (History -> Create Report).</li>
+                            <li>Set price in <strong>"Price (€/km)"</strong> (default 0.57€).</li>
+                            <li>This setting is saved for future use.</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>📄 Create Report:</strong>
+                        <ol>
+                            <li>Open <strong>History</strong> and tap <strong>"📄 Create Report"</strong>.</li>
+                            <li>Select <strong>Period:</strong> (e.g., "Last Month").</li>
+                            <li>Select <strong>Type:</strong> (e.g., "Work Trips Only").</li>
+                            <li>You see an instant summary and estimated value on screen.</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>📥 Download (Excel/CSV):</strong>
+                        Tap "Download CSV". File includes columns for:
+                        <ul>
+                            <li>Date, Car, Distance, <strong>Allowance (€)</strong>, Start Address, End Address, Description.</li>
+                        </ul>
+                    </div>`
             }
         ]
     },
@@ -554,17 +610,22 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.08",
+                title: "🚀 1. Mới trong v6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>👋 Trợ giúp tự động:</strong>
+                        <strong>🛡️ Cập nhật bảo mật:</strong>
                         <ul>
-                            <li>Ứng dụng tự mở hướng dẫn sau khi cập nhật.</li>
+                            <li>Ứng dụng hiện đã được khóa hoàn toàn đối với người dùng chưa đăng nhập.</li>
                         </ul>
-                        <strong>⏯️ Nút mới:</strong>
+                        <strong>📊 Báo cáo mới (Pro):</strong>
                         <ul>
-                            <li><strong>🔴 BẮT ĐẦU:</strong> Chuyến mới.</li>
-                            <li><strong>⏯ TIẾP TỤC:</strong> Lái tiếp chuyến cũ.</li>
+                            <li>Nút <strong>"Tạo Báo Cáo"</strong> trong Lịch sử.</li>
+                            <li>Lọc theo Tháng, Xe hoặc Loại.</li>
+                            <li>Tự động tính <strong>Tiền xăng/công tác phí (€)</strong>.</li>
+                        </ul>
+                        <strong>📍 Địa chỉ chính xác:</strong>
+                        <ul>
+                            <li>Ghi lại địa chỉ Điểm đầu và Điểm cuối chính xác khi lưu.</li>
                         </ul>
                     </div>`
             },
@@ -598,26 +659,11 @@ const helpData = {
                     <div class="help-step">
                         <strong>📱 Chế độ Dọc (Portrait):</strong>
                         <ol>
-                            <li><strong>🔴 BẮT ĐẦU:</strong> Chuyến đi mới.</li>
+                            <li><strong>🔴 BẮT ĐẦU:</strong> Chuyến mới.</li>
                             <li><strong>⏯ TIẾP TỤC:</strong> Nối tiếp chuyến cũ.</li>
-                            <li><strong>Tốc độ:</strong> Số lớn ở giữa.</li>
-                            <li><strong>Thống kê:</strong> Lưới 6 ô.</li>
+                            <li><strong>HUD:</strong> Lật ngược màn hình (lái đêm).</li>
+                            <li><strong>👁️ Mắt:</strong> Chế độ tối giản (Chỉ hiện tốc độ).</li>
                         </ol>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>🔄 Chế độ Ngang (Landscape):</strong>
-                        Xoay ngang điện thoại để xem màn hình rộng:
-                        <ul>
-                            <li><strong>Trái:</strong> Số đo tốc độ cực lớn.</li>
-                            <li><strong>Phải:</strong> Lưới thống kê.</li>
-                            <li><strong>Dưới:</strong> Địa chỉ và tọa độ chuyển sang bên cạnh.</li>
-                        </ul>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>👁️ Chế độ Tối giản:</strong>
-                        Nhấn biểu tượng con mắt ở góc trên bên trái. Chỉ hiện tốc độ. Dùng khi lái xe ban đêm.
                     </div>
 
                     <div class="help-step">
@@ -698,7 +744,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "📝 6. Lịch sử & Báo cáo",
+                title: "📝 6. Lịch sử & Chỉnh sửa",
                 content: `
                     <div class="help-step">
                         <strong>⏯️ Tiếp tục lái:</strong>
@@ -719,16 +765,6 @@ const helpData = {
                         <strong>✏️ Chỉnh sửa (Extended Edit):</strong>
                         Quên bật ứng dụng? Nhấn biểu tượng bút chì (✏️) trong danh sách.
                         Bạn có thể sửa lại: Ngày, Quãng đường (km), Loại chuyến và Xe.
-                    </div>
-
-                    <div class="help-step">
-                        <strong>➕ Nhập thủ công:</strong>
-                        Quên dùng ứng dụng? Nhấn <strong>"+ Nhập thủ công"</strong> ở trang lịch sử để thêm chuyến đi bằng tay.
-                    </div>
-
-                    <div class="help-step">
-                        <strong>📥 Báo cáo (Excel/CSV):</strong>
-                        Nhấn <strong>"Tải xuống CSV"</strong>. Bạn sẽ nhận được file tương thích với Excel. Cột: Ngày, Giờ, Xe, Loại, Km, Thời gian, Tuyến đường, Ghi chú.
                     </div>`
             },
             {
@@ -825,6 +861,38 @@ const helpData = {
                         <strong>H: Tắt chế độ tối (Dark mode) thế nào?</strong>
                         <br>Đ: Nhấn biểu tượng mặt trời/trăng (☀/☾) ở thanh trên cùng.
                     </div>`
+            },
+            {
+                title: "📊 12. Báo cáo Pro & Euro",
+                content: `
+                    <p>Công cụ mới cho kê khai thuế và lập hóa đơn.</p>
+                    
+                    <div class="help-step">
+                        <strong>💰 Đặt giá cước (Mileage Allowance):</strong>
+                        <ol>
+                            <li>Mở cửa sổ Báo cáo (Lịch sử -> Tạo Báo Cáo).</li>
+                            <li>Đặt giá tại ô <strong>"Giá (€/km)"</strong> (mặc định 0.57€).</li>
+                            <li>Cài đặt này sẽ được lưu cho lần sau.</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>📄 Tạo báo cáo:</strong>
+                        <ol>
+                            <li>Mở <strong>Lịch sử</strong> và nhấn <strong>"📄 Tạo Báo Cáo"</strong>.</li>
+                            <li>Chọn <strong>Thời gian:</strong> (ví dụ: "Tháng trước").</li>
+                            <li>Chọn <strong>Loại:</strong> (ví dụ: "Chỉ công việc").</li>
+                            <li>Bạn sẽ thấy tóm tắt và số tiền ước tính ngay trên màn hình.</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>📥 Tải xuống (Excel/CSV):</strong>
+                        Nhấn "Tải xuống CSV". File bao gồm các cột:
+                        <ul>
+                            <li>Ngày, Xe, Khoảng cách, <strong>Phụ cấp (€)</strong>, Điểm đi, Điểm đến, Ghi chú.</li>
+                        </ul>
+                    </div>`
             }
         ]
     }
@@ -840,7 +908,7 @@ window.renderHelp = function(lang) {
     }
 
     const data = helpData[lang] || helpData['fi'];
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.08';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.12';
 
     // 1. Kielinapit
     const buttons = `
