@@ -1,10 +1,10 @@
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v6.05 CONTINUE DRIVE)
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v6.07 SPLIT BUTTONS)
 // =========================================================
 
 // --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
 // Tämä pitää selaimen prosessin hengissä vaikka näyttö sammuisi.
-const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
+const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
 silentAudio.loop = true;
 silentAudio.volume = 0.01; // Hyvin hiljainen varmuuden vuoksi
 
@@ -34,9 +34,24 @@ if (btnActivate) {
             }
 
             if(activeRecBtns) activeRecBtns.style.display = 'none'; 
-            if(btnStartRec) btnStartRec.style.display = 'inline-block'; 
+            
+            // Varmistetaan että aloitusnapit näkyvät
+            const startContainer = document.getElementById('start-buttons-container');
+            if(startContainer) startContainer.style.display = 'flex';
+            else if(btnStartRec) btnStartRec.style.display = 'inline-block';
             
             if(statusEl) statusEl.innerText = "GPS Päällä";
+        }
+    });
+}
+
+// UUSI NAPPI: JATKA VANHAA AJOA (VIE HISTORIAAN)
+const btnGotoHistory = document.getElementById('btn-goto-history');
+if (btnGotoHistory) {
+    btnGotoHistory.addEventListener('click', () => {
+        if(typeof switchView === 'function') {
+            switchView('history');
+            if(typeof showToast === 'function') showToast("Valitse jatkettava ajo listasta (⏯️) 📋");
         }
     });
 }
@@ -111,7 +126,10 @@ function startRecordingSession(isContinue = false) {
     }
     
     // UI-tilojen päivitys
-    if (btnStartRec) btnStartRec.style.display = 'none';
+    const startContainer = document.getElementById('start-buttons-container');
+    if (startContainer) startContainer.style.display = 'none';
+    else if (btnStartRec) btnStartRec.style.display = 'none';
+
     if (activeRecBtns) activeRecBtns.style.display = 'flex';
     if (btnPause) btnPause.style.display = 'inline-block';
     if (btnResume) btnResume.style.display = 'none';
@@ -509,7 +527,11 @@ function resetRecordingUI() {
     
     clearCrashData(); 
 
-    if(btnStartRec) btnStartRec.style.display = 'inline-block';
+    // PALAUTETAAN START-NAPIT NÄKYVIIN (UUSI v6.07)
+    const startContainer = document.getElementById('start-buttons-container');
+    if(startContainer) startContainer.style.display = 'flex';
+    else if(btnStartRec) btnStartRec.style.display = 'inline-block';
+
     if(activeRecBtns) activeRecBtns.style.display = 'none';
     if(statusEl) {
         statusEl.innerText = "GPS Päällä";
@@ -728,6 +750,11 @@ function restoreDrive(data) {
     
     if(btnActivate) btnActivate.style.display = 'none';
     if(document.getElementById('rec-controls')) document.getElementById('rec-controls').style.display = 'flex';
+    
+    // KORJAUS: Piilotetaan uudet napit myös palautuksessa
+    const startContainer = document.getElementById('start-buttons-container');
+    if (startContainer) startContainer.style.display = 'none';
+    
     if(activeRecBtns) activeRecBtns.style.display = 'flex';
     if(btnStartRec) btnStartRec.style.display = 'none';
     
