@@ -1,5 +1,5 @@
 // =========================================================
-// AUTH.JS - KIRJAUTUMINEN JA KÄYTTÄJÄHALLINTA
+// AUTH.JS - KIRJAUTUMINEN JA KÄYTTÄJÄHALLINTA (Auto-Help)
 // =========================================================
 
 // Kuunnellaan kirjautumistilan muutoksia
@@ -23,38 +23,60 @@ auth.onAuthStateChanged((user) => {
         }
 
         // TÄRKEÄÄ: Ladataan tiedot heti kun kirjaudutaan sisään
-        // Tarkistetaan onko funktiot ladattu ennen kutsua
         if(typeof loadCars === 'function') loadCars(); 
         if(typeof loadHistory === 'function') loadHistory(); 
         if(typeof generateCarIcons === 'function') generateCarIcons(); 
         
-        // UUSI: Ladataan tankkaukset
-        if(typeof loadRefuelings === 'function') loadRefuelings();
-
-        // Korjataan kartan koko jos se on piilossa lataushetkellä
-        if (views.map && views.map.style.display !== 'none' && map) {
-            setTimeout(() => map.invalidateSize(), 200);
+        // --- ENSIMMÄISEN KÄYNNISTYKSEN LOGIIKKA (UUSI) ---
+        // Tarkistetaan, onko käyttäjä nähnyt ohjeet tässä versiossa
+        const hasSeenIntro = localStorage.getItem('intro_seen_v6');
+        
+        if (!hasSeenIntro) {
+            // Jos ei ole nähnyt -> Pakota ohjenäkymään
+            setTimeout(() => {
+                if(typeof switchView === 'function') switchView('help');
+                if(typeof showToast === 'function') showToast("Tervetuloa! Lue tästä asennusohjeet. 📲");
+            }, 500); // Pieni viive varmistaa että UI on valmis
+            
+            // Merkitään nähdyksi, ettei kiusata joka kerta
+            localStorage.setItem('intro_seen_v6', 'true');
+        } else {
+            // Jos on nähnyt -> Varmistetaan että ollaan mittaristossa (oletus)
+            // (UI.js hoitaa tämän yleensä, mutta varmistus ei haittaa)
         }
+        // ----------------------------------------------------
+
+        // Korjataan kartan koko jos se on "piilossa" latauksen aikana
+        setTimeout(() => { if(typeof map !== 'undefined' && map) map.invalidateSize(); }, 500);
+
     } else {
         // --- KÄYTTÄJÄ EI OLE KIRJAUTUNUT ---
         currentUser = null;
-        if (appContainer) appContainer.style.display = 'none';
-        if (loginView) loginView.style.display = 'flex';
+        loginView.style.display = 'flex';
+        appContainer.style.display = 'none';
+        // Tyhjennetään tiedot
+        userCars = [];
+        allHistoryData = [];
     }
 });
 
-// Kirjautumispainikkeiden toiminnot
-const btnLoginGoogle = document.getElementById('btn-login');
-if(btnLoginGoogle) {
-    btnLoginGoogle.addEventListener('click', () => {
-        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-            .catch(e => alert(e.message));
+// LOGIN NAPIT
+const btnLogin = document.getElementById('btn-login');
+if (btnLogin) {
+    btnLogin.addEventListener('click', () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch((error) => {
+            alert("Virhe kirjautumisessa: " + error.message);
+        });
     });
 }
 
-const btnLoginEmail = document.getElementById('btn-email-login');
-if(btnLoginEmail) {
-    btnLoginEmail.addEventListener('click', () => {
+// SÄHKÖPOSTIKIRJAUTUMINEN
+const btnEmailLogin = document.getElementById('btn-email-login');
+const btnEmailRegister = document.getElementById('btn-email-register');
+
+if (btnEmailLogin) {
+    btnEmailLogin.addEventListener('click', () => {
         const email = document.getElementById('email-input').value;
         const pass = document.getElementById('password-input').value;
         if(!email || !pass) { 
@@ -62,13 +84,12 @@ if(btnLoginEmail) {
             return; 
         }
         auth.signInWithEmailAndPassword(email, pass)
-            .catch(e => alert("Virhe kirjautumisessa: " + e.message));
+            .catch(e => alert("Virhe: " + e.message));
     });
 }
 
-const btnRegisterEmail = document.getElementById('btn-email-register');
-if(btnRegisterEmail) {
-    btnRegisterEmail.addEventListener('click', () => {
+if (btnEmailRegister) {
+    btnEmailRegister.addEventListener('click', () => {
         const email = document.getElementById('email-input').value;
         const pass = document.getElementById('password-input').value;
         if(!email || !pass) { 
@@ -107,8 +128,9 @@ if(btnLoginHelp) {
         backBtn.onclick = () => location.reload();
         
         const helpView = document.getElementById('help-view');
-        if (helpView && !helpView.querySelector('button')) {
-            helpView.prepend(backBtn);
+        if (helpView && !helpView.querySelector('.back-to-login-btn')) {
+            backBtn.classList.add('back-to-login-btn');
+            helpView.insertBefore(backBtn, helpView.firstChild);
         }
     });
 }
