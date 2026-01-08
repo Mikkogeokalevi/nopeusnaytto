@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.07 SPLIT BUTTONS)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.08 INSTALL GUIDE FIX)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,28 +9,48 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta versiossa 6.07",
+                title: "🚀 1. Uutta versiossa 6.08",
                 content: `
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>⏯️ Uudet aloitusnapit:</strong>
+                        <strong>👋 Tervetuloa-opastus:</strong>
                         <ul>
-                            <li><strong>🔴 ALOITA:</strong> Aloittaa täysin uuden ajon (mittarit nollassa).</li>
-                            <li><strong>⏯ JATKA:</strong> Vie historiaan, josta voit valita jatkettavan ajon (esim. tauon jälkeen).</li>
+                            <li>Sovellus avaa ohjeet automaattisesti päivityksen jälkeen.</li>
                         </ul>
-                        <strong>🔧 iPhone-korjaus (v6.06):</strong>
+                        <strong>⏯️ Aloitusnapit (v6.07):</strong>
                         <ul>
-                            <li>Korjattu kirjautumisongelma (Network Error) Safarilla.</li>
+                            <li><strong>🔴 ALOITA:</strong> Uusi ajo.</li>
+                            <li><strong>⏯ JATKA:</strong> Jatka vanhaa ajoa historiasta.</li>
                         </ul>
-                    </div>
-                    <div class="help-step">
-                        <strong>🚶 Kävely-tila:</strong>
+                        <strong>🔧 iPhone-korjaus:</strong>
                         <ul>
-                            <li>Mittaristo näyttää askeleet, tahdin ja kalorit.</li>
+                            <li>Kirjautumisongelmat korjattu.</li>
                         </ul>
                     </div>`
             },
             {
-                title: "🏎️ 2. Mittaristo (Dashboard)",
+                title: "📲 2. Asennus sovellukseksi (Tärkeä!)",
+                content: `
+                    <p>Jotta GPS toimii vakaasti taustalla ja osoitepalkit eivät vie tilaa, asenna sivu sovellukseksi:</p>
+                    
+                    <div class="help-step">
+                        <strong>🍎 iPhone (Safari):</strong>
+                        <ol>
+                            <li>Paina alareunan <strong>Jaa-painiketta</strong> (Neliö, josta nuoli ylös <span style="font-size:16px">share</span>).</li>
+                            <li>Selaa valikkoa alaspäin.</li>
+                            <li>Valitse <strong>"Lisää Koti-valikkoon"</strong> (Add to Home Screen).</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>🤖 Android (Chrome):</strong>
+                        <ol>
+                            <li>Paina yläkulman kolmea pistettä (⋮).</li>
+                            <li>Valitse <strong>"Asenna sovellus"</strong> tai <strong>"Lisää aloitusnäytölle"</strong>.</li>
+                        </ol>
+                    </div>`
+            },
+            {
+                title: "🏎️ 3. Mittaristo (Dashboard)",
                 content: `
                     <p>Näkymä mukautuu automaattisesti puhelimen asennon mukaan.</p>
                     
@@ -64,7 +84,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🚗 3. Autotalli ja Valinnat",
+                title: "🚗 4. Autotalli ja Valinnat",
                 content: `
                     <p>Hallitse kalustoa <strong>Asetukset</strong>-välilehdellä.</p>
                     
@@ -105,7 +125,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "⏱️ 4. Ajon tallennus & Työajo",
+                title: "⏱️ 5. Ajon tallennus & Työajo",
                 content: `
                     <div class="help-step">
                         <strong>🔇 Tausta-ajo (Silent Audio Hack):</strong>
@@ -123,7 +143,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "📝 5. Historia & Raportit",
+                title: "📝 6. Historia & Raportit",
                 content: `
                     <div class="help-step">
                         <strong>⏯️ Jatka ajoa:</strong>
@@ -151,7 +171,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "⛽ 6. Tankkaukset",
+                title: "⛽ 7. Tankkaukset",
                 content: `
                     <p>Paina mittaristossa <strong>⛽</strong>-nappia lisätäksesi tankkauksen.</p>
                     
@@ -164,7 +184,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🆘 7. Crash Recovery (Palautus)",
+                title: "🆘 8. Crash Recovery (Palautus)",
                 content: `
                     <div class="help-step">
                         <strong>Jos sovellus kaatuu tai sammuu:</strong>
@@ -177,7 +197,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🕶️ 8. HUD-tila (Yönäkö)",
+                title: "🕶️ 9. HUD-tila (Yönäkö)",
                 content: `
                     <p>Uusi ominaisuus pimeäajoon! HUD (Head-Up Display) kääntää näytön peilikuvaksi ja lisää kontrastia, jolloin se heijastuu tuulilasiin oikein päin.</p>
                     
@@ -196,11 +216,11 @@ const helpData = {
                     </div>`
             },
             {
-                title: "📡 9. Offline-tila (Ulkomaat)",
+                title: "📡 10. Offline-tila (Ulkomaat)",
                 content: `
                     <p>Voit käyttää sovellusta ilman nettiyhteyttä (esim. roaming estetty).</p>
                     
-                    <div class="help-step" style="border-left: 4px solid #ffd600; padding-left: 10px;">
+                    <div class="help-step">
                         <strong>⚠️ Tärkeä ensiasennus:</strong>
                         Jotta Offline-tila toimii varmasti, tee näin <strong>ennen matkaa</strong>:
                         <ol>
@@ -239,7 +259,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "❓ 10. Ongelmatilanteet (UKK)",
+                title: "❓ 11. Ongelmatilanteet (UKK)",
                 content: `
                     <div class="help-step">
                         <strong>K: GPS-viiva on suora ("teleporttaus")?</strong>
@@ -261,38 +281,44 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. Setup and Permissions",
+                title: "🚀 1. New in v6.08",
                 content: `
-                    <p>This is a PWA (Progressive Web App). To make it work reliably in the background and remove address bars, please follow these steps.</p>
-                    
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>New in v6.07:</strong>
+                        <strong>👋 Auto-Help:</strong>
                         <ul>
-                            <li><strong>New Start Buttons:</strong> 🔴 START (New Drive) and ⏯ CONTINUE (From History).</li>
-                            <li><strong>⛽ Avg Consumption:</strong> Refueling history shows l/100km.</li>
-                            <li><strong>iPhone Fix:</strong> Solved "Network Error" on Safari login.</li>
+                            <li>The app now automatically shows this guide after an update.</li>
                         </ul>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>📲 Installation (Important!):</strong>
+                        <strong>⏯️ Start Buttons:</strong>
                         <ul>
-                            <li><strong>🍎 iPhone (Safari):</strong> Tap the <strong>Share button</strong> at the bottom (Square with arrow up <span style="font-size:16px">share</span>). Scroll and select <strong>"Add to Home Screen"</strong>.</li>
-                            <li><strong>🤖 Android (Chrome):</strong> Tap the three dots (⋮) in the top corner and select <strong>"Install App"</strong> or <strong>"Add to Home screen"</strong>.</li>
-                        </ul>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>⚠️ Required Permissions:</strong>
-                        <ul>
-                            <li>📍 <strong>Location:</strong> Select "Allow Always" or "Allow While Using". Speedometer will not work without this.</li>
-                            <li>📱 <strong>Motion Sensors:</strong> (iOS only) Safari requires permission for accelerometers. This enables the G-force meter and Eco-analysis.</li>
-                            <li>🔊 <strong>Auto-play (Audio):</strong> The app plays a silent track in the background to keep the GPS alive when phone is in your pocket. Allow audio if asked.</li>
+                            <li><strong>🔴 START:</strong> New Drive.</li>
+                            <li><strong>⏯ CONTINUE:</strong> Resume from History.</li>
                         </ul>
                     </div>`
             },
             {
-                title: "🏎️ 2. Dashboard",
+                title: "📲 2. Install as App (Important!)",
+                content: `
+                    <p>To ensure GPS works in the background and to remove address bars, install as an App:</p>
+                    
+                    <div class="help-step">
+                        <strong>🍎 iPhone (Safari):</strong>
+                        <ol>
+                            <li>Tap the <strong>Share button</strong> at the bottom (Square with arrow up <span style="font-size:16px">share</span>).</li>
+                            <li>Scroll down.</li>
+                            <li>Select <strong>"Add to Home Screen"</strong>.</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>🤖 Android (Chrome):</strong>
+                        <ol>
+                            <li>Tap the three dots (⋮) in the top corner.</li>
+                            <li>Select <strong>"Install App"</strong> or <strong>"Add to Home screen"</strong>.</li>
+                        </ol>
+                    </div>`
+            },
+            {
+                title: "🏎️ 3. Dashboard",
                 content: `
                     <p>The view adapts automatically based on phone orientation.</p>
                     
@@ -326,7 +352,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🚗 3. Garage & Selection",
+                title: "🚗 4. Garage & Selection",
                 content: `
                     <p>Drives are always recorded for a specific vehicle.</p>
                     
@@ -366,7 +392,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "⏱️ 4. Recording & Work Trips",
+                title: "⏱️ 5. Recording & Work Trips",
                 content: `
                     <div class="help-step">
                         <strong>🔇 Background Drive (Silent Audio Hack):</strong>
@@ -384,7 +410,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "📝 5. History & Reports",
+                title: "📝 6. History & Reports",
                 content: `
                     <div class="help-step">
                         <strong>⏯️ Continue Drive:</strong>
@@ -418,7 +444,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "⛽ 6. Refueling",
+                title: "⛽ 7. Refueling",
                 content: `
                     <p>Tap the <strong>⛽</strong> button on the dashboard to add a refueling.</p>
                     
@@ -431,7 +457,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🆘 7. Crash Recovery",
+                title: "🆘 8. Crash Recovery",
                 content: `
                     <div class="help-step">
                         <strong>If the app stops unexpectedly:</strong>
@@ -444,7 +470,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🕶️ 8. HUD Mode (Night Vision)",
+                title: "🕶️ 9. HUD Mode (Night Vision)",
                 content: `
                     <p>New feature for night driving! HUD (Head-Up Display) mirrors the screen and boosts contrast, reflecting it correctly on the windshield.</p>
                     
@@ -463,7 +489,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "📡 9. Offline Mode (Roaming)",
+                title: "📡 10. Offline Mode (Roaming)",
                 content: `
                     <p>You can use the app without an internet connection.</p>
                     
@@ -506,7 +532,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "❓ 10. FAQ & Troubleshooting",
+                title: "❓ 11. FAQ & Troubleshooting",
                 content: `
                     <div class="help-step">
                         <strong>Q: Straight line on map ("teleporting")?</strong>
@@ -528,38 +554,44 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Cài đặt và Quyền truy cập",
+                title: "🚀 1. Mới trong v6.08",
                 content: `
-                    <p>Đây là ứng dụng PWA. Để hoạt động ổn định trong nền và không bị thanh địa chỉ che khuất, hãy làm theo các bước sau.</p>
-                    
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>Mới trong v6.07:</strong>
+                        <strong>👋 Trợ giúp tự động:</strong>
                         <ul>
-                            <li><strong>Nút mới:</strong> 🔴 BẮT ĐẦU (Mới) và ⏯ TIẾP TỤC (Từ lịch sử).</li>
-                            <li><strong>⛽ Tiêu thụ nhiên liệu:</strong> Hiện l/100km (cần 2 lần đổ).</li>
-                            <li><strong>Sửa lỗi iPhone:</strong> Khắc phục lỗi đăng nhập Safari.</li>
+                            <li>Ứng dụng tự mở hướng dẫn sau khi cập nhật.</li>
                         </ul>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>📲 Cài đặt (Quan trọng!):</strong>
+                        <strong>⏯️ Nút mới:</strong>
                         <ul>
-                            <li><strong>🍎 iPhone (Safari):</strong> Nhấn nút <strong>Chia sẻ</strong> ở dưới cùng (Hình vuông có mũi tên lên <span style="font-size:16px">share</span>). Cuộn và chọn <strong>"Thêm vào MH chính"</strong> (Add to Home Screen).</li>
-                            <li><strong>🤖 Android (Chrome):</strong> Nhấn dấu ba chấm (⋮) ở góc trên và chọn <strong>"Cài đặt ứng dụng"</strong> hoặc <strong>"Thêm vào màn hình chính"</strong>.</li>
-                        </ul>
-                    </div>
-
-                    <div class="help-step">
-                        <strong>⚠️ Quyền bắt buộc:</strong>
-                        <ul>
-                            <li>📍 <strong>Vị trí (Location):</strong> Chọn "Luôn cho phép" hoặc "Khi dùng ứng dụng". Đồng hồ tốc độ sẽ không chạy nếu thiếu quyền này.</li>
-                            <li>📱 <strong>Cảm biến (Motion):</strong> (Chỉ iOS) Safari cần quyền truy cập gia tốc kế. Giúp đo lực G và phân tích Eco.</li>
-                            <li>🔊 <strong>Âm thanh (Audio):</strong> Ứng dụng phát âm thanh im lặng để giữ GPS hoạt động khi bỏ điện thoại trong túi. Hãy cho phép nếu được hỏi.</li>
+                            <li><strong>🔴 BẮT ĐẦU:</strong> Chuyến mới.</li>
+                            <li><strong>⏯ TIẾP TỤC:</strong> Lái tiếp chuyến cũ.</li>
                         </ul>
                     </div>`
             },
             {
-                title: "🏎️ 2. Bảng điều khiển (Dashboard)",
+                title: "📲 2. Cài đặt App (Quan trọng!)",
+                content: `
+                    <p>Để GPS chạy ổn định và toàn màn hình, hãy cài đặt ứng dụng:</p>
+                    
+                    <div class="help-step">
+                        <strong>🍎 iPhone (Safari):</strong>
+                        <ol>
+                            <li>Nhấn nút <strong>Chia sẻ</strong> (Hình vuông có mũi tên lên <span style="font-size:16px">share</span>).</li>
+                            <li>Cuộn xuống dưới.</li>
+                            <li>Chọn <strong>"Thêm vào MH chính"</strong> (Add to Home Screen).</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-step">
+                        <strong>🤖 Android (Chrome):</strong>
+                        <ol>
+                            <li>Nhấn dấu ba chấm (⋮) ở góc trên.</li>
+                            <li>Chọn <strong>"Cài đặt ứng dụng"</strong> hoặc <strong>"Thêm vào màn hình chính"</strong>.</li>
+                        </ol>
+                    </div>`
+            },
+            {
+                title: "🏎️ 3. Bảng điều khiển (Dashboard)",
                 content: `
                     <p>Giao diện tự động thay đổi theo hướng cầm điện thoại.</p>
                     
@@ -608,7 +640,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🚗 3. Gara xe & Lựa chọn",
+                title: "🚗 4. Gara xe & Lựa chọn",
                 content: `
                     <p>Dữ liệu chuyến đi luôn được lưu cho một xe cụ thể.</p>
                     
@@ -648,7 +680,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "⏱️ 4. Ghi hình & Công tác",
+                title: "⏱️ 5. Ghi hình & Công tác",
                 content: `
                     <div class="help-step">
                         <strong>🔇 Chạy nền (Silent Audio Hack):</strong>
@@ -666,7 +698,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "📝 5. Lịch sử & Báo cáo",
+                title: "📝 6. Lịch sử & Báo cáo",
                 content: `
                     <div class="help-step">
                         <strong>⏯️ Tiếp tục lái:</strong>
@@ -700,7 +732,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "⛽ 6. Đổ xăng",
+                title: "⛽ 7. Đổ xăng",
                 content: `
                     <p>Nhấn nút <strong>⛽</strong> trên bảng điều khiển để thêm lần đổ xăng.</p>
                     
@@ -713,7 +745,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🆘 7. Khôi phục sự cố (Crash Recovery)",
+                title: "🆘 8. Khôi phục sự cố (Crash Recovery)",
                 content: `
                     <div class="help-step">
                         <strong>Nếu ứng dụng tắt đột ngột:</strong>
@@ -726,7 +758,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "🕶️ 8. Chế độ HUD (Ban đêm)",
+                title: "🕶️ 9. Chế độ HUD (Ban đêm)",
                 content: `
                     <p>Tính năng mới cho lái xe đêm! HUD (Head-Up Display) lật ngược màn hình và tăng độ tương phản để phản chiếu lên kính lái.</p>
                     
@@ -745,7 +777,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "📡 9. Chế độ Offline (Không mạng)",
+                title: "📡 10. Chế độ Offline (Không mạng)",
                 content: `
                     <p>Lái xe khi không có internet.</p>
                     
@@ -779,7 +811,7 @@ const helpData = {
                     </div>`
             },
             {
-                title: "❓ 10. FAQ (Câu hỏi thường gặp)",
+                title: "❓ 11. FAQ (Câu hỏi thường gặp)",
                 content: `
                     <div class="help-step">
                         <strong>H: Bản đồ hiện đường thẳng tắp ("Dịch chuyển tức thời")?</strong>
@@ -808,7 +840,7 @@ window.renderHelp = function(lang) {
     }
 
     const data = helpData[lang] || helpData['fi'];
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.07';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.08';
 
     // 1. Kielinapit
     const buttons = `
