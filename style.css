@@ -1,5 +1,5 @@
 /* =========================================================
-   STYLE.CSS - IPHONE LAYOUT FIX (v6.02 HOTFIX)
+   STYLE.CSS - v6.10 (REPORTING & SECURITY UI)
    ========================================================= */
 
 /* BOX-SIZING FIX */
@@ -551,7 +551,8 @@ body.hud-mode .side-tap-zone,
 body.hud-mode #btn-open-fuel,
 body.hud-mode .bottom-nav,
 body.hud-mode .g-force-wrapper,
-body.hud-mode .time-right-col button { 
+body.hud-mode .time-right-col button,
+body.hud-mode #btn-dashboard-minimal { 
     display: none !important;
 }
 
@@ -613,7 +614,7 @@ body.minimalist-mode #dashboard-view .huge-speed-container {
     margin-bottom: 50px;
 }
 
-/* UUSI NAPPI MITTARISTOON (MINIMALIST-TOGGLE) */
+/* UUSI NAPPI MITTARISTOON (MINIMALIST-TOGGLE) - POISTETTU TÄSTÄ, SÄÄDETÄÄN ALLA */
 .dashboard-toggle-btn {
     font-size: 20px;
     background: transparent;
@@ -721,4 +722,41 @@ body.minimalist-mode #dashboard-view .huge-speed-container {
 /* Piilota nuoli jos ei olla kompaktissa tilassa */
 #log-list:not(.compact) .log-card::after {
     display: none;
+}
+
+/* --- V6.10 PÄIVITYKSET --- */
+
+/* 1. SILMÄ-IKONIN UUSI PAIKKA (ALHAALLA VASEMMALLA) */
+#btn-dashboard-minimal {
+    position: absolute;
+    bottom: 90px; /* Alapalkin yläpuolella */
+    left: 20px;
+    z-index: 100;
+    background-color: rgba(30,30,30,0.6); /* Hieman taustaa erottuvuuden vuoksi */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* 2. TIETOTURVA: PIILOTA VALIKOT JOS "LOGIN HELP" -TILA ON PÄÄLLÄ */
+body.login-help-active .top-bar-container,
+body.login-help-active .bottom-nav,
+body.login-help-active .controls-container,
+body.login-help-active #main-menu {
+    display: none !important;
+}
+
+body.login-help-active #app-container {
+    height: 100% !important;
+    padding-bottom: 0 !important;
+}
+
+/* Takaisin-nappi Login-help tilassa */
+.back-to-login-btn {
+    margin-bottom: 20px;
+    width: 100%;
 }
