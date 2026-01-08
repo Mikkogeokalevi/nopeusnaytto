@@ -1,15 +1,18 @@
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v6.07 SPLIT BUTTONS)
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v6.10 ADDRESS FIX)
 // =========================================================
 
 // --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
 // Tämä pitää selaimen prosessin hengissä vaikka näyttö sammuisi.
-const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
+const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
 silentAudio.loop = true;
 silentAudio.volume = 0.01; // Hyvin hiljainen varmuuden vuoksi
 
 // CRASH RECOVERY KEY
 const RECOVERY_KEY = 'ajopro_crash_recovery_v1';
+
+// OSOITEMUISTI (UUSI v6.10)
+var startAddressSnapshot = ""; 
 
 // 1. KONTROLLIPAINIKKEET JA LOGIIKKA
 
@@ -45,7 +48,7 @@ if (btnActivate) {
     });
 }
 
-// UUSI NAPPI: JATKA VANHAA AJOA (VIE HISTORIAAN)
+// NAPPI: JATKA VANHAA AJOA (VIE HISTORIAAN)
 const btnGotoHistory = document.getElementById('btn-goto-history');
 if (btnGotoHistory) {
     btnGotoHistory.addEventListener('click', () => {
@@ -105,6 +108,9 @@ function startRecordingSession(isContinue = false) {
         maxSpeed = 0;
         totalDistance = 0;
         routePath = [];
+        // OSOITEKORJAUS: Otetaan talteen tämän hetken osoite lähtöosoitteeksi
+        startAddressSnapshot = currentAddress;
+        
         if(realTimePolyline) realTimePolyline.setLatLngs([]);
         if(typeof clearSavedRoute === 'function') clearSavedRoute();
         currentDriveWeather = "";
@@ -154,24 +160,20 @@ window.continueDrive = function(driveData) {
         // 2. Palautetaan muuttujat vanhasta datasta
         startTime = new Date(driveData.startTime);
         
-        // LASKETAAN TAUKOAIKA (Tärkeä!)
-        // Kokonaisaika (nyt - alku) miinus Aiempi Aktiivinen Ajoaika = Kokonaistauko
+        // 3. Palautetaan alkuperäinen lähtöosoite (ettei se muutu nykyiseksi)
+        startAddressSnapshot = driveData.startAddress || currentAddress;
+        
+        // LASKETAAN TAUKOAIKA
         const oldEndTime = new Date(driveData.endTime);
         const now = new Date();
-        
-        // Aiempi ajoaika (ms)
         const prevActiveDuration = driveData.durationMs || 0;
-        
-        // Aika alusta tähän hetkeen
         const totalTimeSinceStart = now - startTime;
-        
-        // Tauko on kaikki se aika, jolloin EI ajettu
         totalPauseTime = totalTimeSinceStart - prevActiveDuration;
 
         // Muut muuttujat
         maxSpeed = parseFloat(driveData.maxSpeed) || 0;
         totalDistance = parseFloat(driveData.distanceKm) || 0;
-        aggressiveEvents = 0; // Nollataan tyylipisteet uudelle pätkälle
+        aggressiveEvents = 0; 
         currentDriveWeather = driveData.weather || "";
 
         // Palautetaan reitti
@@ -179,29 +181,23 @@ window.continueDrive = function(driveData) {
         if(realTimePolyline) {
             realTimePolyline.setLatLngs([]);
             if(routePath.length > 0) {
-                // Leaflet vaatii [lat, lng] taulukot tai objektit
                 const latLngs = routePath.map(p => [p.lat, p.lng]);
                 realTimePolyline.setLatLngs(latLngs);
             }
         }
         
-        // Tyhjennetään kartalta vanha "haamureitti" jottei tule tuplia
         if(typeof clearSavedRoute === 'function') clearSavedRoute();
 
         // Varmistetaan että GPS on päällä
         if (!isGPSActive) {
             startGPS();
-            // Piilotetaan "Aktivoi GPS" nappi jos se on näkyvissä
             if(btnActivate) btnActivate.style.display = 'none';
             if(document.getElementById('rec-controls')) document.getElementById('rec-controls').style.display = 'flex';
         }
 
-        // Käynnistetään sessio (isContinue = true estää nollauksen)
         startRecordingSession(true);
         
-        // Siirry mittaristoon
         if(typeof switchView === 'function') switchView('dashboard');
-        
         if(typeof showToast === 'function') showToast(`Jatketaan ajoa! Matka: ${totalDistance.toFixed(1)} km.`);
 
     } catch (e) {
@@ -259,7 +255,6 @@ if (btnStopRec) {
         let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
 
         let styleLabel = "";
-        // Päivitetty: Ohita tyylipisteytys myös kävelyssä
         if (currentCarType !== 'bike' && currentCarType !== 'walking') {
             styleLabel = "Tasainen";
             if (aggressiveEvents > 5) styleLabel = "Reipas";
@@ -273,7 +268,6 @@ if (btnStopRec) {
             if(c) {
                 selectedCarName = c.name;
                 selectedCarIcon = c.icon || (c.type === 'bike' ? "🚲" : "🚗");
-                // Kävelyn oletusikoni
                 if (c.type === 'walking' && (!c.icon || c.icon === '🚗')) selectedCarIcon = "🚶";
             }
         }
@@ -281,30 +275,29 @@ if (btnStopRec) {
         tempDriveData = {
             type: 'end_drive',
             startTime: startTime.toISOString(),
-            endTime: endTime.toISOString(), // Uusi lopetusaika
-            distanceKm: totalDistance.toFixed(2), // Uusi kokonaismatka
+            endTime: endTime.toISOString(),
+            distanceKm: totalDistance.toFixed(2),
             maxSpeed: maxSpeed.toFixed(1),
-            avgSpeed: avgSpeed.toFixed(1), // Uusi keskinopeus (koko ajalle)
-            durationMs: activeDurationMs, // Uusi kokonaiskesto
-            subject: "", // Tämä täytetään modaalissa (tai haetaan vanhasta jos jatketaan?)
+            avgSpeed: avgSpeed.toFixed(1),
+            durationMs: activeDurationMs,
+            subject: "", 
             weather: currentDriveWeather,
             drivingStyle: styleLabel,
             carName: selectedCarName,
             carIcon: selectedCarIcon, 
             carId: currentCarId,
             carType: currentCarType,
-            route: routePath // Yhdistetty reitti
+            route: routePath,
+            // OSOITTEET (UUSI v6.10)
+            startAddress: startAddressSnapshot,
+            endAddress: currentAddress // Nappaa nykyisen sijainnin lopetuksessa
         };
 
         const mins = Math.floor(activeDurationMs / 60000);
         if(modalDistEl) modalDistEl.innerText = totalDistance.toFixed(2) + " km";
         if(modalTimeEl) modalTimeEl.innerText = mins + " min";
         
-        // Jos jatketaan vanhaa ajoa, haetaan vanha "Aihe" pohjaksi jos mahdollista
-        // (Tässä kohtaa emme pääse helposti käsiksi alkuperäiseen historiaobjektiin ilman hakua, 
-        //  joten jätetään tyhjäksi tai käyttäjä täyttää uudelleen)
         if(modalSubjectEl) modalSubjectEl.value = ""; 
-        
         if(modalCarNameEl) modalCarNameEl.innerText = selectedCarName; 
 
         if(saveModal) saveModal.style.display = 'flex';
@@ -411,7 +404,6 @@ function updatePosition(position) {
         
         if (views.map && views.map.style.display !== 'none' && !isViewingHistory && map) {
             let targetZoom = 18; 
-            // Päivitetty: Kävely pidetään lähellä (kuten pyöräily)
             if (currentCarType === 'bike' || currentCarType === 'walking') {
                 if (speedKmh > 15) targetZoom = 17; else targetZoom = 19; 
             } else {
@@ -490,7 +482,6 @@ function handleMotion(event) {
         gBubbleEl.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
     }
 
-    // Päivitetty: Ohita myös kävelyssä (estää väärät aggressiiviset hälytykset)
     if (currentCarType === 'bike' || currentCarType === 'walking') return;
     
     const now = Date.now();
@@ -523,11 +514,10 @@ function resetRecordingUI() {
     tempDriveData = null;
     routePath = [];
     if(realTimePolyline) realTimePolyline.setLatLngs([]);
-    currentDriveId = null; // Nollataan jatkettu ajo
+    currentDriveId = null; 
     
     clearCrashData(); 
 
-    // PALAUTETAAN START-NAPIT NÄKYVIIN (UUSI v6.07)
     const startContainer = document.getElementById('start-buttons-container');
     if(startContainer) startContainer.style.display = 'flex';
     else if(btnStartRec) btnStartRec.style.display = 'inline-block';
@@ -635,9 +625,6 @@ function saveToFirebase(data) {
     if (currentUser) {
         // Jos history.js on ladattu ja funktio löytyy, käytä sitä
         if (typeof window.saveDriveSafely === 'function') {
-            // VÄLITÄÄN NYT MYÖS currentDriveId TALLENNUSFUNKTIOLLE!
-            // Jos currentDriveId on olemassa, saveDriveSafely osaa tehdä päivityksen (update)
-            // push() sijaan.
             window.saveDriveSafely(data, currentDriveId).then(() => {
                 console.log("Safe save initiated (New or Update)");
             });
@@ -665,7 +652,7 @@ async function requestWakeLock() {
 }
 
 // =========================================================
-// 4. CRASH RECOVERY LOGIIKKA (PÄIVITETTY v6.05)
+// 4. CRASH RECOVERY LOGIIKKA (PÄIVITETTY v6.10)
 // =========================================================
 
 function saveCrashData() {
@@ -681,8 +668,8 @@ function saveCrashData() {
         currentCarType: currentCarType,
         isPaused: isPaused,
         pauseStartTime: (isPaused && pauseStartTime) ? pauseStartTime.toISOString() : null,
-        // UUSI: Tallennetaan tieto, onko tämä jatkettu ajo
-        driveDbId: currentDriveId // Nimetään eri tavalla ettei mene sekaisin currentCarId kanssa
+        driveDbId: currentDriveId,
+        startAddress: startAddressSnapshot // Tallennetaan myös tämä recoveryyn
     };
     localStorage.setItem(RECOVERY_KEY, JSON.stringify(crashData));
 }
@@ -732,8 +719,8 @@ function restoreDrive(data) {
     currentCarId = data.currentCarId || 'all';
     currentCarType = data.currentCarType || 'car';
     
-    // UUSI: Palauta tieto jatketusta ajosta
     currentDriveId = data.driveDbId || null;
+    startAddressSnapshot = data.startAddress || ""; // Palautetaan lähtöosoite
     
     const carSelect = document.getElementById('car-select');
     if (carSelect) carSelect.value = currentCarId;
@@ -741,7 +728,6 @@ function restoreDrive(data) {
     
     startGPS(); 
     
-    // TÄRKEÄ: Aktivoidaan ääni ja anturit käyttäjän "Kyllä"-painalluksesta
     silentAudio.play().then(() => console.log("Audio restored")).catch(e => console.error("Audio restore fail", e));
     activateMotionSensors(); 
 
@@ -751,7 +737,6 @@ function restoreDrive(data) {
     if(btnActivate) btnActivate.style.display = 'none';
     if(document.getElementById('rec-controls')) document.getElementById('rec-controls').style.display = 'flex';
     
-    // KORJAUS: Piilotetaan uudet napit myös palautuksessa
     const startContainer = document.getElementById('start-buttons-container');
     if (startContainer) startContainer.style.display = 'none';
     
@@ -768,14 +753,12 @@ function restoreDrive(data) {
         isPaused = false;
         if(btnPause) btnPause.style.display = 'inline-block';
         if(btnResume) btnResume.style.display = 'none';
-        // Näytä erikoisteksti jos jatketaan vanhaa
         const statusText = currentDriveId ? "🔴 JATKETAAN AJOA (PALAUTETTU)" : "🔴 TALLENNETAAN (PALAUTETTU)";
         if(statusEl) { statusEl.innerText = statusText; statusEl.style.color = "#ff4444"; }
         timerInterval = setInterval(updateTimer, 1000);
     }
     
     if(realTimePolyline && routePath.length > 0) {
-        // Leaflet fix
         const latLngs = routePath.map(pt => [pt.lat, pt.lng]);
         realTimePolyline.setLatLngs(latLngs);
     }
