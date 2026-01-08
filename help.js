@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.05 CONTINUE DRIVE)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.07 SPLIT BUTTONS)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,24 +9,23 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta versiossa 6.05",
+                title: "🚀 1. Uutta versiossa 6.07",
                 content: `
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>⏯️ Jatka ajoa (Continue Drive):</strong>
+                        <strong>⏯️ Uudet aloitusnapit:</strong>
                         <ul>
-                            <li>Voit nyt jatkaa aiempaa ajoa historiasta!</li>
-                            <li>Täydellinen esim. kätköilyyn, jakeluajoon tai Lapin matkalle.</li>
-                            <li>Ajoaika ei kulu, kun auto on parkissa "pätkien" välissä.</li>
+                            <li><strong>🔴 ALOITA:</strong> Aloittaa täysin uuden ajon (mittarit nollassa).</li>
+                            <li><strong>⏯ JATKA:</strong> Vie historiaan, josta voit valita jatkettavan ajon (esim. tauon jälkeen).</li>
+                        </ul>
+                        <strong>🔧 iPhone-korjaus (v6.06):</strong>
+                        <ul>
+                            <li>Korjattu kirjautumisongelma (Network Error) Safarilla.</li>
                         </ul>
                     </div>
                     <div class="help-step">
                         <strong>🚶 Kävely-tila:</strong>
                         <ul>
                             <li>Mittaristo näyttää askeleet, tahdin ja kalorit.</li>
-                        </ul>
-                        <strong>⛽ Keskikulutus:</strong>
-                        <ul>
-                            <li>Näkyy tankkaushistoriassa (vaatii 2 tankkausta).</li>
                         </ul>
                     </div>`
             },
@@ -38,7 +37,8 @@ const helpData = {
                     <div class="help-step">
                         <strong>Toiminnot:</strong>
                         <ul>
-                            <li><strong>START GPS:</strong> Aloittaa tallennuksen ja matkamittauksen.</li>
+                            <li><strong>🔴 ALOITA:</strong> Käynnistää uuden tallennuksen.</li>
+                            <li><strong>⏯ JATKA:</strong> Oikopolku historiaan vanhan ajon jatkamiseksi.</li>
                             <li><strong>HUD:</strong> Kääntää näytön peilikuvaksi (yöajo).</li>
                             <li><strong>👁️ Silmä-ikoni:</strong> Yksinkertaistettu tila. Piilottaa kaiken paitsi nopeuslukeman.</li>
                         </ul>
@@ -126,11 +126,11 @@ const helpData = {
                 title: "📝 5. Historia & Raportit",
                 content: `
                     <div class="help-step">
-                        <strong>⏯️ Jatka ajoa (UUSI):</strong>
+                        <strong>⏯️ Jatka ajoa:</strong>
                         Voit jatkaa vanhaa ajoa (esim. kätköilypäivä tai usean päivän reissu):
                         <ol>
-                            <li>Etsi ajo historiasta (alle 48h vanha).</li>
-                            <li>Paina vihreää ⏯️-nappia.</li>
+                            <li>Paina mittaristossa <strong>⏯ JATKA</strong> tai etsi ajo suoraan historiasta.</li>
+                            <li>Paina vihreää ⏯️-nappia listassa.</li>
                             <li>Ajo jatkuu siitä mihin jäit. Välissä kulunut aika merkitään tauoksi.</li>
                         </ol>
                     </div>
@@ -266,11 +266,11 @@ const helpData = {
                     <p>This is a PWA (Progressive Web App). To make it work reliably in the background and remove address bars, please follow these steps.</p>
                     
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>New in v6.05:</strong>
+                        <strong>New in v6.07:</strong>
                         <ul>
-                            <li><strong>⏯️ Continue Drive:</strong> Resume a previous drive from History! Great for multi-stop trips.</li>
-                            <li><strong>🚶 Walking Mode:</strong> Dashboard shows Steps, Pace (min/km) and Calories.</li>
+                            <li><strong>New Start Buttons:</strong> 🔴 START (New Drive) and ⏯ CONTINUE (From History).</li>
                             <li><strong>⛽ Avg Consumption:</strong> Refueling history shows l/100km.</li>
+                            <li><strong>iPhone Fix:</strong> Solved "Network Error" on Safari login.</li>
                         </ul>
                     </div>
 
@@ -299,7 +299,8 @@ const helpData = {
                     <div class="help-step">
                         <strong>Features:</strong>
                         <ul>
-                            <li><strong>START GPS:</strong> Starts recording track and distance.</li>
+                            <li><strong>🔴 START:</strong> Starts a new drive.</li>
+                            <li><strong>⏯ CONTINUE:</strong> Shortcut to History to resume a previous drive.</li>
                             <li><strong>HUD:</strong> Mirrors screen for windshield reflection (Night mode).</li>
                             <li><strong>👁️ Eye Icon:</strong> Toggles Minimalist Mode (Speed only).</li>
                         </ul>
@@ -386,11 +387,11 @@ const helpData = {
                 title: "📝 5. History & Reports",
                 content: `
                     <div class="help-step">
-                        <strong>⏯️ Continue Drive (NEW):</strong>
+                        <strong>⏯️ Continue Drive:</strong>
                         To continue a previous trip (e.g., multi-stop):
                         <ol>
-                            <li>Find the drive in History (must be recent).</li>
-                            <li>Tap the green ⏯️ button.</li>
+                            <li>Tap <strong>⏯ CONTINUE</strong> on dashboard (or go to History).</li>
+                            <li>Find the drive and tap the green ⏯️ button.</li>
                             <li>Recording resumes. Time between drives is counted as pause.</li>
                         </ol>
                     </div>
@@ -532,11 +533,11 @@ const helpData = {
                     <p>Đây là ứng dụng PWA. Để hoạt động ổn định trong nền và không bị thanh địa chỉ che khuất, hãy làm theo các bước sau.</p>
                     
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>Mới trong v6.05:</strong>
+                        <strong>Mới trong v6.07:</strong>
                         <ul>
-                            <li><strong>⏯️ Tiếp tục lái (Continue Drive):</strong> Nối tiếp chuyến đi trước đó!</li>
+                            <li><strong>Nút mới:</strong> 🔴 BẮT ĐẦU (Mới) và ⏯ TIẾP TỤC (Từ lịch sử).</li>
                             <li><strong>⛽ Tiêu thụ nhiên liệu:</strong> Hiện l/100km (cần 2 lần đổ).</li>
-                            <li><strong>🚶 Chế độ Đi bộ:</strong> Bảng điều khiển hiện Số bước, Tốc độ, Calo.</li>
+                            <li><strong>Sửa lỗi iPhone:</strong> Khắc phục lỗi đăng nhập Safari.</li>
                         </ul>
                     </div>
 
@@ -565,10 +566,10 @@ const helpData = {
                     <div class="help-step">
                         <strong>📱 Chế độ Dọc (Portrait):</strong>
                         <ol>
+                            <li><strong>🔴 BẮT ĐẦU:</strong> Chuyến đi mới.</li>
+                            <li><strong>⏯ TIẾP TỤC:</strong> Nối tiếp chuyến cũ.</li>
                             <li><strong>Tốc độ:</strong> Số lớn ở giữa.</li>
-                            <li><strong>Thống kê:</strong> Lưới 6 ô (Max, Km, Thời gian, Tốc độ TB, Hướng, Độ cao).</li>
-                            <li><strong>Địa chỉ:</strong> Tên đường và tọa độ nằm dưới bảng thống kê.</li>
-                            <li><strong>Thời gian & Thời tiết:</strong> Đồng hồ, ngày và icon thời tiết ở dưới cùng.</li>
+                            <li><strong>Thống kê:</strong> Lưới 6 ô.</li>
                         </ol>
                     </div>
 
@@ -668,11 +669,11 @@ const helpData = {
                 title: "📝 5. Lịch sử & Báo cáo",
                 content: `
                     <div class="help-step">
-                        <strong>⏯️ Tiếp tục lái (MỚI):</strong>
+                        <strong>⏯️ Tiếp tục lái:</strong>
                         Để nối tiếp chuyến đi trước:
                         <ol>
-                            <li>Tìm chuyến đi trong lịch sử.</li>
-                            <li>Nhấn nút ⏯️ màu xanh.</li>
+                            <li>Nhấn <strong>⏯ TIẾP TỤC</strong> ở màn hình chính.</li>
+                            <li>Tìm chuyến đi và nhấn nút ⏯️ màu xanh.</li>
                             <li>Thời gian nghỉ sẽ được tính là tạm dừng.</li>
                         </ol>
                     </div>
@@ -807,7 +808,7 @@ window.renderHelp = function(lang) {
     }
 
     const data = helpData[lang] || helpData['fi'];
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.05';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.07';
 
     // 1. Kielinapit
     const buttons = `
