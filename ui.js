@@ -1,5 +1,5 @@
 // =========================================================
-// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (v6.03 WALKING METRICS)
+// UI.JS - KÄYTTÖLIITTYMÄELEMENTIT JA NÄKYMÄT (v6.10 REPORTING)
 // =========================================================
 
 // --- 1. DOM ELEMENTIT ---
@@ -161,6 +161,13 @@ const btnSaveCar = document.getElementById('btn-save-car');
 const carTypeSelect = document.getElementById('car-type');
 const carSpecificFields = document.getElementById('car-specific-fields');
 
+// RAPORTOINTI (UUSI v6.10)
+const reportModal = document.getElementById('report-modal');
+const btnOpenReport = document.getElementById('btn-open-report');
+const btnReportClose = document.getElementById('btn-report-close');
+const btnReportDownload = document.getElementById('btn-report-download');
+const inputPricePerKm = document.getElementById('settings-price-per-km');
+
 
 // --- 2. APUFUNKTIOT (TOAST & CONFIRM) ---
 
@@ -219,7 +226,12 @@ function switchView(viewName) {
 
     const targetEl = views[viewName];
     if (targetEl) {
-        targetEl.style.display = ''; 
+        // Jos kartta tai dashboard, käytetään flexiä jotta täyttää ruudun
+        if(viewName === 'map' || viewName === 'dashboard') {
+            targetEl.style.display = 'flex';
+        } else {
+            targetEl.style.display = 'block';
+        }
         targetEl.classList.add('active-view');
     }
     
@@ -237,6 +249,11 @@ function switchView(viewName) {
     if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
+    
+    // Tallenna viimeinen näkymä
+    if (viewName !== 'help') {
+        localStorage.setItem('lastView', viewName);
+    }
 }
 
 function updateDashboardUI(spd, max, dist, time, alt, avg) {
@@ -258,8 +275,8 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         if(dashMaxSpeedEl) {
             dashMaxSpeedEl.innerText = steps;
             // Etsitään label ja unit
-            const label = dashMaxSpeedEl.previousElementSibling;
-            const unit = dashMaxSpeedEl.nextElementSibling;
+            const label = dashMaxSpeedEl.parentElement.querySelector('.stat-label');
+            const unit = dashMaxSpeedEl.parentElement.querySelector('.stat-unit');
             if(label) label.innerText = "Askeleet";
             if(unit) unit.innerText = "kpl (arvio)";
         }
@@ -276,8 +293,8 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
             const pSecStr = pSec < 10 ? "0"+pSec : pSec;
             dashAvgEl.innerText = (pMin > 99) ? "--:--" : `${pMin}:${pSecStr}`;
             
-            const label = dashAvgEl.previousElementSibling;
-            const unit = dashAvgEl.nextElementSibling;
+            const label = dashAvgEl.parentElement.querySelector('.stat-label');
+            const unit = dashAvgEl.parentElement.querySelector('.stat-unit');
             if(label) label.innerText = "Tahti";
             if(unit) unit.innerText = "min/km";
         }
@@ -291,13 +308,14 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
             dashHeadingEl.style.fontSize = "20px"; // Palautetaan fonttikoko
 
             // Etsitään label (Suunta-ruudun rakenne on erilainen)
-            // .stat-card -> .stat-label
             const card = dashHeadingEl.closest('.stat-card');
             if(card) {
                 const label = card.querySelector('.stat-label');
                 if(label) label.innerText = "Kalorit";
             }
         }
+        // Piilota G-pallo
+        if(gBubbleEl) gBubbleEl.parentElement.parentElement.style.display = 'none';
 
     } else {
         // --- AUTO-TILA (Palautetaan normaalit) ---
@@ -305,8 +323,8 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         // 1. Max Speed
         if(dashMaxSpeedEl) {
             dashMaxSpeedEl.innerText = max.toFixed(1);
-            const label = dashMaxSpeedEl.previousElementSibling;
-            const unit = dashMaxSpeedEl.nextElementSibling;
+            const label = dashMaxSpeedEl.parentElement.querySelector('.stat-label');
+            const unit = dashMaxSpeedEl.parentElement.querySelector('.stat-unit');
             if(label) label.innerText = "Huippu";
             if(unit) unit.innerText = "km/h";
         }
@@ -314,8 +332,8 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         // 2. Avg Speed
         if(dashAvgEl) {
             if(avg !== undefined) dashAvgEl.innerText = avg.toFixed(1);
-            const label = dashAvgEl.previousElementSibling;
-            const unit = dashAvgEl.nextElementSibling;
+            const label = dashAvgEl.parentElement.querySelector('.stat-label');
+            const unit = dashAvgEl.parentElement.querySelector('.stat-unit');
             if(label) label.innerText = "Ø Nopeus";
             if(unit) unit.innerText = "km/h";
         }
@@ -330,6 +348,10 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
                 const label = card.querySelector('.stat-label');
                 if(label) label.innerText = "Suunta";
             }
+        }
+        // Näytä G-pallo (paitsi jos minimalistinen)
+        if(gBubbleEl && !document.body.classList.contains('minimalist-mode')) {
+            gBubbleEl.parentElement.parentElement.style.display = 'block';
         }
     }
 
@@ -360,7 +382,10 @@ if (navBtns.map) navBtns.map.addEventListener('click', () => switchView('map'));
 if (navBtns.history) navBtns.history.addEventListener('click', () => switchView('history'));
 if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('stats'));
 if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
-if (navBtns.help) navBtns.help.addEventListener('click', () => switchView('help'));
+if (navBtns.help) navBtns.help.addEventListener('click', () => {
+    switchView('help');
+    if(typeof renderHelp === 'function') renderHelp('fi');
+});
 
 // Alapalkki
 if (botNavBtns.dashboard) botNavBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
@@ -376,7 +401,7 @@ if (btnHud) {
         const isHudOn = document.body.classList.toggle('hud-mode');
         
         if (isHudOn) {
-            showToast("HUD-tila (Koko näyttö). Napauta ruutua poistuaksesi. 🕶️");
+            showToast("HUD-tila (Koko näyttö). Napauta ruutua poistuaksesi. 🌑");
             if (document.documentElement.requestFullscreen) {
                 try { await document.documentElement.requestFullscreen(); } catch(e) { console.log(e); }
             }
@@ -627,6 +652,7 @@ if(btnPreviewConfirm) {
 
 const btnEditSave2 = document.getElementById('btn-edit-save');
 if(btnEditSave2) {
+    // Estetään duplikaatit
     const newBtn = btnEditSave2.cloneNode(true);
     btnEditSave2.parentNode.replaceChild(newBtn, btnEditSave2);
     
@@ -724,7 +750,7 @@ if(statTabDrives && statTabFuel) {
 }
 
 // ==========================================
-// UUSI LOGIIKKA: ULKOASUASETUKSET
+// UUSI LOGIIKKA: ULKOASUASETUKSET & RAPORTIT
 // ==========================================
 
 // 1. VÄRIVALINTA
@@ -786,7 +812,50 @@ if (toggleCompact) {
     });
 }
 
-// --- 6. ALUSTUS ---
+// 4. KM-KORVAUS (UUSI v6.10)
+if (inputPricePerKm) {
+    inputPricePerKm.addEventListener('change', () => {
+        const val = parseFloat(inputPricePerKm.value);
+        if (!isNaN(val)) {
+            localStorage.setItem('pricePerKm', val);
+            if(typeof showToast === 'function') showToast(`Km-korvaus tallennettu: ${val} €/km`);
+        }
+    });
+}
+
+// --- 6. RAPORTOINTIMODAALI (UUSI v6.10) ---
+if (btnOpenReport) {
+    btnOpenReport.addEventListener('click', () => {
+        if (reportModal) reportModal.style.display = 'flex';
+        if (typeof updateReportPreview === 'function') updateReportPreview();
+    });
+}
+
+if (btnReportClose) {
+    btnReportClose.addEventListener('click', () => {
+        if (reportModal) reportModal.style.display = 'none';
+    });
+}
+
+if (btnReportDownload) {
+    btnReportDownload.addEventListener('click', () => {
+        if (typeof generateReport === 'function') {
+            generateReport();
+            if (reportModal) reportModal.style.display = 'none';
+        }
+    });
+}
+
+// Kuuntele muutoksia raporttimodaalissa esikatselua varten
+const reportInputs = document.querySelectorAll('#report-period, #report-car, input[name="report-type"]');
+reportInputs.forEach(input => {
+    input.addEventListener('change', () => {
+        if (typeof updateReportPreview === 'function') updateReportPreview();
+    });
+});
+
+
+// --- 7. ALUSTUS ---
 (function updateVersionText() {
     if(typeof APP_VERSION !== 'undefined') {
         if(splashVersionEl) splashVersionEl.innerText = "Modular v" + APP_VERSION;
@@ -796,7 +865,13 @@ if (toggleCompact) {
 
 // LATAA TALLENNETUT ASETUKSET
 window.addEventListener('DOMContentLoaded', () => {
-    switchView('dashboard');
+    // Palauta viimeisin näkymä (jos on)
+    const lastView = localStorage.getItem('lastView');
+    if (lastView && views[lastView]) {
+        switchView(lastView);
+    } else {
+        switchView('dashboard');
+    }
     
     const savedColor = localStorage.getItem('accentColor');
     if (savedColor) {
@@ -812,6 +887,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const savedMinimal = localStorage.getItem('minimalistMode');
     if (savedMinimal === 'true') {
         setMinimalistMode(true);
+        if(toggleMinimal) toggleMinimal.checked = true;
     }
     
     const savedCompact = localStorage.getItem('compactHistory');
@@ -819,5 +895,11 @@ window.addEventListener('DOMContentLoaded', () => {
         const logList = document.getElementById('log-list');
         if(logList) logList.classList.add('compact');
         if(toggleCompact) toggleCompact.checked = true;
+    }
+    
+    // Lataa km-hinta
+    const savedPrice = localStorage.getItem('pricePerKm');
+    if (savedPrice && inputPricePerKm) {
+        inputPricePerKm.value = savedPrice;
     }
 });
