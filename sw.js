@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.09
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.10
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.09'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.10-final'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
@@ -84,7 +84,10 @@ self.addEventListener('fetch', (event) => {
                 if (response) {
                     return response;
                 }
-                return fetch(event.request);
+                return fetch(event.request).catch(() => {
+                    // Jos verkkopyyntö epäonnistuu (esim. offline), ei tehdä mitään erityistä
+                    // tai palautetaan offline-sivu jos sellainen olisi.
+                });
             })
     );
 });
