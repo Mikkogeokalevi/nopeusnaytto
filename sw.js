@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.05
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.06
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.05'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.06'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
@@ -62,6 +62,21 @@ self.addEventListener('activate', (event) => {
 
 // 3. FETCH (VERKKO PYYNNÖT)
 self.addEventListener('fetch', (event) => {
+    const requestUrl = new URL(event.request.url);
+
+    // --- TÄRKEÄ KORJAUS IPHONE/FIREBASE LOGINILLE ---
+    // Jos pyyntö menee Googlelle tai Firebaselle, ohita välimuisti kokonaan.
+    // Tämä estää "AuthError / network-request-failed" -virheen.
+    if (requestUrl.origin.includes('googleapis.com') || 
+        requestUrl.origin.includes('firebase') || 
+        requestUrl.origin.includes('google.com') ||
+        requestUrl.origin.includes('accounts.google.com')) {
+        
+        event.respondWith(fetch(event.request));
+        return;
+    }
+    // -----------------------------------------------
+
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
