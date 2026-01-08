@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.01</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.07</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -24,7 +24,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.01...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.07...</p>
             <p>Ladataan...</p>
         </div>
     </div>
@@ -323,7 +323,12 @@
             <div id="status">Odottaa toimenpidettä</div>
             <button id="btn-activate-gps" class="action-btn blue-btn">Aktivoi Nopeusnäyttö</button>
             <div id="rec-controls" style="display:none; flex-direction:column; align-items:center; gap:5px; width: 100%;">
-                <button id="btn-start-rec" class="action-btn green-btn">🔴 ALOITA TALLENNUS</button>
+                
+                <div id="start-buttons-container" style="display:flex; gap:10px; width:100%; justify-content:center;">
+                    <button id="btn-start-rec" class="action-btn green-btn" style="flex:2;">🔴 ALOITA</button>
+                    <button id="btn-goto-history" class="action-btn blue-btn" style="flex:1; white-space:nowrap;">⏯ JATKA</button>
+                </div>
+
                 <div id="active-rec-btns" style="display:none; width:100%; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
                     <button id="btn-pause" class="action-btn yellow-btn" style="flex:1; max-width:170px;">⏸ TAUKO</button>
                     <button id="btn-resume" class="action-btn blue-btn" style="display:none; flex:1; max-width:170px;">▶ JATKA</button>
@@ -569,11 +574,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
-    <script src="globals.js?v=6.01"></script>
+    <script src="globals.js?v=6.07"></script>
     <script src="ui.js?v=6.01"></script>
     <script src="auth.js?v=6.01"></script>
     <script src="map.js?v=6.01"></script>
-    <script src="gps.js?v=6.01"></script>
+    <script src="gps.js?v=6.07"></script>
     <script src="garage.js?v=6.01"></script>
     <script src="history.js?v=6.01"></script>
     <script src="help.js?v=6.01"></script>
