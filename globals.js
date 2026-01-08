@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - NYT 6.06 (iOS Auth Fix)
-const APP_VERSION = "6.06"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT 6.07 (New UI Buttons)
+const APP_VERSION = "6.07"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
