@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - NYT 6.07 (New UI Buttons)
-const APP_VERSION = "6.07"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - NYT 6.09 (Installation Guide Update)
+const APP_VERSION = "6.09"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
