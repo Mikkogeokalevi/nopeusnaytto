@@ -1,18 +1,18 @@
 // =========================================================
-// HISTORY.JS - HISTORIA, TILASTOT JA RAPORTOINTI (v6.10 FINAL)
+// HISTORY.JS - HISTORIA, TILASTOT JA RAPORTOINTI (v6.11 FIXED)
 // =========================================================
 
 // --- ASETUKSET ---
-// Oletusarvo km-korvaukselle (voidaan ylikirjoittaa localStorage-asetuksella)
 const DEFAULT_KM_RATE = 0.57; 
 
 // Globaalit muuttujat datalle
 if (typeof allHistoryData === 'undefined') var allHistoryData = [];
 if (typeof allRefuelings === 'undefined') var allRefuelings = [];
-let chartInstances = {}; // Chart.js instanssien hallinta
+// Chart.js instanssien hallinta (säilytetään muistissa jotta voidaan tuhota ennen uudelleenpiirtoa)
+let chartInstances = {}; 
 
 // =========================================================
-// 0. OFFLINE MANAGER (SYNC & STORAGE)
+// 0. OFFLINE MANAGER (SÄILYTETTY)
 // =========================================================
 
 function initOfflineManager() {
@@ -29,7 +29,6 @@ function initOfflineManager() {
     setTimeout(updateSyncButton, 1000);
 }
 
-// Turvallinen tallennus (Kutsutaan GPS.js:stä)
 window.saveDriveSafely = function(driveData, updateKey = null) {
     if (navigator.onLine) {
         if (updateKey) {
@@ -141,17 +140,17 @@ window.renderFuelList = renderFuelList;
 window.renderStats = renderStats;
 window.renderDriveStats = renderDriveStats;
 window.renderFuelStats = renderFuelStats;
-window.exportToCSV = exportToCSV; // Legacy
+window.exportToCSV = exportToCSV;
 window.populatePreviewTable = populatePreviewTable;
-window.updateReportPreview = updateReportPreview; // UUSI v6.10
-window.generateReport = generateReport; // UUSI v6.10
+window.updateReportPreview = updateReportPreview;
+window.generateReport = generateReport;
 
 function loadHistory() {
     if (!currentUser) return;
 
     db.ref('ajopaivakirja/' + currentUser.uid).off();
     
-    // Haetaan data
+    // Haetaan data (Viimeiset 1000)
     const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).orderByChild('startTime').limitToLast(1000); 
 
     historyRef.on('value', (snapshot) => {
@@ -180,22 +179,16 @@ function loadHistory() {
         
         updateSyncButton();
         
-        // Päivitetään näkyvä osio
-        const logList = document.getElementById('log-list');
-        const fuelList = document.getElementById('fuel-list');
+        // Pakotetaan päivitys kaikkiin näkymiin
+        renderHistoryList();
+        renderFuelList();
+        
         const statsView = document.getElementById('stats-view');
-
-        if (logList && logList.style.display !== 'none') {
-            renderHistoryList();
-        } else if (fuelList && fuelList.style.display !== 'none') {
-            renderFuelList();
-        } else if (statsView && statsView.style.display !== 'none') {
+        if (statsView && statsView.style.display !== 'none') {
             renderStats();
-        } else {
-            renderHistoryList();
         }
         
-        // UUSI: Jos raportti-ikkuna on auki, päivitä sen esikatselu lennosta
+        // Raportin esikatselu
         if (document.getElementById('report-modal') && document.getElementById('report-modal').style.display !== 'none') {
             updateReportPreview();
         }
@@ -254,15 +247,18 @@ function populateFilter() {
 }
 
 // =========================================================
-// 2. AJOHISTORIA (LISTA)
+// 2. AJOHISTORIA (LISTA) - KORJATTU RENDERING
 // =========================================================
 
 function renderHistoryList() {
     const logList = document.getElementById('log-list');
     if(!logList) return;
+    
+    // Tyhjennetään ensin
     logList.innerHTML = ""; 
     updateSyncButton();
     
+    // Tarkistus: Onko dataa?
     if (allHistoryData.length === 0) {
         logList.innerHTML = "<p style='text-align:center; margin-top:20px; color:#888;'>Ei tallennettuja ajoja.</p>";
         if(historySummaryEl) historySummaryEl.style.display = 'none';
@@ -271,7 +267,7 @@ function renderHistoryList() {
 
     const selectedFilter = filterEl ? filterEl.value : 'all';
     
-    // Hae km-korvaus localStoragesta (v6.10)
+    // Hae km-korvaus localStoragesta
     const savedRate = localStorage.getItem('pricePerKm');
     const kmRate = savedRate ? parseFloat(savedRate) : DEFAULT_KM_RATE;
 
@@ -281,22 +277,28 @@ function renderHistoryList() {
     const now = new Date().getTime();
     const recentLimit = 48 * 60 * 60 * 1000; 
 
+    // LOOP: Käydään ajot läpi
     allHistoryData.forEach((drive) => {
         try {
-            // Auton suodatus
+            // --- SUODATUS ---
+            // Jos valittu tietty auto, näytä vain se. Jos 'all', piilota arkistoidut.
             if (currentCarId === 'all') {
                 const carObj = userCars.find(c => c.id === drive.carId);
+                // Jos autoa ei löydy (poistettu?) tai se on arkistoitu, piilota se 'active'-näkymästä
                 if (carObj && carObj.isArchived) return; 
             } else if (currentCarId === 'all_archived') {
+                // Näytä kaikki
             } else {
+                // Näytä vain valittu auto
                 if (drive.carId && drive.carId !== currentCarId) return;
-                if (!drive.carId) return; 
+                // Jos ajolla ei ole auto-ID:tä, piilotetaan se filtteröidyssä näkymässä varmuuden vuoksi
+                if (!drive.carId && currentCarId !== 'all') return; 
             }
 
             let start = new Date(drive.startTime);
-            if (isNaN(start.getTime())) return;
+            if (isNaN(start.getTime())) return; // Virheellinen pvm
 
-            // Aika suodatus
+            // Aikasuojaus
             if (selectedFilter !== 'all') {
                 if (selectedFilter === 'custom') {
                     const startInput = filterStart.value; const endInput = filterEnd.value;
@@ -313,6 +315,7 @@ function renderHistoryList() {
                 }
             }
 
+            // Laskennat
             let durationMinutes = 0;
             let durationMs = 0;
             if (drive.durationMs) {
@@ -328,6 +331,7 @@ function renderHistoryList() {
             totalKm += dist;
             totalMs += durationMs;
 
+            // UI Elementtien valmistelu
             let mapBtn = "";
             if (drive.route && drive.route.length > 0) {
                 mapBtn = `<button class="map-btn" onclick="window.showRouteOnMap('${drive.key}')" title="Näytä reitti">🗺️</button>`;
@@ -356,14 +360,14 @@ function renderHistoryList() {
             const typeLabel = (drive.driveType === 'work') ? "Työajo" : "Oma ajo";
             const typeColor = (drive.driveType === 'work') ? "#00695c" : "#424242";
 
-            // EURO-LASKENTA UI (v6.10 Update)
+            // EURO-LASKENTA UI
             let euroInfo = "";
             if (drive.driveType === 'work') {
                 const allowance = dist * kmRate;
                 euroInfo = `<span style="color:#ffd600; font-size:11px; margin-left:5px;">(~${allowance.toFixed(2)}€)</span>`;
             }
 
-            // OSOITENÄYTTÖ (v6.10 Update)
+            // OSOITENÄYTTÖ (v6.10)
             let addressLine = "";
             if (drive.startAddress || drive.endAddress) {
                 const s = drive.startAddress || "?";
@@ -381,8 +385,16 @@ function renderHistoryList() {
             const card = document.createElement('div');
             card.className = 'log-card';
             card.style.cssText = cardStyle;
-            if(renderCount < 30) card.style.animationDelay = `${Math.min(renderCount * 0.05, 1.0)}s`;
             
+            // LAZY LOAD ANIMAATIO (Estää nykimisen jos lista on pitkä)
+            if(renderCount < 20) {
+                card.style.animationDelay = `${Math.min(renderCount * 0.05, 1.0)}s`;
+            } else {
+                card.style.opacity = 1; 
+                card.style.animation = 'none';
+            }
+            
+            // KLIKKAUS TOIMINTO (LAAJENNUS)
             card.onclick = (e) => {
                 if (e.target.closest('button') || e.target.closest('input')) return;
                 const list = document.getElementById('log-list');
@@ -415,7 +427,9 @@ function renderHistoryList() {
             `;
             logList.appendChild(card);
             renderCount++;
-        } catch (err) { console.error(err); }
+        } catch (err) { 
+            console.error("Virhe renderöinnissä:", err, drive); 
+        }
     });
 
     if (renderCount > 0 && historySummaryEl) {
@@ -549,7 +563,7 @@ function renderFuelList() {
 }
 
 // =========================================================
-// 4. TILASTOT (PALAUTETTU MASSIIVINEN LOGIIKKA)
+// 4. TILASTOT (PALAUTETTU MASSIIVINEN LOGIIKKA - CHART.JS)
 // =========================================================
 
 function renderStats() {
@@ -564,9 +578,8 @@ function renderStats() {
 
 function renderDriveStats() {
     if (!allHistoryData || allHistoryData.length === 0) return;
-    const range = statsTimeRange ? statsTimeRange.value : '30d'; 
-    
-    // Hae km-korvaus localStoragesta (v6.10)
+    const rangeEl = document.getElementById('stats-time-range');
+    const range = rangeEl ? rangeEl.value : '30d'; 
     const savedRate = localStorage.getItem('pricePerKm');
     const kmRate = savedRate ? parseFloat(savedRate) : DEFAULT_KM_RATE;
 
@@ -597,7 +610,6 @@ function renderDriveStats() {
         const avgSpd = parseFloat(d.avgSpeed) || 0;
         const date = new Date(d.startTime);
         
-        // EURO LASKENTA
         if (d.driveType === 'work') totalEstimatedEuros += (dist * kmRate);
 
         let key = (range === '7d' || range === '30d') ? `${date.getDate()}.${date.getMonth()+1}.` : `${date.getMonth()+1}/${date.getFullYear()}`;
@@ -626,15 +638,26 @@ function renderDriveStats() {
     const values = Object.values(timeData).map(v => v.toFixed(1));
 
     // GRAAFIT - PALAUTETTU TÄYDET KONFIGURAATIOT
+    
+    // 1. Bar Chart (Kuukausi)
     const canvasMonthly = document.getElementById('chart-drive-monthly');
     if (canvasMonthly) {
         if (chartInstances['driveMonthly']) chartInstances['driveMonthly'].destroy();
         chartInstances['driveMonthly'] = new Chart(canvasMonthly.getContext('2d'), {
-            type: 'bar', data: { labels: labels, datasets: [{ label: 'Kilometrit', data: values, backgroundColor: 'rgba(41, 121, 255, 0.6)', borderColor: 'rgba(41, 121, 255, 1)', borderWidth: 1 }] },
-            options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+            type: 'bar', 
+            data: { 
+                labels: labels, 
+                datasets: [{ label: 'Kilometrit', data: values, backgroundColor: 'rgba(41, 121, 255, 0.6)', borderColor: 'rgba(41, 121, 255, 1)', borderWidth: 1 }] 
+            },
+            options: { 
+                responsive: true, 
+                scales: { y: { beginAtZero: true, ticks: { color: '#888' }, grid: { color: '#333' } }, x: { ticks: { color: '#888' } } }, 
+                plugins: { legend: { display: false } } 
+            }
         });
     }
 
+    // 2. Line Chart (Trendi)
     const canvasTrend = document.getElementById('chart-drive-trend');
     if (canvasTrend) {
         if (chartInstances['driveTrend']) chartInstances['driveTrend'].destroy();
@@ -645,29 +668,67 @@ function renderDriveStats() {
             trendDatasets.push({ label: carName, data: labels.map(lbl => (timesObj[lbl] || 0)), borderColor: colors[colorIdx % colors.length], tension: 0.3, fill: false });
             colorIdx++;
         }
-        chartInstances['driveTrend'] = new Chart(canvasTrend.getContext('2d'), { type: 'line', data: { labels: labels, datasets: trendDatasets }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
+        chartInstances['driveTrend'] = new Chart(canvasTrend.getContext('2d'), { 
+            type: 'line', 
+            data: { labels: labels, datasets: trendDatasets }, 
+            options: { 
+                responsive: true, 
+                scales: { y: { beginAtZero: true, ticks: { color: '#888' }, grid: { color: '#333' } }, x: { ticks: { color: '#888' } } },
+                plugins: { legend: { labels: { color: '#888' } } }
+            } 
+        });
     }
 
+    // 3. Line Chart (Speed)
     const canvasSpeed = document.getElementById('chart-drive-speed');
     if (canvasSpeed) {
         if (chartInstances['driveSpeed']) chartInstances['driveSpeed'].destroy();
         chartInstances['driveSpeed'] = new Chart(canvasSpeed.getContext('2d'), {
-            type: 'line', data: { labels: labels, datasets: [{ label: 'Ø Nopeus', data: labels.map(k => (speedData[k] && speedData[k].count > 0 ? (speedData[k].sum / speedData[k].count).toFixed(1) : 0)), borderColor: '#00e676', backgroundColor: 'rgba(0, 230, 118, 0.1)', fill: true, tension: 0.4 }] },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            type: 'line', 
+            data: { 
+                labels: labels, 
+                datasets: [{ label: 'Ø Nopeus', data: labels.map(k => (speedData[k] && speedData[k].count > 0 ? (speedData[k].sum / speedData[k].count).toFixed(1) : 0)), borderColor: '#00e676', backgroundColor: 'rgba(0, 230, 118, 0.1)', fill: true, tension: 0.4 }] 
+            },
+            options: { 
+                responsive: true, 
+                scales: { y: { beginAtZero: true, ticks: { color: '#888' }, grid: { color: '#333' } }, x: { ticks: { color: '#888' } } } 
+            }
         });
     }
 
+    // 4. Doughnut (Vehicles)
     const canvasVehicles = document.getElementById('chart-drive-vehicles');
     if (canvasVehicles) {
         if (chartInstances['driveVehicles']) chartInstances['driveVehicles'].destroy();
-        chartInstances['driveVehicles'] = new Chart(canvasVehicles.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(vehicleData), datasets: [{ data: Object.values(vehicleData).map(v => v.toFixed(1)), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'], borderWidth: 1 }] } });
+        chartInstances['driveVehicles'] = new Chart(canvasVehicles.getContext('2d'), { 
+            type: 'doughnut', 
+            data: { 
+                labels: Object.keys(vehicleData), 
+                datasets: [{ data: Object.values(vehicleData).map(v => v.toFixed(1)), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'], borderWidth: 1 }] 
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'right', labels: { color: '#888' } } }
+            }
+        });
     }
 
+    // 5. Pie (Style)
     const canvasStyle = document.getElementById('chart-drive-style');
     if (canvasStyle) {
         if (chartInstances['driveStyle']) chartInstances['driveStyle'].destroy();
         const filteredStyle = Object.entries(styleData).filter(([k,v]) => v > 0);
-        chartInstances['driveStyle'] = new Chart(canvasStyle.getContext('2d'), { type: 'pie', data: { labels: filteredStyle.map(x => x[0]), datasets: [{ data: filteredStyle.map(x => x[1]), backgroundColor: ['#00c853', '#2979ff', '#fbc02d', '#ff1744'] }] } });
+        chartInstances['driveStyle'] = new Chart(canvasStyle.getContext('2d'), { 
+            type: 'pie', 
+            data: { 
+                labels: filteredStyle.map(x => x[0]), 
+                datasets: [{ data: filteredStyle.map(x => x[1]), backgroundColor: ['#00c853', '#2979ff', '#fbc02d', '#ff1744'] }] 
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'right', labels: { color: '#888' } } }
+            }
+        });
     }
 }
 
@@ -722,23 +783,39 @@ function renderFuelStats() {
     const canvasFuelType = document.getElementById('chart-fuel-type');
     if (canvasFuelType) {
         if (chartInstances['fuelType']) chartInstances['fuelType'].destroy();
-        chartInstances['fuelType'] = new Chart(canvasFuelType.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(fuelTypeData), datasets: [{ data: Object.values(fuelTypeData).map(v => v.toFixed(1)), backgroundColor: ['#4caf50', '#2196f3', '#9e9e9e'] }] } });
+        chartInstances['fuelType'] = new Chart(canvasFuelType.getContext('2d'), { 
+            type: 'doughnut', 
+            data: { labels: Object.keys(fuelTypeData), datasets: [{ data: Object.values(fuelTypeData).map(v => v.toFixed(1)), backgroundColor: ['#4caf50', '#2196f3', '#9e9e9e'] }] },
+            options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#888' } } } }
+        });
     }
     const canvasMonthly = document.getElementById('chart-fuel-monthly');
     if (canvasMonthly) {
         if (chartInstances['fuelMonthly']) chartInstances['fuelMonthly'].destroy();
-        chartInstances['fuelMonthly'] = new Chart(canvasMonthly.getContext('2d'), { type: 'bar', data: { labels: Object.keys(timeCosts), datasets: [{ label: 'Euroa (€)', data: Object.values(timeCosts), backgroundColor: '#fbc02d', borderColor: '#fbc02d', borderWidth: 1 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } });
+        chartInstances['fuelMonthly'] = new Chart(canvasMonthly.getContext('2d'), { 
+            type: 'bar', 
+            data: { labels: Object.keys(timeCosts), datasets: [{ label: 'Euroa (€)', data: Object.values(timeCosts), backgroundColor: '#fbc02d', borderColor: '#fbc02d', borderWidth: 1 }] }, 
+            options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { color: '#888' }, grid: { color: '#333' } }, x: { ticks: { color: '#888' } } }, plugins: { legend: { display: false } } } 
+        });
     }
     const canvasTrend = document.getElementById('chart-fuel-trend');
     if (canvasTrend) {
         if (chartInstances['fuelTrend']) chartInstances['fuelTrend'].destroy();
         const allDates = [...new Set([...trendGas.map(d=>d.x), ...trendDiesel.map(d=>d.x)])];
-        chartInstances['fuelTrend'] = new Chart(canvasTrend.getContext('2d'), { type: 'line', data: { labels: allDates, datasets: [ { label: 'Bensiini (€)', data: trendGas, borderColor: '#00e676', tension: 0.3, pointRadius: 3 }, { label: 'Diesel (€)', data: trendDiesel, borderColor: '#212121', backgroundColor: 'rgba(0,0,0,0.5)', tension: 0.3, pointRadius: 3 } ] }, options: { responsive: true } });
+        chartInstances['fuelTrend'] = new Chart(canvasTrend.getContext('2d'), { 
+            type: 'line', 
+            data: { labels: allDates, datasets: [ { label: 'Bensiini (€)', data: trendGas, borderColor: '#00e676', tension: 0.3, pointRadius: 3 }, { label: 'Diesel (€)', data: trendDiesel, borderColor: '#212121', backgroundColor: 'rgba(0,0,0,0.5)', tension: 0.3, pointRadius: 3 } ] }, 
+            options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { color: '#888' }, grid: { color: '#333' } }, x: { ticks: { color: '#888' } } } } 
+        });
     }
     const canvasCar = document.getElementById('chart-fuel-car');
     if (canvasCar) {
         if (chartInstances['fuelCar']) chartInstances['fuelCar'].destroy();
-        chartInstances['fuelCar'] = new Chart(canvasCar.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(carCosts), datasets: [{ data: Object.values(carCosts).map(v => v.toFixed(2)), backgroundColor: ['#36A2EB', '#FF6384', '#4BC0C0', '#FF9F40'] }] } });
+        chartInstances['fuelCar'] = new Chart(canvasCar.getContext('2d'), { 
+            type: 'doughnut', 
+            data: { labels: Object.keys(carCosts), datasets: [{ data: Object.values(carCosts).map(v => v.toFixed(2)), backgroundColor: ['#36A2EB', '#FF6384', '#4BC0C0', '#FF9F40'] }] },
+            options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#888' } } } }
+        });
     }
 }
 
@@ -747,7 +824,6 @@ function renderFuelStats() {
 // 5. RAPORTOINTI (UUSI v6.10 PRO ENGINE)
 // =========================================================
 
-// Apufunktio suodatukseen raporttimodaalissa
 function getFilteredDataForReport() {
     const period = document.getElementById('report-period').value;
     const carFilter = document.getElementById('report-car').value;
