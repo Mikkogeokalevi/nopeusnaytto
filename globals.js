@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - NYT 6.09 (Installation Guide Update)
-const APP_VERSION = "6.09"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.12 (Final Reporting & Security)
+const APP_VERSION = "6.12"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -51,7 +51,7 @@ var timerInterval = null;
 // Väliaikaiset tallennustiedot
 var tempDriveData = null; 
 var deleteKey = null;
-var currentDriveId = null; // UUSI: Tieto siitä, jatketaanko vanhaa ajoa (ID) vai onko uusi (null)
+var currentDriveId = null; 
 
 // Ajodata (Live)
 var maxSpeed = 0;
@@ -74,7 +74,7 @@ var styleResetTimer = null;
 
 // Historia ja Data
 var allHistoryData = []; 
-var pendingDrives = []; // UUSI: Offline-ajot, jotka odottavat lähetystä
+var pendingDrives = []; 
 
 // Autotalli
 var userCars = [];
@@ -96,3 +96,12 @@ var chartFuelType = null;
 var chartFuelMonthly = null;
 var chartFuelTrend = null;
 var chartFuelCar = null;
+
+// Apufunktio: Turvallinen JSON parse
+function safeParse(json) {
+    try {
+        return JSON.parse(json);
+    } catch (e) {
+        return null;
+    }
+}
