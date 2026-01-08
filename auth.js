@@ -1,5 +1,5 @@
 // =========================================================
-// AUTH.JS - KIRJAUTUMINEN JA KÄYTTÄJÄHALLINTA (Auto-Help)
+// AUTH.JS - KIRJAUTUMINEN JA KÄYTTÄJÄHALLINTA (v6.10 SECURITY FIX)
 // =========================================================
 
 // Kuunnellaan kirjautumistilan muutoksia
@@ -13,6 +13,9 @@ auth.onAuthStateChanged((user) => {
         // --- KÄYTTÄJÄ ON KIRJAUTUNUT ---
         currentUser = user; // Asetetaan globaali muuttuja
         
+        // VARMISTUS: Poistetaan tietoturva-luokka jos se jäi päälle
+        document.body.classList.remove('login-help-active');
+
         loginView.style.display = 'none';
         appContainer.style.display = 'flex';
         
@@ -27,22 +30,23 @@ auth.onAuthStateChanged((user) => {
         if(typeof loadHistory === 'function') loadHistory(); 
         if(typeof generateCarIcons === 'function') generateCarIcons(); 
         
-        // --- ENSIMMÄISEN KÄYNNISTYKSEN LOGIIKKA (UUSI) ---
+        // --- ENSIMMÄISEN KÄYNNISTYKSEN LOGIIKKA (PÄIVITETTY v6.10) ---
         // Tarkistetaan, onko käyttäjä nähnyt ohjeet tässä versiossa
-        const hasSeenIntro = localStorage.getItem('intro_seen_v6');
+        // Avain vaihdettu, jotta kaikki näkevät ohjeen päivityksen jälkeen
+        const hasSeenIntro = localStorage.getItem('intro_seen_v6_10');
         
         if (!hasSeenIntro) {
             // Jos ei ole nähnyt -> Pakota ohjenäkymään
             setTimeout(() => {
                 if(typeof switchView === 'function') switchView('help');
-                if(typeof showToast === 'function') showToast("Tervetuloa! Lue tästä asennusohjeet. 📲");
-            }, 500); // Pieni viive varmistaa että UI on valmis
+                if(typeof showToast === 'function') showToast("Tervetuloa v6.10! Lue uudet ohjeet. 📲");
+            }, 600); 
             
-            // Merkitään nähdyksi, ettei kiusata joka kerta
-            localStorage.setItem('intro_seen_v6', 'true');
+            // Merkitään nähdyksi
+            localStorage.setItem('intro_seen_v6_10', 'true');
         } else {
-            // Jos on nähnyt -> Varmistetaan että ollaan mittaristossa (oletus)
-            // (UI.js hoitaa tämän yleensä, mutta varmistus ei haittaa)
+            // Jos on nähnyt, varmistetaan dashboard (tai viimeinen tila)
+            // (UI.js hoitaa oletuksena dashboardin)
         }
         // ----------------------------------------------------
 
@@ -54,7 +58,8 @@ auth.onAuthStateChanged((user) => {
         currentUser = null;
         loginView.style.display = 'flex';
         appContainer.style.display = 'none';
-        // Tyhjennetään tiedot
+        
+        // Tyhjennetään tiedot muistista
         userCars = [];
         allHistoryData = [];
     }
@@ -110,26 +115,35 @@ if(btnLogout) {
     });
 }
 
+// --- KIRJAUTUMISRUUDUN OHJEET (TURVAPÄIVITYS) ---
 const btnLoginHelp = document.getElementById('btn-login-help');
 if(btnLoginHelp) {
     btnLoginHelp.addEventListener('click', () => {
         loginView.style.display = 'none';
+        
+        // Näytetään container, mutta CSS (login-help-active) piilottaa valikot
         appContainer.style.display = 'flex';
+        document.body.classList.add('login-help-active');
+
         if(typeof switchView === 'function') switchView('help');
         
-        const controls = document.querySelector('.controls-container');
-        if(controls) controls.style.display = 'none';
+        // Lisää takaisin-nappi dynaamisesti ohjesivulle
+        const helpView = document.getElementById('help-view');
         
-        // Lisää takaisin-nappi dynaamisesti
+        // Poistetaan vanha nappi jos on
+        const oldBtn = helpView.querySelector('.back-to-login-btn');
+        if(oldBtn) oldBtn.remove();
+
         const backBtn = document.createElement('button');
         backBtn.innerText = "← Takaisin kirjautumiseen";
-        backBtn.className = 'action-btn blue-btn';
-        backBtn.style.marginTop = "20px";
-        backBtn.onclick = () => location.reload();
+        backBtn.className = 'action-btn blue-btn back-to-login-btn'; 
+        backBtn.onclick = () => {
+            // Poista turvaluokka ja lataa sivu uudelleen (puhdas pöytä)
+            document.body.classList.remove('login-help-active');
+            location.reload();
+        };
         
-        const helpView = document.getElementById('help-view');
-        if (helpView && !helpView.querySelector('.back-to-login-btn')) {
-            backBtn.classList.add('back-to-login-btn');
+        if (helpView) {
             helpView.insertBefore(backBtn, helpView.firstChild);
         }
     });
