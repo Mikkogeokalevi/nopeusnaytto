@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.12 SEGMENTS
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.13 FINAL
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.12-segments'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.13-final'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
