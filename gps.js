@@ -1,5 +1,5 @@
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v6.12 SEGMENTS)
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v6.12 SEGMENTS + ADDRESSES)
 // =========================================================
 
 // --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
@@ -18,6 +18,7 @@ var startAddressSnapshot = "";
 var sessionStartTime = null;      // Tämän nimenomaisen pätkän aloitusaika
 var sessionStartDistance = 0;     // Mittarilukema tämän pätkän alussa
 var sessionPauseTime = 0;         // Tauot vain tämän pätkän aikana
+var sessionStartAddress = "";     // Tämän pätkän lähtöosoite
 var existingSessions = [];        // Lista aiemmista osamatkoista (jos continue)
 
 // 1. KONTROLLIPAINIKKEET JA LOGIIKKA
@@ -100,6 +101,7 @@ function startRecordingSession(isContinue = false) {
     // Alustetaan nykyisen session muuttujat (SUB-TRIP)
     sessionStartTime = new Date();
     sessionPauseTime = 0;
+    sessionStartAddress = currentAddress; // Otetaan talteen pätkän aloitusosoite
     
     // Varmistetaan että ääni soi
     if (silentAudio.paused) {
@@ -118,7 +120,7 @@ function startRecordingSession(isContinue = false) {
         maxSpeed = 0;
         totalDistance = 0;
         routePath = [];
-        // OSOITEKORJAUS: Otetaan talteen tämän hetken osoite lähtöosoitteeksi
+        // OSOITEKORJAUS: Otetaan talteen tämän hetken osoite lähtöosoitteeksi (Pääajo)
         startAddressSnapshot = currentAddress;
         
         // Nollataan sessiotiedot
@@ -289,13 +291,15 @@ if (btnStopRec) {
         const segmentDurationMs = (endTime - sessionStartTime) - sessionPauseTime;
         
         // Luodaan uusi osio-objekti
-        // Varmistetaan, ettei luoda "tyhjää" osiota (esim. vahinkopainallus heti aloituksen jälkeen)
+        // Varmistetaan, ettei luoda "tyhjää" osiota
         if (segmentDurationMs > 1000 || segmentDist > 0.01) {
             const newSession = {
                 startTime: sessionStartTime.toISOString(),
                 endTime: endTime.toISOString(),
                 dist: segmentDist.toFixed(2),
-                durationMs: segmentDurationMs
+                durationMs: segmentDurationMs,
+                startAddr: sessionStartAddress || "",   // LISÄTTY: Pätkän aloitus
+                endAddr: currentAddress || ""           // LISÄTTY: Pätkän lopetus
             };
             existingSessions.push(newSession);
         }
@@ -583,6 +587,7 @@ function resetRecordingUI() {
     // Nollataan sessiot
     existingSessions = [];
     sessionStartDistance = 0;
+    sessionStartAddress = "";
     
     if(silentAudio) {
         silentAudio.pause();
@@ -726,6 +731,7 @@ function saveCrashData() {
         sessionStartTime: sessionStartTime ? sessionStartTime.toISOString() : null,
         sessionStartDistance: sessionStartDistance,
         sessionPauseTime: sessionPauseTime,
+        sessionStartAddress: sessionStartAddress, // LISÄTTY
         existingSessions: existingSessions
     };
     localStorage.setItem(RECOVERY_KEY, JSON.stringify(crashData));
@@ -785,6 +791,7 @@ function restoreDrive(data) {
     
     sessionStartDistance = data.sessionStartDistance || 0;
     sessionPauseTime = data.sessionPauseTime || 0;
+    sessionStartAddress = data.sessionStartAddress || ""; // LISÄTTY
     existingSessions = data.existingSessions || [];
     
     const carSelect = document.getElementById('car-select');
