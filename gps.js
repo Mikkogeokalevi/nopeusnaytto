@@ -1,18 +1,28 @@
+{
+type: uploaded file
+fileName: gps.js
+fullContent:
 // =========================================================
-// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v6.10 ADDRESS FIX)
+// GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v6.12 SEGMENTS)
 // =========================================================
 
 // --- 0. SILENT AUDIO HACK (BACKGROUND MODE) ---
 // Tämä pitää selaimen prosessin hengissä vaikka näyttö sammuisi.
-const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
+const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAbXA0MgBUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAA2NvbXBhdGlibGVfYnJhbmRzAGlzb21tcDQyAFRTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh//OEAAAAAAAAAAAAAAAAAAAAAAAAMExhdmM1Ny42NAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAFccAAABAAAAAAAAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA//OEMAAAAB5AAAAAAAAAAAFccAAAAAAA");
 silentAudio.loop = true;
 silentAudio.volume = 0.01; // Hyvin hiljainen varmuuden vuoksi
 
 // CRASH RECOVERY KEY
 const RECOVERY_KEY = 'ajopro_crash_recovery_v1';
 
-// OSOITEMUISTI (UUSI v6.10)
+// OSOITEMUISTI (v6.10)
 var startAddressSnapshot = ""; 
+
+// OSIO-SEURANTA (v6.12 SUB-TRIPS)
+var sessionStartTime = null;      // Tämän nimenomaisen pätkän aloitusaika
+var sessionStartDistance = 0;     // Mittarilukema tämän pätkän alussa
+var sessionPauseTime = 0;         // Tauot vain tämän pätkän aikana
+var existingSessions = [];        // Lista aiemmista osamatkoista (jos continue)
 
 // 1. KONTROLLIPAINIKKEET JA LOGIIKKA
 
@@ -91,6 +101,10 @@ function startRecordingSession(isContinue = false) {
     isPaused = false;
     isViewingHistory = false;
     
+    // Alustetaan nykyisen session muuttujat (SUB-TRIP)
+    sessionStartTime = new Date();
+    sessionPauseTime = 0;
+    
     // Varmistetaan että ääni soi
     if (silentAudio.paused) {
         silentAudio.play().catch(e => console.warn(e));
@@ -101,7 +115,7 @@ function startRecordingSession(isContinue = false) {
         mapGpsToggle.classList.remove('inactive');
     }
 
-    // Jos kyseessä on UUSI ajo (ei jatkettu), nollataan muuttujat
+    // Jos kyseessä on UUSI ajo (ei jatkettu), nollataan globaalit
     if (!isContinue) {
         startTime = new Date();
         totalPauseTime = 0;
@@ -111,11 +125,18 @@ function startRecordingSession(isContinue = false) {
         // OSOITEKORJAUS: Otetaan talteen tämän hetken osoite lähtöosoitteeksi
         startAddressSnapshot = currentAddress;
         
+        // Nollataan sessiotiedot
+        existingSessions = [];
+        sessionStartDistance = 0; 
+        
         if(realTimePolyline) realTimePolyline.setLatLngs([]);
         if(typeof clearSavedRoute === 'function') clearSavedRoute();
         currentDriveWeather = "";
         aggressiveEvents = 0;
         currentDriveId = null; // Varmistetaan että ID on null (uusi ajo)
+    } else {
+        // Jos jatketaan, asetetaan session aloitusmatka nykyiseen kokonaismatkaan
+        sessionStartDistance = totalDistance;
     }
     
     if(typeof updateDashboardUI === 'function') updateDashboardUI(0, maxSpeed, totalDistance, 0, 0, 0);
@@ -163,6 +184,9 @@ window.continueDrive = function(driveData) {
         // 3. Palautetaan alkuperäinen lähtöosoite (ettei se muutu nykyiseksi)
         startAddressSnapshot = driveData.startAddress || currentAddress;
         
+        // SUB-TRIPS: Ladataan olemassa olevat sessiot
+        existingSessions = driveData.sessions || [];
+
         // LASKETAAN TAUKOAIKA
         const oldEndTime = new Date(driveData.endTime);
         const now = new Date();
@@ -227,7 +251,12 @@ if (btnResume) {
     btnResume.addEventListener('click', () => {
         isPaused = false;
         const now = new Date();
-        totalPauseTime += (now - pauseStartTime);
+        const pauseDuration = (now - pauseStartTime);
+        
+        // Lisätään tauko globaaliin ja nykyiseen sessioon
+        totalPauseTime += pauseDuration;
+        sessionPauseTime += pauseDuration;
+
         btnResume.style.display = 'none';
         btnPause.style.display = 'inline-block';
         if(statusEl) {
@@ -245,14 +274,35 @@ if (btnStopRec) {
         clearInterval(timerInterval);
         window.removeEventListener('devicemotion', handleMotion);
         
+        // Jos lopetetaan tauolta, lisätään tauko laskuriin
         if (isPaused && pauseStartTime) {
-            totalPauseTime += (new Date() - pauseStartTime);
+            const pauseLen = (new Date() - pauseStartTime);
+            totalPauseTime += pauseLen;
+            sessionPauseTime += pauseLen;
         }
 
         const endTime = new Date();
+        
+        // KOKONAISLASKENTA
         const activeDurationMs = (endTime - startTime) - totalPauseTime;
         const durationHours = activeDurationMs / (1000 * 60 * 60);
         let avgSpeed = durationHours > 0 ? (totalDistance / durationHours) : 0;
+
+        // OSIOLASKENTA (New Segment)
+        const segmentDist = totalDistance - sessionStartDistance;
+        const segmentDurationMs = (endTime - sessionStartTime) - sessionPauseTime;
+        
+        // Luodaan uusi osio-objekti
+        // Varmistetaan, ettei luoda "tyhjää" osiota (esim. vahinkopainallus heti aloituksen jälkeen)
+        if (segmentDurationMs > 1000 || segmentDist > 0.01) {
+            const newSession = {
+                startTime: sessionStartTime.toISOString(),
+                endTime: endTime.toISOString(),
+                dist: segmentDist.toFixed(2),
+                durationMs: segmentDurationMs
+            };
+            existingSessions.push(newSession);
+        }
 
         let styleLabel = "";
         if (currentCarType !== 'bike' && currentCarType !== 'walking') {
@@ -288,9 +338,11 @@ if (btnStopRec) {
             carId: currentCarId,
             carType: currentCarType,
             route: routePath,
-            // OSOITTEET (UUSI v6.10)
+            // OSOITTEET
             startAddress: startAddressSnapshot,
-            endAddress: currentAddress // Nappaa nykyisen sijainnin lopetuksessa
+            endAddress: currentAddress,
+            // SUB-TRIPS (LISÄTTY)
+            sessions: existingSessions
         };
 
         const mins = Math.floor(activeDurationMs / 60000);
@@ -532,6 +584,10 @@ function resetRecordingUI() {
     if(liveStatusBar) liveStatusBar.style.opacity = '0'; 
     if(dashAddressEl) dashAddressEl.innerText = "Odottaa sijaintia...";
     
+    // Nollataan sessiot
+    existingSessions = [];
+    sessionStartDistance = 0;
+    
     if(silentAudio) {
         silentAudio.pause();
         silentAudio.currentTime = 0;
@@ -652,7 +708,7 @@ async function requestWakeLock() {
 }
 
 // =========================================================
-// 4. CRASH RECOVERY LOGIIKKA (PÄIVITETTY v6.10)
+// 4. CRASH RECOVERY LOGIIKKA (PÄIVITETTY v6.12 SESSION SUPPORT)
 // =========================================================
 
 function saveCrashData() {
@@ -669,7 +725,12 @@ function saveCrashData() {
         isPaused: isPaused,
         pauseStartTime: (isPaused && pauseStartTime) ? pauseStartTime.toISOString() : null,
         driveDbId: currentDriveId,
-        startAddress: startAddressSnapshot // Tallennetaan myös tämä recoveryyn
+        startAddress: startAddressSnapshot,
+        // SESSION DATA
+        sessionStartTime: sessionStartTime ? sessionStartTime.toISOString() : null,
+        sessionStartDistance: sessionStartDistance,
+        sessionPauseTime: sessionPauseTime,
+        existingSessions: existingSessions
     };
     localStorage.setItem(RECOVERY_KEY, JSON.stringify(crashData));
 }
@@ -720,7 +781,15 @@ function restoreDrive(data) {
     currentCarType = data.currentCarType || 'car';
     
     currentDriveId = data.driveDbId || null;
-    startAddressSnapshot = data.startAddress || ""; // Palautetaan lähtöosoite
+    startAddressSnapshot = data.startAddress || ""; 
+    
+    // PALAUTETAAN SESSION DATA
+    if (data.sessionStartTime) sessionStartTime = new Date(data.sessionStartTime);
+    else sessionStartTime = new Date(); // Fallback
+    
+    sessionStartDistance = data.sessionStartDistance || 0;
+    sessionPauseTime = data.sessionPauseTime || 0;
+    existingSessions = data.existingSessions || [];
     
     const carSelect = document.getElementById('car-select');
     if (carSelect) carSelect.value = currentCarId;
@@ -767,3 +836,5 @@ function restoreDrive(data) {
 }
 
 setTimeout(checkCrashRecovery, 1000);
+
+}
