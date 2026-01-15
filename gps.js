@@ -1,7 +1,3 @@
-{
-type: uploaded file
-fileName: gps.js
-fullContent:
 // =========================================================
 // GPS.JS - PAIKANNUS, MATKA JA TALLENNUS (v6.12 SEGMENTS)
 // =========================================================
@@ -836,5 +832,3 @@ function restoreDrive(data) {
 }
 
 setTimeout(checkCrashRecovery, 1000);
-
-}
