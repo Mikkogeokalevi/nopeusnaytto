@@ -1,7 +1,3 @@
-{
-type: uploaded file
-fileName: history.js
-fullContent:
 // =========================================================
 // HISTORY.JS - HISTORIA, TILASTOT JA RAPORTOINTI (v6.12 FIXED ORDER & SEGMENTS)
 // =========================================================
@@ -1024,5 +1020,3 @@ window.exportToCSV = generateReport;
 
 // Init
 window.addEventListener('load', initOfflineManager);
-
-}
