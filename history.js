@@ -1,5 +1,9 @@
+{
+type: uploaded file
+fileName: history.js
+fullContent:
 // =========================================================
-// HISTORY.JS - HISTORIA, TILASTOT JA RAPORTOINTI (v6.12 FIXED ORDER)
+// HISTORY.JS - HISTORIA, TILASTOT JA RAPORTOINTI (v6.12 FIXED ORDER & SEGMENTS)
 // =========================================================
 
 // --- ASETUKSET ---
@@ -361,13 +365,38 @@ function renderHistoryList() {
                 euroInfo = `<span style="color:#ffd600; font-size:11px; margin-left:5px;">(~${allowance.toFixed(2)}€)</span>`;
             }
 
-            // OSOITENÄYTTÖ (v6.10)
+            // OSOITENÄYTTÖ
             let addressLine = "";
             if (drive.startAddress || drive.endAddress) {
                 const s = drive.startAddress || "?";
                 const e = drive.endAddress || "?";
                 addressLine = `<div style="font-size:11px; color:#aaa; margin-top:5px; border-top:1px solid rgba(255,255,255,0.05); padding-top:4px;">📍 ${s} ➝ ${e}</div>`;
             }
+
+            // --- SEGMENTTIEN RENDERÖINTI (SUB-TRIPS) ---
+            // NÄYTETÄÄN VAIN JOS ON USEAMPI KUIN 1 SESSION (Jatketut ajot)
+            let segmentsHtml = "";
+            if (drive.sessions && Array.isArray(drive.sessions) && drive.sessions.length > 1) {
+                segmentsHtml = `<div class="log-segments" style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05); font-size:11px; color:var(--subtext-color);">`;
+                // segmentsHtml += `<div style="margin-bottom:4px; font-weight:bold; opacity:0.7;">Osamatkat:</div>`;
+                
+                drive.sessions.forEach((sess, idx) => {
+                    const sTime = new Date(sess.startTime).toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+                    const eTime = new Date(sess.endTime).toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'});
+                    const dist = parseFloat(sess.dist).toFixed(1);
+                    const dur = Math.floor(sess.durationMs / 60000);
+                    
+                    segmentsHtml += `
+                        <div style="display:flex; justify-content:space-between; padding:2px 0;">
+                            <span>#${idx+1} ${sTime}-${eTime}</span>
+                            <span>${dist} km</span>
+                            <span>${dur} min</span>
+                        </div>
+                    `;
+                });
+                segmentsHtml += `</div>`;
+            }
+            // -------------------------------------------
 
             let cardStyle = "";
             let syncBadge = "";
@@ -416,6 +445,7 @@ function renderHistoryList() {
                     <div><span class="stat-label">Ø KM/H</span>${drive.avgSpeed || "-"}</div>
                 </div>
                 ${!drive.isPending ? `<input type="text" class="subject-input" placeholder="Kirjoita aihe..." value="${drive.subject || ""}" onchange="window.updateLogSubject('${drive.key}', this.value)">` : `<div style="font-style:italic; color:#888; font-size:12px; padding:5px;">${drive.subject || "Ei aihetta"} (Muokkaa synkronoinnin jälkeen)</div>`}
+                ${segmentsHtml}
                 ${addressLine}
             `;
             logList.appendChild(card);
@@ -994,3 +1024,5 @@ window.exportToCSV = generateReport;
 
 // Init
 window.addEventListener('load', initOfflineManager);
+
+}
