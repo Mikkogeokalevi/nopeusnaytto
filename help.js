@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.12 FINAL)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.13 SEGMENTS & ADDRESSES)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,10 +9,21 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta versiossa 6.12",
+                title: "🚀 1. Uutta (v6.13 & v6.12)",
                 content: `
+                    <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>📍 UUTTA v6.13: Älykkäät Osamatkat (Segments):</strong>
+                        <p>Kun käytät "Jatka ajoa" -toimintoa (esim. työpäivän jälkeen), sovellus ei enää vain lisää kilometrejä mittariin, vaan luo uuden <strong>osamatkan</strong>.</p>
+                        <p>Historiassa näet nyt pääkortin sisällä tarkan erittelyn:</p>
+                        <ul style="font-size:13px; color:#aaa;">
+                            <li>#1 07:30-08:00 (20km) 📍 Koti ➝ Työ</li>
+                            <li>#2 16:00-16:30 (22km) 📍 Työ ➝ Kauppa</li>
+                        </ul>
+                        <p>Tämä auttaa hahmottamaan päivän rakenteen yhdellä silmäyksellä!</p>
+                    </div>
+
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>🛡️ Tietoturvapäivitys:</strong>
+                        <strong>🛡️ Tietoturvapäivitys (v6.12):</strong>
                         <ul>
                             <li>Sovellus on nyt täysin lukittu kirjautumattomilta käyttäjiltä.</li>
                             <li>Kirjautumisruudun "Ohjeet"-nappi avaa vain ohjeet, eikä päästä valikoihin.</li>
@@ -310,10 +321,20 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New in v6.12",
+                title: "🚀 1. New (v6.13 & v6.12)",
                 content: `
+                    <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>📍 NEW in v6.13: Smart Segment Tracking:</strong>
+                        <p>When you use "Continue Drive" (e.g., after a work day), the app now creates a distinct <strong>segment</strong> instead of just adding kilometers.</p>
+                        <p>In History, you will see a breakdown inside the main card:</p>
+                        <ul style="font-size:13px; color:#aaa;">
+                            <li>#1 07:30-08:00 (20km) 📍 Home ➝ Work</li>
+                            <li>#2 16:00-16:30 (22km) 📍 Work ➝ Shop</li>
+                        </ul>
+                    </div>
+
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>🛡️ Security Update:</strong>
+                        <strong>🛡️ Security Update (v6.12):</strong>
                         <ul>
                             <li>App is now fully locked for non-logged-in users.</li>
                         </ul>
@@ -610,10 +631,20 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.12",
+                title: "🚀 1. Mới trong v6.13 & 6.12",
                 content: `
+                    <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>📍 MỚI v6.13: Theo dõi Chặng đường (Segments):</strong>
+                        <p>Khi bạn nhấn "Tiếp tục lái" (Continue Drive), ứng dụng sẽ tạo một <strong>phân đoạn</strong> mới.</p>
+                        <p>Trong Lịch sử, bạn sẽ thấy chi tiết từng chặng:</p>
+                        <ul style="font-size:13px; color:#aaa;">
+                            <li>#1 07:30-08:00 (20km) 📍 Nhà ➝ Công ty</li>
+                            <li>#2 16:00-16:30 (22km) 📍 Công ty ➝ Cửa hàng</li>
+                        </ul>
+                    </div>
+
                     <div class="help-step" style="border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px;">
-                        <strong>🛡️ Cập nhật bảo mật:</strong>
+                        <strong>🛡️ Cập nhật bảo mật (v6.12):</strong>
                         <ul>
                             <li>Ứng dụng hiện đã được khóa hoàn toàn đối với người dùng chưa đăng nhập.</li>
                         </ul>
@@ -908,7 +939,7 @@ window.renderHelp = function(lang) {
     }
 
     const data = helpData[lang] || helpData['fi'];
-    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.12';
+    const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : '6.13';
 
     // 1. Kielinapit
     const buttons = `
