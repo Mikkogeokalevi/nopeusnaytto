@@ -1,0 +1,18 @@
+# Ympäristömuuttujat - ÄLÄ SISÄLLYTÄ GITHUBIIN
+.env
+
+# Välimuistit ja lokit
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Editorit
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node.js (jos käytössä)
+node_modules/
+package-lock.json
