@@ -1,0 +1,762 @@
+/* =========================================================
+   STYLE.CSS - v6.10 (REPORTING & SECURITY UI)
+   ========================================================= */
+
+/* BOX-SIZING FIX */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-color: #121212;
+    --panel-bg: #1e1e1e;
+    --text-color: #ffffff;
+    --speed-color: #2979ff; 
+    --accent-color: #2979ff;
+    --border-color: #333;
+    --subtext-color: #888;
+    --card-bg: rgba(30, 30, 30, 0.85);
+}
+
+body.light-theme {
+    --bg-color: #f0f2f5;
+    --panel-bg: #ffffff;
+    --text-color: #121212;
+    --speed-color: #0056d2;
+    --accent-color: #0056d2;
+    --border-color: #ccc;
+    --subtext-color: #555;
+    --card-bg: rgba(255, 255, 255, 0.9);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    
+    /* IPHONE FIX: Käytetään dvh (dynamic viewport height) */
+    height: 100vh; /* Fallback vanhoille */
+    height: 100dvh; /* Moderni mobiilistandardi */
+    
+    overflow: hidden;
+    width: 100%;
+    overflow-x: hidden;
+    transition: background-color 0.3s, color 0.3s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* TAUSTALOGO */
+.watermark-bg { position: relative; z-index: 0; }
+.watermark-bg::before {
+    content: ""; position: absolute;
+    top: 40%; left: 50%; transform: translate(-50%, -50%);
+    width: 80%; height: 50%;
+    background-image: url('ajopaivakirja_logo_mu.png?v=4.6');
+    background-position: center; background-repeat: no-repeat; background-size: contain;
+    opacity: 0.08; z-index: -1; pointer-events: none;
+    transition: background-image 0.3s ease-in-out;
+}
+body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_logo.png?v=4.6'); opacity: 0.05; }
+
+/* KIRJAUTUMINEN */
+#login-view {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: var(--bg-color);
+    display: flex; justify-content: center; align-items: center; z-index: 5000;
+}
+.login-content { text-align: center; padding: 20px; width: 100%; max-width: 400px; animation: fadeInUp 0.5s ease-out; }
+.login-logo { width: 100px; height: 100px; margin-bottom: 20px; border-radius: 50%; border: 2px solid var(--accent-color); box-shadow: 0 0 20px rgba(41, 121, 255, 0.2); }
+.google-btn { background-color: #4285F4; margin-top: 5px; }
+
+.login-input {
+    width: 100%; padding: 12px; margin-bottom: 10px;
+    border-radius: 8px; border: 1px solid var(--border-color);
+    background-color: rgba(255,255,255,0.05); color: var(--text-color);
+    transition: border-color 0.3s;
+}
+.login-input:focus { outline: none; border-color: var(--accent-color); }
+.light-theme .login-input { background-color: #fff; color: #000; border: 1px solid #ccc; }
+
+.text-btn {
+    background: none; border: none; color: var(--subtext-color);
+    font-size: 14px; text-decoration: underline; cursor: pointer;
+    transition: color 0.2s; margin-top: 10px;
+}
+.text-btn:hover { color: var(--accent-color); }
+
+/* YLÄPALKKI */
+.top-bar-container {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 15px; background-color: var(--panel-bg);
+    border-bottom: 1px solid var(--border-color); z-index: 2000;
+    height: 55px; box-sizing: border-box; flex-shrink: 0;
+    width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    
+    /* IPHONE FIX: Yläreunan lovi */
+    padding-top: max(8px, env(safe-area-inset-top));
+    height: auto;
+    min-height: 55px;
+}
+
+.header-logo { height: 34px; width: 34px; border-radius: 50%; border: 2px solid var(--accent-color); cursor: pointer; transition: transform 0.2s; }
+.header-logo:active { transform: scale(0.9); }
+
+.top-car-select {
+    background-color: transparent; color: var(--text-color);
+    border: 1px solid var(--border-color); border-radius: 20px;
+    padding: 4px 12px; font-size: 13px; font-weight: 600;
+    max-width: 160px; outline: none;
+    transition: border-color 0.3s;
+}
+.top-car-select:focus { border-color: var(--accent-color); }
+
+.top-buttons { display: flex; align-items: center; gap: 10px; }
+.icon-btn {
+    background: transparent; border: 1px solid var(--border-color); color: var(--text-color);
+    border-radius: 10px; width: 34px; height: 34px; font-size: 16px;
+    cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; flex-shrink: 0;
+    transition: all 0.2s;
+}
+.icon-btn:active { transform: scale(0.9); background-color: rgba(255,255,255,0.1); }
+.menu-btn { font-size: 20px; border-color: var(--accent-color); color: var(--accent-color); }
+
+/* MENU DROPDOWN */
+.menu-dropdown {
+    position: absolute; top: 60px; right: 10px; width: 260px;
+    background-color: var(--panel-bg); 
+    border: 1px solid var(--border-color); border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 3000; display: flex; flex-direction: column;
+    animation: slideIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+@keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.menu-header {
+    padding: 20px; background: linear-gradient(135deg, rgba(41, 121, 255, 0.1), transparent);
+    display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border-color);
+}
+.menu-user-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent-color); }
+.menu-user-name { font-weight: bold; font-size: 15px; overflow: hidden; text-overflow: ellipsis; }
+
+.menu-items { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+.menu-item {
+    background: none; border: none; color: var(--text-color); text-align: left;
+    padding: 12px 15px; font-size: 15px; cursor: pointer; border-radius: 8px;
+    transition: background 0.2s, transform 0.1s; display: flex; align-items: center; gap: 10px;
+}
+.menu-item:active { transform: scale(0.98); }
+.active-menu { background-color: var(--accent-color) !important; color: #fff !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.logout-item { color: #ff4444; border-top: 1px solid var(--border-color); margin-top: 5px; border-radius: 0 0 8px 8px; }
+
+/* PÄÄSISÄLTÖ */
+.main-content { 
+    flex-grow: 1; 
+    position: relative; 
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column; 
+    width: 100%;
+    min-height: 0; 
+}
+.view-section { flex-grow: 1; display: flex; flex-direction: column; width: 100%; height: 100%; overflow: hidden; }
+
+/* --- MITTARISTO (DASHBOARD) --- */
+#dashboard-view { 
+    display: none; 
+    flex-direction: column;
+    justify-content: space-evenly; 
+    align-items: center;
+    padding: 5px 15px; 
+    height: 100%;
+    overflow-y: auto; 
+}
+
+#dashboard-view.active-view { display: flex; }
+
+.view-section.active-view:not(#dashboard-view):not(#map-view) {
+    display: block;
+    overflow-y: auto;
+}
+#map-view.active-view { display: flex; }
+
+/* LIVE STATUS BAR (ECO) */
+.status-bar {
+    display: flex; gap: 15px; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--subtext-color);
+    transition: opacity 0.5s; width: 100%; min-height: 25px;
+    flex-shrink: 0; 
+}
+.style-badge {
+    padding: 4px 10px; border-radius: 20px; font-weight: bold; border: 1px solid transparent;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+    transition: all 0.3s;
+}
+.style-green { background-color: rgba(0, 200, 83, 0.15); color: #00c853; border-color: #00c853; box-shadow: 0 0 10px rgba(0,200,83,0.2); }
+.style-red { background-color: rgba(213, 0, 0, 0.15); color: #ff1744; border-color: #ff1744; animation: shake 0.5s; box-shadow: 0 0 10px rgba(255,23,68,0.2); }
+@keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+
+/* VASEN SIVUNAPPI */
+.side-tap-zone {
+    position: absolute; top: 10px; height: 120px; width: 30px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(to right, rgba(41, 121, 255, 0.2), transparent);
+    color: var(--accent-color); font-weight: bold; font-size: 12px;
+    cursor: pointer; writing-mode: vertical-rl; text-orientation: mixed;
+    z-index: 50; border-radius: 0 10px 10px 0; border: 1px solid rgba(41, 121, 255, 0.3); border-left: none;
+    transition: width 0.2s, background 0.2s;
+}
+#side-tap-left { left: 0; } 
+.side-tap-zone:active { width: 45px; background: var(--accent-color); color: #fff; }
+
+/* ISO NOPEUS */
+.huge-speed-container { 
+    text-align: center; position: relative; 
+    flex-shrink: 0; 
+}
+.huge-speed {
+    font-size: 16vh; 
+    font-weight: 800; color: var(--speed-color); line-height: 0.9;
+    font-variant-numeric: tabular-nums; 
+    text-shadow: 0 0 20px rgba(41, 121, 255, 0.4); 
+    transition: color 0.3s, text-shadow 0.3s;
+}
+@media (max-height: 700px) {
+    .huge-speed { font-size: 14vh; }
+}
+
+.huge-unit { font-size: 16px; color: var(--subtext-color); font-weight: 500; display: block; text-align: center; margin-top: 0px; text-transform: uppercase; letter-spacing: 2px; }
+
+.huge-speed.three-digits {
+    font-size: 13vh; 
+    letter-spacing: -2px; 
+}
+
+/* GRIDI */
+.stats-grid { 
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    width: 100%; max-width: 450px; 
+    position: relative; z-index: 60;
+    flex-shrink: 1; 
+}
+.stat-card {
+    background-color: var(--card-bg); 
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    padding: 8px;
+    border-radius: 14px; text-align: center;
+    width: 100%; border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.light-theme .stat-card { border: 1px solid rgba(0,0,0,0.05); }
+
+.stat-label { font-size: 9px; color: var(--subtext-color); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1px; display: block; }
+.stat-value { font-size: 20px; font-weight: 700; color: var(--text-color); }
+.stat-unit { font-size: 11px; color: var(--subtext-color); font-weight: normal; }
+.coords-box { font-family: 'Roboto Mono', monospace; color: var(--accent-color); font-size: 11px; opacity: 0.8; margin-top: 5px; }
+
+/* TIME & WEATHER */
+.time-weather-wrapper {
+    display: flex; justify-content: center; align-items: center; gap: 20px;
+    text-align: center; width: 100%;
+    flex-shrink: 0;
+    position: relative;
+    overflow: visible !important; 
+}
+.weather-huge {
+    font-size: 28px; font-weight: bold; color: var(--text-color);
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
+}
+.time-right-col { 
+    display: flex; flex-direction: column; text-align: left; 
+    align-items: flex-start;
+    position: relative;
+    overflow: visible !important; 
+}
+.clock-box { font-size: 28px; font-weight: 300; color: var(--text-color); letter-spacing: 1px; line-height: 1; }
+.date-box { font-size: 12px; color: var(--accent-color); margin-top: 0px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+
+/* TANKKAUSNAPPI */
+#btn-open-fuel {
+    position: absolute;
+    right: -50px; 
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px; height: 34px;
+    font-size: 18px;
+    background: transparent;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 100;
+}
+#btn-open-fuel:active { background-color: rgba(41, 121, 255, 0.2); }
+
+/* KARTTA */
+#map-view { display: flex; flex-direction: column; height: 100vh; width: 100%; position: relative; }
+#map { flex-grow: 1; width: 100%; height: 100%; z-index: 1; }
+
+.map-overlay {
+    position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+    background-color: rgba(30, 30, 30, 0.85); backdrop-filter: blur(5px);
+    padding: 5px 20px; border-radius: 30px; z-index: 1000; text-align: center;
+    border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.speed-container { font-size: 28px; font-weight: bold; color: var(--speed-color); }
+.small-coords { font-family: 'Roboto Mono', monospace; font-size: 10px; color: #ccc; margin-top: -2px; }
+
+.map-return-btn {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background-color: var(--accent-color); color: #fff;
+    padding: 12px 30px; border-radius: 30px; border: none; font-weight: bold;
+    font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 1000; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 1px;
+}
+.map-gps-btn {
+    position: absolute; top: 15px; right: 15px; z-index: 1000;
+    background-color: var(--card-bg); color: #fff;
+    border: 1px solid var(--accent-color); border-radius: 12px;
+    padding: 8px 12px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+}
+.map-gps-btn.inactive { background-color: rgba(50,50,50,0.8); color: #aaa; border-color: #555; }
+.map-legend {
+    position: absolute; bottom: 100px; right: 15px; z-index: 1000;
+    background-color: rgba(255,255,255,0.95); padding: 8px 12px;
+    border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-size: 10px; color: #000; display: flex; align-items: center; gap: 8px; font-weight: bold;
+}
+.legend-gradient {
+    width: 80px; height: 8px;
+    background: linear-gradient(to right, #2979ff, #00c853, #fbc02d, #ff1744);
+    border-radius: 4px;
+}
+
+/* LISTA ANIMATIO */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+#log-list { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
+.log-card {
+    background-color: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 16px; padding: 18px; margin-bottom: 15px;
+    width: 100%; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    opacity: 0; animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.log-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+.light-theme .log-header { border-bottom: 1px solid rgba(0,0,0,0.05); }
+.log-car-big { font-size: 16px; font-weight: 700; color: var(--accent-color); margin-top: 3px; display: flex; align-items: center; gap: 5px; }
+.log-date-line { font-size: 12px; color: var(--subtext-color); font-weight: 500; }
+.delete-btn, .edit-btn, .map-btn { background: none; border: none; font-size: 20px; padding: 8px; cursor: pointer; transition: transform 0.2s; }
+.delete-btn:hover, .edit-btn:hover { transform: scale(1.1); }
+.delete-btn { color: #ef5350; } .edit-btn { color: var(--text-color); opacity: 0.6; } .map-btn { color: #fbc02d; }
+.log-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; text-align: center; }
+.log-stats div { display: flex; flex-direction: column; }
+.log-stats span.stat-label { font-size: 9px; margin-bottom: 2px; }
+.subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.1); color: var(--text-color); font-size: 14px; }
+.subject-input:focus { outline: none; border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.05); }
+
+/* AUTO LISTA */
+#cars-list { width: 100%; max-width: 600px; margin: 0 auto; }
+.car-item { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.car-details { font-size: 13px; color: var(--subtext-color); margin-top: 4px; }
+.car-title { font-weight: 700; font-size: 16px; color: var(--text-color); display: flex; align-items: center; gap: 8px; }
+.car-actions { display: flex; gap: 5px; }
+.car-icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
+.car-icon-option { font-size: 22px; text-align: center; cursor: pointer; padding: 5px; border: 1px solid var(--border-color); border-radius: 8px; background-color: rgba(255,255,255,0.05); transition: background 0.2s; }
+.car-icon-option.selected-icon { border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.2); }
+
+/* TAGIT & SUMMARY */
+.log-tags { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.tag { font-size: 10px; padding: 4px 8px; border-radius: 6px; background-color: rgba(255,255,255,0.05); color: var(--subtext-color); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 4px; font-weight: 600; }
+.summary-box { display: flex; justify-content: space-around; align-items: center; background: linear-gradient(135deg, rgba(41, 121, 255, 0.1), transparent); border: 1px solid rgba(41, 121, 255, 0.3); border-radius: 16px; padding: 15px; margin: 0 auto 20px auto; max-width: 600px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.summary-val { font-size: 24px; font-weight: 800; color: var(--accent-color); text-shadow: 0 0 10px rgba(41, 121, 255, 0.2); }
+.summary-sep { color: var(--border-color); font-size: 24px; font-weight: 100; opacity: 0.3; }
+
+/* CONTROLS - NAPEILLE TILAA ALHAALLA */
+.controls-container { 
+    background-color: var(--panel-bg); 
+    padding: 10px 15px; 
+    padding-bottom: max(85px, env(safe-area-inset-bottom));
+    text-align: center; 
+    border-top: 1px solid var(--border-color); 
+    z-index: 2000; 
+    flex-shrink: 0; 
+    width: 100%; 
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.2); 
+}
+
+.action-btn { padding: 12px 20px; font-size: 15px; border: none; border-radius: 50px; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 350px; margin: 5px 0; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s, box-shadow 0.2s; background-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(0,0,0,0)); }
+.action-btn:active { transform: scale(0.97); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.blue-btn { background-color: var(--accent-color); }
+.green-btn { background-color: #00c853; }
+.red-btn { background-color: #d50000; }
+.yellow-btn { background-color: #fbc02d; color: #000; }
+#status { margin-bottom: 8px; font-size: 12px; color: var(--subtext-color); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+
+/* SPLASH */
+#splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease-out; }
+.splash-logo { width: 100px; height: 100px; border-radius: 50%; box-shadow: 0 0 30px rgba(41, 121, 255, 0.4); margin-bottom: 20px; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0.4); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(41, 121, 255, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(41, 121, 255, 0); } }
+
+/* --- MODALS --- */
+.modal-overlay { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background-color: rgba(0, 0, 0, 0.85); z-index: 9000; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; 
+    padding-top: 15vh;       
+    backdrop-filter: blur(5px); 
+    overflow-y: auto;        
+}
+
+.modal-content { 
+    background-color: var(--panel-bg); 
+    width: 90%; max-width: 400px; 
+    border-radius: 20px; padding: 25px; text-align: center; 
+    border: 1px solid var(--border-color); 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+    animation: fadeInUp 0.3s ease-out; 
+}
+.modal-content select { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--accent-color); border-radius: 8px; }
+.modal-summary { margin-bottom: 20px; font-size: 22px; font-weight: bold; color: var(--text-color); }
+
+/* --- TOAST ILMOITUKSET --- */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1e1e1e;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    border: 1px solid var(--accent-color);
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    pointer-events: none;
+}
+.toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+/* ALAREUNAKUVA */
+.bottom-branding { 
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-end; 
+    margin-top: auto; 
+    padding-top: 5px; 
+    padding-bottom: 0px; 
+    z-index: 10; 
+    flex-shrink: 1; 
+}
+.footer-img { max-width: 55%; max-height: 15vh; height: auto; object-fit: contain; border-radius: 20px; opacity: 0.8; }
+.light-mode-img { display: none; }
+.dark-mode-img { display: block; }
+body.light-theme .dark-mode-img { display: none; }
+body.light-theme .light-mode-img { display: block; }
+
+/* G-FORCE & EXTRAS */
+.g-meter-bg { width: 60px; height: 60px; border: 2px solid var(--accent-color); border-radius: 50%; position: relative; background: radial-gradient(circle, rgba(41,121,255,0.1) 0%, rgba(0,0,0,0.5) 100%); box-shadow: 0 0 10px rgba(41, 121, 255, 0.3); }
+.g-bubble { width: 12px; height: 12px; background-color: #fff; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 5px #fff; transition: transform 0.1s ease-out; }
+#dash-address { font-size: 13px; font-weight: bold; color: var(--text-color); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90vw; }
+#compass-arrow { display: inline-block; transition: transform 0.3s cubic-bezier(0.4, 2.5, 0.5, 0.5); }
+
+/* --- VAAKATASO (LANDSCAPE) TUKI --- */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    #dashboard-view.active-view {
+        display: grid;
+        grid-template-columns: 40% 60%;
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas:
+            "status stats"
+            "speed stats"
+            "meta address";
+        padding: 5px 10px;
+        align-content: center;
+        justify-items: center;
+    }
+
+    .bottom-branding { display: none; }
+    .status-bar { grid-area: status; width: 100%; justify-content: center; margin: 0; min-height: 20px; }
+    .huge-speed-container { grid-area: speed; align-self: center; margin: 0; }
+    .huge-speed { font-size: 35vh; }
+    .huge-speed.three-digits { font-size: 26vh; }
+    
+    .stats-grid {
+        grid-area: stats;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 5px;
+        align-content: center;
+        align-self: center;
+        margin: 0;
+        height: 100%;
+        padding-left: 10px;
+    }
+    .address-container { display: block; grid-area: address; width: 100%; text-align: center; padding-top: 5px; z-index: 60; }
+    .time-weather-wrapper {
+        grid-area: meta;
+        flex-direction: row;
+        gap: 15px;
+        padding-bottom: 5px;
+        position: relative;
+        padding-right: 50px;
+    }
+    .clock-box { font-size: 24px; }
+    .weather-huge { font-size: 24px; }
+    .date-box { display: none; } 
+
+    .g-force-wrapper {
+        position: absolute;
+        top: auto; 
+        bottom: 10px; 
+        left: 35%;
+        right: auto;
+        width: 40px;
+        height: 40px;
+    }
+    .g-meter-bg { width: 40px; height: 40px; }
+    .g-bubble { width: 8px; height: 8px; }
+}
+
+/* ========================================= */
+/* HUD MODE (HEAD-UP DISPLAY) */
+/* ========================================= */
+
+body.hud-mode {
+    --bg-color: #000000 !important;
+    --panel-bg: #000000 !important;
+    --text-color: #00ff00 !important; 
+    --speed-color: #00ff00 !important;
+    --accent-color: #00ff00 !important;
+    --subtext-color: #00cc00 !important;
+    --card-bg: #000000 !important;
+    --border-color: #004400 !important;
+    overflow: hidden; 
+}
+
+body.hud-mode .top-bar-container,
+body.hud-mode .bottom-branding,
+body.hud-mode .controls-container,
+body.hud-mode .side-tap-zone, 
+body.hud-mode #btn-open-fuel,
+body.hud-mode .bottom-nav,
+body.hud-mode .g-force-wrapper,
+body.hud-mode .time-right-col button,
+body.hud-mode #btn-dashboard-minimal { 
+    display: none !important;
+}
+
+body.hud-mode #dashboard-view {
+    transform: scaleY(-1); 
+    height: 100vh; 
+    padding-top: 50px; 
+    border: 4px solid #00ff00; 
+    box-shadow: inset 0 0 50px #00ff00; 
+}
+
+body.hud-mode .huge-speed { text-shadow: 0 0 10px #00ff00; }
+body.hud-mode .stat-value { font-size: 26px; font-weight: 900; }
+body.hud-mode .stat-card { border: 2px solid #004400; }
+
+/* ========================================= */
+/* UUDET UI-OMINAISUUDET (V6.00 PÄIVITYS)    */
+/* ========================================= */
+
+/* 1. BOTTOM NAVIGATION (ALAPALKKI) */
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; width: 100%;
+    background-color: var(--panel-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 0;
+    /* IPHONE FIX: Safe area alareunaan */
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    z-index: 4000;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+}
+
+.bottom-nav-item {
+    background: none; border: none; color: var(--subtext-color);
+    font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    cursor: pointer; flex: 1; transition: color 0.2s;
+}
+
+.bottom-nav-item.active {
+    color: var(--accent-color);
+}
+
+.bottom-nav-icon {
+    font-size: 20px; margin-bottom: 2px;
+}
+
+/* 2. MINIMALISTINEN DASHBOARD */
+body.minimalist-mode #dashboard-view .stats-grid,
+body.minimalist-mode #dashboard-view .address-container,
+body.minimalist-mode #dashboard-view .g-force-wrapper,
+body.minimalist-mode #dashboard-view .side-tap-zone,
+body.minimalist-mode #dashboard-view .status-bar {
+    display: none !important;
+}
+
+body.minimalist-mode #dashboard-view .huge-speed-container {
+    transform: scale(1.5);
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+/* UUSI NAPPI MITTARISTOON (MINIMALIST-TOGGLE) - POISTETTU TÄSTÄ, SÄÄDETÄÄN ALLA */
+.dashboard-toggle-btn {
+    font-size: 20px;
+    background: transparent;
+    border: none;
+    color: var(--subtext-color);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.dashboard-toggle-btn:active, .dashboard-toggle-btn.active {
+    color: var(--accent-color);
+}
+
+/* 3. VÄRIVALITSIN ASETUKSISSA */
+.color-picker-container {
+    display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center;
+}
+.color-option {
+    width: 35px; height: 35px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: transform 0.2s, box-shadow 0.2s;
+}
+.color-option:hover { transform: scale(1.1); }
+.color-option.selected {
+    border-color: #fff;
+    box-shadow: 0 0 10px currentColor;
+}
+
+/* 4. KOMPAKTI HISTORIA - LAAJENNETTAVA */
+
+/* Piilotetaan elementit VAIN JOS kortti EI ole avattu (.expanded) */
+#log-list.compact .log-card:not(.expanded) .log-stats,
+#log-list.compact .log-card:not(.expanded) .log-tags,
+#log-list.compact .log-card:not(.expanded) .subject-input,
+#log-list.compact .log-card:not(.expanded) .map-btn,
+#log-list.compact .log-card:not(.expanded) .log-title-group div:last-child { 
+    display: none !important; 
+}
+
+/* Tiivistetään kortti (oletus) */
+#log-list.compact .log-card {
+    padding: 12px 15px !important;
+    margin-bottom: 8px !important;
+    cursor: pointer; /* Osoittaa että voi klikata */
+    transition: all 0.2s ease-in-out;
+}
+
+/* Kun kortti on avattu (.expanded), palautetaan padding ja marginaali */
+#log-list.compact .log-card.expanded {
+    padding: 18px !important;
+    margin-bottom: 15px !important;
+    background-color: var(--panel-bg); /* Hieman korostettu tausta */
+    border: 1px solid var(--accent-color);
+}
+
+#log-list.compact .log-header {
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+/* Kun avattu, palauta headerin välit */
+#log-list.compact .log-card.expanded .log-header {
+    margin-bottom: 12px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    padding-bottom: 10px !important;
+}
+
+/* Asetellaan otsikko uudelleen (kompaktissa tilassa riville) */
+#log-list.compact .log-title-group {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+}
+
+/* Kun avattu, palauta otsikko normaaliksi (allekkain) */
+#log-list.compact .log-card.expanded .log-title-group {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+}
+
+/* Pienempi teksti päivämäärälle (kompaktissa) */
+#log-list.compact .log-date-line {
+    font-size: 13px !important;
+    color: var(--text-color) !important;
+    margin-right: 10px;
+}
+
+/* Visuaalinen nuoli (Chevron) indikoimaan avaamista */
+#log-list.compact .log-card::after {
+    content: "▼";
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    font-size: 10px;
+    color: var(--subtext-color);
+    transition: transform 0.3s;
+}
+
+#log-list.compact .log-card.expanded::after {
+    transform: rotate(180deg);
+}
+
+/* Piilota nuoli jos ei olla kompaktissa tilassa */
+#log-list:not(.compact) .log-card::after {
+    display: none;
+}
+
+/* --- V6.10 PÄIVITYKSET --- */
+
+/* 1. SILMÄ-IKONIN UUSI PAIKKA (ALHAALLA VASEMMALLA) */
+#btn-dashboard-minimal {
+    position: absolute;
+    bottom: 90px; /* Alapalkin yläpuolella */
+    left: 20px;
+    z-index: 100;
+    background-color: rgba(30,30,30,0.6); /* Hieman taustaa erottuvuuden vuoksi */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* 2. TIETOTURVA: PIILOTA VALIKOT JOS "LOGIN HELP" -TILA ON PÄÄLLÄ */
+body.login-help-active .top-bar-container,
+body.login-help-active .bottom-nav,
+body.login-help-active .controls-container,
+body.login-help-active #main-menu {
+    display: none !important;
+}
+
+body.login-help-active #app-container {
+    height: 100% !important;
+    padding-bottom: 0 !important;
+}
+
+/* Takaisin-nappi Login-help tilassa */
+.back-to-login-btn {
+    margin-bottom: 20px;
+    width: 100%;
+}
