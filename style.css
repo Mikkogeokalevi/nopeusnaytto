@@ -1,4 +1,154 @@
 /* =========================================================
+   UUSI V6.14 - ANIMOITU NOPEUSMITTARI & GRAAFIT
+   ========================================================= */
+
+/* Neulanenmittari */
+.speedometer-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+#speedometer-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.speed-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 2;
+}
+
+.huge-speed-gauge {
+    font-size: 48px;
+    font-weight: bold;
+    color: var(--speed-color);
+    display: block;
+    line-height: 1;
+}
+
+.huge-unit-gauge {
+    font-size: 14px;
+    color: var(--subtext-color);
+}
+
+/* Reaaliaikaiset graafit */
+.live-graphs-container {
+    margin: 15px 10px;
+    padding: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.graph-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.graph-row:last-child {
+    margin-bottom: 0;
+}
+
+.graph-card {
+    flex: 1;
+    background: var(--panel-bg);
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.graph-card canvas {
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+.graph-label {
+    font-size: 11px;
+    color: var(--subtext-color);
+    display: block;
+}
+
+/* Mini G-voiman mittari */
+.mini-gauge {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--panel-bg) 0%, rgba(255,255,255,0.1) 100%);
+    border: 2px solid var(--border-color);
+    margin: 0 auto 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.g-indicator {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* Nopeusmittarin värit */
+.speed-green { color: #00e676 !important; }
+.speed-yellow { color: #ff9800 !important; }
+.speed-red { color: #ff1744 !important; }
+
+/* Tärinäefekti */
+@keyframes speed-vibration {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-1px); }
+    75% { transform: translateX(1px); }
+}
+
+.speed-warning {
+    animation: speed-vibration 0.2s infinite;
+    color: #ff1744 !important;
+}
+
+/* Dynaaminen tausta */
+.dashboard-view {
+    position: relative;
+    overflow: hidden;
+}
+
+.route-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.05;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.weather-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* =========================================================
    STYLE.CSS - v6.10 (REPORTING & SECURITY UI)
    ========================================================= */
 

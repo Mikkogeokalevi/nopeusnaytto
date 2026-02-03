@@ -114,8 +114,19 @@
                 </button>
 
                 <div class="huge-speed-container">
-                    <span id="dash-speed" class="huge-speed">0.0</span>
-                    <span class="huge-unit">km/h</span>
+                    <!-- UUSI: Neulanenmittari -->
+                    <div class="speedometer-container" id="speedometer-container" style="display:none;">
+                        <canvas id="speedometer-canvas" width="200" height="200"></canvas>
+                        <div class="speed-center-text">
+                            <span id="dash-speed-gauge" class="huge-speed-gauge">0</span>
+                            <span class="huge-unit-gauge">km/h</span>
+                        </div>
+                    </div>
+                    <!-- Vanha digitaalinen -->
+                    <div class="digital-speed-container" id="digital-speed-container">
+                        <span id="dash-speed" class="huge-speed">0.0</span>
+                        <span class="huge-unit">km/h</span>
+                    </div>
                 </div>
                 
                 <div class="stats-grid">
@@ -149,6 +160,32 @@
                         <span class="stat-label">Korkeus</span>
                         <span class="stat-value" id="dash-alt">0</span>
                         <span class="stat-unit">m</span>
+                    </div>
+                </div>
+
+                <!-- UUSI: Reaaliaikaiset graafit -->
+                <div class="live-graphs-container" id="live-graphs-container" style="display:none;">
+                    <div class="graph-row">
+                        <div class="graph-card">
+                            <canvas id="speed-graph" width="150" height="60"></canvas>
+                            <span class="graph-label">Nopeus (30s)</span>
+                        </div>
+                        <div class="graph-card">
+                            <canvas id="altitude-graph" width="150" height="60"></canvas>
+                            <span class="graph-label">Korkeus</span>
+                        </div>
+                    </div>
+                    <div class="graph-row">
+                        <div class="graph-card">
+                            <canvas id="gforce-graph" width="150" height="60"></canvas>
+                            <span class="graph-label">G-voima</span>
+                        </div>
+                        <div class="graph-card">
+                            <div class="mini-gauge" id="mini-gauge">
+                                <div class="g-indicator" id="g-indicator"></div>
+                            </div>
+                            <span class="graph-label">Kiihtyvyys</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -271,6 +308,15 @@
                         <div class="color-option" style="background-color:#00e676;" data-color="#00e676"></div>
                         <div class="color-option" style="background-color:#ff1744;" data-color="#ff1744"></div>
                         <div class="color-option" style="background-color:#d500f9;" data-color="#d500f9"></div>
+                    </div>
+                    
+                    <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:15px;">
+                        <span>Nopeusmittarin tyyli:</span>
+                        <select id="speedometer-style" class="subject-input" style="width:120px;">
+                            <option value="digital">Digitaalinen</option>
+                            <option value="gauge">Neulanenmittari</option>
+                            <option value="both">Molemmat</option>
+                        </select>
                     </div>
                     
                     <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:15px;">
@@ -574,9 +620,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    
-    <script src="globals.js?v=6.10"></script>
-    <script src="ui.js?v=6.10"></script>
+
+    <script src="globals.js?v=6.14"></script>
+    <script src="visuals.js?v=6.14"></script>
+    <script src="ui.js?v=6.14"></script>
     <script src="auth.js?v=6.10"></script>
     <script src="map.js?v=6.01"></script>
     <script src="gps.js?v=6.10"></script>

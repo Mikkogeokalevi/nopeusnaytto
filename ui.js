@@ -902,4 +902,9 @@ window.addEventListener('DOMContentLoaded', () => {
     if (savedPrice && inputPricePerKm) {
         inputPricePerKm.value = savedPrice;
     }
+    
+    // UUSI V6.14: Alusta visuaaliset elementit
+    if (typeof initVisuals === 'function') {
+        initVisuals();
+    }
 });

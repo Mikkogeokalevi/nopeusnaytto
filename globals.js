@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.13 (Security Fix - API Key Protection)
-const APP_VERSION = "6.13"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.14 (Animated Speedometer & Live Graphs)
+const APP_VERSION = "6.14"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

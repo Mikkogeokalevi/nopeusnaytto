@@ -447,6 +447,25 @@ function updatePosition(position) {
         }
 
         saveCrashData();
+
+        // UUSI V6.14: Päivitä visuaaliset elementit
+        if (typeof updateSpeedometer === 'function') {
+            updateSpeedometer(speedKmh);
+        }
+        
+        if (typeof updateGraphs === 'function') {
+            // G-voiman laskenta (jos anturit saatavilla)
+            let gx = 0, gy = 0;
+            if (window.motionData) {
+                gx = window.motionData.x || 0;
+                gy = window.motionData.y || 0;
+            }
+            updateGraphs(speedKmh, alt, Math.sqrt(gx * gx + gy * gy));
+        }
+        
+        if (typeof updateGIndicator === 'function' && window.motionData) {
+            updateGIndicator(window.motionData.x || 0, window.motionData.y || 0);
+        }
     }
     
     if (!lastLatLng || speedKmh > 0 || isGPSActive) {
