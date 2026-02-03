@@ -90,6 +90,94 @@ const helpData = {
                         <li>Keskinopeudet</li>
                         <li>Polttoainekulutukset</li>
                     </ul>`
+            },
+            {
+                title: "🗺️ 6. Kartat",
+                content: `
+                    <p>Reaaliaikainen kartta ajon aikana:</p>
+                    <ul>
+                        <li>Näytä nykyinen sijainti</li>
+                        <li>Reittiviivan piirto</li>
+                        <li>Lähtö- ja päätepisteet</li>
+                        <li>Karttatyylit (normaali/satelliitti)</li>
+                    </ul>`
+            },
+            {
+                title: "📱 7. PWA-toiminnot",
+                content: `
+                    <p>Sovellus toimii myös offline:</p>
+                    <ul>
+                        <li>GPS toimii taustalla</li>
+                        <li>Tiedot tallentuvat paikallisesti</li>
+                        <li>Synkronointi kun yhteys palautuu</li>
+                        <li>Pääsy ilman verkkoyhteyttä</li>
+                    </ul>`
+            },
+            {
+                title: "🔧 8. Asetukset",
+                content: `
+                    <p>Personoi sovellusta:</p>
+                    <ul>
+                        <li>Teeman valinta (vaalea/tumma)</li>
+                        <li>Nopeusmittarin tyyli (v6.14)</li>
+                        <li>Käyttäjäprofiili</li>
+                        <li>Kilometrikorvauksen asetus</li>
+                    </ul>`
+            },
+            {
+                title: "📈 9. Raportointi",
+                content: `
+                    <p>Luo yksityiskohtaisia raportteja:</p>
+                    <ul>
+                        <li>Suodata ajot kuukauden/auton mukaan</li>
+                        <li>Kilometrikorvauslaskuri</li>
+                        <li>CSV-vienti Exceliin</li>
+                        <li>Veroilmoitukseen sopiva muoto</li>
+                    </ul>`
+            },
+            {
+                title: "🔄 10. Synkronointi",
+                content: `
+                    <p>Cloud-tallennus Firebaseen:</p>
+                    <ul>
+                        <li>Kaikki tiedot turvassa pilvessä</li>
+                        <li>Automaattinen synkronointi</li>
+                        <li>Pääsy usealta laitteelta</li>
+                        <li>Varmuuskopiointi</li>
+                    </ul>`
+            },
+            {
+                title: "🎯 11. Uudet v6.14 ominaisuudet",
+                content: `
+                    <p><strong>Animoitu nopeusmittari:</strong></p>
+                    <ul>
+                        <li>Canvas-pohjainen neulanenmittari</li>
+                        <li>Värit vaihtuvat nopeuden mukaan</li>
+                        <li>Tärinäefekti ylinopeuksilla</li>
+                    </ul>
+                    <p><strong>Live-graafit:</strong></p>
+                    <ul>
+                        <li>Nopeuskäyrä (30s historia)</li>
+                        <li>Korkeusgraafi</li>
+                        <li>G-voiman visualisointi</li>
+                        <li>Mini G-mittari</li>
+                    </ul>`
+            },
+            {
+                title: "💡 12. Vinkkejä",
+                content: `
+                    <p><strong>Akun säästäminen:</strong></p>
+                    <ul>
+                        <li>Käytä "Molemmat" -tilaa vain tarvittaessa</li>
+                        <li>Sulje kartta taustalla</li>
+                        <li>Käytä tummaa teemaa</li>
+                    </ul>
+                    <p><strong>Tarkkuuden parantaminen:</strong></p>
+                    <ul>
+                        <li>Anna GPS:n kalibroitua</li>
+                        <li>Vältä rakennusten sisällä ajoa</li>
+                        <li>Käytä ulkoista GPS-antennia</li>
+                    </ul>`
             }
         ]
     },
@@ -178,6 +266,94 @@ const helpData = {
                         <li>Vehicle distribution</li>
                         <li>Average speeds</li>
                         <li>Fuel consumption</li>
+                    </ul>`
+            },
+            {
+                title: "🗺️ 6. Maps",
+                content: `
+                    <p>Real-time map during driving:</p>
+                    <ul>
+                        <li>Show current location</li>
+                        <li>Route line drawing</li>
+                        <li>Start and end points</li>
+                        <li>Map styles (normal/satellite)</li>
+                    </ul>`
+            },
+            {
+                title: "📱 7. PWA Features",
+                content: `
+                    <p>App works offline too:</p>
+                    <ul>
+                        <li>GPS works in background</li>
+                        <li>Data saves locally</li>
+                        <li>Sync when connection returns</li>
+                        <li>Access without network</li>
+                    </ul>`
+            },
+            {
+                title: "🔧 8. Settings",
+                content: `
+                    <p>Personalize the app:</p>
+                    <ul>
+                        <li>Theme selection (light/dark)</li>
+                        <li>Speedometer style (v6.14)</li>
+                        <li>User profile</li>
+                        <li>Mileage compensation setting</li>
+                    </ul>`
+            },
+            {
+                title: "📈 9. Reporting",
+                content: `
+                    <p>Create detailed reports:</p>
+                    <ul>
+                        <li>Filter drives by month/car</li>
+                        <li>Mileage compensation calculator</li>
+                        <li>CSV export to Excel</li>
+                        <li>Tax return compatible format</li>
+                    </ul>`
+            },
+            {
+                title: "🔄 10. Synchronization",
+                content: `
+                    <p>Cloud storage with Firebase:</p>
+                    <ul>
+                        <li>All data secure in cloud</li>
+                        <li>Automatic synchronization</li>
+                        <li>Access from multiple devices</li>
+                        <li>Backup</li>
+                    </ul>`
+            },
+            {
+                title: "🎯 11. New v6.14 Features",
+                content: `
+                    <p><strong>Animated Speedometer:</strong></p>
+                    <ul>
+                        <li>Canvas-based needle speedometer</li>
+                        <li>Colors change by speed</li>
+                        <li>Vibration effect at high speeds</li>
+                    </ul>
+                    <p><strong>Live Graphs:</strong></p>
+                    <ul>
+                        <li>Speed curve (30s history)</li>
+                        <li>Altitude graph</li>
+                        <li>G-force visualization</li>
+                        <li>Mini G-gauge</li>
+                    </ul>`
+            },
+            {
+                title: "💡 12. Tips",
+                content: `
+                    <p><strong>Battery Saving:</strong></p>
+                    <ul>
+                        <li>Use "Both" mode only when needed</li>
+                        <li>Close map in background</li>
+                        <li>Use dark theme</li>
+                    </ul>
+                    <p><strong>Improving Accuracy:</strong></p>
+                    <ul>
+                        <li>Let GPS calibrate</li>
+                        <li>Avoid driving indoors</li>
+                        <li>Use external GPS antenna</li>
                     </ul>`
             }
         ]
@@ -268,6 +444,94 @@ const helpData = {
                         <li>Tốc độ trung bình</li>
                         <li>Tiêu thụ nhiên liệu</li>
                     </ul>`
+            },
+            {
+                title: "🗺️ 6. Bản đồ",
+                content: `
+                    <p>Bản đồ thời gian thực khi lái xe:</p>
+                    <ul>
+                        <li>Hiển thị vị trí hiện tại</li>
+                        <li>Vẽ đường đi</li>
+                        <li>Điểm bắt đầu và kết thúc</li>
+                        <li>Kiểu bản đồ (thông thường/vệ tinh)</li>
+                    </ul>`
+            },
+            {
+                title: "📱 7. Tính năng PWA",
+                content: `
+                    <p>Ứng dụng hoạt động ngoại tuyến:</p>
+                    <ul>
+                        <li>GPS hoạt động nền</li>
+                        <li>Dữ liệu lưu cục bộ</li>
+                        <li>Đồng bộ khi kết nối trở lại</li>
+                        <li>Truy cập không cần mạng</li>
+                    </ul>`
+            },
+            {
+                title: "🔧 8. Cài đặt",
+                content: `
+                    <p>Cá nhân hóa ứng dụng:</p>
+                    <ul>
+                        <li>Lựa chọn chủ đề (sáng/tối)</li>
+                        <li>Kiểu đồng hồ tốc độ (v6.14)</li>
+                        <li>Hồ sơ người dùng</li>
+                        <li>Cài đặt bồi thường quãng đường</li>
+                    </ul>`
+            },
+            {
+                title: "📈 9. Báo cáo",
+                content: `
+                    <p>Tạo báo cáo chi tiết:</p>
+                    <ul>
+                        <li>Lọc chuyến đi theo tháng/xe</li>
+                        <li>Máy tính bồi thường quãng đường</li>
+                        <li>Xuất CSV sang Excel</li>
+                        <li>Định dạng tương thích khai thuế</li>
+                    </ul>`
+            },
+            {
+                title: "🔄 10. Đồng bộ hóa",
+                content: `
+                    <p>Lưu trữ đám mây với Firebase:</p>
+                    <ul>
+                        <li>Tất cả dữ liệu an toàn trong đám mây</li>
+                        <li>Đồng bộ tự động</li>
+                        <li>Truy cập từ nhiều thiết bị</li>
+                        <li>Sao lưu</li>
+                    </ul>`
+            },
+            {
+                title: "🎯 11. Tính năng mới v6.14",
+                content: `
+                    <p><strong>Đồng hồ tốc độ động:</strong></p>
+                    <ul>
+                        <li>Đồng hồ tốc độ kim loại dựa trên Canvas</li>
+                        <li>Màu sắc thay đổi theo tốc độ</li>
+                        <li>Hiệu ứng rung ở tốc độ cao</li>
+                    </ul>
+                    <p><strong>Đồ thị trực tiếp:</strong></p>
+                    <ul>
+                        <li>Đường cong tốc độ (lịch sử 30s)</li>
+                        <li>Đồ thị độ cao</li>
+                        <li>Hình ảnh G-lực</li>
+                        <li>Đồng hồ G mini</li>
+                    </ul>`
+            },
+            {
+                title: "💡 12. Mẹo",
+                content: `
+                    <p><strong>Tiết kiệm pin:</strong></p>
+                    <ul>
+                        <li>Chỉ sử dụng chế độ "Cả hai" khi cần</li>
+                        <li>Đóng bản đồ nền</li>
+                        <li>Sử dụng chủ đề tối</li>
+                    </ul>
+                    <p><strong>Cải thiện độ chính xác:</strong></p>
+                    <ul>
+                        <li>Để GPS hiệu chuẩn</li>
+                        <li>Tránh lái xe trong nhà</li>
+                        <li>Sử dụng anten GPS bên ngoài</li>
+                    </ul>`
             }
         ]
     }
@@ -302,6 +566,27 @@ window.renderHelp = function(lang) {
                     © 2026 Mikkogeokalevi
                 </p>
             </div>
+            
+            <div style="text-align:center; margin-top:20px;">
+                <button onclick="window.showLanguageSelector()" class="action-btn" style="width:auto; padding:10px 20px;">🌐 Vaihda kieli / Change Language</button>
+            </div>
+        </div>
+    `;
+};
+
+// --- KIELIVALINTA ---
+window.showLanguageSelector = function() {
+    const helpView = document.getElementById('help-view');
+    if (!helpView) return;
+    
+    helpView.innerHTML = `
+        <div style="padding:20px; text-align:center;">
+            <h2 style="color:var(--accent-color); margin-bottom:20px;">Valitse kieli / Choose Language / Chọn ngôn ngữ</h2>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button onclick="window.renderHelp('fi')" class="action-btn" style="width:auto; padding:10px 20px;">🇫🇮 Suomi</button>
+                <button onclick="window.renderHelp('en')" class="action-btn" style="width:auto; padding:10px 20px;">🇬🇧 English</button>
+                <button onclick="window.renderHelp('vi')" class="action-btn" style="width:auto; padding:10px 20px;">🇻🇳 Tiếng Việt</button>
+            </div>
         </div>
     `;
 };
@@ -311,15 +596,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const helpView = document.getElementById('help-view');
     if (helpView) {
         // Näytä kielivalinta
-        helpView.innerHTML = `
-            <div style="padding:20px; text-align:center;">
-                <h2 style="color:var(--accent-color); margin-bottom:20px;">Valitse kieli / Choose Language / Chọn ngôn ngữ</h2>
-                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                    <button onclick="window.renderHelp('fi')" class="action-btn" style="width:auto; padding:10px 20px;">🇫🇮 Suomi</button>
-                    <button onclick="window.renderHelp('en')" class="action-btn" style="width:auto; padding:10px 20px;">🇬🇧 English</button>
-                    <button onclick="window.renderHelp('vi')" class="action-btn" style="width:auto; padding:10px 20px;">🇻🇳 Tiếng Việt</button>
-                </div>
-            </div>
-        `;
+        window.showLanguageSelector();
     }
 });
