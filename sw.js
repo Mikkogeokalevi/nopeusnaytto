@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.13 FINAL
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.14 ANIMATED SPEEDOMETER
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.13-final'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.14-animated'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
@@ -11,6 +11,7 @@ const urlsToCache = [
     
     // Javascript-moduulit
     './globals.js',
+    './visuals.js', // UUSI v6.14
     './ui.js',
     './auth.js',
     './map.js',
