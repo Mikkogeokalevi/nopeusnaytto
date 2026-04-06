@@ -195,15 +195,22 @@ function updateSpeedometer(speed) {
         speedElement.textContent = Math.round(speed);
         
         // Värin päivitys
-        const container = document.querySelector('.speedometer-container');
+        const container = document.getElementById('speedometer-container');
         if (container) {
-            container.classList.remove('speed-green', 'speed-yellow', 'speed-red');
+            container.classList.remove('speed-green', 'speed-yellow', 'speed-red', 'speed-warning');
+
+            // Neulan ja numeron väri nopeuden mukaan
+            let color = '#00e676';
+            if (speed > 120) color = '#ff1744';
+            else if (speed > 80) color = '#ff9800';
+
+            // Aseta väri suoraan numerolle (varmin tapa, ei riipu CSS-periytymisestä)
+            speedElement.style.color = color;
+
+            // Luokat edelleen käyttöön (tärinä jne.)
             if (speed > 120) {
                 container.classList.add('speed-red');
-                // Tärinäefekti korkeilla nopeuksilla
-                if (speed > 140) {
-                    container.classList.add('speed-warning');
-                }
+                if (speed > 140) container.classList.add('speed-warning');
             } else if (speed > 80) {
                 container.classList.add('speed-yellow');
             } else {
@@ -319,6 +326,35 @@ function initVisuals() {
     
     // Aseta alkuarvot
     updateSpeedometerStyle(speedometerStyle);
+
+    // Varmista canvaksille järkevät mitat myös silloin kun näkymä oli aluksi piilossa
+    // (piilossa olevissa elementeissä canvas voi jäädä "0x0" ja näyttää tyhjältä)
+    if (speedometerCanvas) {
+        if (!speedometerCanvas.width || speedometerCanvas.width < 50) speedometerCanvas.width = 200;
+        if (!speedometerCanvas.height || speedometerCanvas.height < 50) speedometerCanvas.height = 200;
+    }
+    if (speedGraphCanvas) {
+        if (!speedGraphCanvas.width || speedGraphCanvas.width < 50) speedGraphCanvas.width = 150;
+        if (!speedGraphCanvas.height || speedGraphCanvas.height < 30) speedGraphCanvas.height = 60;
+    }
+    if (altitudeGraphCanvas) {
+        if (!altitudeGraphCanvas.width || altitudeGraphCanvas.width < 50) altitudeGraphCanvas.width = 150;
+        if (!altitudeGraphCanvas.height || altitudeGraphCanvas.height < 30) altitudeGraphCanvas.height = 60;
+    }
+    if (gforceGraphCanvas) {
+        if (!gforceGraphCanvas.width || gforceGraphCanvas.width < 50) gforceGraphCanvas.width = 150;
+        if (!gforceGraphCanvas.height || gforceGraphCanvas.height < 30) gforceGraphCanvas.height = 60;
+    }
+
+    // Ensipiirto (ettei mittari/graafit näytä tyhjältä ennen ensimmäistä GPS-päivitystä)
+    try {
+        drawSpeedometer(0);
+        drawSpeedGraph();
+        drawAltitudeGraph();
+        drawGforceGraph();
+    } catch (e) {
+        console.warn('Visuals init draw failed:', e);
+    }
     
     // Aseta tapahtumankuuntelijat
     const styleSelect = document.getElementById('speedometer-style');
