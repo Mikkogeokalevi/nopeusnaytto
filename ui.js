@@ -187,6 +187,19 @@ window.showToast = (msg, type = 'info') => {
     }, 3000);
 }
 
+window.showPersistentToast = (msg) => {
+    const toast = document.getElementById('toast-notification');
+    if (!toast) return;
+    toast.innerText = msg;
+    toast.classList.add('visible');
+}
+
+window.hidePersistentToast = () => {
+    const toast = document.getElementById('toast-notification');
+    if (!toast) return;
+    toast.classList.remove('visible');
+}
+
 window.openConfirmModal = (title, message, callback) => {
     if(confirmTitle) confirmTitle.innerText = title;
     if(confirmMsg) confirmMsg.innerText = message;

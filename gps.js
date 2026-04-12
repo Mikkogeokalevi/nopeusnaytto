@@ -66,6 +66,38 @@ if (btnGotoHistory) {
     });
 }
 
+// NAPPI: MERKKAA AJON AIKANA
+const btnDriveMark = document.getElementById('btn-drive-mark');
+if (btnDriveMark) {
+    btnDriveMark.addEventListener('click', () => {
+        if (!isRecording || isPaused) {
+            if (typeof showToast === 'function') showToast('Merkkaus onnistuu vain tallennuksen aikana.');
+            return;
+        }
+        if (!lastLatLng) {
+            if (typeof showToast === 'function') showToast('Odotetaan GPS-sijaintia...');
+            return;
+        }
+
+        const label = prompt('Merkinnän teksti (valinnainen)', '');
+        if (label === null) return;
+        const type = 'mark';
+
+        const markerObj = {
+            lat: lastLatLng.lat,
+            lng: lastLatLng.lng,
+            ts: Date.now(),
+            type,
+            label: (label || '').trim()
+        };
+        driveMarkers.push(markerObj);
+
+        if (typeof showToast === 'function') {
+            showToast('📌 Merkintä lisätty ajolle');
+        }
+    });
+}
+
 // ALOITA TALLENNUS (UUSI AJO)
 if (btnStartRec) {
     btnStartRec.addEventListener('click', () => {
@@ -120,6 +152,7 @@ function startRecordingSession(isContinue = false) {
         maxSpeed = 0;
         totalDistance = 0;
         routePath = [];
+        driveMarkers = [];
         // OSOITEKORJAUS: Otetaan talteen tämän hetken osoite lähtöosoitteeksi (Pääajo)
         startAddressSnapshot = currentAddress;
         
@@ -200,6 +233,7 @@ window.continueDrive = function(driveData) {
 
         // Palautetaan reitti
         routePath = driveData.route || [];
+        driveMarkers = driveData.markers || [];
         if(realTimePolyline) {
             realTimePolyline.setLatLngs([]);
             if(routePath.length > 0) {
@@ -338,6 +372,7 @@ if (btnStopRec) {
             carId: currentCarId,
             carType: currentCarType,
             route: routePath,
+            markers: driveMarkers,
             // OSOITTEET
             startAddress: startAddressSnapshot,
             endAddress: currentAddress,
@@ -508,55 +543,110 @@ function updatePosition(position) {
     // =========================================================
     if (currentUser && Array.isArray(poiData) && poiData.length > 0) {
         try {
-            checkPoiAlerts(lat, lng);
+            checkPoiAlerts(lat, lng, heading);
         } catch (e) {
             // Ei kaadeta GPS-loopia
         }
     }
 }
 
-function checkPoiAlerts(lat, lng) {
+function checkPoiAlerts(lat, lng, heading) {
     const now = Date.now();
 
-    // Käydään kaikki POI:t läpi. Määrä oletuksena pieni, joten suora looppi on ok.
+    // 1) Jos meillä on aktiivinen varoitus, pidetään se kunnes se ei enää kelpaa
+    if (activePoiAlert && activePoiAlert.id) {
+        const existing = poiData.find(p => p && p.id === activePoiAlert.id);
+        const ok = existing && poiQualifies(existing, lat, lng, heading);
+        if (ok) {
+            updateActivePoiToast(existing, lat, lng, now);
+            return;
+        } else {
+            activePoiAlert = null;
+            if (typeof hidePersistentToast === 'function') hidePersistentToast();
+        }
+    }
+
+    // 2) Ei aktiivista tai se ei kelvannut -> etsitään paras osuma
+    let best = null;
+    let bestDistM = Infinity;
+
     for (const poi of poiData) {
         if (!poi || !poi.id) continue;
-        if (!poi.alertEnabled) continue;
-        if (typeof poi.lat !== 'number' || typeof poi.lng !== 'number') continue;
+        if (!poiQualifies(poi, lat, lng, heading)) continue;
 
-        const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
-        const cooldownSec = Math.max(0, parseInt(poi.cooldownSec || 180, 10));
-
-        // Cooldown
-        const lastTs = poiAlertState[poi.id] || 0;
-        if (cooldownSec > 0 && lastTs && (now - lastTs) < cooldownSec * 1000) {
-            continue;
+        const distM = getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng) * 1000;
+        if (distM < bestDistM) {
+            best = poi;
+            bestDistM = distM;
         }
+    }
 
-        const distKm = getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng);
-        const distM = distKm * 1000;
-        if (distM <= radiusM) {
-            poiAlertState[poi.id] = now;
+    if (best) {
+        activePoiAlert = { id: best.id, startedAt: now, lastShownAt: 0 };
+        updateActivePoiToast(best, lat, lng, now);
+    } else {
+        if (typeof hidePersistentToast === 'function') hidePersistentToast();
+    }
+}
 
-            const type = poi.type || 'other';
-            let label = poi.name || 'Paikkamerkintä';
-            if (!poi.name) {
-                if (type === 'speedcamera') label = 'Nopeuskamera';
-                else if (type === 'danger') label = 'Vaara';
-                else if (type === 'customer') label = 'Asiakas';
-                else if (type === 'reminder') label = 'Muistutus';
-                else label = 'POI';
-            }
+function poiQualifies(poi, lat, lng, heading) {
+    if (!poi.alertEnabled) return false;
+    if (typeof poi.lat !== 'number' || typeof poi.lng !== 'number') return false;
 
-            if (typeof showToast === 'function') {
-                showToast(`📍 ${label} lähellä (${Math.round(distM)} m)`, 'warn');
-            }
+    const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
+    const distM = getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng) * 1000;
+    if (distM > radiusM) return false;
 
-            // Kevyt värinä jos saatavilla
-            if (navigator.vibrate) {
-                navigator.vibrate([120, 60, 120]);
-            }
-        }
+    // Nopeuskamera: suunnan mukaan, jos heading on saatavilla
+    if ((poi.type === 'speedcamera') && (heading !== null) && (!isNaN(heading))) {
+        const bearingToPoi = calculateBearing(lat, lng, poi.lat, poi.lng);
+        const diff = angularDiffDeg(heading, bearingToPoi);
+        if (diff > 70) return false;
+    }
+
+    return true;
+}
+
+function getPoiLabel(poi) {
+    const type = poi.type || 'other';
+    if (poi.name && String(poi.name).trim()) return String(poi.name).trim();
+    if (type === 'speedcamera') return 'Nopeuskamera';
+    if (type === 'danger') return 'Vaara';
+    if (type === 'customer') return 'Asiakas';
+    if (type === 'reminder') return 'Muistutus';
+    return 'POI';
+}
+
+function updateActivePoiToast(poi, lat, lng, now) {
+    const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
+    const cooldownSec = Math.max(0, parseInt(poi.cooldownSec || 180, 10));
+    const distM = Math.max(0, Math.min(radiusM, getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng) * 1000));
+
+    // Päivitetään näyttö max ~1x/sek (säästää vähän)
+    if (activePoiAlert && activePoiAlert.lastShownAt && (now - activePoiAlert.lastShownAt) < 800) {
+        return;
+    }
+    if (activePoiAlert) activePoiAlert.lastShownAt = now;
+
+    const label = getPoiLabel(poi);
+    const meters = Math.round(distM);
+    if (typeof showPersistentToast === 'function') {
+        showPersistentToast(`📍 ${label}: ${meters} m`);
+    } else if (typeof showToast === 'function') {
+        showToast(`📍 ${label}: ${meters} m`);
+    }
+
+    // Värinä + "hälytys" vain cooldownin mukaan (ei joka päivitys)
+    const lastTs = poiAlertState[poi.id] || 0;
+    if (cooldownSec === 0 || !lastTs || (now - lastTs) >= cooldownSec * 1000) {
+        poiAlertState[poi.id] = now;
+        if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+    }
+
+    // Kun ollaan käytännössä perillä, voidaan piilottaa varoitus
+    if (meters <= 0) {
+        activePoiAlert = null;
+        if (typeof hidePersistentToast === 'function') hidePersistentToast();
     }
 }
 
@@ -678,6 +768,7 @@ function resetRecordingUI() {
     isPaused = false;
     tempDriveData = null;
     routePath = [];
+    driveMarkers = [];
     if(realTimePolyline) realTimePolyline.setLatLngs([]);
     currentDriveId = null; 
     
@@ -833,6 +924,7 @@ function saveCrashData() {
         maxSpeed: maxSpeed,
         totalDistance: totalDistance,
         routePath: routePath,
+        driveMarkers: driveMarkers,
         aggressiveEvents: aggressiveEvents,
         currentCarId: currentCarId,
         currentCarType: currentCarType,
@@ -891,6 +983,7 @@ function restoreDrive(data) {
     maxSpeed = data.maxSpeed || 0;
     totalDistance = data.totalDistance || 0;
     routePath = data.routePath || [];
+    driveMarkers = data.driveMarkers || [];
     aggressiveEvents = data.aggressiveEvents || 0;
     currentCarId = data.currentCarId || 'all';
     currentCarType = data.currentCarType || 'car';

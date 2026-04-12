@@ -78,6 +78,7 @@ var currentDriveId = null;
 var maxSpeed = 0;
 var totalDistance = 0;
 var lastLatLng = null;
+var driveMarkers = []; // Ajon aikaiset merkinnät (markers)
 
 // Reitit ja Karttaobjektit
 var routePath = []; 
@@ -101,6 +102,7 @@ var pendingDrives = [];
 var poiData = [];            // Lista POI-objekteista
 var poiAlertState = {};      // { [poiId]: lastAlertTsMs }
 var poiAddMode = false;      // Kartan lisäystila
+var activePoiAlert = null;   // { id, startedAt, lastShownAt } - aktiivinen varoitus UI:lle
 
 // Autotalli
 var userCars = [];

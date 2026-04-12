@@ -150,6 +150,26 @@ window.centerMapOnPOI = function(poi) {
     map.setView([poi.lat, poi.lng], Math.max(map.getZoom(), 17));
 }
 
+// =========================================================
+// Ajon markerit (historiassa)
+// =========================================================
+window._driveMarkerLayers = [];
+
+function renderDriveMarkersOnMap(drive) {
+    if (!map || !drive || !Array.isArray(drive.markers)) return;
+
+    drive.markers.forEach((m, idx) => {
+        if (!m || typeof m.lat !== 'number' || typeof m.lng !== 'number') return;
+        const label = (m.label && String(m.label).trim()) ? String(m.label).trim() : `Merkki #${idx + 1}`;
+        const ts = m.ts ? new Date(m.ts).toLocaleString('fi-FI') : '';
+
+        const marker = L.marker([m.lat, m.lng]);
+        marker.bindPopup(`<strong>📌 ${label}</strong>${ts ? `<br><span style="font-size:12px; opacity:0.75;">${ts}</span>` : ''}`);
+        marker.addTo(map);
+        window._driveMarkerLayers.push(marker);
+    });
+}
+
 // 3. GPS Toggle Kartalla (ON/OFF)
 if (mapGpsToggle) {
     mapGpsToggle.addEventListener('click', () => {
@@ -218,6 +238,9 @@ window.showRouteOnMap = (key) => {
         savedRouteLayer = L.polyline(drive.route, {color: '#ff9100', weight: 5, opacity: 0.8}).addTo(map);
         map.fitBounds(savedRouteLayer.getBounds(), {padding: [50, 50]});
     }
+
+    // Markerit ajolta
+    renderDriveMarkersOnMap(drive);
     
     // Vaihda näkymä kartalle (UI-funktio)
     if(typeof switchView === 'function') switchView('map');
@@ -234,6 +257,13 @@ function clearSavedRoute() {
     if(savedRouteLayer) {
         map.removeLayer(savedRouteLayer);
         savedRouteLayer = null;
+    }
+
+    if (window._driveMarkerLayers && window._driveMarkerLayers.length > 0) {
+        window._driveMarkerLayers.forEach(layer => {
+            try { map.removeLayer(layer); } catch(e) {}
+        });
+        window._driveMarkerLayers = [];
     }
 }
 
