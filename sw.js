@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.14 ANIMATED SPEEDOMETER
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.15 POI PAIKKAMERKINNÄT
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.14-animated'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.15-poi'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

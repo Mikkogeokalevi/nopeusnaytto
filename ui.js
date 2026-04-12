@@ -168,6 +168,12 @@ const btnReportClose = document.getElementById('btn-report-close');
 const btnReportDownload = document.getElementById('btn-report-download');
 const inputPricePerKm = document.getElementById('settings-price-per-km');
 
+// POI (Paikkamerkinnät)
+const poiListEl = document.getElementById('poi-list');
+const btnPoiAddHere = document.getElementById('btn-poi-add-here');
+const btnPoiAddCoords = document.getElementById('btn-poi-add-coords');
+const btnPoiAddMap = document.getElementById('btn-poi-add-map');
+
 
 // --- 2. APUFUNKTIOT (TOAST & CONFIRM) ---
 
@@ -186,6 +192,253 @@ window.openConfirmModal = (title, message, callback) => {
     if(confirmMsg) confirmMsg.innerText = message;
     confirmCallback = callback;
     if(confirmModal) confirmModal.style.display = 'flex';
+}
+
+// LATAUS FIREBASESTA (auth.js kutsuu tätä kirjautumisen jälkeen)
+window.loadPOIs = function() {
+    if (!currentUser) return;
+
+    const ref = db.ref('poi/' + currentUser.uid);
+    ref.off();
+    ref.on('value', (snapshot) => {
+        const list = [];
+        if (snapshot.exists()) {
+            snapshot.forEach(child => {
+                list.push({ id: child.key, ...child.val() });
+            });
+        }
+        poiData = list;
+
+        if (typeof renderPoiList === 'function') renderPoiList();
+        if (typeof window.renderPOIsOnMap === 'function') window.renderPOIsOnMap();
+
+    }, (err) => {
+        console.error('POI load error:', err);
+    });
+}
+
+// =========================================================
+// POI (Paikkamerkinnät) - UI + Firebase CRUD
+// =========================================================
+
+function getPoiTypeLabel(type) {
+    if (type === 'speedcamera') return 'Nopeuskamera';
+    if (type === 'danger') return 'Vaara';
+    if (type === 'customer') return 'Asiakas';
+    if (type === 'reminder') return 'Muistutus';
+    return 'Muu';
+}
+
+function getPoiTypeIcon(type) {
+    if (type === 'speedcamera') return '📷';
+    if (type === 'danger') return '⚠️';
+    if (type === 'customer') return '🏁';
+    if (type === 'reminder') return '📝';
+    return '📍';
+}
+
+function renderPoiList() {
+    if (!poiListEl) return;
+
+    if (!currentUser) {
+        poiListEl.innerHTML = '<div style="text-align:center; padding:15px; color:#888;">Kirjaudu sisään nähdäksesi POI:t.</div>';
+        return;
+    }
+
+    const list = Array.isArray(poiData) ? poiData.slice() : [];
+    list.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
+
+    if (list.length === 0) {
+        poiListEl.innerHTML = '<div style="text-align:center; padding:15px; color:#888;">Ei POI-merkintöjä. Lisää ensimmäinen.</div>';
+        return;
+    }
+
+    poiListEl.innerHTML = '';
+    list.forEach(poi => {
+        const div = document.createElement('div');
+        div.className = 'car-item';
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.style.padding = '12px';
+        div.style.marginBottom = '10px';
+        div.style.backgroundColor = 'var(--panel-bg)';
+        div.style.border = '1px solid var(--border-color)';
+        div.style.borderRadius = '8px';
+
+        const title = poi.name || getPoiTypeLabel(poi.type);
+        const icon = getPoiTypeIcon(poi.type);
+
+        const enabled = !!poi.alertEnabled;
+        const radius = parseInt(poi.alertRadiusM || 350, 10);
+        const cd = parseInt(poi.cooldownSec || 180, 10);
+
+        const infoDiv = document.createElement('div');
+        infoDiv.style.flex = '1';
+        infoDiv.style.paddingRight = '10px';
+        infoDiv.innerHTML = `
+            <strong style="font-size:15px;">${icon} ${title}</strong>
+            <div style="font-size:12px; color:var(--subtext-color); margin-top:2px;">
+                ${getPoiTypeLabel(poi.type)} • ${enabled ? `Varoitus: PÄÄLLÄ (${radius}m / ${cd}s)` : 'Varoitus: POIS'}
+            </div>
+            <div style="font-size:12px; color:var(--subtext-color); margin-top:2px;">
+                ${typeof toGeocacheFormat === 'function' ? `${toGeocacheFormat(poi.lat, true)} ${toGeocacheFormat(poi.lng, false)}` : `${poi.lat}, ${poi.lng}`}
+            </div>
+        `;
+
+        const btnGroup = document.createElement('div');
+        btnGroup.style.display = 'flex';
+        btnGroup.style.gap = '10px';
+
+        const btnCenter = document.createElement('button');
+        btnCenter.innerText = '🗺️';
+        btnCenter.title = 'Näytä kartalla';
+        btnCenter.className = 'icon-btn';
+        btnCenter.onclick = () => {
+            if (typeof window.centerMapOnPOI === 'function') window.centerMapOnPOI(poi);
+            if (typeof switchView === 'function') switchView('map');
+        };
+
+        const btnEdit = document.createElement('button');
+        btnEdit.innerText = '✏️';
+        btnEdit.title = 'Muokkaa';
+        btnEdit.className = 'icon-btn';
+        btnEdit.onclick = () => openPoiEditor(poi);
+
+        const btnDel = document.createElement('button');
+        btnDel.innerText = '🗑';
+        btnDel.title = 'Poista';
+        btnDel.className = 'icon-btn';
+        btnDel.style.color = '#ff4444';
+        btnDel.style.borderColor = '#ff4444';
+        btnDel.onclick = () => {
+            if (typeof openConfirmModal === 'function') {
+                openConfirmModal('Poista POI?', 'Haluatko varmasti poistaa tämän paikkamerkinnän?', () => deletePOI(poi.id));
+            } else {
+                if (confirm('Haluatko varmasti poistaa tämän paikkamerkinnän?')) deletePOI(poi.id);
+            }
+        };
+
+        btnGroup.appendChild(btnCenter);
+        btnGroup.appendChild(btnEdit);
+        btnGroup.appendChild(btnDel);
+
+        div.appendChild(infoDiv);
+        div.appendChild(btnGroup);
+        poiListEl.appendChild(div);
+    });
+}
+
+function openPoiEditor(existingPoi = null, fixedCoords = null) {
+    if (!currentUser) return;
+
+    const isEdit = !!existingPoi;
+
+    const defaultType = existingPoi?.type || 'speedcamera';
+    const typeInput = prompt(
+        'Valitse tyyppi (kirjoita yksi):\n- speedcamera\n- danger\n- customer\n- reminder\n- other',
+        defaultType
+    );
+    if (!typeInput) return;
+    const type = typeInput.trim();
+
+    const defaultName = existingPoi?.name || '';
+    const name = prompt('Nimi (esim. "Kamera 80" / "Risteys")', defaultName);
+    if (name === null) return;
+
+    let lat = fixedCoords?.lat ?? existingPoi?.lat;
+    let lng = fixedCoords?.lng ?? existingPoi?.lng;
+
+    if (typeof lat !== 'number' || typeof lng !== 'number') {
+        const coordStr = prompt('Syötä koordinaatit geokätköilymuodossa (esim. N 60° 10.123 E 024° 56.789)', '');
+        if (!coordStr) return;
+        if (typeof window.parseGeocacheCoordinates !== 'function') {
+            alert('Koordinaattiparsija puuttuu (parseGeocacheCoordinates).');
+            return;
+        }
+        const parsed = window.parseGeocacheCoordinates(coordStr);
+        if (!parsed) {
+            alert('Koordinaatteja ei voitu tulkita.');
+            return;
+        }
+        lat = parsed.lat;
+        lng = parsed.lng;
+    }
+
+    const defaultAlert = existingPoi?.alertEnabled ? '1' : '0';
+    const alertOn = prompt('Lähestymisvaroitus? (1 = päällä, 0 = pois)', defaultAlert);
+    if (alertOn === null) return;
+    const alertEnabled = alertOn.trim() === '1' || alertOn.trim().toLowerCase() === 'true';
+
+    const radiusDefault = String(existingPoi?.alertRadiusM ?? 350);
+    const radiusStr = prompt('Varoitusetäisyys metreinä (esim. 350)', radiusDefault);
+    if (radiusStr === null) return;
+    const alertRadiusM = Math.max(30, parseInt(radiusStr, 10) || 350);
+
+    const cdDefault = String(existingPoi?.cooldownSec ?? 180);
+    const cdStr = prompt('Cooldown sekunteina (esim. 180)', cdDefault);
+    if (cdStr === null) return;
+    const cooldownSec = Math.max(0, parseInt(cdStr, 10) || 180);
+
+    const payload = {
+        name: name.trim(),
+        type,
+        lat,
+        lng,
+        alertEnabled,
+        alertRadiusM,
+        cooldownSec,
+        updatedAt: Date.now()
+    };
+    if (!isEdit) payload.createdAt = Date.now();
+
+    if (isEdit) {
+        return db.ref('poi/' + currentUser.uid + '/' + existingPoi.id).update(payload)
+            .then(() => { if(typeof showToast === 'function') showToast('POI päivitetty ✅'); })
+            .catch(err => alert('Virhe POI-päivityksessä: ' + err.message));
+    }
+
+    return db.ref('poi/' + currentUser.uid).push().set(payload)
+        .then(() => { if(typeof showToast === 'function') showToast('POI lisätty ✅'); })
+        .catch(err => alert('Virhe POI-tallennuksessa: ' + err.message));
+}
+
+function deletePOI(poiId) {
+    if (!currentUser || !poiId) return;
+    return db.ref('poi/' + currentUser.uid + '/' + poiId).remove()
+        .then(() => { if(typeof showToast === 'function') showToast('POI poistettu 🗑'); })
+        .catch(err => alert('Virhe POI-poistossa: ' + err.message));
+}
+
+window.renderPoiList = renderPoiList;
+window.openPoiEditor = openPoiEditor;
+window.deletePOI = deletePOI;
+
+// NAPIT
+if (btnPoiAddHere) {
+    btnPoiAddHere.addEventListener('click', () => {
+        if (!lastLatLng) {
+            if(typeof showToast === 'function') showToast('Odotetaan GPS-sijaintia...');
+            return;
+        }
+        openPoiEditor(null, { lat: lastLatLng.lat, lng: lastLatLng.lng });
+    });
+}
+
+if (btnPoiAddCoords) {
+    btnPoiAddCoords.addEventListener('click', () => {
+        openPoiEditor(null, null);
+    });
+}
+
+if (btnPoiAddMap) {
+    btnPoiAddMap.addEventListener('click', () => {
+        poiAddMode = true;
+        if(typeof showToast === 'function') {
+            showToast('Kartalta lisäys: avaa Kartta ja tee pitkä painallus kohtaan.');
+        }
+        if (typeof switchView === 'function') switchView('map');
+    });
 }
 
 // Confirm napit

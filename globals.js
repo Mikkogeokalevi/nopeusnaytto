@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.14 (Animated Speedometer & Live Graphs)
-const APP_VERSION = "6.14"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.15 (POI Paikkamerkinnät & Varoitukset)
+const APP_VERSION = "6.15"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -96,6 +96,11 @@ var styleResetTimer = null;
 // Historia ja Data
 var allHistoryData = []; 
 var pendingDrives = []; 
+
+// POI (Paikkamerkinnät)
+var poiData = [];            // Lista POI-objekteista
+var poiAlertState = {};      // { [poiId]: lastAlertTsMs }
+var poiAddMode = false;      // Kartan lisäystila
 
 // Autotalli
 var userCars = [];

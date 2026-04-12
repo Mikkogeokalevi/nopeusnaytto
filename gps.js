@@ -502,6 +502,100 @@ function updatePosition(position) {
     }
 
     if (isGPSActive && wakeLock === null) requestWakeLock();
+
+    // =========================================================
+    // POI VAROITUKSET (Lähestyessä)
+    // =========================================================
+    if (currentUser && Array.isArray(poiData) && poiData.length > 0) {
+        try {
+            checkPoiAlerts(lat, lng);
+        } catch (e) {
+            // Ei kaadeta GPS-loopia
+        }
+    }
+}
+
+function checkPoiAlerts(lat, lng) {
+    const now = Date.now();
+
+    // Käydään kaikki POI:t läpi. Määrä oletuksena pieni, joten suora looppi on ok.
+    for (const poi of poiData) {
+        if (!poi || !poi.id) continue;
+        if (!poi.alertEnabled) continue;
+        if (typeof poi.lat !== 'number' || typeof poi.lng !== 'number') continue;
+
+        const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
+        const cooldownSec = Math.max(0, parseInt(poi.cooldownSec || 180, 10));
+
+        // Cooldown
+        const lastTs = poiAlertState[poi.id] || 0;
+        if (cooldownSec > 0 && lastTs && (now - lastTs) < cooldownSec * 1000) {
+            continue;
+        }
+
+        const distKm = getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng);
+        const distM = distKm * 1000;
+        if (distM <= radiusM) {
+            poiAlertState[poi.id] = now;
+
+            const type = poi.type || 'other';
+            let label = poi.name || 'Paikkamerkintä';
+            if (!poi.name) {
+                if (type === 'speedcamera') label = 'Nopeuskamera';
+                else if (type === 'danger') label = 'Vaara';
+                else if (type === 'customer') label = 'Asiakas';
+                else if (type === 'reminder') label = 'Muistutus';
+                else label = 'POI';
+            }
+
+            if (typeof showToast === 'function') {
+                showToast(`📍 ${label} lähellä (${Math.round(distM)} m)`, 'warn');
+            }
+
+            // Kevyt värinä jos saatavilla
+            if (navigator.vibrate) {
+                navigator.vibrate([120, 60, 120]);
+            }
+        }
+    }
+}
+
+// =========================================================
+// KOORDINAATTIAPU: GEOKÄTKÖILY-MUOTO -> desimaaliasteet
+// Esim: "N 60° 10.123 E 024° 56.789"
+// =========================================================
+
+window.parseGeocacheCoordinates = function(input) {
+    if (!input || typeof input !== 'string') return null;
+    const s = input.trim().replace(/\s+/g, ' ');
+
+    // Yritetään erottaa N/S ja E/W -osat
+    // Etsitään ensin N/S ja E/W kirjain
+    const nsMatch = s.match(/([NS])\s*([0-9]{1,2})\s*[°º]?\s*([0-9]{1,2}(?:\.[0-9]+)?)\s*['’]?/i);
+    const ewMatch = s.match(/([EW])\s*([0-9]{1,3})\s*[°º]?\s*([0-9]{1,2}(?:\.[0-9]+)?)\s*['’]?/i);
+
+    if (!nsMatch || !ewMatch) return null;
+
+    const ns = nsMatch[1].toUpperCase();
+    const latDeg = parseInt(nsMatch[2], 10);
+    const latMin = parseFloat(nsMatch[3]);
+
+    const ew = ewMatch[1].toUpperCase();
+    const lngDeg = parseInt(ewMatch[2], 10);
+    const lngMin = parseFloat(ewMatch[3]);
+
+    if (isNaN(latDeg) || isNaN(latMin) || isNaN(lngDeg) || isNaN(lngMin)) return null;
+    if (latMin >= 60 || lngMin >= 60) return null;
+
+    let lat = latDeg + (latMin / 60);
+    let lng = lngDeg + (lngMin / 60);
+    if (ns === 'S') lat = -lat;
+    if (ew === 'W') lng = -lng;
+
+    // Perusvalidointi
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+
+    return { lat, lng };
 }
 
 function stopGPSAndRec() {

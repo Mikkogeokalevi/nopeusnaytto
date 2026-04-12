@@ -28,6 +28,7 @@ auth.onAuthStateChanged((user) => {
         // TÄRKEÄÄ: Ladataan tiedot heti kun kirjaudutaan sisään
         if(typeof loadCars === 'function') loadCars(); 
         if(typeof loadHistory === 'function') loadHistory(); 
+        if(typeof loadPOIs === 'function') loadPOIs();
         if(typeof generateCarIcons === 'function') generateCarIcons(); 
         
         // --- ENSIMMÄISEN KÄYNNISTYKSEN LOGIIKKA (PÄIVITETTY v6.10) ---

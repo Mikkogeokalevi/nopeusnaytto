@@ -48,6 +48,106 @@ if (document.getElementById('map')) {
         weight: 5, 
         opacity: 0.7
     }).addTo(map);
+
+    // =========================================================
+    // POI (Paikkamerkinnät) - aina näkyvissä kartalla
+    // =========================================================
+    window._poiLayerGroup = L.layerGroup().addTo(map);
+
+    // Kartalta lisäys: oikea klikkaus (desktop) / pitkä painallus (mobiili)
+    // Leaflet ei oletuksena tarjoa long-press eventtiä, joten tehdään kevyt toteutus.
+    let pressTimer = null;
+    let pressStart = null;
+
+    function tryOpenPoiAddFromLatLng(latlng) {
+        if (!poiAddMode) return;
+        poiAddMode = false;
+        if (typeof window.openPoiEditor === 'function') {
+            window.openPoiEditor(null, { lat: latlng.lat, lng: latlng.lng });
+        } else {
+            alert('POI editor puuttuu.');
+        }
+    }
+
+    map.on('contextmenu', (e) => {
+        tryOpenPoiAddFromLatLng(e.latlng);
+    });
+
+    map.on('mousedown', (e) => {
+        pressStart = { x: e.originalEvent?.clientX, y: e.originalEvent?.clientY };
+        pressTimer = setTimeout(() => {
+            tryOpenPoiAddFromLatLng(e.latlng);
+        }, 650);
+    });
+
+    map.on('mouseup', (e) => {
+        if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+        }
+    });
+
+    map.on('mousemove', (e) => {
+        if (!pressTimer || !pressStart) return;
+        const x = e.originalEvent?.clientX;
+        const y = e.originalEvent?.clientY;
+        if (typeof x !== 'number' || typeof y !== 'number') return;
+        const dx = x - pressStart.x;
+        const dy = y - pressStart.y;
+        if (Math.sqrt(dx*dx + dy*dy) > 10) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+        }
+    });
+}
+
+// =========================================================
+// POI renderöinti ja kartta-apurit
+// =========================================================
+
+function getPoiStyle(type) {
+    if (type === 'speedcamera') return { color: '#ff1744', fillColor: '#ff1744', icon: '📷' };
+    if (type === 'danger') return { color: '#ff9800', fillColor: '#ff9800', icon: '⚠️' };
+    if (type === 'customer') return { color: '#00e676', fillColor: '#00e676', icon: '🏁' };
+    if (type === 'reminder') return { color: '#2979ff', fillColor: '#2979ff', icon: '📝' };
+    return { color: '#888', fillColor: '#888', icon: '📍' };
+}
+
+window.renderPOIsOnMap = function() {
+    if (!map || !window._poiLayerGroup) return;
+    if (!Array.isArray(poiData)) return;
+
+    window._poiLayerGroup.clearLayers();
+
+    poiData.forEach(poi => {
+        if (!poi || typeof poi.lat !== 'number' || typeof poi.lng !== 'number') return;
+        const style = getPoiStyle(poi.type);
+
+        const circle = L.circleMarker([poi.lat, poi.lng], {
+            radius: 7,
+            color: style.color,
+            fillColor: style.fillColor,
+            fillOpacity: 0.85,
+            weight: 2
+        });
+
+        const title = poi.name || 'POI';
+        const warn = poi.alertEnabled ? `Varoitus: PÄÄLLÄ (${poi.alertRadiusM || 350}m / ${poi.cooldownSec || 180}s)` : 'Varoitus: POIS';
+
+        circle.bindPopup(`<strong>${style.icon} ${title}</strong><br>${warn}`);
+        circle.on('click', () => {
+            // Avataan popup heti
+            circle.openPopup();
+        });
+
+        circle.addTo(window._poiLayerGroup);
+    });
+}
+
+window.centerMapOnPOI = function(poi) {
+    if (!map || !poi) return;
+    if (typeof poi.lat !== 'number' || typeof poi.lng !== 'number') return;
+    map.setView([poi.lat, poi.lng], Math.max(map.getZoom(), 17));
 }
 
 // 3. GPS Toggle Kartalla (ON/OFF)
