@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.15 POI PAIKKAMERKINNÄT
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.16 POI Varoituslaskuri + Ajon markerit
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.15-poi'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.16-poi-alerts'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

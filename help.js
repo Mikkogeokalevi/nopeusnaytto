@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.14 ANIMATED SPEEDOMETER)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.16 POI ALERT COUNTDOWN + DRIVE MARKERS)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,8 +9,54 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.16, v6.14, v6.13 & v6.12)",
                 content: `
+                    <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>📍 UUTTA v6.16: Paikkamerkinnät (POI) + Varoitukset + Ajon markerit:</strong>
+                        <p>Voit tallentaa kartalle pysyviä paikkamerkintöjä (esim. nopeuskamerat) ja saada lähestyessä varoituksen. Lisäksi voit merkitä ajon aikana reitille omia muistiinpisteitä (ajokohtaiset markerit).</p>
+                        <ul>
+                            <li><strong>📌 POI (pysyvä merkki)</strong> tallennetaan Firebaseen ja näkyy kartalla aina.</li>
+                            <li><strong>📌 Ajon markeri</strong> tallennetaan vain siihen yhteen ajoon (Historia → kartta näyttää markerit).</li>
+                            <li><strong>📣 Varoitus näyttää etäisyyden metreinä</strong> ja metrimäärä vähenee kohti nollaa ajon aikana.</li>
+                            <li><strong>🧭 Nopeuskamera-varoitus suodatetaan suunnan mukaan</strong> jos puhelin antaa ajosuunnan (heading), jolloin "väärään suuntaan" olevat kamerat eivät yleensä hälytä.</li>
+                        </ul>
+
+                        <strong>1) Lisää POI (pysyvä kamera / vaara / muistutus):</strong>
+                        <ol>
+                            <li>Avaa <strong>Asetukset</strong>.</li>
+                            <li>Siirry kohtaan <strong>📍 Paikkamerkinnät (POI)</strong>.</li>
+                            <li>Valitse lisäystapa:
+                                <ul>
+                                    <li><strong>+ Lisää tähän sijaintiin</strong> (käyttää viimeisintä GPS-sijaintia)</li>
+                                    <li><strong>+ Lisää koordinaateilla</strong> (voit syöttää geokätköily-muodon esim. <em>N 60° 10.123 E 024° 56.789</em>)</li>
+                                    <li><strong>+ Lisää kartalta</strong> → avaa Kartta ja tee <strong>pitkä painallus</strong> kohtaan (tai tietokoneella hiiren oikea)</li>
+                                </ul>
+                            </li>
+                            <li>Aseta tarvittaessa:
+                                <ul>
+                                    <li><strong>Varoitus päälle/pois</strong></li>
+                                    <li><strong>Säde (m)</strong> (oletus 350m)</li>
+                                    <li><strong>Cooldown (s)</strong> (estää jatkuvan värinän / hälytyksen samassa kohdassa)</li>
+                                </ul>
+                            </li>
+                        </ol>
+
+                        <strong>2) Miltä varoitus näyttää ajon aikana?</strong>
+                        <ul>
+                            <li>Kun olet POI:n säteen sisällä, ruudulle tulee varoitus muodossa <strong>"📍 Nopeuskamera: 312 m"</strong>.</li>
+                            <li>Etäisyys päivittyy ja pienenee kun lähestyt. Kun poistut säteeltä tai etäisyys menee käytännössä nollaan, varoitus katoaa.</li>
+                            <li>Jos samalla alueella on useita POI:ta, sovellus näyttää kerrallaan <strong>parhaan osuman</strong> (lähin ja suuntaan sopiva), ettei ilmoitus "pompi".</li>
+                        </ul>
+
+                        <strong>3) Ajon aikaiset markerit (muistiinpisteet reitille):</strong>
+                        <ol>
+                            <li>Aloita ajo normaalisti (<strong>🔴 ALOITA</strong>).</li>
+                            <li>Paina ajon aikana <strong>📌 MERKKAA</strong> silloin kun haluat talteen pisteen reitille.</li>
+                            <li>Voit kirjoittaa lyhyen tekstin (valinnainen).</li>
+                            <li>Kun katsot ajoa myöhemmin: <strong>Historia → 🗺️</strong>, markerit näkyvät reitillä kartassa ja ovat klikattavia.</li>
+                        </ol>
+                    </div>
+
                     <div class="help-step" style="border-left: 4px solid #ff1744; padding-left: 10px; margin-bottom: 15px;">
                         <strong>🎨 UUTTA v6.14: Animoitu Nopeusmittari & Live-Graafit:</strong>
                         <p>Täysin uusi visuaalinen kokemus ajon aikana!</p>
@@ -336,8 +382,54 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.16, v6.14, v6.13 & v6.12)",
                 content: `
+                    <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>📍 NEW in v6.16: POIs + Alerts + Drive Markers:</strong>
+                        <p>You can save permanent Points of Interest (POIs) on the map (for example speed cameras) and get a live distance warning when approaching. You can also add per-drive markers during a recording (notes along the route).</p>
+                        <ul>
+                            <li><strong>📌 POI (permanent)</strong> is saved to Firebase and is always visible on the map.</li>
+                            <li><strong>📌 Drive marker</strong> is saved only inside that single drive (History → map shows them).</li>
+                            <li><strong>📣 Alert shows meters remaining</strong> and the number decreases as you approach.</li>
+                            <li><strong>🧭 Speed camera alerts use direction filtering</strong> when device heading is available, reducing alerts for the opposite direction.</li>
+                        </ul>
+
+                        <strong>1) Add a POI (speed camera / danger / reminder):</strong>
+                        <ol>
+                            <li>Open <strong>Settings</strong>.</li>
+                            <li>Go to <strong>📍 Points of Interest (POI)</strong>.</li>
+                            <li>Choose how to add:
+                                <ul>
+                                    <li><strong>+ Add at current location</strong> (uses latest GPS)</li>
+                                    <li><strong>+ Add with coordinates</strong> (geocaching format supported, e.g. <em>N 60° 10.123 E 024° 56.789</em>)</li>
+                                    <li><strong>+ Add from map</strong> → open Map and <strong>long-press</strong> the location (or right-click on desktop)</li>
+                                </ul>
+                            </li>
+                            <li>Configure (optional):
+                                <ul>
+                                    <li><strong>Alert on/off</strong></li>
+                                    <li><strong>Radius (m)</strong> (default 350m)</li>
+                                    <li><strong>Cooldown (s)</strong> (prevents repeated vibration/alerts at the same spot)</li>
+                                </ul>
+                            </li>
+                        </ol>
+
+                        <strong>2) How does the alert work while driving?</strong>
+                        <ul>
+                            <li>When you are inside the radius, you will see something like <strong>"📍 Speed camera: 312 m"</strong>.</li>
+                            <li>The distance updates and decreases as you approach. When you leave the radius or reach ~0 m, the alert disappears.</li>
+                            <li>If multiple POIs are nearby, the app shows only the <strong>best match</strong> (nearest + direction-compatible) to avoid jumping between alerts.</li>
+                        </ul>
+
+                        <strong>3) Drive markers (notes along the recorded route):</strong>
+                        <ol>
+                            <li>Start recording as usual (<strong>🔴 START</strong>).</li>
+                            <li>Tap <strong>📌 MARK</strong> whenever you want to save a point on the route.</li>
+                            <li>Enter optional text.</li>
+                            <li>Later: <strong>History → 🗺️</strong> to view the route and click markers on the map.</li>
+                        </ol>
+                    </div>
+
                     <div class="help-step" style="border-left: 4px solid #ff1744; padding-left: 10px; margin-bottom: 15px;">
                         <strong>🎨 NEW in v6.14: Animated Speedometer & Live Graphs:</strong>
                         <p>Completely new visual experience during driving!</p>
@@ -661,8 +753,54 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.16, v6.14, v6.13 & 6.12",
                 content: `
+                    <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>📍 MỚI v6.16: POI (Điểm đánh dấu) + Cảnh báo + Marker cho từng chuyến:</strong>
+                        <p>Bạn có thể lưu các điểm POI cố định trên bản đồ (ví dụ: camera tốc độ) và nhận cảnh báo hiển thị khoảng cách (mét) giảm dần khi tiến gần. Ngoài ra, trong lúc ghi chuyến đi, bạn có thể tạo marker (ghi chú) cho riêng chuyến đó.</p>
+                        <ul>
+                            <li><strong>📌 POI (cố định)</strong> được lưu vào Firebase và luôn hiển thị trên bản đồ.</li>
+                            <li><strong>📌 Marker chuyến đi</strong> chỉ nằm trong chuyến đó (Lịch sử → bản đồ sẽ hiển thị).</li>
+                            <li><strong>📣 Cảnh báo hiển thị số mét còn lại</strong> và giảm dần khi bạn tiến gần.</li>
+                            <li><strong>🧭 Camera tốc độ lọc theo hướng di chuyển</strong> nếu thiết bị cung cấp heading, giúp giảm cảnh báo "ngược chiều".</li>
+                        </ul>
+
+                        <strong>1) Thêm POI (camera / nguy hiểm / nhắc nhở):</strong>
+                        <ol>
+                            <li>Mở <strong>Cài đặt</strong>.</li>
+                            <li>Vào mục <strong>📍 Paikkamerkinnät (POI)</strong>.</li>
+                            <li>Chọn cách thêm:
+                                <ul>
+                                    <li><strong>+ Thêm tại vị trí hiện tại</strong> (dùng GPS gần nhất)</li>
+                                    <li><strong>+ Thêm bằng tọa độ</strong> (hỗ trợ định dạng geocaching, ví dụ <em>N 60° 10.123 E 024° 56.789</em>)</li>
+                                    <li><strong>+ Thêm từ bản đồ</strong> → mở Bản đồ và <strong>nhấn giữ</strong> vào vị trí (máy tính: nhấp chuột phải)</li>
+                                </ul>
+                            </li>
+                            <li>Cài đặt (tùy chọn):
+                                <ul>
+                                    <li><strong>Bật/tắt cảnh báo</strong></li>
+                                    <li><strong>Bán kính (m)</strong> (mặc định 350m)</li>
+                                    <li><strong>Cooldown (giây)</strong> (tránh rung/cảnh báo liên tục tại cùng 1 điểm)</li>
+                                </ul>
+                            </li>
+                        </ol>
+
+                        <strong>2) Cảnh báo hiển thị như thế nào khi lái xe?</strong>
+                        <ul>
+                            <li>Khi bạn vào trong bán kính, sẽ thấy ví dụ: <strong>"📍 Camera tốc độ: 312 m"</strong>.</li>
+                            <li>Khoảng cách cập nhật và giảm dần khi bạn tiến gần. Khi bạn ra khỏi bán kính hoặc đạt ~0 m, cảnh báo sẽ biến mất.</li>
+                            <li>Nếu có nhiều POI gần nhau, ứng dụng chỉ hiển thị <strong>POI phù hợp nhất</strong> (gần nhất + đúng hướng) để tránh nhảy liên tục.</li>
+                        </ul>
+
+                        <strong>3) Marker cho chuyến đi (ghi chú trên lộ trình):</strong>
+                        <ol>
+                            <li>Bắt đầu ghi chuyến như bình thường (<strong>🔴 BẮT ĐẦU</strong>).</li>
+                            <li>Trong lúc đi, nhấn <strong>📌 MERKKAA</strong> để lưu điểm trên lộ trình.</li>
+                            <li>Nhập ghi chú (tùy chọn).</li>
+                            <li>Xem lại: <strong>Lịch sử → 🗺️</strong> để xem route và click marker trên bản đồ.</li>
+                        </ol>
+                    </div>
+
                     <div class="help-step" style="border-left: 4px solid #ff1744; padding-left: 10px; margin-bottom: 15px;">
                         <strong>🎨 MỚI v6.14: Đồng hồ tốc độ động & Đồ thị trực tiếp:</strong>
                         <p>Trải nghiệm hình ảnh hoàn toàn mới khi lái xe!</p>

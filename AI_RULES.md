@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.14 (Animated Speedometer & Live Graphs)
+**Versio:** v6.16 (POI Alerts Countdown + Drive Markers)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -13,6 +13,8 @@
 - Ajoneuvokaluston hallinta
 - Polttoainekulutusten seuranta
 - Tilastot ja raportointi
+- Paikkamerkinnät (POI) kartalle + lähestymisvaroitukset
+- Ajon aikaiset markerit (muistiinpisteet reittiin)
 - Suunniteltu mobiilikäyttöön (PWA)
 
 ---
@@ -92,6 +94,15 @@ nopeusnaytto-main/
 - ✅ visuals.js-moduuli luotu
 - ✅ Integroitu GPS-päivityksiin
 
+### **v6.16 - POI Alerts Countdown + Drive Markers**
+- ✅ Pysyvät paikkamerkinnät (POI) Firebase Realtime Databaseen
+- ✅ POI:t näkyvät aina kartassa
+- ✅ Lähestymisvaroitus, joka näyttää <strong>vähenevän etäisyyden metreinä</strong>
+- ✅ Nopeuskamera-POI:lle suuntasuodatus (heading → vähentää väärän suunnan hälyjä)
+- ✅ Paras osuma -valinta (lähin + suuntaan sopiva), jotta varoitus ei pompi
+- ✅ Ajon aikainen "📌 MERKKAA"-nappi → tallentaa markerit ajotietueeseen
+- ✅ Markerit näkyvät historiakartan reittinäkymässä
+
 ---
 
 ## 🎯 **JATKO-KEHITYSTEHTÄVÄT**
@@ -124,6 +135,48 @@ nopeusnaytto-main/
 3. **Päivitä sw.js** Service Worker
 4. **Testaa** mobiilissa
 5. **Tee varmuuskopio** ennen julkaisua
+
+---
+
+## 📦 **FIREBASE DATAMALLI (UUSI v6.16)**
+
+### **POI (Paikkamerkinnät):**
+Polku: `poi/<uid>/<poiId>`
+
+Kentät (suositus):
+- `name` (string)
+- `type` (string) esim. `speedcamera`, `danger`, `customer`, `reminder`, `other`
+- `lat` (number)
+- `lng` (number)
+- `alertEnabled` (boolean)
+- `alertRadiusM` (number)
+- `cooldownSec` (number)
+- `createdAt` (number)
+- `updatedAt` (number)
+
+### **Ajon markerit (per ajo):**
+Tallennetaan ajotietueeseen `ajopaivakirja/<uid>/<driveId>/markers`.
+
+Marker-objekti:
+- `lat` (number)
+- `lng` (number)
+- `ts` (number, ms)
+- `type` (string, esim. `mark`)
+- `label` (string, valinnainen)
+
+---
+
+## 🧠 **POI-VAROITUSLOGIIKKA (UUSI v6.16)**
+
+### **Periaate:**
+- Varoitus näytetään, kun käyttäjä on POI:n säteen sisällä.
+- Näytetään kerrallaan vain <strong>yksi aktiivinen varoitus</strong> (`activePoiAlert`), joka päivittyy.
+- Kun aktiivinen POI ei enää kelpaa (poistutaan säteeltä / suunta ei täsmää), etsitään uusi "paras".
+
+### **Nopeuskamera ja suunta:**
+- Jos `heading` on saatavilla, lasketaan bearing käyttäjältä POI:hin ja verrataan kulmaeroa.
+- Jos kulmaero on suuri, hälytys ohitetaan (vähentää vastakkaisen suunnan kameroiden hälyjä).
+
 
 ---
 
