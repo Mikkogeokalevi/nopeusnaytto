@@ -155,7 +155,7 @@ window.centerMapOnPOI = function(poi) {
 // =========================================================
 window._driveMarkerLayers = [];
 
-function renderDriveMarkersOnMap(drive) {
+function renderDriveMarkersOnMap(drive, driveKey) {
     if (!map || !drive || !Array.isArray(drive.markers)) return;
 
     drive.markers.forEach((m, idx) => {
@@ -164,10 +164,69 @@ function renderDriveMarkersOnMap(drive) {
         const ts = m.ts ? new Date(m.ts).toLocaleString('fi-FI') : '';
 
         const marker = L.marker([m.lat, m.lng]);
-        marker.bindPopup(`<strong>📌 ${label}</strong>${ts ? `<br><span style="font-size:12px; opacity:0.75;">${ts}</span>` : ''}`);
+        const actions = (!drive.isPending && driveKey) ? `
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button onclick="window.editDriveMarker('${driveKey}', ${idx})" class="action-btn" style="width:auto; padding:6px 10px; background:#424242;">Muokkaa</button>
+                <button onclick="window.deleteDriveMarker('${driveKey}', ${idx})" class="action-btn" style="width:auto; padding:6px 10px; background:#ff4444;">Poista</button>
+            </div>
+        ` : '';
+
+        marker.bindPopup(
+            `<strong>📌 ${label}</strong>` +
+            `${ts ? `<br><span style="font-size:12px; opacity:0.75;">${ts}</span>` : ''}` +
+            actions
+        );
         marker.addTo(map);
         window._driveMarkerLayers.push(marker);
     });
+}
+
+window.editDriveMarker = function(driveKey, markerIndex) {
+    if (!currentUser) return;
+    const drive = allHistoryData.find(d => d && d.key === driveKey);
+    if (!drive || drive.isPending) {
+        if (typeof showToast === 'function') showToast('Offline-ajon markereita ei voi muokata ennen synkronointia.');
+        return;
+    }
+    if (!Array.isArray(drive.markers) || !drive.markers[markerIndex]) return;
+
+    const currentLabel = drive.markers[markerIndex].label || '';
+    const nextLabel = prompt('Muokkaa selitettä', currentLabel);
+    if (nextLabel === null) return;
+
+    drive.markers[markerIndex].label = String(nextLabel).trim();
+
+    db.ref('ajopaivakirja/' + currentUser.uid + '/' + driveKey + '/markers').set(drive.markers)
+        .then(() => {
+            if (typeof showToast === 'function') showToast('Marker päivitetty.');
+            // Päivitä näkyvä kartta uudelleen jos sama reitti on auki
+            if (typeof window.showRouteOnMap === 'function') window.showRouteOnMap(driveKey);
+        })
+        .catch((err) => {
+            alert('Virhe markerin päivityksessä: ' + err.message);
+        });
+}
+
+window.deleteDriveMarker = function(driveKey, markerIndex) {
+    if (!currentUser) return;
+    const drive = allHistoryData.find(d => d && d.key === driveKey);
+    if (!drive || drive.isPending) {
+        if (typeof showToast === 'function') showToast('Offline-ajon markereita ei voi poistaa ennen synkronointia.');
+        return;
+    }
+    if (!Array.isArray(drive.markers) || !drive.markers[markerIndex]) return;
+    if (!confirm('Poistetaanko tämä merkintä ajolta?')) return;
+
+    drive.markers.splice(markerIndex, 1);
+
+    db.ref('ajopaivakirja/' + currentUser.uid + '/' + driveKey + '/markers').set(drive.markers)
+        .then(() => {
+            if (typeof showToast === 'function') showToast('Marker poistettu.');
+            if (typeof window.showRouteOnMap === 'function') window.showRouteOnMap(driveKey);
+        })
+        .catch((err) => {
+            alert('Virhe markerin poistossa: ' + err.message);
+        });
 }
 
 // 3. GPS Toggle Kartalla (ON/OFF)
@@ -240,7 +299,7 @@ window.showRouteOnMap = (key) => {
     }
 
     // Markerit ajolta
-    renderDriveMarkersOnMap(drive);
+    renderDriveMarkersOnMap(drive, key);
     
     // Vaihda näkymä kartalle (UI-funktio)
     if(typeof switchView === 'function') switchView('map');

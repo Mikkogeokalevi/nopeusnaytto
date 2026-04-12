@@ -543,20 +543,20 @@ function updatePosition(position) {
     // =========================================================
     if (currentUser && Array.isArray(poiData) && poiData.length > 0) {
         try {
-            checkPoiAlerts(lat, lng, heading);
+            checkPoiAlerts(lat, lng, heading, speedKmh);
         } catch (e) {
             // Ei kaadeta GPS-loopia
         }
     }
 }
 
-function checkPoiAlerts(lat, lng, heading) {
+function checkPoiAlerts(lat, lng, heading, speedKmh) {
     const now = Date.now();
 
     // 1) Jos meillä on aktiivinen varoitus, pidetään se kunnes se ei enää kelpaa
     if (activePoiAlert && activePoiAlert.id) {
         const existing = poiData.find(p => p && p.id === activePoiAlert.id);
-        const ok = existing && poiQualifies(existing, lat, lng, heading);
+        const ok = existing && poiQualifies(existing, lat, lng, heading, speedKmh);
         if (ok) {
             updateActivePoiToast(existing, lat, lng, now);
             return;
@@ -572,7 +572,7 @@ function checkPoiAlerts(lat, lng, heading) {
 
     for (const poi of poiData) {
         if (!poi || !poi.id) continue;
-        if (!poiQualifies(poi, lat, lng, heading)) continue;
+        if (!poiQualifies(poi, lat, lng, heading, speedKmh)) continue;
 
         const distM = getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng) * 1000;
         if (distM < bestDistM) {
@@ -582,14 +582,14 @@ function checkPoiAlerts(lat, lng, heading) {
     }
 
     if (best) {
-        activePoiAlert = { id: best.id, startedAt: now, lastShownAt: 0 };
+        activePoiAlert = { id: best.id, startedAt: now, lastShownAt: 0, minDistM: null };
         updateActivePoiToast(best, lat, lng, now);
     } else {
         if (typeof hidePersistentToast === 'function') hidePersistentToast();
     }
 }
 
-function poiQualifies(poi, lat, lng, heading) {
+function poiQualifies(poi, lat, lng, heading, speedKmh) {
     if (!poi.alertEnabled) return false;
     if (typeof poi.lat !== 'number' || typeof poi.lng !== 'number') return false;
 
@@ -598,7 +598,9 @@ function poiQualifies(poi, lat, lng, heading) {
     if (distM > radiusM) return false;
 
     // Nopeuskamera: suunnan mukaan, jos heading on saatavilla
-    if ((poi.type === 'speedcamera') && (heading !== null) && (!isNaN(heading))) {
+    // HUOM: heading on monilla laitteilla epäluotettava hitaassa vauhdissa, joten käytetään suodatusta vain liikkeessä.
+    const useHeading = (typeof speedKmh === 'number' && speedKmh >= 8);
+    if ((poi.type === 'speedcamera') && useHeading && (heading !== null) && (!isNaN(heading))) {
         const bearingToPoi = calculateBearing(lat, lng, poi.lat, poi.lng);
         const diff = angularDiffDeg(heading, bearingToPoi);
         if (diff > 70) return false;
@@ -621,6 +623,22 @@ function updateActivePoiToast(poi, lat, lng, now) {
     const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
     const cooldownSec = Math.max(0, parseInt(poi.cooldownSec || 180, 10));
     const distM = Math.max(0, Math.min(radiusM, getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng) * 1000));
+
+    // Tallennetaan pienin saavutettu etäisyys ja poistetaan varoitus, jos ohituksen jälkeen etäisyys kasvaa selvästi.
+    if (activePoiAlert) {
+        if (typeof activePoiAlert.minDistM !== 'number' || activePoiAlert.minDistM === null) {
+            activePoiAlert.minDistM = distM;
+        } else {
+            if (distM < activePoiAlert.minDistM) activePoiAlert.minDistM = distM;
+
+            // Ohitusheuristiikka: jos oltiin jo lähellä ja nyt kasvaa selvästi, lopetetaan varoitus.
+            if (activePoiAlert.minDistM < 80 && distM > activePoiAlert.minDistM + 25) {
+                activePoiAlert = null;
+                if (typeof hidePersistentToast === 'function') hidePersistentToast();
+                return;
+            }
+        }
+    }
 
     // Päivitetään näyttö max ~1x/sek (säästää vähän)
     if (activePoiAlert && activePoiAlert.lastShownAt && (now - activePoiAlert.lastShownAt) < 800) {
