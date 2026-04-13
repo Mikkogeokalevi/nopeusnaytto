@@ -736,7 +736,7 @@ function updateActivePoiToast(poi, lat, lng, now) {
     if (cooldownSec === 0 || !lastTs || (now - lastTs) >= cooldownSec * 1000) {
         poiAlertState[poi.id] = now;
         if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
-        if (typeof window.playPoiAlertBeep === 'function') window.playPoiAlertBeep();
+        if (poi.beepEnabled !== false && typeof window.playPoiAlertBeep === 'function') window.playPoiAlertBeep();
     }
 
     // Kun ollaan käytännössä perillä, voidaan piilottaa varoitus

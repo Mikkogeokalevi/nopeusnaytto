@@ -269,6 +269,7 @@ window.saveMarkerAsPOI = function(driveKey, markerIndex) {
         alertEnabled: true,
         alertRadiusM: 350,
         cooldownSec: 180,
+        beepEnabled: true,
         createdAt: Date.now(),
         updatedAt: Date.now()
     };

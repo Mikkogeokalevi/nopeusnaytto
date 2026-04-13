@@ -397,6 +397,11 @@ function openPoiEditor(existingPoi = null, fixedCoords = null) {
     if (cdStr === null) return;
     const cooldownSec = Math.max(0, parseInt(cdStr, 10) || 180);
 
+    const beepDefault = (existingPoi?.beepEnabled === false) ? '0' : '1';
+    const beepStr = prompt('Äänimerkki hälytyksessä? (1 = päällä, 0 = pois)', beepDefault);
+    if (beepStr === null) return;
+    const beepEnabled = beepStr.trim() === '1' || beepStr.trim().toLowerCase() === 'true';
+
     const payload = {
         name: name.trim(),
         type,
@@ -405,6 +410,7 @@ function openPoiEditor(existingPoi = null, fixedCoords = null) {
         alertEnabled,
         alertRadiusM,
         cooldownSec,
+        beepEnabled,
         updatedAt: Date.now()
     };
     if (!isEdit) payload.createdAt = Date.now();
