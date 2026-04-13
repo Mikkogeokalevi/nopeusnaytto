@@ -653,6 +653,11 @@ function poiQualifies(poi, lat, lng, heading, speedKmh) {
 
     const poiType = String(poi.type || 'other').trim().toLowerCase();
 
+    // Nopeuskamerat pois käytöstä kävely- ja pyörätilassa
+    if (poiType === 'speedcamera' && (currentCarType === 'walking' || currentCarType === 'bike')) {
+        return false;
+    }
+
     const poiLat = (typeof poi.lat === 'number') ? poi.lat : parseFloat(poi.lat);
     const poiLng = (typeof poi.lng === 'number') ? poi.lng : parseFloat(poi.lng);
     if (!isFinite(poiLat) || !isFinite(poiLng)) return false;

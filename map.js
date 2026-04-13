@@ -125,6 +125,10 @@ window.renderPOIsOnMap = function() {
         const pLng = (typeof poi.lng === 'number') ? poi.lng : parseFloat(poi.lng);
         if (!isFinite(pLat) || !isFinite(pLng)) return;
         const type = String(poi.type || 'other').trim().toLowerCase();
+
+        // Nopeuskamerat pois käytöstä kävely- ja pyörätilassa
+        if (type === 'speedcamera' && (currentCarType === 'walking' || currentCarType === 'bike')) return;
+
         const style = getPoiStyle(type);
 
         const circle = L.circleMarker([pLat, pLng], {
