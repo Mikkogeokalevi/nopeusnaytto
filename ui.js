@@ -200,6 +200,10 @@ window.hidePersistentToast = () => {
     toast.classList.remove('visible');
 }
 
+window.addEventListener('pointerdown', () => {
+    if (typeof window.ensurePoiAudioContext === 'function') window.ensurePoiAudioContext();
+}, { once: true });
+
 window.openConfirmModal = (title, message, callback) => {
     if(confirmTitle) confirmTitle.innerText = title;
     if(confirmMsg) confirmMsg.innerText = message;
@@ -353,7 +357,7 @@ function openPoiEditor(existingPoi = null, fixedCoords = null) {
         defaultType
     );
     if (!typeInput) return;
-    const type = typeInput.trim();
+    const type = typeInput.trim().toLowerCase();
 
     const defaultName = existingPoi?.name || '';
     const name = prompt('Nimi (esim. "Kamera 80" / "Risteys")', defaultName);

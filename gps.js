@@ -21,6 +21,50 @@ var sessionPauseTime = 0;         // Tauot vain tämän pätkän aikana
 var sessionStartAddress = "";     // Tämän pätkän lähtöosoite
 var existingSessions = [];        // Lista aiemmista osamatkoista (jos continue)
 
+window.ensurePoiAudioContext = function() {
+    try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return null;
+        if (!window._poiAudioCtx) window._poiAudioCtx = new AudioCtx();
+        if (window._poiAudioCtx && window._poiAudioCtx.state === 'suspended') {
+            window._poiAudioCtx.resume().catch(() => {});
+        }
+        return window._poiAudioCtx;
+    } catch (e) {
+        return null;
+    }
+}
+
+window.playPoiAlertBeep = function() {
+    // 1 = päällä, 0 = pois
+    const enabled = localStorage.getItem('poiBeepEnabled');
+    if (enabled === '0') return;
+
+    const ctx = window.ensurePoiAudioContext();
+    if (!ctx) return;
+    if (ctx.state !== 'running') return;
+
+    try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        gain.gain.value = 0.0001;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const t0 = ctx.currentTime;
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.exponentialRampToValueAtTime(0.12, t0 + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+
+        osc.start(t0);
+        osc.stop(t0 + 0.2);
+    } catch (e) {
+        // ignore
+    }
+}
+
 // 1. KONTROLLIPAINIKKEET JA LOGIIKKA
 
 // Aktivointinappi
@@ -42,7 +86,6 @@ if (btnActivate) {
             if(document.getElementById('rec-controls')) {
                 document.getElementById('rec-controls').style.display = 'flex';
             }
-
             if(activeRecBtns) activeRecBtns.style.display = 'none'; 
             
             // Varmistetaan että aloitusnapit näkyvät
@@ -589,28 +632,57 @@ function checkPoiAlerts(lat, lng, heading, speedKmh) {
     }
 }
 
+function poiDebug(msg) {
+    try {
+        if (localStorage.getItem('poiDebug') !== '1') return;
+        console.log('[POI]', msg);
+        // Kevyt throttlaus, ettei spämmää
+        const last = parseInt(localStorage.getItem('poiDebugLast') || '0', 10) || 0;
+        const now = Date.now();
+        if (now - last < 3000) return;
+        localStorage.setItem('poiDebugLast', String(now));
+        if (typeof showToast === 'function') showToast(msg);
+    } catch (e) {
+        // ignore
+    }
+}
+
 function poiQualifies(poi, lat, lng, heading, speedKmh) {
-    if (!poi.alertEnabled) return false;
-    if (typeof poi.lat !== 'number' || typeof poi.lng !== 'number') return false;
+    const alertEnabled = (poi.alertEnabled === true || poi.alertEnabled === 1 || poi.alertEnabled === '1' || String(poi.alertEnabled).toLowerCase() === 'true');
+    if (!alertEnabled) return false;
+
+    const poiType = String(poi.type || 'other').trim().toLowerCase();
+
+    const poiLat = (typeof poi.lat === 'number') ? poi.lat : parseFloat(poi.lat);
+    const poiLng = (typeof poi.lng === 'number') ? poi.lng : parseFloat(poi.lng);
+    if (!isFinite(poiLat) || !isFinite(poiLng)) return false;
 
     const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
-    const distM = getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng) * 1000;
-    if (distM > radiusM) return false;
+    const distM = getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000;
+    if (distM > radiusM) {
+        return false;
+    }
 
     // Nopeuskamera: suunnan mukaan, jos heading on saatavilla
     // HUOM: heading on monilla laitteilla epäluotettava hitaassa vauhdissa, joten käytetään suodatusta vain liikkeessä.
     const useHeading = (typeof speedKmh === 'number' && speedKmh >= 8);
-    if ((poi.type === 'speedcamera') && useHeading && (heading !== null) && (!isNaN(heading))) {
-        const bearingToPoi = calculateBearing(lat, lng, poi.lat, poi.lng);
+    if ((poiType === 'speedcamera') && useHeading && (heading !== null) && (!isNaN(heading))) {
+        const bearingToPoi = calculateBearing(lat, lng, poiLat, poiLng);
         const diff = angularDiffDeg(heading, bearingToPoi);
-        if (diff > 70) return false;
+        if (diff > 70) {
+            poiDebug(`Nopeuskamera ei kelpaa (suunta): diff ${Math.round(diff)}° (head ${Math.round(heading)}°)`);
+            return false;
+        }
+    } else if (poiType === 'speedcamera' && !useHeading) {
+        // Heading suodatus pois päältä hitaassa vauhdissa
+        poiDebug(`Nopeuskamera: heading-suodatus OFF (spd ${Math.round(speedKmh || 0)} km/h)`);
     }
 
     return true;
 }
 
 function getPoiLabel(poi) {
-    const type = poi.type || 'other';
+    const type = String(poi.type || 'other').trim().toLowerCase();
     if (poi.name && String(poi.name).trim()) return String(poi.name).trim();
     if (type === 'speedcamera') return 'Nopeuskamera';
     if (type === 'danger') return 'Vaara';
@@ -622,7 +694,12 @@ function getPoiLabel(poi) {
 function updateActivePoiToast(poi, lat, lng, now) {
     const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
     const cooldownSec = Math.max(0, parseInt(poi.cooldownSec || 180, 10));
-    const distM = Math.max(0, Math.min(radiusM, getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng) * 1000));
+
+    const poiLat = (typeof poi.lat === 'number') ? poi.lat : parseFloat(poi.lat);
+    const poiLng = (typeof poi.lng === 'number') ? poi.lng : parseFloat(poi.lng);
+    if (!isFinite(poiLat) || !isFinite(poiLng)) return;
+
+    const distM = Math.max(0, Math.min(radiusM, getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000));
 
     // Tallennetaan pienin saavutettu etäisyys ja poistetaan varoitus, jos ohituksen jälkeen etäisyys kasvaa selvästi.
     if (activePoiAlert) {
@@ -659,6 +736,7 @@ function updateActivePoiToast(poi, lat, lng, now) {
     if (cooldownSec === 0 || !lastTs || (now - lastTs) >= cooldownSec * 1000) {
         poiAlertState[poi.id] = now;
         if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+        if (typeof window.playPoiAlertBeep === 'function') window.playPoiAlertBeep();
     }
 
     // Kun ollaan käytännössä perillä, voidaan piilottaa varoitus

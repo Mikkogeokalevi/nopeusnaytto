@@ -159,15 +159,21 @@ function renderDriveMarkersOnMap(drive, driveKey) {
     if (!map || !drive || !Array.isArray(drive.markers)) return;
 
     drive.markers.forEach((m, idx) => {
-        if (!m || typeof m.lat !== 'number' || typeof m.lng !== 'number') return;
+        if (!m) return;
+        const mLat = (typeof m.lat === 'number') ? m.lat : parseFloat(m.lat);
+        const mLng = (typeof m.lng === 'number') ? m.lng : parseFloat(m.lng);
+        if (!isFinite(mLat) || !isFinite(mLng)) return;
         const label = (m.label && String(m.label).trim()) ? String(m.label).trim() : `Merkki #${idx + 1}`;
         const ts = m.ts ? new Date(m.ts).toLocaleString('fi-FI') : '';
 
-        const marker = L.marker([m.lat, m.lng]);
+        const marker = L.marker([mLat, mLng]);
         const actions = (!drive.isPending && driveKey) ? `
             <div style="display:flex; gap:8px; margin-top:8px;">
                 <button onclick="window.editDriveMarker('${driveKey}', ${idx})" class="action-btn" style="width:auto; padding:6px 10px; background:#424242;">Muokkaa</button>
                 <button onclick="window.deleteDriveMarker('${driveKey}', ${idx})" class="action-btn" style="width:auto; padding:6px 10px; background:#ff4444;">Poista</button>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button onclick="window.saveMarkerAsPOI('${driveKey}', ${idx})" class="action-btn" style="width:auto; padding:6px 10px; background:#1e88e5;">Tallenna POI:ksi</button>
             </div>
         ` : '';
 
@@ -226,6 +232,54 @@ window.deleteDriveMarker = function(driveKey, markerIndex) {
         })
         .catch((err) => {
             alert('Virhe markerin poistossa: ' + err.message);
+        });
+}
+
+window.saveMarkerAsPOI = function(driveKey, markerIndex) {
+    if (!currentUser) return;
+    const drive = allHistoryData.find(d => d && d.key === driveKey);
+    if (!drive || drive.isPending) {
+        if (typeof showToast === 'function') showToast('Offline-ajon markereita ei voi muuntaa POI:ksi ennen synkronointia.');
+        return;
+    }
+    if (!Array.isArray(drive.markers) || !drive.markers[markerIndex]) return;
+
+    const m = drive.markers[markerIndex];
+    const lat = (typeof m.lat === 'number') ? m.lat : parseFloat(m.lat);
+    const lng = (typeof m.lng === 'number') ? m.lng : parseFloat(m.lng);
+    if (!isFinite(lat) || !isFinite(lng)) return;
+
+    const defaultType = 'speedcamera';
+    const typeInput = prompt(
+        'Valitse POI-tyyppi (kirjoita yksi):\n- speedcamera\n- danger\n- customer\n- reminder\n- other',
+        defaultType
+    );
+    if (!typeInput) return;
+    const type = String(typeInput).trim().toLowerCase();
+
+    const defaultName = (m.label && String(m.label).trim()) ? String(m.label).trim() : '';
+    const name = prompt('Nimi (valinnainen)', defaultName);
+    if (name === null) return;
+
+    const payload = {
+        name: String(name || '').trim(),
+        type,
+        lat,
+        lng,
+        alertEnabled: true,
+        alertRadiusM: 350,
+        cooldownSec: 180,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+    };
+
+    db.ref('poi/' + currentUser.uid).push().set(payload)
+        .then(() => {
+            if (typeof showToast === 'function') showToast('POI tallennettu markerista ✅');
+            if (typeof window.loadPOIs === 'function') window.loadPOIs();
+        })
+        .catch((err) => {
+            alert('Virhe POI-tallennuksessa: ' + err.message);
         });
 }
 
