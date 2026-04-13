@@ -181,6 +181,21 @@ const btnPoiShowMore = document.getElementById('btn-poi-show-more');
 const btnPoiShowAll = document.getElementById('btn-poi-show-all');
 const btnPoiNearby = document.getElementById('btn-poi-nearby');
 
+const poiModal = document.getElementById('poi-modal');
+const poiModalTitleEl = document.getElementById('poi-modal-title');
+const btnPoiModalClose = document.getElementById('btn-poi-modal-close');
+const poiModalIdEl = document.getElementById('poi-modal-id');
+const poiModalTypeEl = document.getElementById('poi-modal-type');
+const poiModalNameEl = document.getElementById('poi-modal-name');
+const poiModalLatEl = document.getElementById('poi-modal-lat');
+const poiModalLngEl = document.getElementById('poi-modal-lng');
+const poiModalAlertEl = document.getElementById('poi-modal-alert');
+const poiModalRadiusEl = document.getElementById('poi-modal-radius');
+const poiModalCooldownEl = document.getElementById('poi-modal-cooldown');
+const poiModalBeepEl = document.getElementById('poi-modal-beep');
+const btnPoiModalSave = document.getElementById('btn-poi-modal-save');
+const btnPoiModalDelete = document.getElementById('btn-poi-modal-delete');
+
 let poiRenderLimit = 60;
 let poiNearbyMode = false;
 
@@ -451,82 +466,34 @@ function renderPoiList() {
 
 function openPoiEditor(existingPoi = null, fixedCoords = null) {
     if (!currentUser) return;
-
-    const isEdit = !!existingPoi;
-
-    const defaultType = existingPoi?.type || 'speedcamera';
-    const typeInput = prompt(
-        'Valitse tyyppi (kirjoita yksi):\n- speedcamera\n- danger\n- customer\n- reminder\n- other',
-        defaultType
-    );
-    if (!typeInput) return;
-    const type = typeInput.trim().toLowerCase();
-
-    const defaultName = existingPoi?.name || '';
-    const name = prompt('Nimi (esim. "Kamera 80" / "Risteys")', defaultName);
-    if (name === null) return;
-
-    let lat = fixedCoords?.lat ?? existingPoi?.lat;
-    let lng = fixedCoords?.lng ?? existingPoi?.lng;
-
-    if (typeof lat !== 'number' || typeof lng !== 'number') {
-        const coordStr = prompt('Syötä koordinaatit geokätköilymuodossa (esim. N 60° 10.123 E 024° 56.789)', '');
-        if (!coordStr) return;
-        if (typeof window.parseGeocacheCoordinates !== 'function') {
-            alert('Koordinaattiparsija puuttuu (parseGeocacheCoordinates).');
-            return;
-        }
-        const parsed = window.parseGeocacheCoordinates(coordStr);
-        if (!parsed) {
-            alert('Koordinaatteja ei voitu tulkita.');
-            return;
-        }
-        lat = parsed.lat;
-        lng = parsed.lng;
+    if (!poiModal) {
+        return;
     }
 
-    const defaultAlert = existingPoi?.alertEnabled ? '1' : '0';
-    const alertOn = prompt('Lähestymisvaroitus? (1 = päällä, 0 = pois)', defaultAlert);
-    if (alertOn === null) return;
-    const alertEnabled = alertOn.trim() === '1' || alertOn.trim().toLowerCase() === 'true';
+    const isEdit = !!existingPoi && !!existingPoi.id;
+    if (poiModalTitleEl) poiModalTitleEl.innerText = isEdit ? '📍 Muokkaa POI' : '📍 Lisää POI';
+    if (poiModalIdEl) poiModalIdEl.value = isEdit ? existingPoi.id : '';
 
-    const radiusDefault = String(existingPoi?.alertRadiusM ?? 350);
-    const radiusStr = prompt('Varoitusetäisyys metreinä (esim. 350)', radiusDefault);
-    if (radiusStr === null) return;
-    const alertRadiusM = Math.max(30, parseInt(radiusStr, 10) || 350);
+    const type = String(existingPoi?.type || 'speedcamera').trim().toLowerCase();
+    if (poiModalTypeEl) poiModalTypeEl.value = type;
 
-    const cdDefault = String(existingPoi?.cooldownSec ?? 180);
-    const cdStr = prompt('Cooldown sekunteina (esim. 180)', cdDefault);
-    if (cdStr === null) return;
-    const cooldownSec = Math.max(0, parseInt(cdStr, 10) || 180);
+    const name = String(existingPoi?.name || '').trim();
+    if (poiModalNameEl) poiModalNameEl.value = name;
 
-    const beepDefault = (existingPoi?.beepEnabled === false) ? '0' : '1';
-    const beepStr = prompt('Äänimerkki hälytyksessä? (1 = päällä, 0 = pois)', beepDefault);
-    if (beepStr === null) return;
-    const beepEnabled = beepStr.trim() === '1' || beepStr.trim().toLowerCase() === 'true';
+    const lat = fixedCoords?.lat ?? existingPoi?.lat;
+    const lng = fixedCoords?.lng ?? existingPoi?.lng;
+    if (poiModalLatEl) poiModalLatEl.value = (typeof lat === 'number' ? lat : parseFloat(lat || 0)) || '';
+    if (poiModalLngEl) poiModalLngEl.value = (typeof lng === 'number' ? lng : parseFloat(lng || 0)) || '';
 
-    const payload = {
-        name: name.trim(),
-        type,
-        lat,
-        lng,
-        alertEnabled,
-        alertRadiusM,
-        cooldownSec,
-        beepEnabled,
-        updatedAt: Date.now()
-    };
-    if (!isEdit) payload.createdAt = Date.now();
+    const alertEnabled = (existingPoi?.alertEnabled === true || existingPoi?.alertEnabled === 1 || existingPoi?.alertEnabled === '1' || String(existingPoi?.alertEnabled).toLowerCase() === 'true');
+    if (poiModalAlertEl) poiModalAlertEl.checked = isEdit ? alertEnabled : true;
 
-    if (isEdit) {
-        return db.ref('poi/' + currentUser.uid + '/' + existingPoi.id).update(payload)
-            .then(() => { if(typeof showToast === 'function') showToast('POI päivitetty ✅'); })
-            .catch(err => alert('Virhe POI-päivityksessä: ' + err.message));
-    }
+    if (poiModalRadiusEl) poiModalRadiusEl.value = String(existingPoi?.alertRadiusM ?? 350);
+    if (poiModalCooldownEl) poiModalCooldownEl.value = String(existingPoi?.cooldownSec ?? 180);
+    if (poiModalBeepEl) poiModalBeepEl.checked = (existingPoi?.beepEnabled !== false);
 
-    return db.ref('poi/' + currentUser.uid).push().set(payload)
-        .then(() => { if(typeof showToast === 'function') showToast('POI lisätty ✅'); })
-        .catch(err => alert('Virhe POI-tallennuksessa: ' + err.message));
+    if (btnPoiModalDelete) btnPoiModalDelete.style.display = isEdit ? 'block' : 'none';
+    poiModal.style.display = 'flex';
 }
 
 function deletePOI(poiId) {
@@ -540,6 +507,25 @@ window.renderPoiList = renderPoiList;
 window.openPoiEditor = openPoiEditor;
 window.deletePOI = deletePOI;
 
+window.openPoiEditorById = function(poiId) {
+    if (!poiId) return;
+    const poi = Array.isArray(poiData) ? poiData.find(p => p && p.id === poiId) : null;
+    if (!poi) {
+        if (typeof showToast === 'function') showToast('POI:tä ei löytynyt.');
+        return;
+    }
+    openPoiEditor(poi, null);
+}
+
+window.deletePoiById = function(poiId) {
+    if (!poiId) return;
+    if (typeof openConfirmModal === 'function') {
+        openConfirmModal('Poista POI?', 'Haluatko varmasti poistaa tämän paikkamerkinnän?', () => deletePOI(poiId));
+    } else {
+        if (confirm('Haluatko varmasti poistaa tämän paikkamerkinnän?')) deletePOI(poiId);
+    }
+}
+
 // NAPIT
 if (btnPoiAddHere) {
     btnPoiAddHere.addEventListener('click', () => {
@@ -548,6 +534,71 @@ if (btnPoiAddHere) {
             return;
         }
         openPoiEditor(null, { lat: lastLatLng.lat, lng: lastLatLng.lng });
+    });
+}
+
+function closePoiModal() {
+    if (!poiModal) return;
+    poiModal.style.display = 'none';
+}
+
+if (btnPoiModalClose) btnPoiModalClose.addEventListener('click', closePoiModal);
+if (poiModal) {
+    poiModal.addEventListener('click', (e) => {
+        if (e.target === poiModal) closePoiModal();
+    });
+}
+
+if (btnPoiModalSave) {
+    btnPoiModalSave.addEventListener('click', () => {
+        if (!currentUser) return;
+        const id = poiModalIdEl ? poiModalIdEl.value : '';
+        const isEdit = !!id;
+
+        const type = String(poiModalTypeEl?.value || 'other').trim().toLowerCase();
+        const name = String(poiModalNameEl?.value || '').trim();
+        const lat = parseFloat(poiModalLatEl?.value);
+        const lng = parseFloat(poiModalLngEl?.value);
+        if (!isFinite(lat) || !isFinite(lng)) {
+            alert('Koordinaatit puuttuvat tai ovat virheelliset.');
+            return;
+        }
+
+        const alertEnabled = !!poiModalAlertEl?.checked;
+        const alertRadiusM = Math.max(30, parseInt(poiModalRadiusEl?.value || '350', 10) || 350);
+        const cooldownSec = Math.max(0, parseInt(poiModalCooldownEl?.value || '180', 10) || 180);
+        const beepEnabled = !!poiModalBeepEl?.checked;
+
+        const payload = {
+            name,
+            type,
+            lat,
+            lng,
+            alertEnabled,
+            alertRadiusM,
+            cooldownSec,
+            beepEnabled,
+            updatedAt: Date.now()
+        };
+        if (!isEdit) payload.createdAt = Date.now();
+
+        const p = isEdit
+            ? db.ref('poi/' + currentUser.uid + '/' + id).update(payload)
+            : db.ref('poi/' + currentUser.uid).push().set(payload);
+
+        p.then(() => {
+            if (typeof showToast === 'function') showToast(isEdit ? 'POI päivitetty ✅' : 'POI lisätty ✅');
+            closePoiModal();
+        }).catch(err => alert('Virhe POI-tallennuksessa: ' + err.message));
+    });
+}
+
+if (btnPoiModalDelete) {
+    btnPoiModalDelete.addEventListener('click', () => {
+        const id = poiModalIdEl ? poiModalIdEl.value : '';
+        if (!id) return;
+        window.deletePoiById(id);
+        closePoiModal();
     });
 }
 

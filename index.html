@@ -29,6 +29,72 @@
         </div>
     </div>
 
+    <div id="poi-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content" style="max-width:520px; text-align:left;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
+                <h3 id="poi-modal-title" style="margin:0; color:var(--accent-color);">📍 POI</h3>
+                <button id="btn-poi-modal-close" class="icon-btn" style="width:auto; padding:8px 12px;">✕</button>
+            </div>
+
+            <input type="hidden" id="poi-modal-id" value="" />
+
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <div>
+                    <label style="display:block; margin-bottom:6px;">Tyyppi</label>
+                    <select id="poi-modal-type" class="subject-input" style="width:100%;">
+                        <option value="speedcamera">Nopeuskamera</option>
+                        <option value="danger">Vaara</option>
+                        <option value="customer">Asiakas</option>
+                        <option value="reminder">Muistutus</option>
+                        <option value="other">Muu</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px;">Nimi</label>
+                    <input id="poi-modal-name" class="subject-input" type="text" placeholder="Esim. Kamera 80" />
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label style="display:block; margin-bottom:6px;">Lat</label>
+                        <input id="poi-modal-lat" class="subject-input" type="number" step="0.000001" />
+                    </div>
+                    <div style="flex:1;">
+                        <label style="display:block; margin-bottom:6px;">Lng</label>
+                        <input id="poi-modal-lng" class="subject-input" type="number" step="0.000001" />
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:12px;">
+                    <span>Lähestymisvaroitus</span>
+                    <input id="poi-modal-alert" type="checkbox" style="transform: scale(1.5);" />
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label style="display:block; margin-bottom:6px;">Säde (m)</label>
+                        <input id="poi-modal-radius" class="subject-input" type="number" step="1" min="30" />
+                    </div>
+                    <div style="flex:1;">
+                        <label style="display:block; margin-bottom:6px;">Cooldown (s)</label>
+                        <input id="poi-modal-cooldown" class="subject-input" type="number" step="1" min="0" />
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:12px;">
+                    <span>Äänimerkki</span>
+                    <input id="poi-modal-beep" type="checkbox" style="transform: scale(1.5);" />
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:18px;">
+                <button id="btn-poi-modal-save" class="action-btn green-btn" style="flex:2; margin:0;">Tallenna</button>
+                <button id="btn-poi-modal-delete" class="action-btn red-btn" style="flex:1; margin:0; display:none;">Poista</button>
+            </div>
+        </div>
+    </div>
+
     <div id="login-view" style="display:none;">
         <div class="login-content">
             <img src="ajopaivakirja_logo.png?v=6.01" alt="Logo" class="login-logo">

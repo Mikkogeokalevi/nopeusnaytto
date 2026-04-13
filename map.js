@@ -120,10 +120,14 @@ window.renderPOIsOnMap = function() {
     window._poiLayerGroup.clearLayers();
 
     poiData.forEach(poi => {
-        if (!poi || typeof poi.lat !== 'number' || typeof poi.lng !== 'number') return;
-        const style = getPoiStyle(poi.type);
+        if (!poi) return;
+        const pLat = (typeof poi.lat === 'number') ? poi.lat : parseFloat(poi.lat);
+        const pLng = (typeof poi.lng === 'number') ? poi.lng : parseFloat(poi.lng);
+        if (!isFinite(pLat) || !isFinite(pLng)) return;
+        const type = String(poi.type || 'other').trim().toLowerCase();
+        const style = getPoiStyle(type);
 
-        const circle = L.circleMarker([poi.lat, poi.lng], {
+        const circle = L.circleMarker([pLat, pLng], {
             radius: 7,
             color: style.color,
             fillColor: style.fillColor,
@@ -133,8 +137,14 @@ window.renderPOIsOnMap = function() {
 
         const title = poi.name || 'POI';
         const warn = poi.alertEnabled ? `Varoitus: PÄÄLLÄ (${poi.alertRadiusM || 350}m / ${poi.cooldownSec || 180}s)` : 'Varoitus: POIS';
+        const actions = poi.id ? `
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <button onclick="window.openPoiEditorById && window.openPoiEditorById('${poi.id}')" class="action-btn" style="width:auto; padding:6px 10px; background:#424242;">Muokkaa</button>
+                <button onclick="window.deletePoiById && window.deletePoiById('${poi.id}')" class="action-btn" style="width:auto; padding:6px 10px; background:#ff4444;">Poista</button>
+            </div>
+        ` : '';
 
-        circle.bindPopup(`<strong>${style.icon} ${title}</strong><br>${warn}`);
+        circle.bindPopup(`<strong>${style.icon} ${title}</strong><br>${warn}${actions}`);
         circle.on('click', () => {
             // Avataan popup heti
             circle.openPopup();
