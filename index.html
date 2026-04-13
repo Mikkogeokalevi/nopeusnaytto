@@ -346,10 +346,30 @@
                         <button id="btn-poi-add-here" class="action-btn" style="width:auto; background-color:#00796b;">+ Lisää tähän sijaintiin</button>
                         <button id="btn-poi-add-coords" class="action-btn" style="width:auto; background-color:#444;">+ Lisää koordinaateilla</button>
                         <button id="btn-poi-add-map" class="action-btn" style="width:auto; background-color:#333;">+ Lisää kartalta</button>
+                        <button id="btn-poi-import-cameras" class="action-btn" style="width:auto; background-color:#1e88e5;">⬆ Tuo nopeuskamerat (CSV/SVC)</button>
+                        <input id="inp-poi-import-cameras" type="file" accept=".csv,.svc,text/csv,text/plain" multiple style="display:none;" />
                     </div>
 
                     <div style="font-size:12px; color:var(--subtext-color); margin-bottom:10px;">
                         POI:t näkyvät aina kartassa. Voit asettaa lähestymisvaroituksen (säde + cooldown) per merkintä.
+                    </div>
+
+                    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
+                        <input id="poi-search" class="subject-input" type="text" placeholder="Hae POI (nimi / tyyppi)" style="flex:1; min-width:220px; max-width:360px;" />
+                        <select id="poi-filter-type" class="subject-input" style="width:160px;">
+                            <option value="">Kaikki tyypit</option>
+                            <option value="speedcamera">Nopeuskamerat</option>
+                            <option value="danger">Vaara</option>
+                            <option value="customer">Asiakas</option>
+                            <option value="reminder">Muistutus</option>
+                            <option value="other">Muu</option>
+                        </select>
+                        <button id="btn-poi-nearby" class="action-btn" style="width:auto; background-color:#424242;">📍 Lähimmät</button>
+                    </div>
+
+                    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
+                        <button id="btn-poi-show-more" class="action-btn" style="width:auto; background-color:#333;">Näytä lisää</button>
+                        <button id="btn-poi-show-all" class="action-btn" style="width:auto; background-color:#555;">Näytä kaikki</button>
                     </div>
 
                     <div id="poi-list" style="margin-top:10px;">

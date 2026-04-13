@@ -173,6 +173,16 @@ const poiListEl = document.getElementById('poi-list');
 const btnPoiAddHere = document.getElementById('btn-poi-add-here');
 const btnPoiAddCoords = document.getElementById('btn-poi-add-coords');
 const btnPoiAddMap = document.getElementById('btn-poi-add-map');
+const btnPoiImportCameras = document.getElementById('btn-poi-import-cameras');
+const inpPoiImportCameras = document.getElementById('inp-poi-import-cameras');
+const poiSearchEl = document.getElementById('poi-search');
+const poiFilterTypeEl = document.getElementById('poi-filter-type');
+const btnPoiShowMore = document.getElementById('btn-poi-show-more');
+const btnPoiShowAll = document.getElementById('btn-poi-show-all');
+const btnPoiNearby = document.getElementById('btn-poi-nearby');
+
+let poiRenderLimit = 60;
+let poiNearbyMode = false;
 
 
 // --- 2. APUFUNKTIOT (TOAST & CONFIRM) ---
@@ -234,6 +244,57 @@ window.loadPOIs = function() {
     });
 }
 
+function resetPoiListView() {
+    poiRenderLimit = 60;
+    poiNearbyMode = false;
+    if (typeof renderPoiList === 'function') renderPoiList();
+}
+
+if (poiSearchEl) {
+    poiSearchEl.addEventListener('input', () => {
+        poiRenderLimit = 60;
+        poiNearbyMode = false;
+        renderPoiList();
+    });
+}
+
+if (poiFilterTypeEl) {
+    poiFilterTypeEl.addEventListener('change', () => {
+        poiRenderLimit = 60;
+        poiNearbyMode = false;
+        renderPoiList();
+    });
+}
+
+if (btnPoiShowMore) {
+    btnPoiShowMore.addEventListener('click', () => {
+        poiRenderLimit = Math.min(2000, poiRenderLimit + 100);
+        renderPoiList();
+    });
+}
+
+if (btnPoiShowAll) {
+    btnPoiShowAll.addEventListener('click', () => {
+        if (confirm('Näytetäänkö kaikki POI:t? Tämä voi olla hidasta jos POI:ta on paljon.')) {
+            poiRenderLimit = 1000000;
+            renderPoiList();
+        }
+    });
+}
+
+if (btnPoiNearby) {
+    btnPoiNearby.addEventListener('click', () => {
+        if (!lastLatLng) {
+            if (typeof showToast === 'function') showToast('Odotetaan GPS-sijaintia...');
+            return;
+        }
+        poiNearbyMode = !poiNearbyMode;
+        poiRenderLimit = 80;
+        if (typeof renderPoiList === 'function') renderPoiList();
+        if (typeof showToast === 'function') showToast(poiNearbyMode ? 'Näytetään lähimmät POI:t' : 'Lähin-näkymä pois');
+    });
+}
+
 // =========================================================
 // POI (Paikkamerkinnät) - UI + Firebase CRUD
 // =========================================================
@@ -262,8 +323,34 @@ function renderPoiList() {
         return;
     }
 
-    const list = Array.isArray(poiData) ? poiData.slice() : [];
-    list.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
+    let list = Array.isArray(poiData) ? poiData.slice() : [];
+
+    const q = (poiSearchEl && typeof poiSearchEl.value === 'string') ? poiSearchEl.value.trim().toLowerCase() : '';
+    const typeFilter = (poiFilterTypeEl && typeof poiFilterTypeEl.value === 'string') ? poiFilterTypeEl.value.trim().toLowerCase() : '';
+
+    if (typeFilter) {
+        list = list.filter(p => String(p?.type || '').trim().toLowerCase() === typeFilter);
+    }
+
+    if (q) {
+        list = list.filter(p => {
+            const name = String(p?.name || '').toLowerCase();
+            const type = String(p?.type || '').toLowerCase();
+            const label = String(getPoiTypeLabel(p?.type) || '').toLowerCase();
+            return name.includes(q) || type.includes(q) || label.includes(q);
+        });
+    }
+
+    if (poiNearbyMode && lastLatLng && typeof lastLatLng.lat === 'number' && typeof lastLatLng.lng === 'number') {
+        list.forEach(p => {
+            const pLat = (typeof p.lat === 'number') ? p.lat : parseFloat(p.lat);
+            const pLng = (typeof p.lng === 'number') ? p.lng : parseFloat(p.lng);
+            p._distM = (isFinite(pLat) && isFinite(pLng)) ? (getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, pLat, pLng) * 1000) : Infinity;
+        });
+        list.sort((a, b) => (a._distM || Infinity) - (b._distM || Infinity));
+    } else {
+        list.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
+    }
 
     if (list.length === 0) {
         poiListEl.innerHTML = '<div style="text-align:center; padding:15px; color:#888;">Ei POI-merkintöjä. Lisää ensimmäinen.</div>';
@@ -271,7 +358,20 @@ function renderPoiList() {
     }
 
     poiListEl.innerHTML = '';
-    list.forEach(poi => {
+    const total = list.length;
+    const limited = list.slice(0, Math.max(1, poiRenderLimit));
+
+    if (total > limited.length) {
+        const info = document.createElement('div');
+        info.style.textAlign = 'center';
+        info.style.padding = '8px';
+        info.style.color = 'var(--subtext-color)';
+        info.style.fontSize = '12px';
+        info.innerText = `Näytetään ${limited.length}/${total}. Käytä hakua tai "Näytä lisää".`;
+        poiListEl.appendChild(info);
+    }
+
+    limited.forEach(poi => {
         const div = document.createElement('div');
         div.className = 'car-item';
         div.style.display = 'flex';
@@ -286,9 +386,12 @@ function renderPoiList() {
         const title = poi.name || getPoiTypeLabel(poi.type);
         const icon = getPoiTypeIcon(poi.type);
 
-        const enabled = !!poi.alertEnabled;
+        const enabled = (poi.alertEnabled === true || poi.alertEnabled === 1 || poi.alertEnabled === '1' || String(poi.alertEnabled).toLowerCase() === 'true');
         const radius = parseInt(poi.alertRadiusM || 350, 10);
         const cd = parseInt(poi.cooldownSec || 180, 10);
+        const beepOn = (poi.beepEnabled !== false);
+
+        const distSuffix = (poiNearbyMode && isFinite(poi._distM)) ? ` • ${Math.round(poi._distM)} m` : '';
 
         const infoDiv = document.createElement('div');
         infoDiv.style.flex = '1';
@@ -296,7 +399,7 @@ function renderPoiList() {
         infoDiv.innerHTML = `
             <strong style="font-size:15px;">${icon} ${title}</strong>
             <div style="font-size:12px; color:var(--subtext-color); margin-top:2px;">
-                ${getPoiTypeLabel(poi.type)} • ${enabled ? `Varoitus: PÄÄLLÄ (${radius}m / ${cd}s)` : 'Varoitus: POIS'}
+                ${getPoiTypeLabel(poi.type)}${distSuffix} • ${enabled ? `Varoitus: PÄÄLLÄ (${radius}m / ${cd}s)` : 'Varoitus: POIS'} • Ääni: ${beepOn ? 'ON' : 'OFF'}
             </div>
             <div style="font-size:12px; color:var(--subtext-color); margin-top:2px;">
                 ${typeof toGeocacheFormat === 'function' ? `${toGeocacheFormat(poi.lat, true)} ${toGeocacheFormat(poi.lng, false)}` : `${poi.lat}, ${poi.lng}`}
@@ -461,6 +564,110 @@ if (btnPoiAddMap) {
             showToast('Kartalta lisäys: avaa Kartta ja tee pitkä painallus kohtaan.');
         }
         if (typeof switchView === 'function') switchView('map');
+    });
+}
+
+function parseCameraLinesToPois(text, fileLabel = '') {
+    const out = [];
+    if (!text || typeof text !== 'string') return out;
+    const prefix = (fileLabel && String(fileLabel).trim()) ? (String(fileLabel).trim() + ' - ') : '';
+    const lines = text.split(/\r?\n/);
+    for (const raw of lines) {
+        const line = String(raw || '').trim();
+        if (!line) continue;
+
+        const m = line.match(/^\s*([+-]?(?:\d+\.?\d*|\d*\.?\d+))\s*,\s*([+-]?(?:\d+\.?\d*|\d*\.?\d+))\s*,?\s*(?:"([^"]*)"\s*)?$/);
+        if (!m) continue;
+
+        const lon = parseFloat(m[1]);
+        const lat = parseFloat(m[2]);
+        const rawName = (m[3] !== undefined && m[3] !== null) ? String(m[3]).trim() : '';
+        const name = prefix + rawName;
+        if (!isFinite(lat) || !isFinite(lon)) continue;
+
+        out.push({
+            name,
+            type: 'speedcamera',
+            lat,
+            lng: lon,
+            alertEnabled: true,
+            alertRadiusM: 350,
+            cooldownSec: 180,
+            beepEnabled: true,
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+        });
+    }
+    return out;
+}
+
+async function importSpeedCamerasFromFiles(fileList) {
+    if (!currentUser) return;
+    const files = Array.from(fileList || []);
+    if (files.length === 0) return;
+
+    const allPois = [];
+    for (const f of files) {
+        const text = await f.text();
+        const fileLabel = String(f.name || '').replace(/\.[^/.]+$/, '');
+        const pois = parseCameraLinesToPois(text, fileLabel);
+        allPois.push(...pois);
+    }
+
+    if (allPois.length === 0) {
+        alert('Tuonti epäonnistui: tiedostoista ei löytynyt kelvollisia rivejä.');
+        return;
+    }
+
+    const radiusStr = prompt('Varoitusetäisyys metreinä (esim. 350)', '350');
+    if (radiusStr === null) return;
+    const alertRadiusM = Math.max(30, parseInt(radiusStr, 10) || 350);
+
+    const cdStr = prompt('Cooldown sekunteina (esim. 180)', '180');
+    if (cdStr === null) return;
+    const cooldownSec = Math.max(0, parseInt(cdStr, 10) || 180);
+
+    const beepStr = prompt('Äänimerkki hälytyksessä? (1 = päällä, 0 = pois)', '1');
+    if (beepStr === null) return;
+    const beepEnabled = beepStr.trim() === '1' || beepStr.trim().toLowerCase() === 'true';
+
+    const updates = {};
+    const baseRef = db.ref('poi/' + currentUser.uid);
+    for (const p of allPois) {
+        const key = baseRef.push().key;
+        updates[key] = {
+            ...p,
+            alertRadiusM,
+            cooldownSec,
+            beepEnabled,
+            updatedAt: Date.now()
+        };
+    }
+
+    await baseRef.update(updates);
+    if (typeof showToast === 'function') showToast(`Tuotu ${allPois.length} nopeuskamera-POI:ta ✅`);
+}
+
+if (btnPoiImportCameras && inpPoiImportCameras) {
+    btnPoiImportCameras.addEventListener('click', () => {
+        if (!currentUser) {
+            if (typeof showToast === 'function') showToast('Kirjaudu sisään tuodaksesi POI:t.');
+            return;
+        }
+        inpPoiImportCameras.value = '';
+        inpPoiImportCameras.click();
+    });
+
+    inpPoiImportCameras.addEventListener('change', async (e) => {
+        try {
+            const files = e.target.files;
+            if (!files || files.length === 0) return;
+            const ok = confirm(`Tuodaanko ${files.length} tiedoston kamerat POI:ksi?`);
+            if (!ok) return;
+            await importSpeedCamerasFromFiles(files);
+        } catch (err) {
+            alert('Virhe tuonnissa: ' + err.message);
+        }
     });
 }
 
