@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.16 (POI Varoituslaskuri + Ajon markerit)
-const APP_VERSION = "6.16"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.17 (POI massatuonti + modaali-editori + karttamuokkaus)
+const APP_VERSION = "6.17"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

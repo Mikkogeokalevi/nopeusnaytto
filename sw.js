@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.16 POI Varoituslaskuri + Ajon markerit
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.17 POI massatuonti + modaali-editori + karttamuokkaus
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.16-poi-alerts'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.17-poi-import-modal'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

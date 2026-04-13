@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.16 POI ALERT COUNTDOWN + DRIVE MARKERS)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.17 POI IMPORT + MODAL EDITOR + MAP EDIT)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,17 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>📍 UUTTA v6.17: Nopeuskameratiedostojen tuonti + POI-modaali + karttamuokkaus:</strong>
+                        <ul>
+                            <li><strong>⬆ Tuo nopeuskamerat (CSV/SVC)</strong> Asetuksista (lon,lat korjataan automaattisesti).</li>
+                            <li><strong>🔎 Haku + suodatus + lähimmät</strong> POI-listaan (ei kasva loputtomaksi).</li>
+                            <li><strong>🗺️ Kartalta muokkaa/poista</strong> POI suoraan klikkaamalla.</li>
+                            <li><strong>🧾 Koordinaatit yhteen kenttään</strong> (geokätköilymuoto tai CSV-tyyli).</li>
+                        </ul>
+
                         <strong>📍 UUTTA v6.16: Paikkamerkinnät (POI) + Varoitukset + Ajon markerit:</strong>
                         <p>Voit tallentaa kartalle pysyviä paikkamerkintöjä (esim. nopeuskamerat) ja saada lähestyessä varoituksen. Lisäksi voit merkitä ajon aikana reitille omia muistiinpisteitä (ajokohtaiset markerit).</p>
                         <ul>
@@ -382,10 +390,18 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
-                        <strong>📍 NEW in v6.16: POIs + Alerts + Drive Markers:</strong>
+                        <strong>📍 NEW in v6.17: Speed camera import + POI modal editor + map edit:</strong>
+                        <ul>
+                            <li><strong>⬆ Import speed cameras (CSV/SVC)</strong> from Settings (lon,lat is auto-fixed).</li>
+                            <li><strong>🔎 Search + filter + nearby</strong> in the POI list (scales to large imports).</li>
+                            <li><strong>�️ Edit/Delete on map</strong> by tapping a POI.</li>
+                            <li><strong>🧾 Paste coordinates in one field</strong> (geocaching format or CSV style).</li>
+                        </ul>
+
+                        <strong>�📍 NEW in v6.16: POIs + Alerts + Drive Markers:</strong>
                         <p>You can save permanent Points of Interest (POIs) on the map (for example speed cameras) and get a live distance warning when approaching. You can also add per-drive markers during a recording (notes along the route).</p>
                         <ul>
                             <li><strong>📌 POI (permanent)</strong> is saved to Firebase and is always visible on the map.</li>
@@ -753,9 +769,17 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>📍 MỚI v6.17: Nhập camera tốc độ + POI modal + chỉnh sửa trên bản đồ:</strong>
+                        <ul>
+                            <li><strong>⬆ Nhập camera tốc độ (CSV/SVC)</strong> trong Cài đặt (tự sửa lon,lat).</li>
+                            <li><strong>🔎 Tìm kiếm + lọc + gần nhất</strong> trong danh sách POI.</li>
+                            <li><strong>🗺️ Sửa/Xóa trên bản đồ</strong> khi bấm vào POI.</li>
+                            <li><strong>🧾 Dán tọa độ 1 ô</strong> (dạng geocache hoặc CSV).</li>
+                        </ul>
+
                         <strong>📍 MỚI v6.16: POI (Điểm đánh dấu) + Cảnh báo + Marker cho từng chuyến:</strong>
                         <p>Bạn có thể lưu các điểm POI cố định trên bản đồ (ví dụ: camera tốc độ) và nhận cảnh báo hiển thị khoảng cách (mét) giảm dần khi tiến gần. Ngoài ra, trong lúc ghi chuyến đi, bạn có thể tạo marker (ghi chú) cho riêng chuyến đó.</p>
                         <ul>

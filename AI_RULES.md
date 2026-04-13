@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.16 (POI Alerts Countdown + Drive Markers)
+**Versio:** v6.17 (POI massatuonti + POI-modaali + karttamuokkaus)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -73,7 +73,7 @@ nopeusnaytto-main/
 ### **Versionhallinta:**
 1. **APP_VERSION** globals.js:ssä
 2. **Versiohistoria** help.js:ssä (3 kielellä)
-3. **Service Worker** päivitetään jokaisella versiolla
+3. **Service Worker** päivitetään jokaisella versiolla (CACHE_NAME + sw.js?v=APP_VERSION)
 
 ---
 
@@ -103,14 +103,25 @@ nopeusnaytto-main/
 - ✅ Ajon aikainen "📌 MERKKAA"-nappi → tallentaa markerit ajotietueeseen
 - ✅ Markerit näkyvät historiakartan reittinäkymässä
 
+### **v6.17 - POI massatuonti + POI-modaali + karttamuokkaus**
+- ✅ Nopeuskamerien massatuonti CSV/SVC-tiedostoista (lon,lat → lat,lng automaattisesti)
+- ✅ Tuonnissa tiedostonimi lisätään POI:n nimeen (hakua varten): `FIFI40 - ...`
+- ✅ Tuonnissa deduplikointi/upsert (uudelleentuonti ei tuplaa; pienet koordinaattimuutokset päivitetään)
+- ✅ POI-lista skaalautuvaksi: haku + tyypin suodatus + "Näytä lisää" + "Lähimmät" (GPS)
+- ✅ POI-muokkaus mobiiliystävällisellä modaalilla (kaikki kentät kerralla)
+- ✅ Kartalta POI:n muokkaus/poisto suoraan popupista
+- ✅ Koordinaattien syöttö yhdellä kentällä: geokätköilymuoto tai CSV-tyyli
+- ✅ Nopeuskamerat pois käytöstä kävely- ja pyörätilassa (ei hälytyksiä, ei kartalla)
+- ✅ POI-hälytykseen äänimerkki (POI-kohtainen `beepEnabled`)
+
 ---
 
 ## 🎯 **JATKO-KEHITYSTEHTÄVÄT**
 
 ### **Välittömät:**
-1. **Päivitä help.js** - lisää v6.14 versiohistoriaan
-2. **Päivitä sw.js** - uusi versio Service Workeriin
-3. **Testaa** uudet visuaaliset ominaisuudet
+1. **Testaa** nopeuskamera-POI hälytyksen luotettavuus eri laitteilla (heading/nopeus)
+2. **Optimoi** massatuonnin suorituskyky tarvittaessa (suuret määrät)
+3. **Testaa** PWA-päivitys mobiilissa (Service Worker)
 
 ### **Tulevaisuudessa:**
 1. **Dynaaminen tausta** (reittiviiva, sääanimaatiot)
@@ -151,6 +162,7 @@ Kentät (suositus):
 - `alertEnabled` (boolean)
 - `alertRadiusM` (number)
 - `cooldownSec` (number)
+- `beepEnabled` (boolean)
 - `createdAt` (number)
 - `updatedAt` (number)
 
@@ -185,7 +197,7 @@ Marker-objekti:
 1. **Tee muutokset** koodiin
 2. **Päivitä versio** (globals.js)
 3. **Päivitä help.js** (versiohistoria)
-4. **Päivitä sw.js** (uusi cache-versio)
+4. **Päivitä sw.js** (uusi cache-versio / CACHE_NAME)
 5. **Testaa** toiminnallisuus
 6. **Aja varmuuskopioi.bat**
 7. **Aja vie_githubiin.bat**
@@ -199,6 +211,7 @@ Marker-objekti:
 - **Cache-versio** päivitettävä jokaisella pääversiolla
 - **Offline-toiminta** säilytettävä
 - **Pakotettu päivitys** uusille versioille
+ - Rekisteröinti tehdään muodossa `sw.js?v=APP_VERSION` ja kutsutaan `registration.update()`
 
 ### **Manifest (manifest.json):**
 - **Versiota** ei tarvitse päivittää jatkuvasti
