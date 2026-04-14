@@ -175,6 +175,7 @@ const btnPoiAddCoords = document.getElementById('btn-poi-add-coords');
 const btnPoiAddMap = document.getElementById('btn-poi-add-map');
 const btnPoiImportCameras = document.getElementById('btn-poi-import-cameras');
 const inpPoiImportCameras = document.getElementById('inp-poi-import-cameras');
+const togglePoiDebug = document.getElementById('toggle-poi-debug');
 const poiSearchEl = document.getElementById('poi-search');
 const poiFilterTypeEl = document.getElementById('poi-filter-type');
 const btnPoiShowMore = document.getElementById('btn-poi-show-more');
@@ -1441,6 +1442,16 @@ if (toggleCompact) {
     });
 }
 
+// 3.5 POI DEBUG (näytä hylkäyssyyt toastina)
+if (togglePoiDebug) {
+    togglePoiDebug.addEventListener('change', (e) => {
+        try {
+            localStorage.setItem('poiDebug', e.target.checked ? '1' : '0');
+        } catch (err) {}
+        if (typeof showToast === 'function') showToast(e.target.checked ? 'POI debug: PÄÄLLÄ' : 'POI debug: POIS');
+    });
+}
+
 // 4. KM-KORVAUS (UUSI v6.10)
 if (inputPricePerKm) {
     inputPricePerKm.addEventListener('change', () => {
@@ -1525,6 +1536,12 @@ window.addEventListener('DOMContentLoaded', () => {
         if(logList) logList.classList.add('compact');
         if(toggleCompact) toggleCompact.checked = true;
     }
+
+    // POI debug
+    try {
+        const savedPoiDebug = localStorage.getItem('poiDebug');
+        if (togglePoiDebug) togglePoiDebug.checked = (savedPoiDebug === '1');
+    } catch (e) {}
     
     // Lataa km-hinta
     const savedPrice = localStorage.getItem('pricePerKm');

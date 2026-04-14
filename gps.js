@@ -649,32 +649,40 @@ function poiDebug(msg) {
 
 function poiQualifies(poi, lat, lng, heading, speedKmh) {
     const alertEnabled = (poi.alertEnabled === true || poi.alertEnabled === 1 || poi.alertEnabled === '1' || String(poi.alertEnabled).toLowerCase() === 'true');
-    if (!alertEnabled) return false;
+    if (!alertEnabled) {
+        poiDebug(`POI ei kelpaa (alertEnabled off): ${getPoiLabel(poi)}`);
+        return false;
+    }
 
     const poiType = String(poi.type || 'other').trim().toLowerCase();
 
     // Nopeuskamerat pois käytöstä kävely- ja pyörätilassa
     if (poiType === 'speedcamera' && (currentCarType === 'walking' || currentCarType === 'bike')) {
+        poiDebug(`Nopeuskamera ei kelpaa (kulkutyyppi ${currentCarType})`);
         return false;
     }
 
     const poiLat = (typeof poi.lat === 'number') ? poi.lat : parseFloat(poi.lat);
     const poiLng = (typeof poi.lng === 'number') ? poi.lng : parseFloat(poi.lng);
-    if (!isFinite(poiLat) || !isFinite(poiLng)) return false;
+    if (!isFinite(poiLat) || !isFinite(poiLng)) {
+        poiDebug(`POI ei kelpaa (koordinaatit virhe): ${getPoiLabel(poi)}`);
+        return false;
+    }
 
     const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
     const distM = getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000;
     if (distM > radiusM) {
+        poiDebug(`POI ei kelpaa (säde): ${getPoiLabel(poi)} ${Math.round(distM)}m > ${radiusM}m`);
         return false;
     }
 
     // Nopeuskamera: suunnan mukaan, jos heading on saatavilla
     // HUOM: heading on monilla laitteilla epäluotettava hitaassa vauhdissa, joten käytetään suodatusta vain liikkeessä.
-    const useHeading = (typeof speedKmh === 'number' && speedKmh >= 8);
+    const useHeading = (typeof speedKmh === 'number' && speedKmh >= 20);
     if ((poiType === 'speedcamera') && useHeading && (heading !== null) && (!isNaN(heading))) {
         const bearingToPoi = calculateBearing(lat, lng, poiLat, poiLng);
         const diff = angularDiffDeg(heading, bearingToPoi);
-        if (diff > 70) {
+        if (diff > 110) {
             poiDebug(`Nopeuskamera ei kelpaa (suunta): diff ${Math.round(diff)}° (head ${Math.round(heading)}°)`);
             return false;
         }
@@ -700,6 +708,8 @@ function updateActivePoiToast(poi, lat, lng, now) {
     const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
     const cooldownSec = Math.max(0, parseInt(poi.cooldownSec || 180, 10));
 
+    const poiType = String(poi.type || 'other').trim().toLowerCase();
+
     const poiLat = (typeof poi.lat === 'number') ? poi.lat : parseFloat(poi.lat);
     const poiLng = (typeof poi.lng === 'number') ? poi.lng : parseFloat(poi.lng);
     if (!isFinite(poiLat) || !isFinite(poiLng)) return;
@@ -707,14 +717,15 @@ function updateActivePoiToast(poi, lat, lng, now) {
     const distM = Math.max(0, Math.min(radiusM, getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000));
 
     // Tallennetaan pienin saavutettu etäisyys ja poistetaan varoitus, jos ohituksen jälkeen etäisyys kasvaa selvästi.
-    if (activePoiAlert) {
+    // Tätä käytetään vain nopeuskameralle (muut POI-tyypit voivat näkyä myös poispäin ajettaessa).
+    if (activePoiAlert && poiType === 'speedcamera') {
         if (typeof activePoiAlert.minDistM !== 'number' || activePoiAlert.minDistM === null) {
             activePoiAlert.minDistM = distM;
         } else {
             if (distM < activePoiAlert.minDistM) activePoiAlert.minDistM = distM;
 
             // Ohitusheuristiikka: jos oltiin jo lähellä ja nyt kasvaa selvästi, lopetetaan varoitus.
-            if (activePoiAlert.minDistM < 80 && distM > activePoiAlert.minDistM + 25) {
+            if (activePoiAlert.minDistM < 120 && distM > activePoiAlert.minDistM + 25) {
                 activePoiAlert = null;
                 if (typeof hidePersistentToast === 'function') hidePersistentToast();
                 return;
