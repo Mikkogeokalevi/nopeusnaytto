@@ -65,6 +65,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     const requestUrl = new URL(event.request.url);
 
+    // Päivitysten kannalta tärkeää: HTML/navigointi haetaan ensisijaisesti verkosta,
+    // jotta asennettu PWA ei jää "jumiin" vanhaan index.html:ään.
+    const isNavigation = event.request.mode === 'navigate';
+    const acceptHeader = event.request.headers.get('accept') || '';
+    const isHtml = isNavigation || acceptHeader.includes('text/html');
+
     // --- TÄRKEÄ KORJAUS IPHONE/FIREBASE LOGINILLE ---
     // Jos pyyntö menee Googlelle tai Firebaselle, ohita välimuisti kokonaan.
     // Tämä estää "AuthError / network-request-failed" -virheen.
@@ -78,16 +84,31 @@ self.addEventListener('fetch', (event) => {
     }
     // -----------------------------------------------
 
+    // HTML: network-first + päivitä cache
+    if (isHtml) {
+        event.respondWith(
+            fetch(event.request, { cache: 'no-store' })
+                .then((response) => {
+                    const copy = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, copy);
+                    });
+                    return response;
+                })
+                .catch(() => {
+                    return caches.match(event.request).then((r) => r || caches.match('./index.html'));
+                })
+        );
+        return;
+    }
+
+    // Muut resurssit: cache-first
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
-                // Palauta välimuistista jos löytyy, muuten hae verkosta
-                if (response) {
-                    return response;
-                }
+                if (response) return response;
                 return fetch(event.request).catch(() => {
-                    // Jos verkkopyyntö epäonnistuu (esim. offline), ei tehdä mitään erityistä
-                    // tai palautetaan offline-sivu jos sellainen olisi.
+                    // offline
                 });
             })
     );
