@@ -42,24 +42,39 @@ window.playPoiAlertBeep = function() {
 
     const ctx = window.ensurePoiAudioContext();
     if (!ctx) return;
-    if (ctx.state !== 'running') return;
 
+    const play = () => {
+        try {
+            if (!ctx || ctx.state !== 'running') return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = 880;
+            gain.gain.value = 0.0001;
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            const t0 = ctx.currentTime;
+            gain.gain.setValueAtTime(0.0001, t0);
+            gain.gain.exponentialRampToValueAtTime(0.12, t0 + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+
+            osc.start(t0);
+            osc.stop(t0 + 0.2);
+        } catch (e) {
+            // ignore
+        }
+    };
+
+    // Samsung/iOS PWA: audio voi jäädä "suspended" ellei sitä avata käyttäjän eleessä.
+    if (ctx.state === 'running') {
+        play();
+        return;
+    }
     try {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = 880;
-        gain.gain.value = 0.0001;
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        const t0 = ctx.currentTime;
-        gain.gain.setValueAtTime(0.0001, t0);
-        gain.gain.exponentialRampToValueAtTime(0.12, t0 + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
-
-        osc.start(t0);
-        osc.stop(t0 + 0.2);
+        ctx.resume().then(() => {
+            play();
+        }).catch(() => {});
     } catch (e) {
         // ignore
     }
@@ -72,6 +87,8 @@ const btnActivate = document.getElementById('btn-activate-gps');
 if (btnActivate) {
     btnActivate.addEventListener('click', () => {
         if (!isGPSActive) {
+            // Avataan POI-äänikonteksti varmasti käyttäjän eleestä (PWA/Samsung)
+            if (typeof window.ensurePoiAudioContext === 'function') window.ensurePoiAudioContext();
             startGPS();
             
             // Käynnistetään taustaääni heti käyttäjän interaktiosta
@@ -636,6 +653,11 @@ function poiDebug(msg) {
     try {
         if (localStorage.getItem('poiDebug') !== '1') return;
         console.log('[POI]', msg);
+
+        if (typeof window.appendPoiDebugLog === 'function') {
+            window.appendPoiDebugLog(msg);
+        }
+
         // Kevyt throttlaus, ettei spämmää
         const last = parseInt(localStorage.getItem('poiDebugLast') || '0', 10) || 0;
         const now = Date.now();
@@ -672,7 +694,11 @@ function poiQualifies(poi, lat, lng, heading, speedKmh) {
     const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
     const distM = getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000;
     if (distM > radiusM) {
-        poiDebug(`POI ei kelpaa (säde): ${getPoiLabel(poi)} ${Math.round(distM)}m > ${radiusM}m`);
+        // Debuggaus: älä spämmää "säde"-hylkäystä kilometrien päästä, se on harhaanjohtavaa.
+        // Näytetään vain jos ollaan kohtuullisen lähellä POI:ta.
+        if (distM <= Math.max(800, radiusM * 3)) {
+            poiDebug(`POI ei kelpaa (säde): ${getPoiLabel(poi)} ${Math.round(distM)}m > ${radiusM}m`);
+        }
         return false;
     }
 
@@ -716,22 +742,9 @@ function updateActivePoiToast(poi, lat, lng, now) {
 
     const distM = Math.max(0, Math.min(radiusM, getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000));
 
-    // Tallennetaan pienin saavutettu etäisyys ja poistetaan varoitus, jos ohituksen jälkeen etäisyys kasvaa selvästi.
-    // Tätä käytetään vain nopeuskameralle (muut POI-tyypit voivat näkyä myös poispäin ajettaessa).
-    if (activePoiAlert && poiType === 'speedcamera') {
-        if (typeof activePoiAlert.minDistM !== 'number' || activePoiAlert.minDistM === null) {
-            activePoiAlert.minDistM = distM;
-        } else {
-            if (distM < activePoiAlert.minDistM) activePoiAlert.minDistM = distM;
-
-            // Ohitusheuristiikka: jos oltiin jo lähellä ja nyt kasvaa selvästi, lopetetaan varoitus.
-            if (activePoiAlert.minDistM < 120 && distM > activePoiAlert.minDistM + 25) {
-                activePoiAlert = null;
-                if (typeof hidePersistentToast === 'function') hidePersistentToast();
-                return;
-            }
-        }
-    }
+    // HUOM: Speedcamera-spesifi "näytä vain kun matka pienenee" -heuristiikka poistettu toistaiseksi,
+    // koska se voi estää hälytyksen kokonaan joillain laitteilla (GPS/heading jitter).
+    // Nyt hälytys toimii kuten muut POI:t: näkyy säteen sisällä ja katoaa kun poistutaan säteeltä.
 
     // Päivitetään näyttö max ~1x/sek (säästää vähän)
     if (activePoiAlert && activePoiAlert.lastShownAt && (now - activePoiAlert.lastShownAt) < 800) {

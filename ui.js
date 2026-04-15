@@ -176,11 +176,18 @@ const btnPoiAddMap = document.getElementById('btn-poi-add-map');
 const btnPoiImportCameras = document.getElementById('btn-poi-import-cameras');
 const inpPoiImportCameras = document.getElementById('inp-poi-import-cameras');
 const togglePoiDebug = document.getElementById('toggle-poi-debug');
+const btnPoiDebugLog = document.getElementById('btn-poi-debug-log');
 const poiSearchEl = document.getElementById('poi-search');
 const poiFilterTypeEl = document.getElementById('poi-filter-type');
 const btnPoiShowMore = document.getElementById('btn-poi-show-more');
 const btnPoiShowAll = document.getElementById('btn-poi-show-all');
 const btnPoiNearby = document.getElementById('btn-poi-nearby');
+
+const poiDebugLogModal = document.getElementById('poi-debug-log-modal');
+const btnPoiDebugLogClose = document.getElementById('btn-poi-debug-log-close');
+const poiDebugLogTextEl = document.getElementById('poi-debug-log-text');
+const btnPoiDebugLogCopy = document.getElementById('btn-poi-debug-log-copy');
+const btnPoiDebugLogClear = document.getElementById('btn-poi-debug-log-clear');
 
 const poiModal = document.getElementById('poi-modal');
 const poiModalTitleEl = document.getElementById('poi-modal-title');
@@ -212,6 +219,70 @@ window.showToast = (msg, type = 'info') => {
     setTimeout(() => {
         toast.classList.remove('visible');
     }, 3000);
+}
+
+window.appendPoiDebugLog = (msg) => {
+    try {
+        const key = 'poiDebugLog';
+        const now = new Date();
+        const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+        const line = `[${ts}] ${String(msg || '')}`;
+
+        let arr = [];
+        try {
+            arr = JSON.parse(localStorage.getItem(key) || '[]');
+            if (!Array.isArray(arr)) arr = [];
+        } catch (e) {
+            arr = [];
+        }
+
+        arr.push(line);
+        if (arr.length > 80) arr = arr.slice(arr.length - 80);
+        localStorage.setItem(key, JSON.stringify(arr));
+    } catch (e) {
+        // ignore
+    }
+};
+
+function getPoiDebugLogText() {
+    try {
+        const arr = JSON.parse(localStorage.getItem('poiDebugLog') || '[]');
+        if (!Array.isArray(arr)) return '';
+        return arr.join('\n');
+    } catch (e) {
+        return '';
+    }
+}
+
+function refreshPoiDebugLogModal() {
+    if (!poiDebugLogTextEl) return;
+    poiDebugLogTextEl.value = getPoiDebugLogText();
+}
+
+async function copyTextToClipboard(text) {
+    const t = String(text || '');
+    if (!t) return false;
+
+    try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            await navigator.clipboard.writeText(t);
+            return true;
+        }
+    } catch (e) {
+        // fallback below
+    }
+
+    try {
+        if (poiDebugLogTextEl) {
+            poiDebugLogTextEl.focus();
+            poiDebugLogTextEl.select();
+            const ok = document.execCommand('copy');
+            return !!ok;
+        }
+    } catch (e) {
+        // ignore
+    }
+    return false;
 }
 
 function parsePoiCoordsInput(input) {
@@ -1449,6 +1520,35 @@ if (togglePoiDebug) {
             localStorage.setItem('poiDebug', e.target.checked ? '1' : '0');
         } catch (err) {}
         if (typeof showToast === 'function') showToast(e.target.checked ? 'POI debug: PÄÄLLÄ' : 'POI debug: POIS');
+    });
+}
+
+if (btnPoiDebugLog) {
+    btnPoiDebugLog.addEventListener('click', () => {
+        refreshPoiDebugLogModal();
+        if (poiDebugLogModal) poiDebugLogModal.style.display = 'flex';
+    });
+}
+
+if (btnPoiDebugLogClose) {
+    btnPoiDebugLogClose.addEventListener('click', () => {
+        if (poiDebugLogModal) poiDebugLogModal.style.display = 'none';
+    });
+}
+
+if (btnPoiDebugLogClear) {
+    btnPoiDebugLogClear.addEventListener('click', () => {
+        try { localStorage.removeItem('poiDebugLog'); } catch (e) {}
+        refreshPoiDebugLogModal();
+        if (typeof showToast === 'function') showToast('POI debug -loki tyhjennetty');
+    });
+}
+
+if (btnPoiDebugLogCopy) {
+    btnPoiDebugLogCopy.addEventListener('click', async () => {
+        const txt = getPoiDebugLogText();
+        const ok = await copyTextToClipboard(txt);
+        if (typeof showToast === 'function') showToast(ok ? 'Kopioitu leikepöydälle' : 'Kopiointi ei onnistunut (voit valita tekstin käsin)');
     });
 }
 

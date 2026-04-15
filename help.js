@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.17 POI IMPORT + MODAL EDITOR + MAP EDIT)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.18 POI ALERT RELIABILITY + PWA UPDATE)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,7 +9,7 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
                         <strong>📍 UUTTA v6.17: Nopeuskameratiedostojen tuonti + POI-modaali + karttamuokkaus:</strong>
@@ -390,7 +390,7 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
                         <strong>📍 NEW in v6.17: Speed camera import + POI modal editor + map edit:</strong>
@@ -401,7 +401,7 @@ const helpData = {
                             <li><strong>🧾 Paste coordinates in one field</strong> (geocaching format or CSV style).</li>
                         </ul>
 
-                        <strong>�📍 NEW in v6.16: POIs + Alerts + Drive Markers:</strong>
+                        <strong>�� NEW in v6.16: POIs + Alerts + Drive Markers:</strong>
                         <p>You can save permanent Points of Interest (POIs) on the map (for example speed cameras) and get a live distance warning when approaching. You can also add per-drive markers during a recording (notes along the route).</p>
                         <ul>
                             <li><strong>📌 POI (permanent)</strong> is saved to Firebase and is always visible on the map.</li>
@@ -769,7 +769,7 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
                         <strong>📍 MỚI v6.17: Nhập camera tốc độ + POI modal + chỉnh sửa trên bản đồ:</strong>
