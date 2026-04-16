@@ -563,6 +563,7 @@ function updatePosition(position) {
         }
     }
     
+    const prevLatLng = lastLatLng ? { lat: lastLatLng.lat, lng: lastLatLng.lng } : null;
     if (!lastLatLng || speedKmh > 0 || isGPSActive) {
         lastLatLng = { lat, lng };
         const newLatLng = new L.LatLng(lat, lng);
@@ -603,20 +604,20 @@ function updatePosition(position) {
     // =========================================================
     if (currentUser && Array.isArray(poiData) && poiData.length > 0) {
         try {
-            checkPoiAlerts(lat, lng, heading, speedKmh);
+            checkPoiAlerts(lat, lng, heading, speedKmh, prevLatLng);
         } catch (e) {
             // Ei kaadeta GPS-loopia
         }
     }
 }
 
-function checkPoiAlerts(lat, lng, heading, speedKmh) {
+function checkPoiAlerts(lat, lng, heading, speedKmh, prevLatLng) {
     const now = Date.now();
 
     // 1) Jos meillä on aktiivinen varoitus, pidetään se kunnes se ei enää kelpaa
     if (activePoiAlert && activePoiAlert.id) {
         const existing = poiData.find(p => p && p.id === activePoiAlert.id);
-        const ok = existing && poiQualifies(existing, lat, lng, heading, speedKmh);
+        const ok = existing && poiQualifies(existing, lat, lng, heading, speedKmh, prevLatLng);
         if (ok) {
             updateActivePoiToast(existing, lat, lng, now);
             return;
@@ -632,7 +633,7 @@ function checkPoiAlerts(lat, lng, heading, speedKmh) {
 
     for (const poi of poiData) {
         if (!poi || !poi.id) continue;
-        if (!poiQualifies(poi, lat, lng, heading, speedKmh)) continue;
+        if (!poiQualifies(poi, lat, lng, heading, speedKmh, prevLatLng)) continue;
 
         const distM = getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng) * 1000;
         if (distM < bestDistM) {
@@ -649,27 +650,7 @@ function checkPoiAlerts(lat, lng, heading, speedKmh) {
     }
 }
 
-function poiDebug(msg) {
-    try {
-        if (localStorage.getItem('poiDebug') !== '1') return;
-        console.log('[POI]', msg);
-
-        if (typeof window.appendPoiDebugLog === 'function') {
-            window.appendPoiDebugLog(msg);
-        }
-
-        // Kevyt throttlaus, ettei spämmää
-        const last = parseInt(localStorage.getItem('poiDebugLast') || '0', 10) || 0;
-        const now = Date.now();
-        if (now - last < 3000) return;
-        localStorage.setItem('poiDebugLast', String(now));
-        if (typeof showToast === 'function') showToast(msg);
-    } catch (e) {
-        // ignore
-    }
-}
-
-function poiQualifies(poi, lat, lng, heading, speedKmh) {
+function poiQualifies(poi, lat, lng, heading, speedKmh, prevLatLng) {
     const alertEnabled = (poi.alertEnabled === true || poi.alertEnabled === 1 || poi.alertEnabled === '1' || String(poi.alertEnabled).toLowerCase() === 'true');
     if (!alertEnabled) {
         poiDebug(`POI ei kelpaa (alertEnabled off): ${getPoiLabel(poi)}`);
@@ -693,11 +674,18 @@ function poiQualifies(poi, lat, lng, heading, speedKmh) {
 
     const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
     const distM = getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000;
-    if (distM > radiusM) {
+    let segMinDistM = Infinity;
+    let prevDistM = Infinity;
+    if (prevLatLng && typeof prevLatLng.lat === 'number' && typeof prevLatLng.lng === 'number') {
+        prevDistM = getDistanceFromLatLonInKm(prevLatLng.lat, prevLatLng.lng, poiLat, poiLng) * 1000;
+        segMinDistM = pointToSegmentDistanceMeters(prevLatLng.lat, prevLatLng.lng, lat, lng, poiLat, poiLng);
+    }
+    const bestDistM = Math.min(distM, prevDistM, segMinDistM);
+    if (bestDistM > radiusM) {
         // Debuggaus: älä spämmää "säde"-hylkäystä kilometrien päästä, se on harhaanjohtavaa.
         // Näytetään vain jos ollaan kohtuullisen lähellä POI:ta.
-        if (distM <= Math.max(800, radiusM * 3)) {
-            poiDebug(`POI ei kelpaa (säde): ${getPoiLabel(poi)} ${Math.round(distM)}m > ${radiusM}m`);
+        if (bestDistM <= Math.max(800, radiusM * 3)) {
+            poiDebug(`POI ei kelpaa (säde): ${getPoiLabel(poi)} cur ${Math.round(distM)}m, prev ${isFinite(prevDistM)?Math.round(prevDistM):'-'}m, seg ${isFinite(segMinDistM)?Math.round(segMinDistM):'-'}m > ${radiusM}m`);
         }
         return false;
     }
@@ -989,6 +977,52 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
             Math.sin(dLon/2)*Math.sin(dLon/2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c; 
+}
+
+function calculateBearing(lat1, lon1, lat2, lon2) {
+    const toRad = (d) => d * (Math.PI / 180);
+    const toDeg = (r) => r * (180 / Math.PI);
+    const φ1 = toRad(lat1);
+    const φ2 = toRad(lat2);
+    const Δλ = toRad(lon2 - lon1);
+    const y = Math.sin(Δλ) * Math.cos(φ2);
+    const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+    const θ = Math.atan2(y, x);
+    return (toDeg(θ) + 360) % 360;
+}
+
+function angularDiffDeg(a, b) {
+    const da = ((a - b) % 360 + 360) % 360;
+    return da > 180 ? 360 - da : da;
+}
+
+function pointToSegmentDistanceMeters(lat1, lon1, lat2, lon2, plat, plon) {
+    const R = 6371000;
+    const toRad = (d) => d * (Math.PI / 180);
+    const φm = toRad((lat1 + lat2 + plat) / 3);
+    const x1 = toRad(lon1) * Math.cos(φm) * R;
+    const y1 = toRad(lat1) * R;
+    const x2 = toRad(lon2) * Math.cos(φm) * R;
+    const y2 = toRad(lat2) * R;
+    const xp = toRad(plon) * Math.cos(φm) * R;
+    const yp = toRad(plat) * R;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len2 = dx * dx + dy * dy;
+    if (!isFinite(len2) || len2 <= 0) {
+        const ddx = xp - x1;
+        const ddy = yp - y1;
+        return Math.sqrt(ddx * ddx + ddy * ddy);
+    }
+    let t = ((xp - x1) * dx + (yp - y1) * dy) / len2;
+    if (t < 0) t = 0;
+    if (t > 1) t = 1;
+    const xc = x1 + t * dx;
+    const yc = y1 + t * dy;
+    const ddx = xp - xc;
+    const ddy = yp - yc;
+    return Math.sqrt(ddx * ddx + ddy * ddy);
 }
 
 function toGeocacheFormat(deg, isLat) {
