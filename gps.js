@@ -643,10 +643,33 @@ function checkPoiAlerts(lat, lng, heading, speedKmh, prevLatLng) {
     }
 
     if (best) {
-        activePoiAlert = { id: best.id, startedAt: now, lastShownAt: 0, minDistM: null };
+        activePoiAlert = { id: best.id, startedAt: now, lastShownAt: 0, minDistM: null, lastDistM: null };
         updateActivePoiToast(best, lat, lng, now);
     } else {
         if (typeof hidePersistentToast === 'function') hidePersistentToast();
+    }
+}
+
+function poiDebug(msg) {
+    try {
+        const enabled = String(localStorage.getItem('poiDebug') || '').toLowerCase();
+        if (!(enabled === '1' || enabled === 'true' || enabled === 'on')) return;
+
+        const text = String(msg || '');
+        console.log('[POI]', text);
+
+        if (typeof window.appendPoiDebugLog === 'function') {
+            window.appendPoiDebugLog(text);
+        }
+
+        // Kevyt throttlaus toastille, mutta lokiin lisätään aina
+        const last = parseInt(localStorage.getItem('poiDebugLast') || '0', 10) || 0;
+        const now = Date.now();
+        if (now - last < 2500) return;
+        localStorage.setItem('poiDebugLast', String(now));
+        if (typeof showToast === 'function') showToast(text);
+    } catch (e) {
+        // ignore
     }
 }
 
@@ -690,6 +713,15 @@ function poiQualifies(poi, lat, lng, heading, speedKmh, prevLatLng) {
         return false;
     }
 
+    // Näytetään varoitus vain lähestyessä (ei kun etäännytään POI:sta).
+    // Lisätään pieni hystereesi GPS-jitteriin.
+    if (isFinite(prevDistM) && (typeof speedKmh === 'number') && speedKmh > 5) {
+        if (distM > prevDistM + 8) {
+            poiDebug(`POI ei kelpaa (loittoneminen): ${getPoiLabel(poi)} prev ${Math.round(prevDistM)}m -> cur ${Math.round(distM)}m`);
+            return false;
+        }
+    }
+
     // Nopeuskamera: suunnan mukaan, jos heading on saatavilla
     // HUOM: heading on monilla laitteilla epäluotettava hitaassa vauhdissa, joten käytetään suodatusta vain liikkeessä.
     const useHeading = (typeof speedKmh === 'number' && speedKmh >= 20);
@@ -728,7 +760,32 @@ function updateActivePoiToast(poi, lat, lng, now) {
     const poiLng = (typeof poi.lng === 'number') ? poi.lng : parseFloat(poi.lng);
     if (!isFinite(poiLat) || !isFinite(poiLng)) return;
 
-    const distM = Math.max(0, Math.min(radiusM, getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000));
+    const distM = Math.max(0, getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000);
+
+    // Jos poistuttiin säteeltä, piilotetaan heti (ei jää roikkumaan).
+    if (distM > radiusM) {
+        activePoiAlert = null;
+        if (typeof hidePersistentToast === 'function') hidePersistentToast();
+        return;
+    }
+
+    // Lähestyminen-only aktiiviselle hälytykselle: kun etäisyys alkaa kasvaa selvästi
+    // lähimmän pisteen jälkeen, suljetaan toast heti.
+    if (activePoiAlert) {
+        const prevMin = (typeof activePoiAlert.minDistM === 'number') ? activePoiAlert.minDistM : null;
+        const prevLast = (typeof activePoiAlert.lastDistM === 'number') ? activePoiAlert.lastDistM : null;
+        if (prevMin === null || distM < prevMin) activePoiAlert.minDistM = distM;
+
+        const minDist = (typeof activePoiAlert.minDistM === 'number') ? activePoiAlert.minDistM : distM;
+        const movingAway = (prevLast !== null) && (distM > prevLast + 6) && (distM > minDist + 12);
+        activePoiAlert.lastDistM = distM;
+
+        if (movingAway) {
+            activePoiAlert = null;
+            if (typeof hidePersistentToast === 'function') hidePersistentToast();
+            return;
+        }
+    }
 
     // HUOM: Speedcamera-spesifi "näytä vain kun matka pienenee" -heuristiikka poistettu toistaiseksi,
     // koska se voi estää hälytyksen kokonaan joillain laitteilla (GPS/heading jitter).
