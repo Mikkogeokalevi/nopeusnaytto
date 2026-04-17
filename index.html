@@ -466,6 +466,24 @@
                             Vihje: jos hälytys ei kuulu kunnolla, nosta tämä ensin 70-100%:iin.
                         </div>
 
+                        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+                            <div style="flex:1; min-width:200px;">
+                                <label style="display:block; margin-bottom:6px;">POI herkkyys</label>
+                                <select id="settings-poi-sensitivity" class="subject-input" style="width:100%;">
+                                    <option value="strict">Varma (vähemmän hälytyksiä)</option>
+                                    <option value="normal">Normaali</option>
+                                    <option value="sensitive">Herkkä (enemmän hälytyksiä)</option>
+                                </select>
+                            </div>
+                            <div style="flex:1; min-width:200px;">
+                                <label style="display:block; margin-bottom:6px;">Uudelleenhälytys vasta (m)</label>
+                                <input id="settings-poi-rearm-distance" class="subject-input" type="number" min="120" max="2500" step="10" value="400" />
+                            </div>
+                        </div>
+                        <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
+                            Nopeuskamera-POI käyttää lisäksi nopeusperusteista dynaamista sädettä (hitaassa pienempi, kovassa vauhdissa suurempi).
+                        </div>
+
                         <div style="margin-top:10px; display:grid; gap:8px;">
                             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 <label style="min-width:120px;">Nopeuskamera</label>
@@ -844,16 +862,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.21"></script>
-    <script src="visuals.js?v=6.21"></script>
-    <script src="ui.js?v=6.21"></script>
-    <script src="auth.js?v=6.21"></script>
-    <script src="map.js?v=6.21"></script>
-    <script src="gps.js?v=6.21"></script>
-    <script src="garage.js?v=6.21"></script>
-    <script src="history.js?v=6.21"></script>
-    <script src="help.js?v=6.21"></script>
+    <script src="globals.js?v=6.22"></script>
+    <script src="visuals.js?v=6.22"></script>
+    <script src="ui.js?v=6.22"></script>
+    <script src="auth.js?v=6.22"></script>
+    <script src="map.js?v=6.22"></script>
+    <script src="gps.js?v=6.22"></script>
+    <script src="garage.js?v=6.22"></script>
+    <script src="history.js?v=6.22"></script>
+    <script src="help.js?v=6.22"></script>
     
-    <script src="app.js?v=6.21"></script>
+    <script src="app.js?v=6.22"></script>
 </body>
 </html>

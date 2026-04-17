@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.21 ADAPTIVE GPS + POI REGRESSION)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.22 POI SENSITIVITY + RE-ARM + DYNAMIC RADIUS)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,16 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🎯 UUTTA v6.22: POI herkkyys + re-arm + dynaaminen nopeuskamerasäde:</strong>
+                        <ul>
+                            <li><strong>POI herkkyys</strong> (Varma / Normaali / Herkkä) säätää suunta- ja confidence-kynnystä.</li>
+                            <li><strong>Uudelleenhälytys vasta (m)</strong> estää saman POI:n turhat uusintahälytykset heti ohituksen jälkeen.</li>
+                            <li><strong>Nopeuskamera</strong> käyttää nyt nopeusperusteista dynaamista sädettä.</li>
+                        </ul>
+
                         <strong>🧭 UUTTA v6.21: adaptiivinen GPS-suodatus + POI regressiotesti:</strong>
                         <ul>
                             <li><strong>Nopeus ja suunta</strong> pehmennetään nyt GPS-tarkkuuden mukaan, mikä vähentää jitteriä.</li>
@@ -410,9 +417,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🎯 NEW in v6.22: POI sensitivity + re-arm + dynamic speedcamera radius:</strong>
+                        <ul>
+                            <li><strong>POI sensitivity</strong> (Strict / Normal / Sensitive) now adjusts heading and confidence thresholds.</li>
+                            <li><strong>Re-alert distance (m)</strong> prevents immediate duplicate alerts for the same POI after passing it.</li>
+                            <li><strong>Speed cameras</strong> now use a speed-based dynamic alert radius.</li>
+                        </ul>
+
                         <strong>🧭 NEW in v6.21: adaptive GPS filter + POI regression test:</strong>
                         <ul>
                             <li><strong>Speed and heading</strong> are now smoothed based on GPS accuracy to reduce jitter.</li>
@@ -809,9 +823,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🎯 MỚI v6.22: độ nhạy POI + re-arm + bán kính camera động:</strong>
+                        <ul>
+                            <li><strong>Độ nhạy POI</strong> (Strict / Normal / Sensitive) chỉnh ngưỡng hướng và confidence.</li>
+                            <li><strong>Khoảng cách cảnh báo lại (m)</strong> chặn cảnh báo lặp ngay sau khi vừa đi qua cùng POI.</li>
+                            <li><strong>Camera tốc độ</strong> dùng bán kính cảnh báo động theo tốc độ.</li>
+                        </ul>
+
                         <strong>🧭 MỚI v6.21: lọc GPS thích ứng + test hồi quy POI:</strong>
                         <ul>
                             <li><strong>Tốc độ và hướng</strong> được làm mượt theo độ chính xác GPS để giảm rung.</li>

@@ -20,6 +20,7 @@ var sessionStartDistance = 0;     // Mittarilukema tämän pätkän alussa
 var sessionPauseTime = 0;         // Tauot vain tämän pätkän aikana
 var sessionStartAddress = "";     // Tämän pätkän lähtöosoite
 var existingSessions = [];        // Lista aiemmista osamatkoista (jos continue)
+var poiRearmLocks = {};           // { [poiId]: tsMs } estää heti-uudelleenhälytyksen
 
 // GPS-signaalin pehmennys POI-logiikkaa varten
 var lastGpsAccuracyM = 30;
@@ -123,6 +124,81 @@ function getPoiConfidenceScore(ctx) {
     }
 
     return clamp01(score);
+}
+
+function getPoiSensitivityMode() {
+    try {
+        const raw = String(localStorage.getItem('poiSensitivityMode') || 'normal').trim().toLowerCase();
+        if (raw === 'strict' || raw === 'sensitive' || raw === 'normal') return raw;
+    } catch (e) {
+        // ignore
+    }
+    return 'normal';
+}
+
+function getPoiSensitivityConfig() {
+    const mode = getPoiSensitivityMode();
+    if (mode === 'strict') {
+        return {
+            headingRejectDeg: 95,
+            speedcameraConfidence: 0.38,
+            otherConfidence: 0.29
+        };
+    }
+    if (mode === 'sensitive') {
+        return {
+            headingRejectDeg: 125,
+            speedcameraConfidence: 0.24,
+            otherConfidence: 0.2
+        };
+    }
+    return {
+        headingRejectDeg: 110,
+        speedcameraConfidence: 0.3,
+        otherConfidence: 0.24
+    };
+}
+
+function getPoiRearmDistanceM() {
+    try {
+        const raw = parseInt(localStorage.getItem('poiRearmDistanceM') || '400', 10);
+        if (!isFinite(raw)) return 400;
+        return Math.max(120, Math.min(2500, raw));
+    } catch (e) {
+        return 400;
+    }
+}
+
+function setPoiRearmLock(poiId) {
+    const id = String(poiId || '').trim();
+    if (!id) return;
+    poiRearmLocks[id] = Date.now();
+}
+
+function clearPoiRearmLock(poiId) {
+    const id = String(poiId || '').trim();
+    if (!id) return;
+    delete poiRearmLocks[id];
+}
+
+function getPoiEffectiveRadiusM(poiType, baseRadiusM, speedKmh) {
+    const base = Math.max(30, Number(baseRadiusM) || 350);
+    const type = String(poiType || 'other').trim().toLowerCase();
+    if (type !== 'speedcamera') return base;
+
+    const spd = Math.max(0, Number(speedKmh) || 0);
+    let factor = 1;
+    if (spd <= 30) {
+        factor = 0.88;
+    } else if (spd <= 80) {
+        factor = 0.88 + ((spd - 30) / 50) * 0.14; // 0.88 -> 1.02
+    } else if (spd <= 130) {
+        factor = 1.02 + ((spd - 80) / 50) * 0.34; // 1.02 -> 1.36
+    } else {
+        factor = 1.36;
+    }
+
+    return Math.max(30, Math.round(base * factor));
 }
 
 window.ensurePoiAudioContext = function() {
@@ -804,6 +880,7 @@ function checkPoiAlerts(lat, lng, heading, speedKmh, prevLatLng) {
             updateActivePoiToast(existing, lat, lng, now);
             return;
         } else {
+            setPoiRearmLock(activePoiAlert.id);
             activePoiAlert = null;
             if (typeof hidePersistentToast === 'function') hidePersistentToast();
         }
@@ -815,9 +892,24 @@ function checkPoiAlerts(lat, lng, heading, speedKmh, prevLatLng) {
 
     for (const poi of poiData) {
         if (!poi || !poi.id) continue;
+
+        const poiLat = (typeof poi.lat === 'number') ? poi.lat : parseFloat(poi.lat);
+        const poiLng = (typeof poi.lng === 'number') ? poi.lng : parseFloat(poi.lng);
+        if (!isFinite(poiLat) || !isFinite(poiLng)) continue;
+
+        const rearmDistM = getPoiRearmDistanceM();
+        const currDistM = getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000;
+        if (poiRearmLocks[poi.id]) {
+            if (currDistM < rearmDistM) {
+                poiDebug(`POI ei kelpaa (re-arm ${Math.round(currDistM)}m < ${rearmDistM}m): ${getPoiLabel(poi)}`);
+                continue;
+            }
+            clearPoiRearmLock(poi.id);
+        }
+
         if (!poiQualifies(poi, lat, lng, heading, speedKmh, prevLatLng)) continue;
 
-        const distM = getDistanceFromLatLonInKm(lat, lng, poi.lat, poi.lng) * 1000;
+        const distM = currDistM;
         if (distM < bestDistM) {
             best = poi;
             bestDistM = distM;
@@ -825,6 +917,7 @@ function checkPoiAlerts(lat, lng, heading, speedKmh, prevLatLng) {
     }
 
     if (best) {
+        clearPoiRearmLock(best.id);
         activePoiAlert = { id: best.id, startedAt: now, lastShownAt: 0, minDistM: null, lastDistM: null };
         updateActivePoiToast(best, lat, lng, now);
     } else {
@@ -877,7 +970,8 @@ function poiQualifies(poi, lat, lng, heading, speedKmh, prevLatLng) {
         return false;
     }
 
-    const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
+    const baseRadiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
+    const radiusM = getPoiEffectiveRadiusM(poiType, baseRadiusM, speedKmh);
     const distM = getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000;
     let segMinDistM = Infinity;
     let prevDistM = Infinity;
@@ -908,12 +1002,13 @@ function poiQualifies(poi, lat, lng, heading, speedKmh, prevLatLng) {
 
     // Nopeuskamera: suunnan mukaan, jos heading on saatavilla
     // HUOM: heading on monilla laitteilla epäluotettava hitaassa vauhdissa, joten käytetään suodatusta vain liikkeessä.
+    const sensitivityCfg = getPoiSensitivityConfig();
     const useHeading = (typeof speedKmh === 'number' && speedKmh >= 20);
     if ((poiType === 'speedcamera') && useHeading && (heading !== null) && (!isNaN(heading))) {
         const bearingToPoi = calculateBearing(lat, lng, poiLat, poiLng);
         headingDiff = angularDiffDeg(heading, bearingToPoi);
-        if (headingDiff > 110) {
-            poiDebug(`Nopeuskamera ei kelpaa (suunta): diff ${Math.round(headingDiff)}° (head ${Math.round(heading)}°)`);
+        if (headingDiff > sensitivityCfg.headingRejectDeg) {
+            poiDebug(`Nopeuskamera ei kelpaa (suunta): diff ${Math.round(headingDiff)}° > ${sensitivityCfg.headingRejectDeg}° (head ${Math.round(heading)}°)`);
             return false;
         }
     } else if (poiType === 'speedcamera' && !useHeading) {
@@ -931,7 +1026,7 @@ function poiQualifies(poi, lat, lng, heading, speedKmh, prevLatLng) {
         accM: lastGpsAccuracyM,
         headingDiffDeg: headingDiff
     });
-    const confidenceThreshold = (poiType === 'speedcamera') ? 0.3 : 0.24;
+    const confidenceThreshold = (poiType === 'speedcamera') ? sensitivityCfg.speedcameraConfidence : sensitivityCfg.otherConfidence;
     const veryCloseBy = bestDistM <= Math.max(20, radiusM * 0.35);
     if (!veryCloseBy && confidence < confidenceThreshold) {
         poiDebug(`POI ei kelpaa (confidence ${confidence.toFixed(2)} < ${confidenceThreshold.toFixed(2)}): ${getPoiLabel(poi)} d=${Math.round(distM)}m acc=${Math.round(lastGpsAccuracyM || 0)}m`);
@@ -1054,10 +1149,11 @@ function getPoiLabel(poi) {
 }
 
 function updateActivePoiToast(poi, lat, lng, now) {
-    const radiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
-    const cooldownSec = Math.max(0, parseInt(poi.cooldownSec || 180, 10));
-
     const poiType = String(poi.type || 'other').trim().toLowerCase();
+    const speedKmhNow = Math.max(0, Number(gpsFilterState.speedKmh) || 0);
+    const baseRadiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
+    const radiusM = getPoiEffectiveRadiusM(poiType, baseRadiusM, speedKmhNow);
+    const cooldownSec = Math.max(0, parseInt(poi.cooldownSec || 180, 10));
 
     const poiLat = (typeof poi.lat === 'number') ? poi.lat : parseFloat(poi.lat);
     const poiLng = (typeof poi.lng === 'number') ? poi.lng : parseFloat(poi.lng);
@@ -1067,6 +1163,7 @@ function updateActivePoiToast(poi, lat, lng, now) {
 
     // Jos poistuttiin säteeltä, piilotetaan heti (ei jää roikkumaan).
     if (distM > radiusM) {
+        if (activePoiAlert && activePoiAlert.id) setPoiRearmLock(activePoiAlert.id);
         activePoiAlert = null;
         if (typeof hidePersistentToast === 'function') hidePersistentToast();
         return;
@@ -1084,6 +1181,7 @@ function updateActivePoiToast(poi, lat, lng, now) {
         activePoiAlert.lastDistM = distM;
 
         if (movingAway) {
+            if (activePoiAlert && activePoiAlert.id) setPoiRearmLock(activePoiAlert.id);
             activePoiAlert = null;
             if (typeof hidePersistentToast === 'function') hidePersistentToast();
             return;
@@ -1118,6 +1216,7 @@ function updateActivePoiToast(poi, lat, lng, now) {
 
     // Kun ollaan käytännössä perillä, voidaan piilottaa varoitus
     if (meters <= 0) {
+        if (activePoiAlert && activePoiAlert.id) setPoiRearmLock(activePoiAlert.id);
         activePoiAlert = null;
         if (typeof hidePersistentToast === 'function') hidePersistentToast();
     }

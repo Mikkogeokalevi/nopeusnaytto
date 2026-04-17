@@ -179,6 +179,8 @@ const togglePoiDebug = document.getElementById('toggle-poi-debug');
 const btnPoiDebugLog = document.getElementById('btn-poi-debug-log');
 const poiMasterVolumeEl = document.getElementById('poi-master-volume');
 const poiMasterVolumeValueEl = document.getElementById('poi-master-volume-value');
+const poiSensitivityEl = document.getElementById('settings-poi-sensitivity');
+const poiRearmDistanceEl = document.getElementById('settings-poi-rearm-distance');
 const poiSoundSelectSpeedcamera = document.getElementById('settings-poi-sound-speedcamera');
 const poiSoundSelectDanger = document.getElementById('settings-poi-sound-danger');
 const poiSoundSelectCustomer = document.getElementById('settings-poi-sound-customer');
@@ -1634,6 +1636,28 @@ if (poiMasterVolumeEl) {
     });
 }
 
+if (poiSensitivityEl) {
+    poiSensitivityEl.addEventListener('change', () => {
+        const mode = String(poiSensitivityEl.value || 'normal').trim().toLowerCase();
+        const normalized = (mode === 'strict' || mode === 'sensitive') ? mode : 'normal';
+        localStorage.setItem('poiSensitivityMode', normalized);
+        if (typeof showToast === 'function') {
+            const txt = normalized === 'strict' ? 'Varma' : (normalized === 'sensitive' ? 'Herkkä' : 'Normaali');
+            showToast(`POI herkkyys: ${txt}`);
+        }
+    });
+}
+
+if (poiRearmDistanceEl) {
+    poiRearmDistanceEl.addEventListener('change', () => {
+        const raw = parseInt(poiRearmDistanceEl.value || '400', 10);
+        const val = isFinite(raw) ? Math.max(120, Math.min(2500, raw)) : 400;
+        poiRearmDistanceEl.value = String(val);
+        localStorage.setItem('poiRearmDistanceM', String(val));
+        if (typeof showToast === 'function') showToast(`POI uudelleenhälytys: ${val} m`);
+    });
+}
+
 bindPoiSoundSelect(poiSoundSelectSpeedcamera, 'speedcamera');
 bindPoiSoundSelect(poiSoundSelectDanger, 'danger');
 bindPoiSoundSelect(poiSoundSelectCustomer, 'customer');
@@ -1743,6 +1767,15 @@ window.addEventListener('DOMContentLoaded', () => {
         const gain = isFinite(rawGain) ? Math.max(0, Math.min(1, rawGain)) : 0.45;
         if (poiMasterVolumeEl) poiMasterVolumeEl.value = String(gain);
         setPoiMasterVolumeText(gain);
+
+        const sensitivityMode = String(localStorage.getItem('poiSensitivityMode') || 'normal').trim().toLowerCase();
+        if (poiSensitivityEl) {
+            poiSensitivityEl.value = (sensitivityMode === 'strict' || sensitivityMode === 'sensitive') ? sensitivityMode : 'normal';
+        }
+
+        const rawRearm = parseInt(localStorage.getItem('poiRearmDistanceM') || '400', 10);
+        const rearmDist = isFinite(rawRearm) ? Math.max(120, Math.min(2500, rawRearm)) : 400;
+        if (poiRearmDistanceEl) poiRearmDistanceEl.value = String(rearmDist);
 
         const defaults = {
             speedcamera: 'double_beep',

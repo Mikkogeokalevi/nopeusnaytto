@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.21 adaptiivinen GPS-suodatus + POI regressiotesti
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.22 POI herkkyys + re-arm + dynaaminen säde
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.21-poi-adaptive-filter-regression'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.22-poi-sensitivity-rearm-dynamic-radius'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
