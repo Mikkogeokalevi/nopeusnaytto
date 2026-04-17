@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.19 POI SOUND PROFILES + VOLUME)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.21 ADAPTIVE GPS + POI REGRESSION)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,17 +9,30 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
-                        <strong>� UUTTA v6.19: POI-äänet voimakkaammiksi + tyyppikohtaiset profiilit:</strong>
+                        <strong>🧭 UUTTA v6.21: adaptiivinen GPS-suodatus + POI regressiotesti:</strong>
+                        <ul>
+                            <li><strong>Nopeus ja suunta</strong> pehmennetään nyt GPS-tarkkuuden mukaan, mikä vähentää jitteriä.</li>
+                            <li><strong>POI confidence</strong> arvioi osumaa etäisyyden, segmentin, suunnan ja tarkkuuden perusteella.</li>
+                            <li><strong>Debug-lokiin</strong> lisättiin nappi "Aja regressiotesti", joka kirjaa testitulokset.</li>
+                        </ul>
+
+                        <strong>🔊 UUTTA v6.20: POI-kohtainen ääniprofiilin override:</strong>
+                        <ul>
+                            <li><strong>POI-modaalissa</strong> voit nyt valita yksittäiselle POI:lle oman äänen.</li>
+                            <li>Jos override ei ole valittu, käytetään automaattisesti POI-tyypin ääntä.</li>
+                        </ul>
+
+                        <strong>🔊 UUTTA v6.19: POI-äänet voimakkaammiksi + tyyppikohtaiset profiilit:</strong>
                         <ul>
                             <li><strong>POI äänen voimakkuus</strong> on nyt säädettävissä Asetuksista (master volume).</li>
                             <li><strong>Ääniprofiili per POI-tyyppi:</strong> nopeuskamera, vaara, asiakas, muistutus ja muu.</li>
                             <li><strong>Testaa-napit</strong> toistavat valitun tyypin äänen heti, jotta säätö onnistuu nopeasti.</li>
                         </ul>
 
-                        <strong>�📍 UUTTA v6.17: Nopeuskameratiedostojen tuonti + POI-modaali + karttamuokkaus:</strong>
+                        <strong>� UUTTA v6.17: Nopeuskameratiedostojen tuonti + POI-modaali + karttamuokkaus:</strong>
                         <ul>
                             <li><strong>⬆ Tuo nopeuskamerat (CSV/SVC)</strong> Asetuksista (lon,lat korjataan automaattisesti).</li>
                             <li><strong>🔎 Haku + suodatus + lähimmät</strong> POI-listaan (ei kasva loputtomaksi).</li>
@@ -397,9 +410,22 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧭 NEW in v6.21: adaptive GPS filter + POI regression test:</strong>
+                        <ul>
+                            <li><strong>Speed and heading</strong> are now smoothed based on GPS accuracy to reduce jitter.</li>
+                            <li><strong>POI confidence</strong> now weighs distance, segment pass, heading and GPS accuracy.</li>
+                            <li><strong>POI debug log</strong> now includes a "Run regression test" button that writes results.</li>
+                        </ul>
+
+                        <strong>🔊 NEW in v6.20: Per-POI sound profile override:</strong>
+                        <ul>
+                            <li><strong>POI modal</strong> now includes an optional sound profile just for that POI.</li>
+                            <li>If no override is selected, the app uses the POI type sound profile automatically.</li>
+                        </ul>
+
                         <strong>🔊 NEW in v6.19: Louder POI audio + per-type sound profiles:</strong>
                         <ul>
                             <li><strong>POI master volume</strong> is now adjustable in Settings.</li>
@@ -783,9 +809,22 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧭 MỚI v6.21: lọc GPS thích ứng + test hồi quy POI:</strong>
+                        <ul>
+                            <li><strong>Tốc độ và hướng</strong> được làm mượt theo độ chính xác GPS để giảm rung.</li>
+                            <li><strong>POI confidence</strong> tính theo khoảng cách, cắt đoạn, hướng và độ chính xác GPS.</li>
+                            <li><strong>POI debug log</strong> có nút "Aja regressiotesti" để ghi kết quả test.</li>
+                        </ul>
+
+                        <strong>🔊 MỚI v6.20: Override âm thanh cho từng POI:</strong>
+                        <ul>
+                            <li><strong>Trong POI modal</strong> bạn có thể chọn âm thanh riêng cho từng POI.</li>
+                            <li>Nếu không chọn override, ứng dụng tự dùng âm thanh theo loại POI.</li>
+                        </ul>
+
                         <strong>🔊 MỚI v6.19: Âm thanh POI to hơn + cấu hình theo từng loại:</strong>
                         <ul>
                             <li><strong>Âm lượng POI tổng</strong> có thể chỉnh trong Cài đặt.</li>

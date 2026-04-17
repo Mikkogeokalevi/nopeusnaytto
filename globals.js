@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.19 (POI ääniasetus + tyyppikohtaiset ääniprofiilit)
-const APP_VERSION = "6.19"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.21 (adaptiivinen GPS-suodatus + POI regressiotesti)
+const APP_VERSION = "6.21"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

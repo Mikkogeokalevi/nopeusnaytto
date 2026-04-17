@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.19 POI ääniasetus + tyyppikohtaiset profiilit
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.21 adaptiivinen GPS-suodatus + POI regressiotesti
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.19-poi-sound-profiles'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.21-poi-adaptive-filter-regression'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

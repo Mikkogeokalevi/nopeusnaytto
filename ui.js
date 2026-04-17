@@ -200,6 +200,7 @@ const btnPoiDebugLogClose = document.getElementById('btn-poi-debug-log-close');
 const poiDebugLogTextEl = document.getElementById('poi-debug-log-text');
 const btnPoiDebugLogCopy = document.getElementById('btn-poi-debug-log-copy');
 const btnPoiDebugLogClear = document.getElementById('btn-poi-debug-log-clear');
+const btnPoiDebugRunTests = document.getElementById('btn-poi-debug-run-tests');
 
 const poiModal = document.getElementById('poi-modal');
 const poiModalTitleEl = document.getElementById('poi-modal-title');
@@ -214,6 +215,7 @@ const poiModalAlertEl = document.getElementById('poi-modal-alert');
 const poiModalRadiusEl = document.getElementById('poi-modal-radius');
 const poiModalCooldownEl = document.getElementById('poi-modal-cooldown');
 const poiModalBeepEl = document.getElementById('poi-modal-beep');
+const poiModalSoundProfileEl = document.getElementById('poi-modal-sound-profile');
 const btnPoiModalSave = document.getElementById('btn-poi-modal-save');
 const btnPoiModalDelete = document.getElementById('btn-poi-modal-delete');
 
@@ -458,6 +460,22 @@ function getPoiTypeIcon(type) {
     return '📍';
 }
 
+function normalizePoiSoundProfile(v) {
+    const s = String(v || '').trim().toLowerCase();
+    if (s === 'double_beep' || s === 'alarm_pulse' || s === 'single_chime' || s === 'soft_ping') return s;
+    return '';
+}
+
+function getPoiSoundProfileLabel(v) {
+    const s = normalizePoiSoundProfile(v);
+    if (!s) return 'Auto';
+    if (s === 'double_beep') return 'Double beep';
+    if (s === 'alarm_pulse') return 'Alarm pulse';
+    if (s === 'single_chime') return 'Single chime';
+    if (s === 'soft_ping') return 'Soft ping';
+    return 'Auto';
+}
+
 function renderPoiList() {
     if (!poiListEl) return;
 
@@ -533,6 +551,7 @@ function renderPoiList() {
         const radius = parseInt(poi.alertRadiusM || 350, 10);
         const cd = parseInt(poi.cooldownSec || 180, 10);
         const beepOn = (poi.beepEnabled !== false);
+        const soundLabel = getPoiSoundProfileLabel(poi.soundProfile);
 
         const distSuffix = (poiNearbyMode && isFinite(poi._distM)) ? ` • ${Math.round(poi._distM)} m` : '';
 
@@ -542,7 +561,7 @@ function renderPoiList() {
         infoDiv.innerHTML = `
             <strong style="font-size:15px;">${icon} ${title}</strong>
             <div style="font-size:12px; color:var(--subtext-color); margin-top:2px;">
-                ${getPoiTypeLabel(poi.type)}${distSuffix} • ${enabled ? `Varoitus: PÄÄLLÄ (${radius}m / ${cd}s)` : 'Varoitus: POIS'} • Ääni: ${beepOn ? 'ON' : 'OFF'}
+                ${getPoiTypeLabel(poi.type)}${distSuffix} • ${enabled ? `Varoitus: PÄÄLLÄ (${radius}m / ${cd}s)` : 'Varoitus: POIS'} • Ääni: ${beepOn ? 'ON' : 'OFF'} (${soundLabel})
             </div>
             <div style="font-size:12px; color:var(--subtext-color); margin-top:2px;">
                 ${typeof toGeocacheFormat === 'function' ? `${toGeocacheFormat(poi.lat, true)} ${toGeocacheFormat(poi.lng, false)}` : `${poi.lat}, ${poi.lng}`}
@@ -629,6 +648,7 @@ function openPoiEditor(existingPoi = null, fixedCoords = null) {
     if (poiModalRadiusEl) poiModalRadiusEl.value = String(existingPoi?.alertRadiusM ?? 350);
     if (poiModalCooldownEl) poiModalCooldownEl.value = String(existingPoi?.cooldownSec ?? 180);
     if (poiModalBeepEl) poiModalBeepEl.checked = (existingPoi?.beepEnabled !== false);
+    if (poiModalSoundProfileEl) poiModalSoundProfileEl.value = normalizePoiSoundProfile(existingPoi?.soundProfile);
 
     if (btnPoiModalDelete) btnPoiModalDelete.style.display = isEdit ? 'block' : 'none';
     poiModal.style.display = 'flex';
@@ -711,6 +731,7 @@ if (btnPoiModalSave) {
         const alertRadiusM = Math.max(30, parseInt(poiModalRadiusEl?.value || '350', 10) || 350);
         const cooldownSec = Math.max(0, parseInt(poiModalCooldownEl?.value || '180', 10) || 180);
         const beepEnabled = !!poiModalBeepEl?.checked;
+        const soundProfile = normalizePoiSoundProfile(poiModalSoundProfileEl?.value || '');
 
         const payload = {
             name,
@@ -721,6 +742,7 @@ if (btnPoiModalSave) {
             alertRadiusM,
             cooldownSec,
             beepEnabled,
+            soundProfile,
             updatedAt: Date.now()
         };
         if (!isEdit) payload.createdAt = Date.now();
@@ -1561,6 +1583,22 @@ if (btnPoiDebugLogCopy) {
         const txt = getPoiDebugLogText();
         const ok = await copyTextToClipboard(txt);
         if (typeof showToast === 'function') showToast(ok ? 'Kopioitu leikepöydälle' : 'Kopiointi ei onnistunut (voit valita tekstin käsin)');
+    });
+}
+
+if (btnPoiDebugRunTests) {
+    btnPoiDebugRunTests.addEventListener('click', () => {
+        if (typeof window.runPoiRegressionTests !== 'function') {
+            if (typeof showToast === 'function') showToast('POI regressiotesti ei ole saatavilla');
+            return;
+        }
+
+        const out = window.runPoiRegressionTests();
+        refreshPoiDebugLogModal();
+        if (typeof showToast === 'function') {
+            const msg = (out && out.summary) ? out.summary : 'POI regressiotesti suoritettu';
+            showToast(msg);
+        }
     });
 }
 

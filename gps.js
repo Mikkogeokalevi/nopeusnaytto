@@ -21,6 +21,110 @@ var sessionPauseTime = 0;         // Tauot vain tämän pätkän aikana
 var sessionStartAddress = "";     // Tämän pätkän lähtöosoite
 var existingSessions = [];        // Lista aiemmista osamatkoista (jos continue)
 
+// GPS-signaalin pehmennys POI-logiikkaa varten
+var lastGpsAccuracyM = 30;
+var gpsFilterState = {
+    speedKmh: null,
+    headingDeg: null
+};
+
+function clamp01(v) {
+    const n = Number(v);
+    if (!isFinite(n)) return 0;
+    return Math.max(0, Math.min(1, n));
+}
+
+function getAdaptiveSpeedAlpha(accM, speedKmh) {
+    let a = 0.5;
+    if (isFinite(accM)) {
+        if (accM > 60) a = 0.22;
+        else if (accM > 35) a = 0.3;
+        else if (accM > 18) a = 0.4;
+    }
+    if (isFinite(speedKmh) && speedKmh < 8) a *= 0.82;
+    return clamp01(a);
+}
+
+function smoothSpeedKmh(rawSpeedKmh, accM) {
+    const speed = Math.max(0, Number(rawSpeedKmh) || 0);
+    const prev = Number(gpsFilterState.speedKmh);
+    if (!isFinite(prev)) {
+        gpsFilterState.speedKmh = speed;
+        return speed;
+    }
+    const alpha = getAdaptiveSpeedAlpha(accM, speed);
+    const next = prev + alpha * (speed - prev);
+    gpsFilterState.speedKmh = next;
+    return next;
+}
+
+function smoothHeadingDeg(rawHeading, derivedHeading, speedKmh, accM) {
+    const hRaw = (typeof rawHeading === 'number' && isFinite(rawHeading)) ? rawHeading : null;
+    const hDerived = (typeof derivedHeading === 'number' && isFinite(derivedHeading)) ? derivedHeading : null;
+    let source = hRaw;
+
+    // Hitaassa vauhdissa tai heikossa tarkkuudessa hyödynnetään geometriasta laskettua suuntaa,
+    // koska laiteheading voi olla epävakaa.
+    const preferDerived = (isFinite(accM) && accM > 40) || (isFinite(speedKmh) && speedKmh < 18);
+    if (preferDerived && hDerived !== null) source = hDerived;
+    if (source === null && hDerived !== null) source = hDerived;
+    if (source === null) return null;
+
+    const prev = Number(gpsFilterState.headingDeg);
+    if (!isFinite(prev)) {
+        gpsFilterState.headingDeg = source;
+        return source;
+    }
+
+    let alpha = 0.34;
+    if (isFinite(accM) && accM > 60) alpha = 0.2;
+    else if (isFinite(accM) && accM < 20) alpha = 0.45;
+    if (isFinite(speedKmh) && speedKmh > 70) alpha = Math.min(0.58, alpha + 0.1);
+
+    const diff = ((source - prev + 540) % 360) - 180;
+    const next = (prev + alpha * diff + 360) % 360;
+    gpsFilterState.headingDeg = next;
+    return next;
+}
+
+function getPoiConfidenceScore(ctx) {
+    const radiusM = Math.max(30, Number(ctx.radiusM) || 350);
+    const distM = Math.max(0, Number(ctx.distM) || 0);
+    const prevDistM = Number(ctx.prevDistM);
+    const segMinDistM = Number(ctx.segMinDistM);
+    const poiType = String(ctx.poiType || 'other');
+    const accM = Number(ctx.accM);
+    const speedKmh = Number(ctx.speedKmh);
+    const headingDiffDeg = Number(ctx.headingDiffDeg);
+
+    let score = 0;
+
+    const proximity = clamp01(1 - (distM / radiusM));
+    score += proximity * 0.5;
+
+    if (isFinite(segMinDistM) && segMinDistM <= radiusM) score += 0.14;
+
+    if (isFinite(prevDistM)) {
+        if (distM <= prevDistM + 5) score += 0.14;
+        else score -= 0.12;
+    }
+
+    if (poiType === 'speedcamera') {
+        if (isFinite(headingDiffDeg)) {
+            score += clamp01(1 - (headingDiffDeg / 120)) * 0.18;
+        } else if (isFinite(speedKmh) && speedKmh >= 20) {
+            score -= 0.06;
+        }
+    }
+
+    if (isFinite(accM)) {
+        if (accM > 80) score -= 0.16;
+        else if (accM > 45) score -= 0.09;
+    }
+
+    return clamp01(score);
+}
+
 window.ensurePoiAudioContext = function() {
     try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -53,15 +157,21 @@ function getPoiBeepMasterGain() {
     }
 }
 
-function getPoiSoundProfile(type) {
+function normalizePoiSoundProfile(v) {
+    const s = String(v || '').trim().toLowerCase();
+    if (s === 'double_beep' || s === 'alarm_pulse' || s === 'single_chime' || s === 'soft_ping') return s;
+    return '';
+}
+
+function getPoiSoundProfile(type, override = '') {
     const t = String(type || 'other').trim().toLowerCase();
     const fallback = POI_SOUND_PROFILE_DEFAULTS[t] || POI_SOUND_PROFILE_DEFAULTS.other;
+    const forced = normalizePoiSoundProfile(override);
+    if (forced) return forced;
     try {
         const key = `poiSoundProfile_${t}`;
-        const saved = String(localStorage.getItem(key) || '').trim().toLowerCase();
-        if (saved === 'double_beep' || saved === 'alarm_pulse' || saved === 'single_chime' || saved === 'soft_ping') {
-            return saved;
-        }
+        const saved = normalizePoiSoundProfile(localStorage.getItem(key) || '');
+        if (saved) return saved;
     } catch (e) {
         // ignore
     }
@@ -84,7 +194,7 @@ function schedulePoiTone(ctx, startAt, freq, peakGain, durationSec, waveType) {
     osc.stop(startAt + durationSec + 0.02);
 }
 
-window.playPoiAlertBeep = function(poiType = 'other') {
+window.playPoiAlertBeep = function(poiType = 'other', overrideProfile = '') {
     // 1 = päällä, 0 = pois
     const enabled = localStorage.getItem('poiBeepEnabled');
     if (enabled === '0') return;
@@ -92,7 +202,7 @@ window.playPoiAlertBeep = function(poiType = 'other') {
     const ctx = window.ensurePoiAudioContext();
     if (!ctx) return;
     const type = String(poiType || 'other').trim().toLowerCase();
-    const profile = getPoiSoundProfile(type);
+    const profile = getPoiSoundProfile(type, overrideProfile);
     const master = getPoiBeepMasterGain();
     if (master <= 0) return;
 
@@ -568,10 +678,22 @@ function updatePosition(position) {
     const lat = position.coords.latitude;
     const lng = position.coords.longitude;
     const alt = position.coords.altitude || 0;
-    const heading = position.coords.heading; 
-    const speedMs = position.coords.speed || 0; 
-    let speedKmh = speedMs * 3.6;
-    if (speedKmh < 1.0) speedKmh = 0;
+    const heading = position.coords.heading;
+    const acc = position.coords.accuracy;
+    if (typeof acc === 'number' && isFinite(acc) && acc > 0) lastGpsAccuracyM = acc;
+
+    const speedMs = position.coords.speed || 0;
+    let rawSpeedKmh = speedMs * 3.6;
+    if (rawSpeedKmh < 1.0) rawSpeedKmh = 0;
+
+    const prevLatLng = lastLatLng ? { lat: lastLatLng.lat, lng: lastLatLng.lng } : null;
+    let derivedHeading = null;
+    if (prevLatLng && (prevLatLng.lat !== lat || prevLatLng.lng !== lng)) {
+        derivedHeading = calculateBearing(prevLatLng.lat, prevLatLng.lng, lat, lng);
+    }
+    let speedKmh = smoothSpeedKmh(rawSpeedKmh, lastGpsAccuracyM);
+    if (speedKmh < 0.6) speedKmh = 0;
+    const headingFiltered = smoothHeadingDeg(heading, derivedHeading, speedKmh, lastGpsAccuracyM);
 
     let currentAvg = 0;
 
@@ -624,7 +746,6 @@ function updatePosition(position) {
         }
     }
     
-    const prevLatLng = lastLatLng ? { lat: lastLatLng.lat, lng: lastLatLng.lng } : null;
     if (!lastLatLng || speedKmh > 0 || isGPSActive) {
         lastLatLng = { lat, lng };
         const newLatLng = new L.LatLng(lat, lng);
@@ -653,9 +774,9 @@ function updatePosition(position) {
     
     if(dashCoordsEl) dashCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
     
-    if (heading !== null && !isNaN(heading)) {
-        if(dashHeadingEl) dashHeadingEl.innerText = `${Math.round(heading)}°`;
-        if(compassArrowEl) compassArrowEl.style.transform = `rotate(${heading}deg)`;
+    if (headingFiltered !== null && !isNaN(headingFiltered)) {
+        if(dashHeadingEl) dashHeadingEl.innerText = `${Math.round(headingFiltered)}°`;
+        if(compassArrowEl) compassArrowEl.style.transform = `rotate(${headingFiltered}deg)`;
     }
 
     if (isGPSActive && wakeLock === null) requestWakeLock();
@@ -665,7 +786,7 @@ function updatePosition(position) {
     // =========================================================
     if (currentUser && Array.isArray(poiData) && poiData.length > 0) {
         try {
-            checkPoiAlerts(lat, lng, heading, speedKmh, prevLatLng);
+            checkPoiAlerts(lat, lng, headingFiltered, speedKmh, prevLatLng);
         } catch (e) {
             // Ei kaadeta GPS-loopia
         }
@@ -783,14 +904,16 @@ function poiQualifies(poi, lat, lng, heading, speedKmh, prevLatLng) {
         }
     }
 
+    let headingDiff = null;
+
     // Nopeuskamera: suunnan mukaan, jos heading on saatavilla
     // HUOM: heading on monilla laitteilla epäluotettava hitaassa vauhdissa, joten käytetään suodatusta vain liikkeessä.
     const useHeading = (typeof speedKmh === 'number' && speedKmh >= 20);
     if ((poiType === 'speedcamera') && useHeading && (heading !== null) && (!isNaN(heading))) {
         const bearingToPoi = calculateBearing(lat, lng, poiLat, poiLng);
-        const diff = angularDiffDeg(heading, bearingToPoi);
-        if (diff > 110) {
-            poiDebug(`Nopeuskamera ei kelpaa (suunta): diff ${Math.round(diff)}° (head ${Math.round(heading)}°)`);
+        headingDiff = angularDiffDeg(heading, bearingToPoi);
+        if (headingDiff > 110) {
+            poiDebug(`Nopeuskamera ei kelpaa (suunta): diff ${Math.round(headingDiff)}° (head ${Math.round(heading)}°)`);
             return false;
         }
     } else if (poiType === 'speedcamera' && !useHeading) {
@@ -798,7 +921,126 @@ function poiQualifies(poi, lat, lng, heading, speedKmh, prevLatLng) {
         poiDebug(`Nopeuskamera: heading-suodatus OFF (spd ${Math.round(speedKmh || 0)} km/h)`);
     }
 
+    const confidence = getPoiConfidenceScore({
+        radiusM,
+        distM,
+        prevDistM,
+        segMinDistM,
+        poiType,
+        speedKmh,
+        accM: lastGpsAccuracyM,
+        headingDiffDeg: headingDiff
+    });
+    const confidenceThreshold = (poiType === 'speedcamera') ? 0.3 : 0.24;
+    const veryCloseBy = bestDistM <= Math.max(20, radiusM * 0.35);
+    if (!veryCloseBy && confidence < confidenceThreshold) {
+        poiDebug(`POI ei kelpaa (confidence ${confidence.toFixed(2)} < ${confidenceThreshold.toFixed(2)}): ${getPoiLabel(poi)} d=${Math.round(distM)}m acc=${Math.round(lastGpsAccuracyM || 0)}m`);
+        return false;
+    }
+
     return true;
+}
+
+window.runPoiRegressionTests = function() {
+    const results = [];
+    const originalPoiData = poiData;
+    const originalActivePoiAlert = activePoiAlert;
+    const originalPoiAlertState = poiAlertState;
+    const originalCurrentUser = currentUser;
+    const originalShowPersistentToast = window.showPersistentToast;
+    const originalHidePersistentToast = window.hidePersistentToast;
+    const originalPlayPoiAlertBeep = window.playPoiAlertBeep;
+
+    const setResult = (name, ok, details) => {
+        results.push({ name, ok: !!ok, details: String(details || '') });
+    };
+
+    try {
+        currentUser = currentUser || { uid: '__poi_test__' };
+        window.playPoiAlertBeep = () => {};
+
+        let hideCount = 0;
+        window.showPersistentToast = () => {};
+        window.hidePersistentToast = () => { hideCount += 1; };
+
+        const testPoi = {
+            id: 'test-speedcam-1',
+            type: 'speedcamera',
+            name: 'Test cam',
+            lat: 60.0,
+            lng: 25.0,
+            alertEnabled: true,
+            alertRadiusM: 70,
+            cooldownSec: 0,
+            beepEnabled: false
+        };
+        poiData = [testPoi];
+
+        // CASE 1: Harvat GPS-pisteet, mutta segmentti ohittaa POI:n säteen -> pitää hälyttää.
+        activePoiAlert = null;
+        poiAlertState = {};
+        hideCount = 0;
+        let prev = null;
+        const sparseCrossing = [
+            { lat: 60.0, lng: 24.9975, heading: 90, speedKmh: 55 },
+            { lat: 60.0, lng: 25.0025, heading: 90, speedKmh: 58 }
+        ];
+        for (const pt of sparseCrossing) {
+            checkPoiAlerts(pt.lat, pt.lng, pt.heading, pt.speedKmh, prev);
+            prev = { lat: pt.lat, lng: pt.lng };
+        }
+        setResult('segment-crossing-triggers', !!(activePoiAlert && activePoiAlert.id === testPoi.id), `active=${activePoiAlert ? activePoiAlert.id : 'none'}`);
+
+        // CASE 2: Hälytys poistuu kun liikutaan pois päin säteeltä.
+        activePoiAlert = null;
+        poiAlertState = {};
+        hideCount = 0;
+        prev = null;
+        const approachThenAway = [
+            { lat: 60.0, lng: 24.9995, heading: 90, speedKmh: 45 },
+            { lat: 60.0, lng: 24.9999, heading: 90, speedKmh: 42 },
+            { lat: 60.0, lng: 25.0007, heading: 90, speedKmh: 45 },
+            { lat: 60.0, lng: 25.0017, heading: 90, speedKmh: 48 }
+        ];
+        for (const pt of approachThenAway) {
+            checkPoiAlerts(pt.lat, pt.lng, pt.heading, pt.speedKmh, prev);
+            prev = { lat: pt.lat, lng: pt.lng };
+        }
+        setResult('moving-away-hides-alert', hideCount > 0 || activePoiAlert === null, `hideCount=${hideCount}, active=${activePoiAlert ? activePoiAlert.id : 'none'}`);
+
+        // CASE 3: Väärä suunta nopeasti -> nopeuskamera ei kelpaa.
+        const wrongDir = poiQualifies(
+            testPoi,
+            60.0,
+            24.9997,
+            270,
+            80,
+            { lat: 60.0, lng: 24.9994 }
+        );
+        setResult('speedcamera-wrong-direction-rejected', wrongDir === false, `qualifies=${wrongDir}`);
+    } catch (e) {
+        setResult('runner-exception', false, e && e.message ? e.message : String(e));
+    } finally {
+        poiData = originalPoiData;
+        activePoiAlert = originalActivePoiAlert;
+        poiAlertState = originalPoiAlertState;
+        currentUser = originalCurrentUser;
+        window.showPersistentToast = originalShowPersistentToast;
+        window.hidePersistentToast = originalHidePersistentToast;
+        window.playPoiAlertBeep = originalPlayPoiAlertBeep;
+    }
+
+    const passed = results.filter(r => r.ok).length;
+    const total = results.length;
+    const summary = `POI regression: ${passed}/${total} passed`;
+    if (typeof window.appendPoiDebugLog === 'function') {
+        window.appendPoiDebugLog(summary);
+        results.forEach(r => {
+            window.appendPoiDebugLog(`${r.ok ? '✅' : '❌'} ${r.name} - ${r.details}`);
+        });
+    }
+    console.log(summary, results);
+    return { summary, results };
 }
 
 function getPoiLabel(poi) {
@@ -871,7 +1113,7 @@ function updateActivePoiToast(poi, lat, lng, now) {
     if (cooldownSec === 0 || !lastTs || (now - lastTs) >= cooldownSec * 1000) {
         poiAlertState[poi.id] = now;
         if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
-        if (poi.beepEnabled !== false && typeof window.playPoiAlertBeep === 'function') window.playPoiAlertBeep(poiType);
+        if (poi.beepEnabled !== false && typeof window.playPoiAlertBeep === 'function') window.playPoiAlertBeep(poiType, poi.soundProfile || '');
     }
 
     // Kun ollaan käytännössä perillä, voidaan piilottaa varoitus

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.19</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.20</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.19"> 
+    <link rel="stylesheet" href="style.css?v=6.20"> 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -24,7 +24,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.19...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.20...</p>
             <p>Ladataan...</p>
         </div>
     </div>
@@ -93,6 +93,20 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:12px;">
                     <span>Äänimerkki</span>
                     <input id="poi-modal-beep" type="checkbox" style="transform: scale(1.5);" />
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px;">Ääniprofiili (tälle POI:lle)</label>
+                    <select id="poi-modal-sound-profile" class="subject-input" style="width:100%;">
+                        <option value="">Automaattinen (tyypin mukaan)</option>
+                        <option value="double_beep">Double beep</option>
+                        <option value="alarm_pulse">Alarm pulse</option>
+                        <option value="single_chime">Single chime</option>
+                        <option value="soft_ping">Soft ping</option>
+                    </select>
+                    <div style="font-size:12px; color:var(--subtext-color); margin-top:4px;">
+                        Jos valitset profiilin, tämä POI käyttää sitä riippumatta tyypin yleisasetuksesta.
+                    </div>
                 </div>
             </div>
 
@@ -818,6 +832,7 @@
             <div style="display:flex; gap:10px; margin-top:12px; justify-content:center; flex-wrap:wrap;">
                 <button id="btn-poi-debug-log-copy" class="action-btn blue-btn" style="width:auto;">Kopioi</button>
                 <button id="btn-poi-debug-log-clear" class="action-btn" style="width:auto; background-color:#555;">Tyhjennä</button>
+                <button id="btn-poi-debug-run-tests" class="action-btn" style="width:auto; background-color:#2e7d32;">Aja regressiotesti</button>
             </div>
         </div>
     </div>
@@ -829,16 +844,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.19"></script>
-    <script src="visuals.js?v=6.19"></script>
-    <script src="ui.js?v=6.19"></script>
-    <script src="auth.js?v=6.19"></script>
-    <script src="map.js?v=6.19"></script>
-    <script src="gps.js?v=6.19"></script>
-    <script src="garage.js?v=6.19"></script>
-    <script src="history.js?v=6.19"></script>
-    <script src="help.js?v=6.19"></script>
+    <script src="globals.js?v=6.21"></script>
+    <script src="visuals.js?v=6.21"></script>
+    <script src="ui.js?v=6.21"></script>
+    <script src="auth.js?v=6.21"></script>
+    <script src="map.js?v=6.21"></script>
+    <script src="gps.js?v=6.21"></script>
+    <script src="garage.js?v=6.21"></script>
+    <script src="history.js?v=6.21"></script>
+    <script src="help.js?v=6.21"></script>
     
-    <script src="app.js?v=6.19"></script>
+    <script src="app.js?v=6.21"></script>
 </body>
 </html>
