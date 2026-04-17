@@ -386,6 +386,14 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     letter-spacing: -2px; 
 }
 
+.center-limit-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 4px 0 10px;
+    z-index: 65;
+}
+
 /* GRIDI */
 .stats-grid { 
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
@@ -409,8 +417,27 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .stat-hint { display: block; margin-top: 3px; font-size: 10px; color: var(--subtext-color); letter-spacing: 0.4px; }
 
 #dash-limit-card .stat-value {
-    font-size: 24px;
+    font-size: 34px;
     font-weight: 800;
+}
+
+#dash-limit-card {
+    width: min(360px, 92vw);
+    border-width: 2px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+#dash-limit-card .stat-label {
+    font-size: 11px;
+    margin-bottom: 3px;
+}
+
+#dash-limit-card .stat-unit {
+    font-size: 12px;
+}
+
+#dash-limit-card .stat-hint {
+    font-size: 11px;
 }
 
 #dash-limit-card.limit-exact .stat-value,
@@ -780,8 +807,16 @@ body.minimalist-mode #dashboard-view .status-bar {
 
 body.minimalist-mode #dashboard-view .huge-speed-container {
     transform: scale(1.5);
-    margin-top: 50px;
-    margin-bottom: 50px;
+    margin-top: 55px;
+    margin-bottom: 26px;
+}
+
+body.minimalist-mode #dashboard-view .center-limit-wrap {
+    margin-top: 8px;
+}
+
+body.minimalist-mode #dashboard-view #dash-limit-card {
+    width: min(320px, 86vw);
 }
 
 /* UUSI NAPPI MITTARISTOON (MINIMALIST-TOGGLE) - POISTETTU TÄSTÄ, SÄÄDETÄÄN ALLA */

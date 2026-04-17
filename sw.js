@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.24 OSM nopeusrajoituksen vakautus
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.25 rajoituksen korostus dashboardissa
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.24-speedlimit-stabilization'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.25-speedlimit-prominent-layout'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
