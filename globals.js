@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.22 (POI herkkyys + re-arm + dynaaminen nopeuskamerasäde)
-const APP_VERSION = "6.22"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.23 (OSM nopeusrajoitus + arvio-värikoodaus)
+const APP_VERSION = "6.23"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

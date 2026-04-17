@@ -406,6 +406,26 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .stat-label { font-size: 9px; color: var(--subtext-color); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1px; display: block; }
 .stat-value { font-size: 20px; font-weight: 700; color: var(--text-color); }
 .stat-unit { font-size: 11px; color: var(--subtext-color); font-weight: normal; }
+.stat-hint { display: block; margin-top: 3px; font-size: 10px; color: var(--subtext-color); letter-spacing: 0.4px; }
+
+#dash-limit-card .stat-value {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+#dash-limit-card.limit-exact .stat-value,
+#dash-limit-card.limit-exact .stat-hint {
+    color: #00e676;
+}
+
+#dash-limit-card.limit-estimated .stat-value,
+#dash-limit-card.limit-estimated .stat-hint {
+    color: #ffb300;
+}
+
+#dash-limit-card.limit-unknown .stat-value {
+    color: var(--subtext-color);
+}
 .coords-box { font-family: 'Roboto Mono', monospace; color: var(--accent-color); font-size: 11px; opacity: 0.8; margin-top: 5px; }
 
 /* TIME & WEATHER */

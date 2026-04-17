@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.22 POI herkkyys + re-arm + dynaaminen säde
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.23 OSM nopeusrajoitus + arvio-värikoodaus
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.22-poi-sensitivity-rearm-dynamic-radius'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.23-speedlimit-osm-estimate-color'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

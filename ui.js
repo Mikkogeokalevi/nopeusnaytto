@@ -128,6 +128,9 @@ const dashDistEl = document.getElementById('dash-dist');
 const dashTimeEl = document.getElementById('dash-time');
 const dashAltEl = document.getElementById('dash-alt');
 const dashAvgEl = document.getElementById('dash-avg'); 
+const dashLimitCardEl = document.getElementById('dash-limit-card');
+const dashSpeedLimitEl = document.getElementById('dash-speed-limit');
+const dashSpeedLimitSourceEl = document.getElementById('dash-speed-limit-source');
 const dashCoordsEl = document.getElementById('dash-coords');
 const dashClockEl = document.getElementById('dash-clock');
 const dashDateEl = document.getElementById('dash-date'); 
@@ -1096,6 +1099,32 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     if(dashDistEl) dashDistEl.innerText = dist.toFixed(2); 
     if(dashAltEl) dashAltEl.innerText = Math.round(alt);
 }
+
+window.updateDashboardSpeedLimit = function(info) {
+    if (!dashSpeedLimitEl || !dashSpeedLimitSourceEl || !dashLimitCardEl) return;
+
+    const data = info || {};
+    const val = Number(data.limitKmh);
+    const source = String(data.source || 'unknown').toLowerCase();
+
+    dashLimitCardEl.classList.remove('limit-exact', 'limit-estimated', 'limit-unknown');
+
+    if (isFinite(val) && val > 0) {
+        dashSpeedLimitEl.innerText = String(Math.round(val));
+        if (source === 'estimated') {
+            dashSpeedLimitSourceEl.innerText = 'Yleisrajoitus-arvio';
+            dashLimitCardEl.classList.add('limit-estimated');
+        } else {
+            dashSpeedLimitSourceEl.innerText = 'Tiekohtainen';
+            dashLimitCardEl.classList.add('limit-exact');
+        }
+        return;
+    }
+
+    dashSpeedLimitEl.innerText = '--';
+    dashSpeedLimitSourceEl.innerText = 'Ei dataa';
+    dashLimitCardEl.classList.add('limit-unknown');
+};
 
 function updateClockAndDate() {
     const now = new Date();

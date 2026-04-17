@@ -29,6 +29,20 @@ var gpsFilterState = {
     headingDeg: null
 };
 
+var roadSpeedLimitState = {
+    limitKmh: null,
+    source: 'unknown', // exact | estimated | unknown
+    roadName: '',
+    roadType: '',
+    lastFetchTs: 0,
+    lastFetchLat: null,
+    lastFetchLng: null,
+    inFlight: false
+};
+
+const ROAD_LIMIT_FETCH_INTERVAL_MS = 45000;
+const ROAD_LIMIT_FETCH_MIN_MOVE_M = 120;
+
 function clamp01(v) {
     const n = Number(v);
     if (!isFinite(n)) return 0;
@@ -199,6 +213,167 @@ function getPoiEffectiveRadiusM(poiType, baseRadiusM, speedKmh) {
     }
 
     return Math.max(30, Math.round(base * factor));
+}
+
+function resetRoadSpeedLimitState() {
+    roadSpeedLimitState.limitKmh = null;
+    roadSpeedLimitState.source = 'unknown';
+    roadSpeedLimitState.roadName = '';
+    roadSpeedLimitState.roadType = '';
+    roadSpeedLimitState.lastFetchTs = 0;
+    roadSpeedLimitState.lastFetchLat = null;
+    roadSpeedLimitState.lastFetchLng = null;
+    roadSpeedLimitState.inFlight = false;
+}
+
+function getRoadSpeedLimitSnapshot() {
+    return {
+        limitKmh: roadSpeedLimitState.limitKmh,
+        source: roadSpeedLimitState.source,
+        roadName: roadSpeedLimitState.roadName,
+        roadType: roadSpeedLimitState.roadType,
+        fetchedAt: roadSpeedLimitState.lastFetchTs
+    };
+}
+
+function parseMaxspeedToKmh(raw) {
+    const txt = String(raw || '').trim().toLowerCase();
+    if (!txt) return null;
+
+    if (txt.includes(';')) {
+        const first = txt.split(';')[0].trim();
+        return parseMaxspeedToKmh(first);
+    }
+
+    if (txt === 'fi:urban') return 50;
+    if (txt === 'fi:rural') return 80;
+    if (txt === 'fi:motorway') return 120;
+
+    const num = parseInt(txt, 10);
+    if (!isFinite(num)) return null;
+
+    if (txt.includes('mph')) return Math.round(num * 1.60934);
+    return num;
+}
+
+function estimateSpeedLimitFromRoadType(roadType) {
+    const t = String(roadType || '').trim().toLowerCase();
+    if (!t) return null;
+    if (t === 'motorway') return 120;
+    if (t === 'trunk') return 100;
+    if (t === 'primary') return 80;
+    if (t === 'secondary') return 80;
+    if (t === 'tertiary') return 70;
+    if (t === 'residential') return 50;
+    if (t === 'living_street') return 20;
+    if (t === 'service') return 30;
+    if (t === 'track') return 30;
+    if (t === 'unclassified') return 70;
+    if (t === 'road') return 60;
+    return null;
+}
+
+function pickNearestRoadElement(elements, lat, lng) {
+    if (!Array.isArray(elements) || elements.length === 0) return null;
+    let best = null;
+    let bestDistM = Infinity;
+
+    for (const el of elements) {
+        if (!el || !el.tags || !el.tags.highway) continue;
+        const cLat = el.center && isFinite(el.center.lat) ? el.center.lat : null;
+        const cLng = el.center && isFinite(el.center.lon) ? el.center.lon : null;
+        if (!isFinite(cLat) || !isFinite(cLng)) continue;
+        const distM = getDistanceFromLatLonInKm(lat, lng, cLat, cLng) * 1000;
+        if (distM < bestDistM) {
+            bestDistM = distM;
+            best = el;
+        }
+    }
+    return best;
+}
+
+function shouldFetchRoadSpeedLimit(lat, lng, nowMs) {
+    if (roadSpeedLimitState.inFlight) return false;
+    if (!isFinite(lat) || !isFinite(lng)) return false;
+    if (!roadSpeedLimitState.lastFetchTs) return true;
+
+    const ageMs = nowMs - roadSpeedLimitState.lastFetchTs;
+    if (ageMs >= ROAD_LIMIT_FETCH_INTERVAL_MS) return true;
+
+    if (!isFinite(roadSpeedLimitState.lastFetchLat) || !isFinite(roadSpeedLimitState.lastFetchLng)) return true;
+
+    const movedM = getDistanceFromLatLonInKm(
+        roadSpeedLimitState.lastFetchLat,
+        roadSpeedLimitState.lastFetchLng,
+        lat,
+        lng
+    ) * 1000;
+
+    if (movedM >= ROAD_LIMIT_FETCH_MIN_MOVE_M && ageMs >= 12000) return true;
+    return false;
+}
+
+function requestRoadSpeedLimit(lat, lng) {
+    const now = Date.now();
+    if (!shouldFetchRoadSpeedLimit(lat, lng, now)) return;
+
+    roadSpeedLimitState.inFlight = true;
+    roadSpeedLimitState.lastFetchTs = now;
+    roadSpeedLimitState.lastFetchLat = lat;
+    roadSpeedLimitState.lastFetchLng = lng;
+
+    const query = `[out:json][timeout:12];way(around:80,${lat},${lng})["highway"];out tags center 20;`;
+    const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+
+    fetch(url)
+        .then((res) => res.json())
+        .then((data) => {
+            const best = pickNearestRoadElement(data && data.elements ? data.elements : [], lat, lng);
+            if (!best || !best.tags) {
+                roadSpeedLimitState.limitKmh = null;
+                roadSpeedLimitState.source = 'unknown';
+                roadSpeedLimitState.roadName = '';
+                roadSpeedLimitState.roadType = '';
+                return;
+            }
+
+            const tags = best.tags || {};
+            const roadType = String(tags.highway || '').trim().toLowerCase();
+            const roadName = String(tags.name || tags.ref || '').trim();
+
+            const rawMax = tags.maxspeed || tags['maxspeed:forward'] || tags['maxspeed:backward'] || '';
+            const exact = parseMaxspeedToKmh(rawMax);
+            if (isFinite(exact) && exact > 0) {
+                roadSpeedLimitState.limitKmh = exact;
+                roadSpeedLimitState.source = 'exact';
+                roadSpeedLimitState.roadName = roadName;
+                roadSpeedLimitState.roadType = roadType;
+                return;
+            }
+
+            const estimated = estimateSpeedLimitFromRoadType(roadType);
+            if (isFinite(estimated) && estimated > 0) {
+                roadSpeedLimitState.limitKmh = estimated;
+                roadSpeedLimitState.source = 'estimated';
+                roadSpeedLimitState.roadName = roadName;
+                roadSpeedLimitState.roadType = roadType;
+                return;
+            }
+
+            roadSpeedLimitState.limitKmh = null;
+            roadSpeedLimitState.source = 'unknown';
+            roadSpeedLimitState.roadName = roadName;
+            roadSpeedLimitState.roadType = roadType;
+        })
+        .catch(() => {
+            // Jos haku epäonnistuu, pidä vanha arvo jos sellainen on.
+        })
+        .finally(() => {
+            roadSpeedLimitState.inFlight = false;
+            if (typeof window.updateDashboardSpeedLimit === 'function') {
+                window.updateDashboardSpeedLimit(getRoadSpeedLimitSnapshot());
+            }
+        });
 }
 
 window.ensurePoiAudioContext = function() {
@@ -779,6 +954,8 @@ function updatePosition(position) {
         lastAddressFetchTime = now;
     }
 
+    requestRoadSpeedLimit(lat, lng);
+
     if (currentDriveWeather === "") fetchWeather(lat, lng);
 
     if (isRecording && !isPaused) {
@@ -846,6 +1023,9 @@ function updatePosition(position) {
 
     if(typeof updateDashboardUI === 'function') {
         updateDashboardUI(speedKmh, maxSpeed, totalDistance, null, alt, currentAvg);
+    }
+    if (typeof window.updateDashboardSpeedLimit === 'function') {
+        window.updateDashboardSpeedLimit(getRoadSpeedLimitSnapshot());
     }
     
     if(dashCoordsEl) dashCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
@@ -1356,6 +1536,10 @@ function resetRecordingUI() {
         statusEl.style.color = "var(--subtext-color)";
     }
     if(typeof updateDashboardUI === 'function') updateDashboardUI(0, 0, 0, 0, 0, 0);
+    resetRoadSpeedLimitState();
+    if (typeof window.updateDashboardSpeedLimit === 'function') {
+        window.updateDashboardSpeedLimit(null);
+    }
     if(dashTimeEl) dashTimeEl.innerText = "00:00";
     if(liveStatusBar) liveStatusBar.style.opacity = '0'; 
     if(dashAddressEl) dashAddressEl.innerText = "Odottaa sijaintia...";

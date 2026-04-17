@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.22 POI SENSITIVITY + RE-ARM + DYNAMIC RADIUS)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.23 ROAD SPEED LIMIT DISPLAY)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,16 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🛣️ UUTTA v6.23: Tien nopeusrajoitus näkyy mittaristossa:</strong>
+                        <ul>
+                            <li><strong>Tiekohtainen rajoitus</strong> haetaan OSM-datasta sijainnin perusteella.</li>
+                            <li><strong>Yleisrajoitus-arvio</strong> näytetään eri värillä, jotta tiedät että arvo on arvio.</li>
+                            <li>Jos dataa ei löydy, kortti näyttää <strong>Ei dataa</strong>.</li>
+                        </ul>
+
                         <strong>🎯 UUTTA v6.22: POI herkkyys + re-arm + dynaaminen nopeuskamerasäde:</strong>
                         <ul>
                             <li><strong>POI herkkyys</strong> (Varma / Normaali / Herkkä) säätää suunta- ja confidence-kynnystä.</li>
@@ -417,9 +424,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🛣️ NEW in v6.23: Road speed limit on dashboard:</strong>
+                        <ul>
+                            <li><strong>Road-specific speed limit</strong> is fetched from OSM data near your location.</li>
+                            <li><strong>General estimate</strong> is shown in a different color so you can treat it with caution.</li>
+                            <li>If no data is available, the card shows <strong>No data</strong>.</li>
+                        </ul>
+
                         <strong>🎯 NEW in v6.22: POI sensitivity + re-arm + dynamic speedcamera radius:</strong>
                         <ul>
                             <li><strong>POI sensitivity</strong> (Strict / Normal / Sensitive) now adjusts heading and confidence thresholds.</li>
@@ -823,9 +837,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🛣️ MỚI v6.23: hiển thị giới hạn tốc độ trên dashboard:</strong>
+                        <ul>
+                            <li><strong>Giới hạn theo tuyến đường</strong> lấy từ dữ liệu OSM gần vị trí hiện tại.</li>
+                            <li><strong>Ước lượng chung</strong> hiển thị màu khác để bạn biết đây là giá trị ước lượng.</li>
+                            <li>Nếu không có dữ liệu, thẻ sẽ hiện <strong>Không có dữ liệu</strong>.</li>
+                        </ul>
+
                         <strong>🎯 MỚI v6.22: độ nhạy POI + re-arm + bán kính camera động:</strong>
                         <ul>
                             <li><strong>Độ nhạy POI</strong> (Strict / Normal / Sensitive) chỉnh ngưỡng hướng và confidence.</li>
