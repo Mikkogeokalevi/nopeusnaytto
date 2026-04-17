@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.18 POI-hälytyksen luotettavuus + PWA päivitys
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.19 POI ääniasetus + tyyppikohtaiset profiilit
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.18-pwa-update'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.19-poi-sound-profiles'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

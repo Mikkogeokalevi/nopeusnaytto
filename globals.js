@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.18 (POI-hälytyksen luotettavuus + PWA päivitys)
-const APP_VERSION = "6.18"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.19 (POI ääniasetus + tyyppikohtaiset ääniprofiilit)
+const APP_VERSION = "6.19"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.18 POI ALERT RELIABILITY + PWA UPDATE)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.19 POI SOUND PROFILES + VOLUME)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,10 +9,17 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
-                        <strong>📍 UUTTA v6.17: Nopeuskameratiedostojen tuonti + POI-modaali + karttamuokkaus:</strong>
+                        <strong>� UUTTA v6.19: POI-äänet voimakkaammiksi + tyyppikohtaiset profiilit:</strong>
+                        <ul>
+                            <li><strong>POI äänen voimakkuus</strong> on nyt säädettävissä Asetuksista (master volume).</li>
+                            <li><strong>Ääniprofiili per POI-tyyppi:</strong> nopeuskamera, vaara, asiakas, muistutus ja muu.</li>
+                            <li><strong>Testaa-napit</strong> toistavat valitun tyypin äänen heti, jotta säätö onnistuu nopeasti.</li>
+                        </ul>
+
+                        <strong>�📍 UUTTA v6.17: Nopeuskameratiedostojen tuonti + POI-modaali + karttamuokkaus:</strong>
                         <ul>
                             <li><strong>⬆ Tuo nopeuskamerat (CSV/SVC)</strong> Asetuksista (lon,lat korjataan automaattisesti).</li>
                             <li><strong>🔎 Haku + suodatus + lähimmät</strong> POI-listaan (ei kasva loputtomaksi).</li>
@@ -390,9 +397,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🔊 NEW in v6.19: Louder POI audio + per-type sound profiles:</strong>
+                        <ul>
+                            <li><strong>POI master volume</strong> is now adjustable in Settings.</li>
+                            <li><strong>Per-type sound profiles</strong> are available for speed camera, danger, customer, reminder, and other POIs.</li>
+                            <li><strong>Test buttons</strong> let you preview each POI type sound instantly.</li>
+                        </ul>
+
                         <strong>📍 NEW in v6.17: Speed camera import + POI modal editor + map edit:</strong>
                         <ul>
                             <li><strong>⬆ Import speed cameras (CSV/SVC)</strong> from Settings (lon,lat is auto-fixed).</li>
@@ -769,9 +783,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🔊 MỚI v6.19: Âm thanh POI to hơn + cấu hình theo từng loại:</strong>
+                        <ul>
+                            <li><strong>Âm lượng POI tổng</strong> có thể chỉnh trong Cài đặt.</li>
+                            <li><strong>Hồ sơ âm thanh theo loại POI</strong> cho camera tốc độ, nguy hiểm, khách hàng, nhắc nhở và loại khác.</li>
+                            <li><strong>Nút Test</strong> giúp nghe thử âm thanh từng loại ngay lập tức.</li>
+                        </ul>
+
                         <strong>📍 MỚI v6.17: Nhập camera tốc độ + POI modal + chỉnh sửa trên bản đồ:</strong>
                         <ul>
                             <li><strong>⬆ Nhập camera tốc độ (CSV/SVC)</strong> trong Cài đặt (tự sửa lon,lat).</li>

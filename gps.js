@@ -35,32 +35,93 @@ window.ensurePoiAudioContext = function() {
     }
 }
 
-window.playPoiAlertBeep = function() {
+const POI_SOUND_PROFILE_DEFAULTS = {
+    speedcamera: 'double_beep',
+    danger: 'alarm_pulse',
+    customer: 'soft_ping',
+    reminder: 'single_chime',
+    other: 'single_chime'
+};
+
+function getPoiBeepMasterGain() {
+    try {
+        const raw = parseFloat(localStorage.getItem('poiBeepMasterGain') || '0.45');
+        if (!isFinite(raw)) return 0.45;
+        return Math.max(0, Math.min(1, raw));
+    } catch (e) {
+        return 0.45;
+    }
+}
+
+function getPoiSoundProfile(type) {
+    const t = String(type || 'other').trim().toLowerCase();
+    const fallback = POI_SOUND_PROFILE_DEFAULTS[t] || POI_SOUND_PROFILE_DEFAULTS.other;
+    try {
+        const key = `poiSoundProfile_${t}`;
+        const saved = String(localStorage.getItem(key) || '').trim().toLowerCase();
+        if (saved === 'double_beep' || saved === 'alarm_pulse' || saved === 'single_chime' || saved === 'soft_ping') {
+            return saved;
+        }
+    } catch (e) {
+        // ignore
+    }
+    return fallback;
+}
+
+function schedulePoiTone(ctx, startAt, freq, peakGain, durationSec, waveType) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = waveType || 'sine';
+    osc.frequency.setValueAtTime(freq, startAt);
+    gain.gain.setValueAtTime(0.0001, startAt);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, peakGain), startAt + Math.min(0.03, durationSec * 0.25));
+    gain.gain.exponentialRampToValueAtTime(0.0001, startAt + durationSec);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(startAt);
+    osc.stop(startAt + durationSec + 0.02);
+}
+
+window.playPoiAlertBeep = function(poiType = 'other') {
     // 1 = päällä, 0 = pois
     const enabled = localStorage.getItem('poiBeepEnabled');
     if (enabled === '0') return;
 
     const ctx = window.ensurePoiAudioContext();
     if (!ctx) return;
+    const type = String(poiType || 'other').trim().toLowerCase();
+    const profile = getPoiSoundProfile(type);
+    const master = getPoiBeepMasterGain();
+    if (master <= 0) return;
 
     const play = () => {
         try {
             if (!ctx || ctx.state !== 'running') return;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = 880;
-            gain.gain.value = 0.0001;
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-
             const t0 = ctx.currentTime;
-            gain.gain.setValueAtTime(0.0001, t0);
-            gain.gain.exponentialRampToValueAtTime(0.12, t0 + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+            if (profile === 'double_beep') {
+                const g = 0.42 * master;
+                schedulePoiTone(ctx, t0, 960, g, 0.16, 'square');
+                schedulePoiTone(ctx, t0 + 0.22, 880, g * 0.92, 0.18, 'square');
+                return;
+            }
 
-            osc.start(t0);
-            osc.stop(t0 + 0.2);
+            if (profile === 'alarm_pulse') {
+                const g = 0.36 * master;
+                schedulePoiTone(ctx, t0, 720, g, 0.14, 'sawtooth');
+                schedulePoiTone(ctx, t0 + 0.16, 780, g * 0.92, 0.14, 'sawtooth');
+                schedulePoiTone(ctx, t0 + 0.32, 840, g * 0.84, 0.16, 'sawtooth');
+                return;
+            }
+
+            if (profile === 'soft_ping') {
+                schedulePoiTone(ctx, t0, 660, 0.20 * master, 0.22, 'sine');
+                return;
+            }
+
+            // single_chime (default)
+            schedulePoiTone(ctx, t0, 740, 0.26 * master, 0.2, 'triangle');
         } catch (e) {
             // ignore
         }
@@ -810,7 +871,7 @@ function updateActivePoiToast(poi, lat, lng, now) {
     if (cooldownSec === 0 || !lastTs || (now - lastTs) >= cooldownSec * 1000) {
         poiAlertState[poi.id] = now;
         if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
-        if (poi.beepEnabled !== false && typeof window.playPoiAlertBeep === 'function') window.playPoiAlertBeep();
+        if (poi.beepEnabled !== false && typeof window.playPoiAlertBeep === 'function') window.playPoiAlertBeep(poiType);
     }
 
     // Kun ollaan käytännössä perillä, voidaan piilottaa varoitus

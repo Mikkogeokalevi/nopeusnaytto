@@ -177,6 +177,18 @@ const btnPoiImportCameras = document.getElementById('btn-poi-import-cameras');
 const inpPoiImportCameras = document.getElementById('inp-poi-import-cameras');
 const togglePoiDebug = document.getElementById('toggle-poi-debug');
 const btnPoiDebugLog = document.getElementById('btn-poi-debug-log');
+const poiMasterVolumeEl = document.getElementById('poi-master-volume');
+const poiMasterVolumeValueEl = document.getElementById('poi-master-volume-value');
+const poiSoundSelectSpeedcamera = document.getElementById('settings-poi-sound-speedcamera');
+const poiSoundSelectDanger = document.getElementById('settings-poi-sound-danger');
+const poiSoundSelectCustomer = document.getElementById('settings-poi-sound-customer');
+const poiSoundSelectReminder = document.getElementById('settings-poi-sound-reminder');
+const poiSoundSelectOther = document.getElementById('settings-poi-sound-other');
+const btnTestPoiSoundSpeedcamera = document.getElementById('btn-test-poi-sound-speedcamera');
+const btnTestPoiSoundDanger = document.getElementById('btn-test-poi-sound-danger');
+const btnTestPoiSoundCustomer = document.getElementById('btn-test-poi-sound-customer');
+const btnTestPoiSoundReminder = document.getElementById('btn-test-poi-sound-reminder');
+const btnTestPoiSoundOther = document.getElementById('btn-test-poi-sound-other');
 const poiSearchEl = document.getElementById('poi-search');
 const poiFilterTypeEl = document.getElementById('poi-filter-type');
 const btnPoiShowMore = document.getElementById('btn-poi-show-more');
@@ -1552,6 +1564,50 @@ if (btnPoiDebugLogCopy) {
     });
 }
 
+function setPoiMasterVolumeText(v) {
+    if (!poiMasterVolumeValueEl) return;
+    const pct = Math.round(Math.max(0, Math.min(1, Number(v) || 0)) * 100);
+    poiMasterVolumeValueEl.innerText = `${pct}%`;
+}
+
+function bindPoiSoundSelect(el, type) {
+    if (!el || !type) return;
+    el.addEventListener('change', () => {
+        const value = String(el.value || '').trim().toLowerCase();
+        if (!value) return;
+        localStorage.setItem(`poiSoundProfile_${type}`, value);
+        if (typeof showToast === 'function') showToast(`POI-ääni (${type}) päivitetty`);
+    });
+}
+
+function bindPoiSoundTest(btn, type) {
+    if (!btn || !type) return;
+    btn.addEventListener('click', () => {
+        if (typeof window.ensurePoiAudioContext === 'function') window.ensurePoiAudioContext();
+        if (typeof window.playPoiAlertBeep === 'function') window.playPoiAlertBeep(type);
+    });
+}
+
+if (poiMasterVolumeEl) {
+    poiMasterVolumeEl.addEventListener('input', () => {
+        const v = Math.max(0, Math.min(1, parseFloat(poiMasterVolumeEl.value) || 0));
+        localStorage.setItem('poiBeepMasterGain', String(v));
+        setPoiMasterVolumeText(v);
+    });
+}
+
+bindPoiSoundSelect(poiSoundSelectSpeedcamera, 'speedcamera');
+bindPoiSoundSelect(poiSoundSelectDanger, 'danger');
+bindPoiSoundSelect(poiSoundSelectCustomer, 'customer');
+bindPoiSoundSelect(poiSoundSelectReminder, 'reminder');
+bindPoiSoundSelect(poiSoundSelectOther, 'other');
+
+bindPoiSoundTest(btnTestPoiSoundSpeedcamera, 'speedcamera');
+bindPoiSoundTest(btnTestPoiSoundDanger, 'danger');
+bindPoiSoundTest(btnTestPoiSoundCustomer, 'customer');
+bindPoiSoundTest(btnTestPoiSoundReminder, 'reminder');
+bindPoiSoundTest(btnTestPoiSoundOther, 'other');
+
 // 4. KM-KORVAUS (UUSI v6.10)
 if (inputPricePerKm) {
     inputPricePerKm.addEventListener('change', () => {
@@ -1641,6 +1697,34 @@ window.addEventListener('DOMContentLoaded', () => {
     try {
         const savedPoiDebug = localStorage.getItem('poiDebug');
         if (togglePoiDebug) togglePoiDebug.checked = (savedPoiDebug === '1');
+    } catch (e) {}
+
+    // POI ääniasetukset
+    try {
+        const rawGain = parseFloat(localStorage.getItem('poiBeepMasterGain') || '0.45');
+        const gain = isFinite(rawGain) ? Math.max(0, Math.min(1, rawGain)) : 0.45;
+        if (poiMasterVolumeEl) poiMasterVolumeEl.value = String(gain);
+        setPoiMasterVolumeText(gain);
+
+        const defaults = {
+            speedcamera: 'double_beep',
+            danger: 'alarm_pulse',
+            customer: 'soft_ping',
+            reminder: 'single_chime',
+            other: 'single_chime'
+        };
+
+        const savedSpeedcamera = String(localStorage.getItem('poiSoundProfile_speedcamera') || defaults.speedcamera).trim().toLowerCase();
+        const savedDanger = String(localStorage.getItem('poiSoundProfile_danger') || defaults.danger).trim().toLowerCase();
+        const savedCustomer = String(localStorage.getItem('poiSoundProfile_customer') || defaults.customer).trim().toLowerCase();
+        const savedReminder = String(localStorage.getItem('poiSoundProfile_reminder') || defaults.reminder).trim().toLowerCase();
+        const savedOther = String(localStorage.getItem('poiSoundProfile_other') || defaults.other).trim().toLowerCase();
+
+        if (poiSoundSelectSpeedcamera) poiSoundSelectSpeedcamera.value = savedSpeedcamera;
+        if (poiSoundSelectDanger) poiSoundSelectDanger.value = savedDanger;
+        if (poiSoundSelectCustomer) poiSoundSelectCustomer.value = savedCustomer;
+        if (poiSoundSelectReminder) poiSoundSelectReminder.value = savedReminder;
+        if (poiSoundSelectOther) poiSoundSelectOther.value = savedOther;
     } catch (e) {}
     
     // Lataa km-hinta
