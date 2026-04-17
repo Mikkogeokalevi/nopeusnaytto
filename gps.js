@@ -34,6 +34,11 @@ var roadSpeedLimitState = {
     source: 'unknown', // exact | estimated | unknown
     roadName: '',
     roadType: '',
+    lastKnownLimitKmh: null,
+    lastKnownSource: 'unknown',
+    lastKnownRoadName: '',
+    lastKnownRoadType: '',
+    lastKnownTs: 0,
     lastFetchTs: 0,
     lastFetchLat: null,
     lastFetchLng: null,
@@ -42,6 +47,8 @@ var roadSpeedLimitState = {
 
 const ROAD_LIMIT_FETCH_INTERVAL_MS = 45000;
 const ROAD_LIMIT_FETCH_MIN_MOVE_M = 120;
+const ROAD_LIMIT_EXACT_HOLD_MS = 90000;
+const ROAD_LIMIT_ESTIMATED_HOLD_MS = 45000;
 
 function clamp01(v) {
     const n = Number(v);
@@ -220,13 +227,65 @@ function resetRoadSpeedLimitState() {
     roadSpeedLimitState.source = 'unknown';
     roadSpeedLimitState.roadName = '';
     roadSpeedLimitState.roadType = '';
+    roadSpeedLimitState.lastKnownLimitKmh = null;
+    roadSpeedLimitState.lastKnownSource = 'unknown';
+    roadSpeedLimitState.lastKnownRoadName = '';
+    roadSpeedLimitState.lastKnownRoadType = '';
+    roadSpeedLimitState.lastKnownTs = 0;
     roadSpeedLimitState.lastFetchTs = 0;
     roadSpeedLimitState.lastFetchLat = null;
     roadSpeedLimitState.lastFetchLng = null;
     roadSpeedLimitState.inFlight = false;
 }
 
+function setRoadSpeedLimitState(limitKmh, source, roadName, roadType) {
+    const limit = Number(limitKmh);
+    const src = String(source || 'unknown').toLowerCase();
+    const rn = String(roadName || '').trim();
+    const rt = String(roadType || '').trim().toLowerCase();
+
+    if (isFinite(limit) && limit > 0 && (src === 'exact' || src === 'estimated')) {
+        roadSpeedLimitState.limitKmh = Math.round(limit);
+        roadSpeedLimitState.source = src;
+        roadSpeedLimitState.roadName = rn;
+        roadSpeedLimitState.roadType = rt;
+
+        roadSpeedLimitState.lastKnownLimitKmh = Math.round(limit);
+        roadSpeedLimitState.lastKnownSource = src;
+        roadSpeedLimitState.lastKnownRoadName = rn;
+        roadSpeedLimitState.lastKnownRoadType = rt;
+        roadSpeedLimitState.lastKnownTs = Date.now();
+        return;
+    }
+
+    roadSpeedLimitState.limitKmh = null;
+    roadSpeedLimitState.source = 'unknown';
+    roadSpeedLimitState.roadName = rn;
+    roadSpeedLimitState.roadType = rt;
+}
+
 function getRoadSpeedLimitSnapshot() {
+    const now = Date.now();
+    const hasLive = isFinite(roadSpeedLimitState.limitKmh) && roadSpeedLimitState.limitKmh > 0
+        && (roadSpeedLimitState.source === 'exact' || roadSpeedLimitState.source === 'estimated');
+
+    if (!hasLive) {
+        const lastLimit = Number(roadSpeedLimitState.lastKnownLimitKmh);
+        const lastSrc = String(roadSpeedLimitState.lastKnownSource || 'unknown').toLowerCase();
+        const holdMs = (lastSrc === 'exact') ? ROAD_LIMIT_EXACT_HOLD_MS : ROAD_LIMIT_ESTIMATED_HOLD_MS;
+        const ageMs = now - Number(roadSpeedLimitState.lastKnownTs || 0);
+        if (isFinite(lastLimit) && lastLimit > 0 && ageMs >= 0 && ageMs <= holdMs && (lastSrc === 'exact' || lastSrc === 'estimated')) {
+            return {
+                limitKmh: lastLimit,
+                source: lastSrc,
+                roadName: roadSpeedLimitState.lastKnownRoadName,
+                roadType: roadSpeedLimitState.lastKnownRoadType,
+                fetchedAt: roadSpeedLimitState.lastKnownTs,
+                stale: true
+            };
+        }
+    }
+
     return {
         limitKmh: roadSpeedLimitState.limitKmh,
         source: roadSpeedLimitState.source,
@@ -330,10 +389,7 @@ function requestRoadSpeedLimit(lat, lng) {
         .then((data) => {
             const best = pickNearestRoadElement(data && data.elements ? data.elements : [], lat, lng);
             if (!best || !best.tags) {
-                roadSpeedLimitState.limitKmh = null;
-                roadSpeedLimitState.source = 'unknown';
-                roadSpeedLimitState.roadName = '';
-                roadSpeedLimitState.roadType = '';
+                setRoadSpeedLimitState(null, 'unknown', '', '');
                 return;
             }
 
@@ -344,26 +400,17 @@ function requestRoadSpeedLimit(lat, lng) {
             const rawMax = tags.maxspeed || tags['maxspeed:forward'] || tags['maxspeed:backward'] || '';
             const exact = parseMaxspeedToKmh(rawMax);
             if (isFinite(exact) && exact > 0) {
-                roadSpeedLimitState.limitKmh = exact;
-                roadSpeedLimitState.source = 'exact';
-                roadSpeedLimitState.roadName = roadName;
-                roadSpeedLimitState.roadType = roadType;
+                setRoadSpeedLimitState(exact, 'exact', roadName, roadType);
                 return;
             }
 
             const estimated = estimateSpeedLimitFromRoadType(roadType);
             if (isFinite(estimated) && estimated > 0) {
-                roadSpeedLimitState.limitKmh = estimated;
-                roadSpeedLimitState.source = 'estimated';
-                roadSpeedLimitState.roadName = roadName;
-                roadSpeedLimitState.roadType = roadType;
+                setRoadSpeedLimitState(estimated, 'estimated', roadName, roadType);
                 return;
             }
 
-            roadSpeedLimitState.limitKmh = null;
-            roadSpeedLimitState.source = 'unknown';
-            roadSpeedLimitState.roadName = roadName;
-            roadSpeedLimitState.roadType = roadType;
+            setRoadSpeedLimitState(null, 'unknown', roadName, roadType);
         })
         .catch(() => {
             // Jos haku epäonnistuu, pidä vanha arvo jos sellainen on.

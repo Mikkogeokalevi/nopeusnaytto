@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.23 OSM nopeusrajoitus + arvio-värikoodaus
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.24 OSM nopeusrajoituksen vakautus
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.23-speedlimit-osm-estimate-color'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.24-speedlimit-stabilization'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
