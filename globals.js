@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.25 (rajoituksen korostus dashboardissa)
-const APP_VERSION = "6.25"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.26 (rajoituksen osumatarkkuus + POI-toast ylemmäs)
+const APP_VERSION = "6.26"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

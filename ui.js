@@ -234,6 +234,7 @@ window.showToast = (msg, type = 'info') => {
     const toast = document.getElementById('toast-notification');
     if (!toast) return;
     toast.innerText = msg;
+    toast.classList.remove('poi-alert-toast');
     toast.classList.add('visible');
     setTimeout(() => {
         toast.classList.remove('visible');
@@ -351,6 +352,7 @@ window.showPersistentToast = (msg) => {
     const toast = document.getElementById('toast-notification');
     if (!toast) return;
     toast.innerText = msg;
+    toast.classList.add('poi-alert-toast');
     toast.classList.add('visible');
 }
 
@@ -358,6 +360,7 @@ window.hidePersistentToast = () => {
     const toast = document.getElementById('toast-notification');
     if (!toast) return;
     toast.classList.remove('visible');
+    toast.classList.remove('poi-alert-toast');
 }
 
 window.addEventListener('pointerdown', () => {

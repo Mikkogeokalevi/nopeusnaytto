@@ -624,7 +624,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 /* --- TOAST ILMOITUKSET --- */
 .toast {
     position: fixed;
-    top: 80px;
+    top: calc(env(safe-area-inset-top) + 64px);
     left: 50%;
     transform: translateX(-50%);
     background-color: #1e1e1e;
@@ -638,6 +638,10 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     opacity: 0;
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     pointer-events: none;
+}
+
+.toast.poi-alert-toast {
+    top: calc(env(safe-area-inset-top) + 44px);
 }
 .toast.visible {
     opacity: 1;

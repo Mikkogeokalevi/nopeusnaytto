@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.25 rajoituksen korostus dashboardissa
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.26 rajoitusosuma + POI-toast paikka
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.25-speedlimit-prominent-layout'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.26-speedlimit-road-match-toast-pos'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
