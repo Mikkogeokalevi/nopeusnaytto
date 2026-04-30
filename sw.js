@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.26 rajoitusosuma + POI-toast paikka
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.27 Pulse HUD nopeusnäkymä
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.26-speedlimit-road-match-toast-pos'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.27-pulse-hud-speed-view'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

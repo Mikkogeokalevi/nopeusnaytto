@@ -3,9 +3,24 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.17 (POI massatuonti + POI-modaali + karttamuokkaus)
+**Versio:** v6.27 (Pulse HUD nopeusnäkymä)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
+
+---
+
+## ⚡ **LUE ENSIN (NOPEA ORIENTOINTI)**
+
+Jos aikaa on vähän, lue nämä tässä järjestyksessä:
+
+1. `PROJECT_STATUS.md` (ajantasainen tilannekuva + viime muutokset)
+2. `APP_FLOW_MAP.md` (1-sivun kokonaisflow: login -> GPS -> dashboard -> tallennus -> history/map)
+3. `globals.js` (`APP_VERSION` + globaalit tilat)
+4. `gps.js` (GPS-looppi, POI-logiikka, nopeusrajoituslogiikka)
+5. `ui.js` (näkymät, dashboard-päivitys, toastit)
+6. `sw.js` (PWA cache/päivitysstrategia)
+
+Tavoite: uusi sessio pääsee nopeasti "kärryille" ilman koko koodikannan kahlausta.
 
 **Sovelluksen tarkoitus:**
 - GPS-pohjainen nopeusnäyttö ja ajopäiväkirja
@@ -56,6 +71,12 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
+### **Nykyinen tilanne (v6.27):**
+- POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
+- Dashboard: Pulse HUD nopeusnäkymä + keskitetty nopeusrajoituskortti (exact/estimated/unknown)
+- Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
+- POI-toast: nostettu ylemmäs ettei peitä nopeuslukemaa
+
 ---
 
 ## 🔧 **TÄRKEÄT TOIMINTAPERIAATTEET**
@@ -74,10 +95,23 @@ nopeusnaytto-main/
 1. **APP_VERSION** globals.js:ssä
 2. **Versiohistoria** help.js:ssä (3 kielellä)
 3. **Service Worker** päivitetään jokaisella versiolla (CACHE_NAME + sw.js?v=APP_VERSION)
+4. **PROJECT_STATUS.md** päivitetään jokaisen merkittävän muutoksen yhteydessä
 
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.27 - Pulse HUD nopeusnäkymä**
+- ✅ Neulanenmittarin tilalle uusi näyttävä Pulse HUD -näkymä
+- ✅ Reaktiivinen kaari + speed state -indikointi (READY/CRUISE/FAST/HYPER)
+- ✅ Asetuksissa mittarityypin nimi päivitetty "Pulse HUD"
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
+
+### **v6.26 - Nopeusrajoituksen osumatarkkuus + POI-toast paikka**
+- ✅ OSM-tievalintaan lisätty geometriapohjainen scoring (segmenttietäisyys + heading + tieluokka)
+- ✅ Rinnakkaisten/hitaiden teiden väärävalintaa vähennetty nopeissa nopeuksissa
+- ✅ POI persistent-toast siirretty ylemmäs, ettei peitä päänopeuslukemaa
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.13 - Security Fix**
 - ✅ API-avain siirretty .env-tiedostoon
@@ -144,8 +178,9 @@ nopeusnaytto-main/
 1. **Päivitä APP_VERSION** globals.js:ssä
 2. **Lisää versiohistoria** help.js:ään (3 kielellä)
 3. **Päivitä sw.js** Service Worker
-4. **Testaa** mobiilissa
-5. **Tee varmuuskopio** ennen julkaisua
+4. **Päivitä PROJECT_STATUS.md** ("viimeisin muutos" + nykytila)
+5. **Testaa** mobiilissa
+6. **Tee varmuuskopio** ennen julkaisua
 
 ---
 
@@ -198,10 +233,18 @@ Marker-objekti:
 2. **Päivitä versio** (globals.js)
 3. **Päivitä help.js** (versiohistoria)
 4. **Päivitä sw.js** (uusi cache-versio / CACHE_NAME)
-5. **Testaa** toiminnallisuus
-6. **Aja varmuuskopioi.bat**
-7. **Aja vie_githubiin.bat**
-8. **Testaa PWA-päivitys** mobiilissa
+5. **Päivitä PROJECT_STATUS.md** (mitä muuttui, miksi, mihin tiedostoihin)
+6. **Testaa** toiminnallisuus
+7. **Aja varmuuskopioi.bat**
+8. **Aja vie_githubiin.bat**
+9. **Testaa PWA-päivitys** mobiilissa
+
+### **Säännöllinen ylläpito (AI-ohjeiden päivitys):**
+- Päivitä `AI_RULES.md` vähintään silloin, kun:
+  - tulee uusi pääversio tai merkittävä ominaisuusmuutos
+  - arkkitehtuuria tai työnkulkua muutetaan
+  - huomataan, että ohjeistus ei enää vastaa koodia
+- Pidä `PROJECT_STATUS.md` aina ensisijaisena "tilanne nyt" -dokumenttina.
 
 ---
 
@@ -272,9 +315,8 @@ const VERSION_HISTORY = [
 
 ## 🎯 **TULEN TÄRKEIN TEHTÄVÄ:**
 
-**HETI TÄMÄN JÄLKEEN:**
-1. **Päivitä help.js** - lisää v6.14 versiohistoriaan
-2. **Päivitys sw.js** - uusi cache-versio
-3. **Testaa** uudet ominaisuudet
+- Pidä käyttökokemus luotettavana mobiilissa ja autokäytössä.
+- Pidä dokumentaatio synkassa koodin kanssa (`AI_RULES.md` + `PROJECT_STATUS.md`).
+- Pidä PWA-päivityspolku kunnossa jokaisessa julkaistavassa muutoksessa.
 
 **MUISTA:** Tämä on suomalainen sovellus suomalaiselle käyttäjälle - laatu ja kattavuus ovat tärkeimpiä!

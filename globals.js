@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.26 (rajoituksen osumatarkkuus + POI-toast ylemmäs)
-const APP_VERSION = "6.26"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.27 (Pulse HUD nopeusnäkymä)
+const APP_VERSION = "6.27"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.23 ROAD SPEED LIMIT DISPLAY)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.27 PULSE HUD SPEED VIEW)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,16 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>✨ UUTTA v6.27: Pulse HUD -mittarinäkymä:</strong>
+                        <ul>
+                            <li><strong>Neulanenmittari korvattu</strong> näyttävällä Pulse HUD -nopeusnäkymällä.</li>
+                            <li><strong>Reaktiivinen kaari + tilat</strong> (READY / CRUISE / FAST / HYPER) tekee nopeudesta selkeästi luettavan.</li>
+                            <li><strong>Asetuksissa mittarityyppi</strong> näyttää nyt valinnan "Pulse HUD".</li>
+                        </ul>
+
                         <strong>🛣️ UUTTA v6.23: Tien nopeusrajoitus näkyy mittaristossa:</strong>
                         <ul>
                             <li><strong>Tiekohtainen rajoitus</strong> haetaan OSM-datasta sijainnin perusteella.</li>
@@ -424,9 +431,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>✨ NEW in v6.27: Pulse HUD speed view:</strong>
+                        <ul>
+                            <li><strong>The old needle gauge was replaced</strong> with a premium Pulse HUD speed display.</li>
+                            <li><strong>Reactive arc + speed states</strong> (READY / CRUISE / FAST / HYPER) improve readability while driving.</li>
+                            <li><strong>Settings speedometer style</strong> now shows the option "Pulse HUD".</li>
+                        </ul>
+
                         <strong>🛣️ NEW in v6.23: Road speed limit on dashboard:</strong>
                         <ul>
                             <li><strong>Road-specific speed limit</strong> is fetched from OSM data near your location.</li>
@@ -837,9 +851,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>✨ MỚI v6.27: giao diện tốc độ Pulse HUD:</strong>
+                        <ul>
+                            <li><strong>Đồng hồ kim cũ đã được thay</strong> bằng giao diện Pulse HUD nổi bật hơn.</li>
+                            <li><strong>Cung phản hồi + trạng thái tốc độ</strong> (READY / CRUISE / FAST / HYPER) giúp dễ đọc khi lái xe.</li>
+                            <li><strong>Trong cài đặt kiểu đồng hồ</strong> giờ có lựa chọn "Pulse HUD".</li>
+                        </ul>
+
                         <strong>🛣️ MỚI v6.23: hiển thị giới hạn tốc độ trên dashboard:</strong>
                         <ul>
                             <li><strong>Giới hạn theo tuyến đường</strong> lấy từ dữ liệu OSM gần vị trí hiện tại.</li>

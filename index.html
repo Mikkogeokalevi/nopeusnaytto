@@ -202,12 +202,20 @@
                 </button>
 
                 <div class="huge-speed-container">
-                    <!-- UUSI: Neulanenmittari -->
+                    <!-- UUSI: Pulse HUD -wow-näkymä -->
                     <div class="speedometer-container" id="speedometer-container" style="display:none;">
-                        <canvas id="speedometer-canvas" width="200" height="200"></canvas>
-                        <div class="speed-center-text">
-                            <span id="dash-speed-gauge" class="huge-speed-gauge">0</span>
-                            <span class="huge-unit-gauge">km/h</span>
+                        <div class="speed-orb-halo"></div>
+                        <div class="speed-orb-core">
+                            <div class="speed-arc-track"></div>
+                            <div class="speed-arc-fill" id="speed-arc-fill"></div>
+                            <div class="speed-orb-inner">
+                                <span id="dash-speed-gauge" class="huge-speed-gauge">0</span>
+                                <span class="huge-unit-gauge">km/h</span>
+                                <span class="wow-speed-state" id="wow-speed-state">READY</span>
+                            </div>
+                        </div>
+                        <div class="wow-bars" id="wow-bars">
+                            <span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span>
                         </div>
                     </div>
                     <!-- Vanha digitaalinen -->
@@ -411,7 +419,7 @@
                         <span>Nopeusmittarin tyyli:</span>
                         <select id="speedometer-style" class="subject-input" style="width:120px;">
                             <option value="digital">Digitaalinen</option>
-                            <option value="gauge">Neulanenmittari</option>
+                            <option value="gauge">Pulse HUD</option>
                             <option value="both">Molemmat</option>
                         </select>
                     </div>
@@ -871,16 +879,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.26"></script>
-    <script src="visuals.js?v=6.26"></script>
-    <script src="ui.js?v=6.26"></script>
-    <script src="auth.js?v=6.26"></script>
-    <script src="map.js?v=6.26"></script>
-    <script src="gps.js?v=6.26"></script>
-    <script src="garage.js?v=6.26"></script>
-    <script src="history.js?v=6.26"></script>
-    <script src="help.js?v=6.26"></script>
+    <script src="globals.js?v=6.27"></script>
+    <script src="visuals.js?v=6.27"></script>
+    <script src="ui.js?v=6.27"></script>
+    <script src="auth.js?v=6.27"></script>
+    <script src="map.js?v=6.27"></script>
+    <script src="gps.js?v=6.27"></script>
+    <script src="garage.js?v=6.27"></script>
+    <script src="history.js?v=6.27"></script>
+    <script src="help.js?v=6.27"></script>
     
-    <script src="app.js?v=6.26"></script>
+    <script src="app.js?v=6.27"></script>
 </body>
 </html>

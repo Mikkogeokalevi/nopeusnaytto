@@ -12,109 +12,44 @@ var maxDataPoints = 30; // 30 sekuntia dataa
 var speedGraphCanvas = null;
 var altitudeGraphCanvas = null;
 var gforceGraphCanvas = null;
-var speedometerCanvas = null;
 
 // Graafien kontekstit
 var speedGraphCtx = null;
 var altitudeGraphCtx = null;
 var gforceGraphCtx = null;
-var speedometerCtx = null;
 
 // Asetukset
 var speedometerStyle = 'digital'; // digital, gauge, both
 var showLiveGraphs = false;
 
 // =========================================================
-// 1. NOPEUSMITTARIN PIIRTO
+// 1. PULSE HUD - NOPEUSNÄYTTÖ
 // =========================================================
 
-function drawSpeedometer(speed) {
-    if (!speedometerCanvas || !speedometerCtx) return;
-    
-    const centerX = speedometerCanvas.width / 2;
-    const centerY = speedometerCanvas.height / 2;
-    const radius = 80;
-    
-    // Tyhjennä canvas
-    speedometerCtx.clearRect(0, 0, speedometerCanvas.width, speedometerCanvas.height);
-    
-    // Piirrä ulkorengas
-    speedometerCtx.beginPath();
-    speedometerCtx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    speedometerCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border-color');
-    speedometerCtx.lineWidth = 4;
-    speedometerCtx.stroke();
-    
-    // Piirrä asteikko (0-180 km/h)
-    for (let i = 0; i <= 180; i += 20) {
-        const angle = (i / 180) * Math.PI + Math.PI;
-        const x1 = centerX + Math.cos(angle) * (radius - 10);
-        const y1 = centerY + Math.sin(angle) * (radius - 10);
-        const x2 = centerX + Math.cos(angle) * (radius - 20);
-        const y2 = centerY + Math.sin(angle) * (radius - 20);
-        
-        speedometerCtx.beginPath();
-        speedometerCtx.moveTo(x1, y1);
-        speedometerCtx.lineTo(x2, y2);
-        speedometerCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--subtext-color');
-        speedometerCtx.lineWidth = 2;
-        speedometerCtx.stroke();
-    }
-    
-    // Piirrä värialueet
-    const greenAngle = (80 / 180) * Math.PI + Math.PI;
-    const yellowAngle = (120 / 180) * Math.PI + Math.PI;
-    
-    // Vihreä alue (0-80 km/h)
-    speedometerCtx.beginPath();
-    speedometerCtx.arc(centerX, centerY, radius - 5, Math.PI, greenAngle, false);
-    speedometerCtx.strokeStyle = '#00e676';
-    speedometerCtx.lineWidth = 6;
-    speedometerCtx.stroke();
-    
-    // Keltainen alue (80-120 km/h)
-    speedometerCtx.beginPath();
-    speedometerCtx.arc(centerX, centerY, radius - 5, greenAngle, yellowAngle, false);
-    speedometerCtx.strokeStyle = '#ff9800';
-    speedometerCtx.lineWidth = 6;
-    speedometerCtx.stroke();
-    
-    // Punainen alue (120-180 km/h)
-    speedometerCtx.beginPath();
-    speedometerCtx.arc(centerX, centerY, radius - 5, yellowAngle, 2 * Math.PI, false);
-    speedometerCtx.strokeStyle = '#ff1744';
-    speedometerCtx.lineWidth = 6;
-    speedometerCtx.stroke();
-    
-    // Piirrä neula
-    const needleAngle = (Math.min(speed, 180) / 180) * Math.PI + Math.PI;
-    const needleLength = radius - 25;
-    
-    speedometerCtx.save();
-    speedometerCtx.translate(centerX, centerY);
-    speedometerCtx.rotate(needleAngle);
-    
-    speedometerCtx.beginPath();
-    speedometerCtx.moveTo(-5, 0);
-    speedometerCtx.lineTo(0, -needleLength);
-    speedometerCtx.lineTo(5, 0);
-    speedometerCtx.closePath();
-    
-    // Neulan väri nopeuden mukaan
-    let needleColor = '#00e676';
-    if (speed > 120) needleColor = '#ff1744';
-    else if (speed > 80) needleColor = '#ff9800';
-    
-    speedometerCtx.fillStyle = needleColor;
-    speedometerCtx.fill();
-    
-    speedometerCtx.restore();
-    
-    // Piirrä keskipiste
-    speedometerCtx.beginPath();
-    speedometerCtx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
-    speedometerCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
-    speedometerCtx.fill();
+function updatePulseHud(speed) {
+    const arcFill = document.getElementById('speed-arc-fill');
+    const speedState = document.getElementById('wow-speed-state');
+    const barsWrap = document.getElementById('wow-bars');
+    const bars = barsWrap ? barsWrap.querySelectorAll('.wow-bar') : [];
+    const root = document.getElementById('speedometer-container');
+    if (!arcFill || !speedState || !root) return;
+
+    const s = Math.max(0, Number(speed) || 0);
+    const ratio = Math.max(0, Math.min(1, s / 180));
+    const fillDeg = -215 + (ratio * 250);
+    arcFill.style.setProperty('--arc-end-deg', `${fillDeg}deg`);
+
+    let state = 'CRUISE';
+    if (s < 5) state = 'READY';
+    else if (s >= 130) state = 'HYPER';
+    else if (s >= 90) state = 'FAST';
+    speedState.textContent = state;
+
+    const activeBars = Math.round(ratio * bars.length);
+    bars.forEach((bar, idx) => {
+        if (idx < activeBars) bar.classList.add('active');
+        else bar.classList.remove('active');
+    });
 }
 
 // =========================================================
@@ -218,8 +153,8 @@ function updateSpeedometer(speed) {
             }
         }
     }
-    
-    drawSpeedometer(speed);
+
+    updatePulseHud(speed);
 }
 
 function updateGraphs(speed, altitude, gforce) {
@@ -303,13 +238,11 @@ function updateSpeedometerStyle(style) {
 
 function initVisuals() {
     // Hae canvas-elementit
-    speedometerCanvas = document.getElementById('speedometer-canvas');
     speedGraphCanvas = document.getElementById('speed-graph');
     altitudeGraphCanvas = document.getElementById('altitude-graph');
     gforceGraphCanvas = document.getElementById('gforce-graph');
     
     // Hae kontekstit
-    if (speedometerCanvas) speedometerCtx = speedometerCanvas.getContext('2d');
     if (speedGraphCanvas) speedGraphCtx = speedGraphCanvas.getContext('2d');
     if (altitudeGraphCanvas) altitudeGraphCtx = altitudeGraphCanvas.getContext('2d');
     if (gforceGraphCanvas) gforceGraphCtx = gforceGraphCanvas.getContext('2d');
@@ -329,10 +262,6 @@ function initVisuals() {
 
     // Varmista canvaksille järkevät mitat myös silloin kun näkymä oli aluksi piilossa
     // (piilossa olevissa elementeissä canvas voi jäädä "0x0" ja näyttää tyhjältä)
-    if (speedometerCanvas) {
-        if (!speedometerCanvas.width || speedometerCanvas.width < 50) speedometerCanvas.width = 200;
-        if (!speedometerCanvas.height || speedometerCanvas.height < 50) speedometerCanvas.height = 200;
-    }
     if (speedGraphCanvas) {
         if (!speedGraphCanvas.width || speedGraphCanvas.width < 50) speedGraphCanvas.width = 150;
         if (!speedGraphCanvas.height || speedGraphCanvas.height < 30) speedGraphCanvas.height = 60;
@@ -348,7 +277,7 @@ function initVisuals() {
 
     // Ensipiirto (ettei mittari/graafit näytä tyhjältä ennen ensimmäistä GPS-päivitystä)
     try {
-        drawSpeedometer(0);
+        updatePulseHud(0);
         drawSpeedGraph();
         drawAltitudeGraph();
         drawGforceGraph();
