@@ -10,31 +10,28 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.27`
+- **Nykyversio:** `v6.28`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
-  - Dashboardin luettavuus ajon aikana (Pulse HUD + toastit + rajoituskortti)
+  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + toastit + rajoituskortti)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
 
-### v6.27 - Pulse HUD nopeusnäkymä (WAU-uudistus)
+### v6.28 - HUD-väriteemat + Velocity Stage (erityisnäkymä)
 
 **Mitä muutettiin:**
-1. Vanha neulanenmittari poistettiin käytännöstä ja korvattiin Pulse HUD -näkymällä.
-2. Uusi nopeusnäkymä sisältää:
-   - reaktiivisen värikaaren
-   - nopeustilat (READY / CRUISE / FAST / HYPER)
-   - dynaamiset tehopalkit
-3. Asetusten mittarityypin valinta päivitettiin näyttämään "Pulse HUD".
+1. Lisättiin kaksi valittavaa HUD-väriteemaa: Cyber Blue ja Sunset Gold.
+2. Lisättiin täysin uusi nopeusnäkymä: Velocity Stage.
+3. Mittarityyppiin lisättiin uusi valinta "Velocity Stage" (Pulse HUDin rinnalle).
 
 **Tiedostot:**
-- `index.html` (uusi speedometer DOM-rakenne + asetustekstit)
-- `style.css` (Pulse HUD visuaalinen ilme + animaatiot)
-- `visuals.js` (Pulse HUD renderöinti + tilapäivitys)
-- `help.js` (v6.27 changelog FI/EN/VI)
+- `index.html` (uusi Velocity Stage -DOM + HUD-theme valinta)
+- `style.css` (HUD theme -tokenit + Velocity Stage -animaatiot)
+- `visuals.js` (theme-hallinta + Velocity Stage päivityslogiikka)
+- `help.js` (v6.28 changelog FI/EN/VI)
 - `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
 
 ---

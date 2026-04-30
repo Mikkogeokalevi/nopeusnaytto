@@ -2,8 +2,27 @@
    UUSI V6.14 - ANIMOITU NOPEUSMITTARI & GRAAFIT
    ========================================================= */
 
+/* HUD-väriteemat */
+body.hud-theme-cyber-blue {
+    --hud-primary: #47d2ff;
+    --hud-secondary: #00e676;
+    --hud-warn: #ffb300;
+    --hud-hot: #ff1744;
+}
+
+body.hud-theme-sunset-gold {
+    --hud-primary: #ffcc5c;
+    --hud-secondary: #ff8f3f;
+    --hud-warn: #ff5b6b;
+    --hud-hot: #ff2e63;
+}
+
 /* Pulse HUD - wow-näkymä */
 .speedometer-container {
+    --hud-primary: #47d2ff;
+    --hud-secondary: #00e676;
+    --hud-warn: #ffb300;
+    --hud-hot: #ff1744;
     position: relative;
     width: 235px;
     height: 235px;
@@ -17,8 +36,8 @@
     inset: 0;
     border-radius: 50%;
     background:
-        radial-gradient(circle at 50% 50%, rgba(41,121,255,0.22) 0%, rgba(41,121,255,0.03) 58%, transparent 72%),
-        conic-gradient(from 0deg, rgba(0,230,118,0.24), rgba(41,121,255,0.28), rgba(255,152,0,0.24), rgba(0,230,118,0.24));
+        radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--hud-primary) 30%, transparent) 0%, rgba(41,121,255,0.03) 58%, transparent 72%),
+        conic-gradient(from 0deg, color-mix(in srgb, var(--hud-secondary) 70%, transparent), color-mix(in srgb, var(--hud-primary) 70%, transparent), color-mix(in srgb, var(--hud-warn) 72%, transparent), color-mix(in srgb, var(--hud-secondary) 70%, transparent));
     filter: blur(16px) saturate(130%);
     opacity: 0.9;
     animation: hudHaloPulse 2.8s ease-in-out infinite;
@@ -56,10 +75,10 @@
     background:
         conic-gradient(
             from -215deg,
-            #00e676 0deg,
-            #47d2ff 105deg,
-            #ffb300 195deg,
-            #ff1744 250deg,
+            var(--hud-secondary) 0deg,
+            var(--hud-primary) 105deg,
+            var(--hud-warn) 195deg,
+            var(--hud-hot) 250deg,
             transparent 250deg 360deg
         );
     -webkit-mask: radial-gradient(circle, transparent 70%, #000 72%);
@@ -90,7 +109,7 @@
     color: var(--speed-color);
     display: block;
     line-height: 0.9;
-    text-shadow: 0 0 18px rgba(41,121,255,0.45);
+    text-shadow: 0 0 18px color-mix(in srgb, var(--hud-primary) 65%, transparent);
 }
 
 .huge-unit-gauge {
@@ -106,9 +125,9 @@
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 1.8px;
-    color: #8fdcff;
-    background: rgba(41,121,255,0.16);
-    border: 1px solid rgba(65,190,255,0.35);
+    color: color-mix(in srgb, var(--hud-primary) 75%, white);
+    background: color-mix(in srgb, var(--hud-primary) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--hud-primary) 45%, transparent);
     padding: 3px 10px;
     border-radius: 999px;
 }
@@ -132,9 +151,146 @@
 }
 
 .wow-bar.active {
-    background: linear-gradient(90deg, #00e676, #43d3ff);
-    box-shadow: 0 0 8px rgba(67,211,255,0.65);
+    background: linear-gradient(90deg, var(--hud-secondary), var(--hud-primary));
+    box-shadow: 0 0 8px color-mix(in srgb, var(--hud-primary) 75%, transparent);
     transform: scaleY(1.35);
+}
+
+/* Velocity Stage - uusi erikoisnäkymä */
+.velocity-stage-container {
+    --hud-primary: #47d2ff;
+    --hud-secondary: #00e676;
+    --hud-warn: #ffb300;
+    --hud-hot: #ff1744;
+    --stage-shift: 0px;
+    position: relative;
+    width: min(390px, 96vw);
+    margin: 0 auto;
+    min-height: 196px;
+    border-radius: 20px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--hud-primary) 24%, transparent), transparent 50%),
+        radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--hud-secondary) 24%, transparent), transparent 50%),
+        linear-gradient(155deg, rgba(8,10,16,0.98), rgba(15,18,26,0.94));
+    border: 1px solid color-mix(in srgb, var(--hud-primary) 35%, rgba(255,255,255,0.12));
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.45),
+        inset 0 0 34px rgba(255,255,255,0.04);
+    padding: 18px 16px 14px;
+}
+
+.velocity-scanline,
+.velocity-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.velocity-scanline {
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.045), rgba(255,255,255,0.045) 2px, transparent 2px, transparent 6px);
+    mix-blend-mode: soft-light;
+    opacity: 0.4;
+}
+
+.velocity-grid {
+    background:
+        linear-gradient(to right, color-mix(in srgb, var(--hud-primary) 18%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in srgb, var(--hud-primary) 18%, transparent) 1px, transparent 1px);
+    background-size: 24px 24px;
+    transform: translateX(calc(var(--stage-shift) * -1));
+    transition: transform 0.32s ease-out;
+    opacity: 0.32;
+}
+
+.velocity-track-shell {
+    position: relative;
+    width: 100%;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.12);
+    overflow: hidden;
+}
+
+.velocity-track-fill {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--hud-secondary), var(--hud-primary), var(--hud-warn));
+    transition: width 0.3s ease-out;
+}
+
+.velocity-track-marker {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 16px color-mix(in srgb, var(--hud-primary) 80%, transparent);
+    transform: translate(-50%, -50%);
+    transition: left 0.3s ease-out;
+}
+
+.velocity-main-readout {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.velocity-speed {
+    font-size: clamp(58px, 16vw, 88px);
+    line-height: 0.88;
+    font-weight: 900;
+    letter-spacing: -2px;
+    color: #f7fbff;
+    text-shadow:
+        0 0 15px color-mix(in srgb, var(--hud-primary) 70%, transparent),
+        0 0 26px color-mix(in srgb, var(--hud-secondary) 30%, transparent);
+}
+
+.velocity-unit {
+    font-size: 13px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--hud-primary) 85%, white);
+}
+
+.velocity-status {
+    display: block;
+    width: fit-content;
+    margin: 8px auto 10px;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    color: #fff;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--hud-primary) 70%, transparent), color-mix(in srgb, var(--hud-warn) 65%, transparent));
+    border: 1px solid color-mix(in srgb, var(--hud-primary) 40%, rgba(255,255,255,0.2));
+}
+
+.velocity-lanes {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    gap: 4px;
+}
+
+.velocity-lane {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.14);
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.velocity-lane.active {
+    background: linear-gradient(90deg, var(--hud-primary), var(--hud-secondary));
+    box-shadow: 0 0 10px color-mix(in srgb, var(--hud-primary) 75%, transparent);
+    transform: scaleY(1.28);
 }
 
 @keyframes hudHaloPulse {
@@ -149,6 +305,12 @@
     }
     .huge-speed-gauge { font-size: 54px; }
     .wow-bars { width: min(180px, 86vw); }
+    .velocity-stage-container {
+        min-height: 178px;
+        padding: 14px 12px 12px;
+    }
+    .velocity-lanes { gap: 3px; }
+    .velocity-lane { height: 7px; }
 }
 
 /* Reaaliaikaiset graafit */

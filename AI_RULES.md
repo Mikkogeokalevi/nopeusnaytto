@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.27 (Pulse HUD nopeusnäkymä)
+**Versio:** v6.28 (Velocity Stage + HUD-väriteemat)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,9 +71,9 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.27):**
+### **Nykyinen tilanne (v6.28):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
-- Dashboard: Pulse HUD nopeusnäkymä + keskitetty nopeusrajoituskortti (exact/estimated/unknown)
+- Dashboard: Pulse HUD + Velocity Stage nopeusnäkymät + keskitetty nopeusrajoituskortti (exact/estimated/unknown)
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
 - POI-toast: nostettu ylemmäs ettei peitä nopeuslukemaa
 
@@ -100,6 +100,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.28 - Velocity Stage + HUD-väriteemat**
+- ✅ Lisätty kaksi HUD-väriteemaa (Cyber Blue / Sunset Gold)
+- ✅ Lisätty täysin uusi Velocity Stage -nopeusnäkymä
+- ✅ Asetuksiin lisätty uusi mittarityyppi "Velocity Stage"
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.27 - Pulse HUD nopeusnäkymä**
 - ✅ Neulanenmittarin tilalle uusi näyttävä Pulse HUD -näkymä

@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.27 Pulse HUD nopeusnäkymä
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.28 Velocity Stage + HUD-väriteemat
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.27-pulse-hud-speed-view'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.28-velocity-stage-hud-themes'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

@@ -218,6 +218,25 @@
                             <span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span>
                         </div>
                     </div>
+
+                    <!-- UUSI: Velocity Stage - erityisnäkymä -->
+                    <div class="velocity-stage-container" id="velocity-stage-container" style="display:none;">
+                        <div class="velocity-scanline"></div>
+                        <div class="velocity-grid"></div>
+                        <div class="velocity-track-shell">
+                            <div class="velocity-track-fill" id="velocity-track-fill"></div>
+                            <div class="velocity-track-marker" id="velocity-track-marker"></div>
+                        </div>
+                        <div class="velocity-main-readout">
+                            <span class="velocity-speed" id="dash-speed-cinema">0</span>
+                            <span class="velocity-unit">km/h</span>
+                        </div>
+                        <span class="velocity-status" id="velocity-status">READY</span>
+                        <div class="velocity-lanes" id="velocity-lanes">
+                            <span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span><span class="velocity-lane"></span>
+                        </div>
+                    </div>
+
                     <!-- Vanha digitaalinen -->
                     <div class="digital-speed-container" id="digital-speed-container">
                         <span id="dash-speed" class="huge-speed">0.0</span>
@@ -417,10 +436,19 @@
                     
                     <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:15px;">
                         <span>Nopeusmittarin tyyli:</span>
-                        <select id="speedometer-style" class="subject-input" style="width:120px;">
+                        <select id="speedometer-style" class="subject-input" style="width:150px;">
                             <option value="digital">Digitaalinen</option>
                             <option value="gauge">Pulse HUD</option>
+                            <option value="cinema">Velocity Stage</option>
                             <option value="both">Molemmat</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:15px;">
+                        <span>HUD-väriteema:</span>
+                        <select id="speed-hud-theme" class="subject-input" style="width:150px;">
+                            <option value="cyber-blue">Cyber Blue</option>
+                            <option value="sunset-gold">Sunset Gold</option>
                         </select>
                     </div>
                     
@@ -879,16 +907,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.27"></script>
-    <script src="visuals.js?v=6.27"></script>
-    <script src="ui.js?v=6.27"></script>
-    <script src="auth.js?v=6.27"></script>
-    <script src="map.js?v=6.27"></script>
-    <script src="gps.js?v=6.27"></script>
-    <script src="garage.js?v=6.27"></script>
-    <script src="history.js?v=6.27"></script>
-    <script src="help.js?v=6.27"></script>
+    <script src="globals.js?v=6.28"></script>
+    <script src="visuals.js?v=6.28"></script>
+    <script src="ui.js?v=6.28"></script>
+    <script src="auth.js?v=6.28"></script>
+    <script src="map.js?v=6.28"></script>
+    <script src="gps.js?v=6.28"></script>
+    <script src="garage.js?v=6.28"></script>
+    <script src="history.js?v=6.28"></script>
+    <script src="help.js?v=6.28"></script>
     
-    <script src="app.js?v=6.27"></script>
+    <script src="app.js?v=6.28"></script>
 </body>
 </html>

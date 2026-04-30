@@ -19,8 +19,21 @@ var altitudeGraphCtx = null;
 var gforceGraphCtx = null;
 
 // Asetukset
-var speedometerStyle = 'digital'; // digital, gauge, both
+var speedometerStyle = 'digital'; // digital, gauge, cinema, both
+var speedHudTheme = 'cyber-blue'; // cyber-blue, sunset-gold
 var showLiveGraphs = false;
+
+function applyHudTheme(theme) {
+    const body = document.body;
+    if (!body) return;
+
+    const normalized = theme === 'sunset-gold' ? 'sunset-gold' : 'cyber-blue';
+    body.classList.remove('hud-theme-cyber-blue', 'hud-theme-sunset-gold');
+    body.classList.add(`hud-theme-${normalized}`);
+    speedHudTheme = normalized;
+
+    localStorage.setItem('speedHudTheme', normalized);
+}
 
 // =========================================================
 // 1. PULSE HUD - NOPEUSNÄYTTÖ
@@ -49,6 +62,38 @@ function updatePulseHud(speed) {
     bars.forEach((bar, idx) => {
         if (idx < activeBars) bar.classList.add('active');
         else bar.classList.remove('active');
+    });
+}
+
+function updateVelocityStage(speed) {
+    const speedText = document.getElementById('dash-speed-cinema');
+    const status = document.getElementById('velocity-status');
+    const trackFill = document.getElementById('velocity-track-fill');
+    const marker = document.getElementById('velocity-track-marker');
+    const stage = document.getElementById('velocity-stage-container');
+    const lanesWrap = document.getElementById('velocity-lanes');
+    const lanes = lanesWrap ? lanesWrap.querySelectorAll('.velocity-lane') : [];
+    if (!speedText || !status || !trackFill || !marker || !stage) return;
+
+    const s = Math.max(0, Number(speed) || 0);
+    const ratio = Math.max(0, Math.min(1, s / 180));
+    const pct = Math.round(ratio * 100);
+
+    speedText.textContent = Math.round(s);
+    trackFill.style.width = `${pct}%`;
+    marker.style.left = `${pct}%`;
+    stage.style.setProperty('--stage-shift', `${Math.round(ratio * 32)}px`);
+
+    let state = 'READY';
+    if (s >= 135) state = 'WARP';
+    else if (s >= 95) state = 'SURGE';
+    else if (s >= 30) state = 'FLOW';
+    status.textContent = state;
+
+    const active = Math.round(ratio * lanes.length);
+    lanes.forEach((lane, idx) => {
+        if (idx < active) lane.classList.add('active');
+        else lane.classList.remove('active');
     });
 }
 
@@ -126,6 +171,9 @@ function drawGforceGraph() {
 
 function updateSpeedometer(speed) {
     const speedElement = document.getElementById('dash-speed-gauge');
+    const speedCinema = document.getElementById('dash-speed-cinema');
+    if (speedCinema) speedCinema.textContent = Math.round(speed);
+
     if (speedElement) {
         speedElement.textContent = Math.round(speed);
         
@@ -155,6 +203,7 @@ function updateSpeedometer(speed) {
     }
 
     updatePulseHud(speed);
+    updateVelocityStage(speed);
 }
 
 function updateGraphs(speed, altitude, gforce) {
@@ -203,27 +252,37 @@ function updateGIndicator(gx, gy) {
 // =========================================================
 
 function updateSpeedometerStyle(style) {
-    speedometerStyle = style;
+    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'gauge') ? style : 'digital';
     
     const digitalContainer = document.getElementById('digital-speed-container');
-    const gaugeContainer = document.getElementById('speedometer-container');
+    const pulseHudContainer = document.getElementById('speedometer-container');
+    const velocityStageContainer = document.getElementById('velocity-stage-container');
     const graphsContainer = document.getElementById('live-graphs-container');
     
     // Näytä/piilota elementit
-    switch(style) {
+    switch(speedometerStyle) {
         case 'digital':
             if (digitalContainer) digitalContainer.style.display = 'block';
-            if (gaugeContainer) gaugeContainer.style.display = 'none';
+            if (pulseHudContainer) pulseHudContainer.style.display = 'none';
+            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'gauge':
             if (digitalContainer) digitalContainer.style.display = 'none';
-            if (gaugeContainer) gaugeContainer.style.display = 'block';
+            if (pulseHudContainer) pulseHudContainer.style.display = 'block';
+            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
+            if (graphsContainer) graphsContainer.style.display = 'none';
+            break;
+        case 'cinema':
+            if (digitalContainer) digitalContainer.style.display = 'none';
+            if (pulseHudContainer) pulseHudContainer.style.display = 'none';
+            if (velocityStageContainer) velocityStageContainer.style.display = 'block';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'both':
             if (digitalContainer) digitalContainer.style.display = 'none';
-            if (gaugeContainer) gaugeContainer.style.display = 'block';
+            if (pulseHudContainer) pulseHudContainer.style.display = 'block';
+            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (graphsContainer) graphsContainer.style.display = 'block';
             break;
     }
@@ -256,6 +315,12 @@ function initVisuals() {
             styleSelect.value = savedStyle;
         }
     }
+
+    const savedHudTheme = localStorage.getItem('speedHudTheme');
+    if (savedHudTheme) speedHudTheme = savedHudTheme;
+    applyHudTheme(speedHudTheme);
+    const hudThemeSelect = document.getElementById('speed-hud-theme');
+    if (hudThemeSelect) hudThemeSelect.value = speedHudTheme;
     
     // Aseta alkuarvot
     updateSpeedometerStyle(speedometerStyle);
@@ -278,6 +343,7 @@ function initVisuals() {
     // Ensipiirto (ettei mittari/graafit näytä tyhjältä ennen ensimmäistä GPS-päivitystä)
     try {
         updatePulseHud(0);
+        updateVelocityStage(0);
         drawSpeedGraph();
         drawAltitudeGraph();
         drawGforceGraph();
@@ -290,6 +356,12 @@ function initVisuals() {
     if (styleSelect) {
         styleSelect.addEventListener('change', (e) => {
             updateSpeedometerStyle(e.target.value);
+        });
+    }
+
+    if (hudThemeSelect) {
+        hudThemeSelect.addEventListener('change', (e) => {
+            applyHudTheme(e.target.value);
         });
     }
     
@@ -305,3 +377,4 @@ window.updateSpeedometer = updateSpeedometer;
 window.updateGraphs = updateGraphs;
 window.updateGIndicator = updateGIndicator;
 window.updateSpeedometerStyle = updateSpeedometerStyle;
+window.applyHudTheme = applyHudTheme;

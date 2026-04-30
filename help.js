@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.27 PULSE HUD SPEED VIEW)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.28 VELOCITY STAGE + HUD THEMES)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,16 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🌈 UUTTA v6.28: HUD-väriteemat + Velocity Stage:</strong>
+                        <ul>
+                            <li><strong>Kaksi erillistä HUD-väriteemaa</strong> (Cyber Blue / Sunset Gold).</li>
+                            <li><strong>Täysin uusi näkymä</strong> "Velocity Stage" tuo futuristisen nopeusnäkymän (track + lane + state).</li>
+                            <li><strong>Nopeusmittarin tyyliin lisätty</strong> valinta "Velocity Stage".</li>
+                        </ul>
+
                         <strong>✨ UUTTA v6.27: Pulse HUD -mittarinäkymä:</strong>
                         <ul>
                             <li><strong>Neulanenmittari korvattu</strong> näyttävällä Pulse HUD -nopeusnäkymällä.</li>
@@ -431,9 +438,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🌈 NEW in v6.28: HUD themes + Velocity Stage:</strong>
+                        <ul>
+                            <li><strong>Two dedicated HUD color themes</strong> (Cyber Blue / Sunset Gold).</li>
+                            <li><strong>A completely new special view</strong> "Velocity Stage" adds a futuristic speed stage (track + lanes + state).</li>
+                            <li><strong>Speedometer style settings</strong> now include "Velocity Stage".</li>
+                        </ul>
+
                         <strong>✨ NEW in v6.27: Pulse HUD speed view:</strong>
                         <ul>
                             <li><strong>The old needle gauge was replaced</strong> with a premium Pulse HUD speed display.</li>
@@ -851,9 +865,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🌈 MỚI v6.28: chủ đề HUD + Velocity Stage:</strong>
+                        <ul>
+                            <li><strong>Hai chủ đề màu HUD riêng</strong> (Cyber Blue / Sunset Gold).</li>
+                            <li><strong>Giao diện hoàn toàn mới</strong> "Velocity Stage" mang phong cách tương lai (track + lane + state).</li>
+                            <li><strong>Trong cài đặt kiểu đồng hồ</strong> đã có thêm "Velocity Stage".</li>
+                        </ul>
+
                         <strong>✨ MỚI v6.27: giao diện tốc độ Pulse HUD:</strong>
                         <ul>
                             <li><strong>Đồng hồ kim cũ đã được thay</strong> bằng giao diện Pulse HUD nổi bật hơn.</li>
