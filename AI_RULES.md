@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.28 (Velocity Stage + HUD-väriteemat)
+**Versio:** v6.29 (Dashboard mini-kartta valinnaisena)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,9 +71,9 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.28):**
+### **Nykyinen tilanne (v6.29):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
-- Dashboard: Pulse HUD + Velocity Stage nopeusnäkymät + keskitetty nopeusrajoituskortti (exact/estimated/unknown)
+- Dashboard: Pulse HUD + Velocity Stage + valinnainen mini-kartta stats-ruutujen tilalle
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
 - POI-toast: nostettu ylemmäs ettei peitä nopeuslukemaa
 
@@ -100,6 +100,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.29 - Dashboard mini-kartta (valinnainen)**
+- ✅ Asetuksiin lisätty toggle: "Kartta stats-ruutujen tilalle"
+- ✅ Dashboardiin lisätty mini-karttaikkuna 2x3 stat-ruudukon vaihtoehdoksi
+- ✅ Valinnan persistointi localStorageen + dashboard-view resize-käsittely
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.28 - Velocity Stage + HUD-väriteemat**
 - ✅ Lisätty kaksi HUD-väriteemaa (Cyber Blue / Sunset Gold)

@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.28 VELOCITY STAGE + HUD THEMES)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.29 DASHBOARD MINI MAP)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,16 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ UUTTA v6.29: Kartta stats-ruutujen tilalle:</strong>
+                        <ul>
+                            <li><strong>Asetuksiin lisätty valinta</strong> "Kartta stats-ruutujen tilalle".</li>
+                            <li><strong>Dashboardissa 2x3-statistiikkaruudut</strong> voidaan korvata live mini-kartalla.</li>
+                            <li><strong>Tila muistetaan</strong> (localStorage), joten valinta säilyy seuraavalla käynnistyskerralla.</li>
+                        </ul>
+
                         <strong>🌈 UUTTA v6.28: HUD-väriteemat + Velocity Stage:</strong>
                         <ul>
                             <li><strong>Kaksi erillistä HUD-väriteemaa</strong> (Cyber Blue / Sunset Gold).</li>
@@ -438,9 +445,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ NEW in v6.29: Map instead of stats cards:</strong>
+                        <ul>
+                            <li><strong>New settings option:</strong> "Map instead of stats cards".</li>
+                            <li><strong>On dashboard, the 2x3 stats cards</strong> can now be replaced by a live mini-map window.</li>
+                            <li><strong>The mode is remembered</strong> (localStorage), so your choice persists on next launch.</li>
+                        </ul>
+
                         <strong>🌈 NEW in v6.28: HUD themes + Velocity Stage:</strong>
                         <ul>
                             <li><strong>Two dedicated HUD color themes</strong> (Cyber Blue / Sunset Gold).</li>
@@ -865,9 +879,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ MỚI v6.29: thay ô thống kê bằng bản đồ:</strong>
+                        <ul>
+                            <li><strong>Thêm tùy chọn trong cài đặt:</strong> "Bản đồ thay cho ô thống kê".</li>
+                            <li><strong>Trong dashboard, cụm 2x3 ô thống kê</strong> có thể thay bằng cửa sổ mini-map live.</li>
+                            <li><strong>Chế độ được ghi nhớ</strong> (localStorage), mở lại app vẫn giữ lựa chọn.</li>
+                        </ul>
+
                         <strong>🌈 MỚI v6.28: chủ đề HUD + Velocity Stage:</strong>
                         <ul>
                             <li><strong>Hai chủ đề màu HUD riêng</strong> (Cyber Blue / Sunset Gold).</li>

@@ -141,6 +141,9 @@ const compassArrowEl = document.getElementById('compass-arrow');
 const gBubbleEl = document.getElementById('g-bubble');
 const liveStatusBar = document.getElementById('live-status-bar');
 const liveStyleEl = document.getElementById('live-style-indicator');
+const statsGridEl = document.querySelector('#dashboard-view .stats-grid');
+const dashboardMapWindowEl = document.getElementById('dashboard-map-window');
+const toggleDashboardMap = document.getElementById('toggle-dashboard-map');
 
 // Kartta
 const mapSpeedEl = document.getElementById('map-speed');
@@ -239,6 +242,23 @@ window.showToast = (msg, type = 'info') => {
     setTimeout(() => {
         toast.classList.remove('visible');
     }, 3000);
+}
+
+function setDashboardMapMode(enable) {
+    const isOn = !!enable;
+
+    if (statsGridEl) statsGridEl.style.display = isOn ? 'none' : 'grid';
+    if (dashboardMapWindowEl) dashboardMapWindowEl.style.display = isOn ? 'block' : 'none';
+    if (toggleDashboardMap) toggleDashboardMap.checked = isOn;
+
+    localStorage.setItem('dashboardMapMode', isOn ? 'true' : 'false');
+
+    if (isOn) {
+        if (typeof window.ensureDashboardMiniMap === 'function') window.ensureDashboardMiniMap();
+        if (typeof window.refreshDashboardMiniMapSize === 'function') {
+            setTimeout(() => window.refreshDashboardMiniMapSize(), 80);
+        }
+    }
 }
 
 window.appendPoiDebugLog = (msg) => {
@@ -988,6 +1008,12 @@ function switchView(viewName) {
         if(mapLegend) mapLegend.style.display = 'none';
     }
     if (viewName === 'map' && map) setTimeout(() => map.invalidateSize(), 100);
+    if (viewName === 'dashboard') {
+        const mapMode = localStorage.getItem('dashboardMapMode') === 'true';
+        if (mapMode && typeof window.refreshDashboardMiniMapSize === 'function') {
+            setTimeout(() => window.refreshDashboardMiniMapSize(), 100);
+        }
+    }
     
     if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
@@ -1558,6 +1584,15 @@ if (toggleMinimal) {
     });
 }
 
+if (toggleDashboardMap) {
+    toggleDashboardMap.addEventListener('change', (e) => {
+        setDashboardMapMode(e.target.checked);
+        if (typeof showToast === 'function') {
+            showToast(e.target.checked ? 'Dashboard-kartta: PÄÄLLÄ' : 'Dashboard-kartta: POIS');
+        }
+    });
+}
+
 if (btnDashMinimal) {
     btnDashMinimal.addEventListener('click', () => {
         const isMin = document.body.classList.contains('minimalist-mode');
@@ -1785,6 +1820,11 @@ window.addEventListener('DOMContentLoaded', () => {
         const logList = document.getElementById('log-list');
         if(logList) logList.classList.add('compact');
         if(toggleCompact) toggleCompact.checked = true;
+    }
+
+    const savedDashboardMap = localStorage.getItem('dashboardMapMode');
+    if (savedDashboardMap === 'true') {
+        setDashboardMapMode(true);
     }
 
     // POI debug

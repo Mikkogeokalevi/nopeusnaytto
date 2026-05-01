@@ -1192,6 +1192,9 @@ function updatePosition(position) {
         }
         if(mapSpeedEl) mapSpeedEl.innerText = speedKmh.toFixed(1);
         if(mapCoordsEl) mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
+        if (typeof window.updateDashboardMiniMap === 'function') {
+            window.updateDashboardMiniMap(lat, lng, `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`);
+        }
     }
 
     if(typeof updateDashboardUI === 'function') {

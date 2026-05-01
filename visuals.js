@@ -79,15 +79,15 @@ function updateVelocityStage(speed) {
     const ratio = Math.max(0, Math.min(1, s / 180));
     const pct = Math.round(ratio * 100);
 
-    speedText.textContent = Math.round(s);
+    speedText.textContent = s.toFixed(1);
     trackFill.style.width = `${pct}%`;
     marker.style.left = `${pct}%`;
     stage.style.setProperty('--stage-shift', `${Math.round(ratio * 32)}px`);
 
-    let state = 'READY';
-    if (s >= 135) state = 'WARP';
-    else if (s >= 95) state = 'SURGE';
-    else if (s >= 30) state = 'FLOW';
+    let state = 'PAIKALLAAN';
+    if (s >= 120) state = 'ERITTÄIN NOPEA';
+    else if (s >= 80) state = 'MAANTIE';
+    else if (s >= 30) state = 'TAAJAMA';
     status.textContent = state;
 
     const active = Math.round(ratio * lanes.length);
@@ -172,7 +172,7 @@ function drawGforceGraph() {
 function updateSpeedometer(speed) {
     const speedElement = document.getElementById('dash-speed-gauge');
     const speedCinema = document.getElementById('dash-speed-cinema');
-    if (speedCinema) speedCinema.textContent = Math.round(speed);
+    if (speedCinema) speedCinema.textContent = (Math.max(0, Number(speed) || 0)).toFixed(1);
 
     if (speedElement) {
         speedElement.textContent = Math.round(speed);

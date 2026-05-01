@@ -213,6 +213,24 @@ body.hud-theme-sunset-gold {
     overflow: hidden;
 }
 
+.velocity-track-wrap {
+    display: grid;
+    gap: 6px;
+}
+
+.velocity-bar-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--hud-primary) 80%, white);
+    opacity: 0.9;
+}
+
+.velocity-bar-label-lanes {
+    margin: 2px 0 6px;
+}
+
 .velocity-track-fill {
     width: 0;
     height: 100%;
@@ -243,10 +261,11 @@ body.hud-theme-sunset-gold {
 }
 
 .velocity-speed {
-    font-size: clamp(58px, 16vw, 88px);
+    font-size: clamp(52px, 14.8vw, 80px);
     line-height: 0.88;
     font-weight: 900;
-    letter-spacing: -2px;
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
     color: #f7fbff;
     text-shadow:
         0 0 15px color-mix(in srgb, var(--hud-primary) 70%, transparent),
@@ -675,6 +694,52 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     position: relative; z-index: 60;
     flex-shrink: 1; 
 }
+
+.dashboard-map-window {
+    width: min(450px, 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(10, 18, 30, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+    z-index: 60;
+}
+
+.dashboard-map-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--subtext-color);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.dashboard-map-coords {
+    color: var(--accent-color);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+}
+
+#dashboard-mini-map {
+    width: 100%;
+    height: 184px;
+    background: #0c111a;
+}
+
+#dashboard-mini-map .leaflet-control-container {
+    display: none;
+}
+
+@media (max-width: 420px) {
+    #dashboard-mini-map { height: 165px; }
+    .dashboard-map-header { font-size: 10px; }
+}
+
 .stat-card {
     background-color: var(--card-bg); 
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);

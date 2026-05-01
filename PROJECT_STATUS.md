@@ -10,28 +10,30 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.28`
+- **Nykyversio:** `v6.29`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
-  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + toastit + rajoituskortti)
+  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + valinnainen mini-kartta + rajoituskortti)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
 
-### v6.28 - HUD-väriteemat + Velocity Stage (erityisnäkymä)
+### v6.29 - Dashboard mini-kartta stats-ruutujen tilalle
 
 **Mitä muutettiin:**
-1. Lisättiin kaksi valittavaa HUD-väriteemaa: Cyber Blue ja Sunset Gold.
-2. Lisättiin täysin uusi nopeusnäkymä: Velocity Stage.
-3. Mittarityyppiin lisättiin uusi valinta "Velocity Stage" (Pulse HUDin rinnalle).
+1. Asetuksiin lisättiin uusi valinta: "Kartta stats-ruutujen tilalle".
+2. Dashboardiin lisättiin live mini-karttaikkuna (koordinaatit + sijaintimerkki).
+3. Valinta tallennetaan localStorageen ja palautuu seuraavalla käynnistyksellä.
 
 **Tiedostot:**
-- `index.html` (uusi Velocity Stage -DOM + HUD-theme valinta)
-- `style.css` (HUD theme -tokenit + Velocity Stage -animaatiot)
-- `visuals.js` (theme-hallinta + Velocity Stage päivityslogiikka)
-- `help.js` (v6.28 changelog FI/EN/VI)
+- `index.html` (dashboard mini-kartta + asetus-toggle)
+- `ui.js` (toggle-logiikka + localStorage + dashboard-view resize)
+- `map.js` (dashboard mini-kartan init + päivitys + invalidate)
+- `gps.js` (live-koordinaatit mini-kartalle)
+- `style.css` (dashboard mini-kartan ulkoasu)
+- `help.js` (v6.29 changelog FI/EN/VI)
 - `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
 
 ---

@@ -17,6 +17,9 @@ const terrainMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png
     attribution: '© OpenTopoMap' 
 });
 
+let dashboardMiniMap = null;
+let dashboardMiniMarker = null;
+
 // 2. Luodaan kartta (map-muuttuja on määritelty globals.js:ssä)
 // Varmistetaan että elementti on olemassa ennen luontia
 if (document.getElementById('map')) {
@@ -100,6 +103,64 @@ if (document.getElementById('map')) {
         }
     });
 }
+
+window.ensureDashboardMiniMap = function() {
+    const mapEl = document.getElementById('dashboard-mini-map');
+    if (!mapEl) return null;
+    if (dashboardMiniMap) return dashboardMiniMap;
+
+    dashboardMiniMap = L.map('dashboard-mini-map', {
+        center: [64.0, 26.0],
+        zoom: 15,
+        layers: [L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OSM'
+        })],
+        zoomControl: false,
+        attributionControl: false,
+        dragging: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        tap: false,
+        touchZoom: false
+    });
+
+    dashboardMiniMarker = L.circleMarker([64.0, 26.0], {
+        color: '#47d2ff',
+        fillColor: '#47d2ff',
+        fillOpacity: 0.9,
+        radius: 6,
+        weight: 2
+    }).addTo(dashboardMiniMap);
+
+    setTimeout(() => {
+        try { dashboardMiniMap.invalidateSize(); } catch (e) {}
+    }, 50);
+
+    return dashboardMiniMap;
+};
+
+window.refreshDashboardMiniMapSize = function() {
+    if (!dashboardMiniMap) return;
+    try { dashboardMiniMap.invalidateSize(); } catch (e) {}
+};
+
+window.updateDashboardMiniMap = function(lat, lng, coordsText) {
+    if (!isFinite(lat) || !isFinite(lng)) return;
+    const mapInst = window.ensureDashboardMiniMap();
+    if (!mapInst) return;
+
+    const pos = [lat, lng];
+    if (dashboardMiniMarker) dashboardMiniMarker.setLatLng(pos);
+    mapInst.setView(pos, 16, { animate: false });
+
+    const coordsEl = document.getElementById('dashboard-map-coords');
+    if (coordsEl && typeof coordsText === 'string' && coordsText.trim()) {
+        coordsEl.innerText = coordsText;
+    }
+};
 
 // =========================================================
 // POI renderöinti ja kartta-apurit

@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.28 Velocity Stage + HUD-väriteemat
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.29 dashboard mini-kartta
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.28-velocity-stage-hud-themes'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.29-dashboard-mini-map'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
