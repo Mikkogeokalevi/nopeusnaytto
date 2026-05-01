@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.31 DASHBOARD MINI-MAP MOBILE FIX)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.32 DASHBOARD MINI-MAP TILE RENDER FIX)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,16 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ UUTTA v6.32: Dashboard mini-kartan renderöintikorjaus mobiili-PWA:han:</strong>
+                        <ul>
+                            <li><strong>Korjattu bugi</strong>, jossa karttalaatat saattoivat piirtyä vain pienenä neliönä vasempaan yläkulmaan.</li>
+                            <li><strong>Mini-kartalle lisätty toistettu invalidateSize-resize-ajastus</strong> näkymänvaihdossa, orientaation vaihdossa ja appin palautuessa näkyviin.</li>
+                            <li><strong>Korjaus kohdistettu erityisesti asennettuun mobiili-PWA-käyttöön</strong> (esim. Samsung Internet).</li>
+                        </ul>
+
                         <strong>🗺️ UUTTA v6.31: Dashboard mini-kartan mobiilikorjaus:</strong>
                         <ul>
                             <li><strong>Korjattu bugi</strong>, jossa mini-kartta saattoi näkyä puhelimessa vain ohuena viivana.</li>
@@ -458,9 +465,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ NEW in v6.32: Dashboard mini-map tile render fix for mobile PWA:</strong>
+                        <ul>
+                            <li><strong>Fixed a bug</strong> where map tiles could render only as a tiny square in the top-left corner.</li>
+                            <li><strong>Added repeated invalidateSize resize scheduling</strong> for view switches, orientation changes and app resume events.</li>
+                            <li><strong>This specifically improves installed mobile PWA behavior</strong> (for example Samsung Internet app mode).</li>
+                        </ul>
+
                         <strong>🗺️ NEW in v6.31: Dashboard mini-map mobile fix:</strong>
                         <ul>
                             <li><strong>Fixed a bug</strong> where the mini-map could appear as a very thin strip on phones.</li>
@@ -905,9 +919,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ MỚI v6.32: sửa lỗi render tile mini-map cho mobile PWA:</strong>
+                        <ul>
+                            <li><strong>Sửa lỗi</strong> tile bản đồ đôi khi chỉ hiện thành ô vuông nhỏ ở góc trên bên trái.</li>
+                            <li><strong>Thêm lịch invalidateSize lặp lại</strong> khi đổi màn hình, xoay máy và khi app quay lại foreground.</li>
+                            <li><strong>Tối ưu đặc biệt cho chế độ app đã cài trên mobile PWA</strong> (ví dụ Samsung Internet).</li>
+                        </ul>
+
                         <strong>🗺️ MỚI v6.31: sửa mini-map trên mobile:</strong>
                         <ul>
                             <li><strong>Sửa lỗi</strong> mini-map trên điện thoại có lúc chỉ hiện thành một dải rất mỏng.</li>

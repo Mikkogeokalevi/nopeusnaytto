@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.31 (Dashboard mini-kartan mobiilikorkeuden korjaus)
-const APP_VERSION = "6.31"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.32 (Dashboard mini-kartan Leaflet resize/render-korjaus mobiili-PWA:ssa)
+const APP_VERSION = "6.32"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

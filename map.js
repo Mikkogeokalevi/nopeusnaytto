@@ -20,6 +20,15 @@ const terrainMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png
 let dashboardMiniMap = null;
 let dashboardMiniMarker = null;
 
+function scheduleDashboardMiniMapResize(delays) {
+    if (!Array.isArray(delays)) return;
+    delays.forEach((ms) => {
+        setTimeout(() => {
+            try { window.refreshDashboardMiniMapSize(); } catch (e) {}
+        }, ms);
+    });
+}
+
 // 2. Luodaan kartta (map-muuttuja on määritelty globals.js:ssä)
 // Varmistetaan että elementti on olemassa ennen luontia
 if (document.getElementById('map')) {
@@ -135,15 +144,15 @@ window.ensureDashboardMiniMap = function() {
         weight: 2
     }).addTo(dashboardMiniMap);
 
-    setTimeout(() => {
-        try { dashboardMiniMap.invalidateSize(); } catch (e) {}
-    }, 50);
+    scheduleDashboardMiniMapResize([50, 180, 360]);
 
     return dashboardMiniMap;
 };
 
 window.refreshDashboardMiniMapSize = function() {
     if (!dashboardMiniMap) return;
+    const mapEl = document.getElementById('dashboard-mini-map');
+    if (!mapEl || mapEl.offsetWidth < 40 || mapEl.offsetHeight < 40) return;
     try { dashboardMiniMap.invalidateSize(); } catch (e) {}
 };
 
@@ -161,6 +170,24 @@ window.updateDashboardMiniMap = function(lat, lng, coordsText) {
         coordsEl.innerText = coordsText;
     }
 };
+
+window.addEventListener('resize', () => {
+    scheduleDashboardMiniMapResize([80, 260]);
+});
+
+window.addEventListener('orientationchange', () => {
+    scheduleDashboardMiniMapResize([120, 360, 620]);
+});
+
+window.addEventListener('pageshow', () => {
+    scheduleDashboardMiniMapResize([120, 320, 620]);
+});
+
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        scheduleDashboardMiniMapResize([120, 320, 620]);
+    }
+});
 
 // =========================================================
 // POI renderöinti ja kartta-apurit

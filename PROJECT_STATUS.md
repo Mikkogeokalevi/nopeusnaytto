@@ -10,26 +10,28 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.31`
+- **Nykyversio:** `v6.32`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
-  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + mini-kartan mobiilikorjaus)
+  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + mini-kartan mobiili/PWA-korjaukset)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
 
-### v6.31 - Dashboard mini-kartan mobiilikorkeuden korjaus
+### v6.32 - Dashboard mini-kartan tile-render-korjaus mobiili-PWA:ssa
 
 **Mitä muutettiin:**
-1. Korjattiin bugi, jossa dashboardin mini-kartta saattoi puhelimessa litistyä ohuen viivan kokoiseksi.
-2. Karttaikkunaan lisättiin vakaat flex-säännöt (display:flex + flex-shrink:0) mini-kartan ympärille.
-3. Mini-kartalle lisättiin min-height + flex-basis -säännöt myös pienille näytöille.
+1. Korjattiin bugi, jossa mini-kartan karttalaatat saattoivat näkyä vain pienenä neliönä vasemmassa yläkulmassa.
+2. Mini-kartalle lisättiin toistettu `invalidateSize`-ajastus näkymänvaihtoihin (dashboard-map-mode + dashboard-view).
+3. Lisättiin resize/orientation/pageshow/visibilitychange-koukut, jotta Leaflet renderöi oikein myös asennetussa PWA-tilassa.
+4. Dashboard map window pidetään näkyvänä `display:flex`-tilassa map-modessa.
 
 **Tiedostot:**
-- `style.css` (mini-kartan korkeuden ja flex-käytöksen mobiilikorjaus)
-- `help.js` (v6.31 changelog FI/EN/VI)
+- `map.js` (mini-kartan resize/render-kestävyys + event-koukut)
+- `ui.js` (map-mode display + lisäresize-kutsut)
+- `help.js` (v6.32 changelog FI/EN/VI)
 - `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
 
 ---

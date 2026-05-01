@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.31 dashboard mini-map mobile fix
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.32 dashboard mini-map tile render fix
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.31-dashboard-mini-map-mobile-height'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.32-dashboard-mini-map-tile-render-fix'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

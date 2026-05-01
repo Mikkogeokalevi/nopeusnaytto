@@ -248,7 +248,7 @@ function setDashboardMapMode(enable) {
     const isOn = !!enable;
 
     if (statsGridEl) statsGridEl.style.display = isOn ? 'none' : 'grid';
-    if (dashboardMapWindowEl) dashboardMapWindowEl.style.display = isOn ? 'block' : 'none';
+    if (dashboardMapWindowEl) dashboardMapWindowEl.style.display = isOn ? 'flex' : 'none';
     if (toggleDashboardMap) toggleDashboardMap.checked = isOn;
 
     localStorage.setItem('dashboardMapMode', isOn ? 'true' : 'false');
@@ -256,7 +256,9 @@ function setDashboardMapMode(enable) {
     if (isOn) {
         if (typeof window.ensureDashboardMiniMap === 'function') window.ensureDashboardMiniMap();
         if (typeof window.refreshDashboardMiniMapSize === 'function') {
-            setTimeout(() => window.refreshDashboardMiniMapSize(), 80);
+            window.refreshDashboardMiniMapSize();
+            setTimeout(() => window.refreshDashboardMiniMapSize(), 120);
+            setTimeout(() => window.refreshDashboardMiniMapSize(), 320);
         }
     }
 }
@@ -1012,6 +1014,7 @@ function switchView(viewName) {
         const mapMode = localStorage.getItem('dashboardMapMode') === 'true';
         if (mapMode && typeof window.refreshDashboardMiniMapSize === 'function') {
             setTimeout(() => window.refreshDashboardMiniMapSize(), 100);
+            setTimeout(() => window.refreshDashboardMiniMapSize(), 300);
         }
     }
     

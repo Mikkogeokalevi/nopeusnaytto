@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.31 (Dashboard mini-kartan mobiilikorjaus)
+**Versio:** v6.32 (Dashboard mini-kartan tile-render-korjaus mobiili-PWA:ssa)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,9 +71,9 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.31):**
+### **Nykyinen tilanne (v6.32):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
-- Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiilikorjaus
+- Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-render-korjaus
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
 - POI-toast: nostettu ylemmäs ettei peitä nopeuslukemaa
 
@@ -100,6 +100,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.32 - Dashboard mini-kartan tile-render-korjaus mobiili-PWA:ssa**
+- ✅ Korjattu bugi, jossa mini-kartan karttalaatat saattoivat näkyä vain pienenä neliönä vasemmassa yläkulmassa
+- ✅ Lisätty toistettu mini-kartan invalidateSize-ajastus näkymänvaihdoissa
+- ✅ Lisätty resize/orientation/pageshow/visibilitychange-koukut mobiili-PWA-käyttöä varten
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.31 - Dashboard mini-kartan mobiilikorkeuden korjaus**
 - ✅ Korjattu bugi, jossa mini-kartta saattoi puhelimessa litistyä ohuen viivan kokoiseksi
