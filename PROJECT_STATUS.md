@@ -10,28 +10,29 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.32`
+- **Nykyversio:** `v6.33`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
-  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + mini-kartan mobiili/PWA-korjaukset)
+  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + mini-kartan mobiili/PWA-korjaukset + pikavaihto)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
 
-### v6.32 - Dashboard mini-kartan tile-render-korjaus mobiili-PWA:ssa
+### v6.33 - Dashboardin mini-kartan/stats-ruutujen pikavaihtonappi
 
 **Mitä muutettiin:**
-1. Korjattiin bugi, jossa mini-kartan karttalaatat saattoivat näkyä vain pienenä neliönä vasemmassa yläkulmassa.
-2. Mini-kartalle lisättiin toistettu `invalidateSize`-ajastus näkymänvaihtoihin (dashboard-map-mode + dashboard-view).
-3. Lisättiin resize/orientation/pageshow/visibilitychange-koukut, jotta Leaflet renderöi oikein myös asennetussa PWA-tilassa.
-4. Dashboard map window pidetään näkyvänä `display:flex`-tilassa map-modessa.
+1. Dashboardin alaosaan lisättiin uusi pikapainike sään vasemmalle puolelle.
+2. Nappi vaihtaa yhdellä painalluksella mini-kartan ja stats-ruutujen välillä.
+3. Napin teksti/tila vaihtuu automaattisesti (🗺️ / 📊), ja sama tila synkronoituu myös Asetukset-toggleen.
+4. Vaihto tallennetaan localStorageen kuten ennenkin, joten tila säilyy sovelluksen uudelleenkäynnistyksessä.
 
 **Tiedostot:**
-- `map.js` (mini-kartan resize/render-kestävyys + event-koukut)
-- `ui.js` (map-mode display + lisäresize-kutsut)
-- `help.js` (v6.32 changelog FI/EN/VI)
+- `index.html` (uusi dashboard quick-toggle nappi)
+- `ui.js` (napin logiikka + tilaindikointi + toast)
+- `style.css` (quick-toggle napin tyyli + active-tila)
+- `help.js` (v6.33 changelog FI/EN/VI)
 - `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
 
 ---

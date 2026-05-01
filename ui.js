@@ -144,6 +144,7 @@ const liveStyleEl = document.getElementById('live-style-indicator');
 const statsGridEl = document.querySelector('#dashboard-view .stats-grid');
 const dashboardMapWindowEl = document.getElementById('dashboard-map-window');
 const toggleDashboardMap = document.getElementById('toggle-dashboard-map');
+const btnDashboardMapQuick = document.getElementById('btn-dashboard-map-quick');
 
 // Kartta
 const mapSpeedEl = document.getElementById('map-speed');
@@ -250,6 +251,12 @@ function setDashboardMapMode(enable) {
     if (statsGridEl) statsGridEl.style.display = isOn ? 'none' : 'grid';
     if (dashboardMapWindowEl) dashboardMapWindowEl.style.display = isOn ? 'flex' : 'none';
     if (toggleDashboardMap) toggleDashboardMap.checked = isOn;
+    if (btnDashboardMapQuick) {
+        btnDashboardMapQuick.textContent = isOn ? '📊' : '🗺️';
+        btnDashboardMapQuick.title = isOn ? 'Näytä stats-ruudut' : 'Näytä mini-kartta';
+        btnDashboardMapQuick.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+        btnDashboardMapQuick.classList.toggle('active', isOn);
+    }
 
     localStorage.setItem('dashboardMapMode', isOn ? 'true' : 'false');
 
@@ -1596,6 +1603,17 @@ if (toggleDashboardMap) {
     });
 }
 
+if (btnDashboardMapQuick) {
+    btnDashboardMapQuick.addEventListener('click', () => {
+        const mapMode = localStorage.getItem('dashboardMapMode') === 'true';
+        const nextMode = !mapMode;
+        setDashboardMapMode(nextMode);
+        if (typeof showToast === 'function') {
+            showToast(nextMode ? 'Dashboard: mini-kartta' : 'Dashboard: stats-ruudut');
+        }
+    });
+}
+
 if (btnDashMinimal) {
     btnDashMinimal.addEventListener('click', () => {
         const isMin = document.body.classList.contains('minimalist-mode');
@@ -1828,6 +1846,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const savedDashboardMap = localStorage.getItem('dashboardMapMode');
     if (savedDashboardMap === 'true') {
         setDashboardMapMode(true);
+    } else {
+        setDashboardMapMode(false);
     }
 
     // POI debug

@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.32 dashboard mini-map tile render fix
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.33 dashboard quick map toggle
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.32-dashboard-mini-map-tile-render-fix'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.33-dashboard-quick-map-toggle'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

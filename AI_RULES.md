@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.32 (Dashboard mini-kartan tile-render-korjaus mobiili-PWA:ssa)
+**Versio:** v6.33 (Dashboardin mini-kartan/stats-ruutujen pikavaihtonappi)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,9 +71,9 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.32):**
+### **Nykyinen tilanne (v6.33):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
-- Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-render-korjaus
+- Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
 - POI-toast: nostettu ylemmäs ettei peitä nopeuslukemaa
 
@@ -100,6 +100,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.33 - Dashboardin mini-kartan/stats-ruutujen pikavaihtonappi**
+- ✅ Lisätty dashboardiin nopea vaihtonappi sään vasemmalle puolelle
+- ✅ Yhdellä napilla voi vaihtaa mini-kartan ja stats-ruutujen välillä ilman Asetukset-sivua
+- ✅ Napin aktiivinen tila synkronoituu asetustogglen kanssa ja tallentuu localStorageen
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.32 - Dashboard mini-kartan tile-render-korjaus mobiili-PWA:ssa**
 - ✅ Korjattu bugi, jossa mini-kartan karttalaatat saattoivat näkyä vain pienenä neliönä vasemmassa yläkulmassa

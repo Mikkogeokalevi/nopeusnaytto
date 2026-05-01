@@ -854,6 +854,17 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     position: relative;
     overflow: visible !important; 
 }
+.dashboard-map-quick-btn {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: rgba(10, 20, 34, 0.32);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
+}
+.dashboard-map-quick-btn.active {
+    background: color-mix(in srgb, var(--accent-color) 28%, transparent);
+    color: #fff;
+    box-shadow: 0 0 14px color-mix(in srgb, var(--accent-color) 45%, transparent);
+}
 .weather-huge {
     font-size: 28px; font-weight: bold; color: var(--text-color);
     filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
@@ -1102,6 +1113,11 @@ body.light-theme .light-mode-img { display: block; }
         padding-bottom: 5px;
         position: relative;
         padding-right: 50px;
+    }
+    .dashboard-map-quick-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
     }
     .clock-box { font-size: 24px; }
     .weather-huge { font-size: 24px; }
