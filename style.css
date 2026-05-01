@@ -740,6 +740,9 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 
 .dashboard-map-window {
     width: min(450px, 100%);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,0.14);
     background: rgba(10, 18, 30, 0.52);
@@ -771,6 +774,8 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 #dashboard-mini-map {
     width: 100%;
     height: 184px;
+    min-height: 165px;
+    flex: 0 0 184px;
     background: #0c111a;
 }
 
@@ -779,7 +784,11 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 
 @media (max-width: 420px) {
-    #dashboard-mini-map { height: 165px; }
+    #dashboard-mini-map {
+        height: 165px;
+        min-height: 150px;
+        flex-basis: 165px;
+    }
     .dashboard-map-header { font-size: 10px; }
 }
 

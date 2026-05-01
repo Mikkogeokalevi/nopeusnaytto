@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.30 VELOCITY STAGE TREND LINES)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.31 DASHBOARD MINI-MAP MOBILE FIX)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,17 +9,23 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
-                        <strong>� UUTTA v6.30: 5 min trendikäyrä Velocity Stageen:</strong>
+                        <strong>🗺️ UUTTA v6.31: Dashboard mini-kartan mobiilikorjaus:</strong>
+                        <ul>
+                            <li><strong>Korjattu bugi</strong>, jossa mini-kartta saattoi näkyä puhelimessa vain ohuena viivana.</li>
+                            <li><strong>Karttaikkunalle asetettu vakaa korkeus</strong> (min-height + flex-basis), jotta näkymä ei litisty.</li>
+                        </ul>
+
+                        <strong>📈 UUTTA v6.30: 5 min trendikäyrä Velocity Stageen:</strong>
                         <ul>
                             <li><strong>Taustalle piirtyy nopeuskäyrä</strong> viimeisen noin 5 minuutin ajalta.</li>
                             <li><strong>Mukana myös korkeuskäyrä</strong> kevyempänä viivana.</li>
                             <li><strong>Käyrät ovat nopeuslukeman taustalla</strong>, eivät numeron päällä.</li>
                         </ul>
 
-                        <strong>�🗺️ UUTTA v6.29: Kartta stats-ruutujen tilalle:</strong>
+                        <strong>🗺️ UUTTA v6.29: Kartta stats-ruutujen tilalle:</strong>
                         <ul>
                             <li><strong>Asetuksiin lisätty valinta</strong> "Kartta stats-ruutujen tilalle".</li>
                             <li><strong>Dashboardissa 2x3-statistiikkaruudut</strong> voidaan korvata live mini-kartalla.</li>
@@ -74,7 +80,7 @@ const helpData = {
                             <li><strong>Testaa-napit</strong> toistavat valitun tyypin äänen heti, jotta säätö onnistuu nopeasti.</li>
                         </ul>
 
-                        <strong>� UUTTA v6.17: Nopeuskameratiedostojen tuonti + POI-modaali + karttamuokkaus:</strong>
+                        <strong>📍 UUTTA v6.17: Nopeuskameratiedostojen tuonti + POI-modaali + karttamuokkaus:</strong>
                         <ul>
                             <li><strong>⬆ Tuo nopeuskamerat (CSV/SVC)</strong> Asetuksista (lon,lat korjataan automaattisesti).</li>
                             <li><strong>🔎 Haku + suodatus + lähimmät</strong> POI-listaan (ei kasva loputtomaksi).</li>
@@ -452,9 +458,15 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ NEW in v6.31: Dashboard mini-map mobile fix:</strong>
+                        <ul>
+                            <li><strong>Fixed a bug</strong> where the mini-map could appear as a very thin strip on phones.</li>
+                            <li><strong>The map window now has stable height rules</strong> (min-height + flex-basis) to prevent collapse.</li>
+                        </ul>
+
                         <strong>📈 NEW in v6.30: 5-minute trend lines in Velocity Stage:</strong>
                         <ul>
                             <li><strong>A speed trend line</strong> is now drawn for the latest ~5 minutes.</li>
@@ -521,11 +533,11 @@ const helpData = {
                         <ul>
                             <li><strong>⬆ Import speed cameras (CSV/SVC)</strong> from Settings (lon,lat is auto-fixed).</li>
                             <li><strong>🔎 Search + filter + nearby</strong> in the POI list (scales to large imports).</li>
-                            <li><strong>�️ Edit/Delete on map</strong> by tapping a POI.</li>
+                            <li><strong>🗺️ Edit/Delete on map</strong> by tapping a POI.</li>
                             <li><strong>🧾 Paste coordinates in one field</strong> (geocaching format or CSV style).</li>
                         </ul>
 
-                        <strong>�� NEW in v6.16: POIs + Alerts + Drive Markers:</strong>
+                        <strong>📍 NEW in v6.16: POIs + Alerts + Drive Markers:</strong>
                         <p>You can save permanent Points of Interest (POIs) on the map (for example speed cameras) and get a live distance warning when approaching. You can also add per-drive markers during a recording (notes along the route).</p>
                         <ul>
                             <li><strong>📌 POI (permanent)</strong> is saved to Firebase and is always visible on the map.</li>
@@ -893,9 +905,15 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ MỚI v6.31: sửa mini-map trên mobile:</strong>
+                        <ul>
+                            <li><strong>Sửa lỗi</strong> mini-map trên điện thoại có lúc chỉ hiện thành một dải rất mỏng.</li>
+                            <li><strong>Khóa chiều cao ổn định cho khung bản đồ</strong> (min-height + flex-basis) để tránh bị co.</li>
+                        </ul>
+
                         <strong>📈 MỚI v6.30: đường xu hướng 5 phút trong Velocity Stage:</strong>
                         <ul>
                             <li><strong>Vẽ đường xu hướng tốc độ</strong> cho khoảng 5 phút gần nhất.</li>

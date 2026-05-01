@@ -10,29 +10,26 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.30`
+- **Nykyversio:** `v6.31`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
-  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + valinnainen mini-kartta)
+  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + mini-kartan mobiilikorjaus)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
 
-### v6.30 - Velocity Stage 5min trenditausta (nopeus + korkeus)
+### v6.31 - Dashboard mini-kartan mobiilikorkeuden korjaus
 
 **Mitä muutettiin:**
-1. Velocity Stage -näkymään lisättiin taustalle piirtyvä trendi viimeiseltä ~5 minuutin jaksolta.
-2. Nopeuskäyrän lisäksi lisättiin kevyt korkeuskäyrä samaan taustatasoon.
-3. Kerrosjärjestys säädettiin niin, että käyrät näkyvät nopeuslukeman takana.
+1. Korjattiin bugi, jossa dashboardin mini-kartta saattoi puhelimessa litistyä ohuen viivan kokoiseksi.
+2. Karttaikkunaan lisättiin vakaat flex-säännöt (display:flex + flex-shrink:0) mini-kartan ympärille.
+3. Mini-kartalle lisättiin min-height + flex-basis -säännöt myös pienille näytöille.
 
 **Tiedostot:**
-- `index.html` (Velocity Stage trendi-SVG)
-- `visuals.js` (5min trendidatan puskurointi + käyrän renderöinti)
-- `gps.js` (altitude välitys visuals-päivitykseen)
-- `style.css` (trendiviivojen ulkoasu + z-index kerrosjärjestys)
-- `help.js` (v6.30 changelog FI/EN/VI)
+- `style.css` (mini-kartan korkeuden ja flex-käytöksen mobiilikorjaus)
+- `help.js` (v6.31 changelog FI/EN/VI)
 - `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
 
 ---

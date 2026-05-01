@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.30 velocity trend background
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.31 dashboard mini-map mobile fix
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.30-velocity-trend-lines'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.31-dashboard-mini-map-mobile-height'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
