@@ -10,30 +10,29 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.29`
+- **Nykyversio:** `v6.30`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
-  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + valinnainen mini-kartta + rajoituskortti)
+  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + valinnainen mini-kartta)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
 
-### v6.29 - Dashboard mini-kartta stats-ruutujen tilalle
+### v6.30 - Velocity Stage 5min trenditausta (nopeus + korkeus)
 
 **Mitä muutettiin:**
-1. Asetuksiin lisättiin uusi valinta: "Kartta stats-ruutujen tilalle".
-2. Dashboardiin lisättiin live mini-karttaikkuna (koordinaatit + sijaintimerkki).
-3. Valinta tallennetaan localStorageen ja palautuu seuraavalla käynnistyksellä.
+1. Velocity Stage -näkymään lisättiin taustalle piirtyvä trendi viimeiseltä ~5 minuutin jaksolta.
+2. Nopeuskäyrän lisäksi lisättiin kevyt korkeuskäyrä samaan taustatasoon.
+3. Kerrosjärjestys säädettiin niin, että käyrät näkyvät nopeuslukeman takana.
 
 **Tiedostot:**
-- `index.html` (dashboard mini-kartta + asetus-toggle)
-- `ui.js` (toggle-logiikka + localStorage + dashboard-view resize)
-- `map.js` (dashboard mini-kartan init + päivitys + invalidate)
-- `gps.js` (live-koordinaatit mini-kartalle)
-- `style.css` (dashboard mini-kartan ulkoasu)
-- `help.js` (v6.29 changelog FI/EN/VI)
+- `index.html` (Velocity Stage trendi-SVG)
+- `visuals.js` (5min trendidatan puskurointi + käyrän renderöinti)
+- `gps.js` (altitude välitys visuals-päivitykseen)
+- `style.css` (trendiviivojen ulkoasu + z-index kerrosjärjestys)
+- `help.js` (v6.30 changelog FI/EN/VI)
 - `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
 
 ---

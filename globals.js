@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.29 (Dashboard mini-kartta stats-ruutujen tilalle)
-const APP_VERSION = "6.29"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.30 (Velocity Stage 5min trendikäyrät)
+const APP_VERSION = "6.30"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

@@ -7,6 +7,9 @@ var speedGraphData = [];
 var altitudeGraphData = [];
 var gforceGraphData = [];
 var maxDataPoints = 30; // 30 sekuntia dataa
+var velocityTrendData = [];
+var velocityTrendWindowMs = 5 * 60 * 1000;
+var velocityTrendMaxPoints = 320;
 
 // Graafien canvas-elementit
 var speedGraphCanvas = null;
@@ -65,7 +68,89 @@ function updatePulseHud(speed) {
     });
 }
 
-function updateVelocityStage(speed) {
+function pushVelocityTrendPoint(speed, altitude) {
+    const now = Date.now();
+    const spd = Math.max(0, Number(speed) || 0);
+    const altNum = Number(altitude);
+
+    velocityTrendData.push({
+        ts: now,
+        speed: spd,
+        altitude: isFinite(altNum) ? altNum : null
+    });
+
+    const cutoffTs = now - velocityTrendWindowMs;
+    while (velocityTrendData.length > 0 && velocityTrendData[0].ts < cutoffTs) {
+        velocityTrendData.shift();
+    }
+
+    if (velocityTrendData.length > velocityTrendMaxPoints) {
+        velocityTrendData.splice(0, velocityTrendData.length - velocityTrendMaxPoints);
+    }
+}
+
+function buildTrendPath(samples, getter, fixedRange) {
+    if (!Array.isArray(samples) || samples.length < 2) return '';
+
+    const firstTs = samples[0].ts;
+    const lastTs = samples[samples.length - 1].ts;
+    const span = Math.max(1000, lastTs - firstTs);
+
+    let minVal = Infinity;
+    let maxVal = -Infinity;
+
+    if (fixedRange && isFinite(fixedRange.min) && isFinite(fixedRange.max)) {
+        minVal = fixedRange.min;
+        maxVal = fixedRange.max;
+    } else {
+        samples.forEach((sample) => {
+            const v = Number(getter(sample));
+            if (!isFinite(v)) return;
+            if (v < minVal) minVal = v;
+            if (v > maxVal) maxVal = v;
+        });
+
+        if (!isFinite(minVal) || !isFinite(maxVal)) return '';
+        if (maxVal - minVal < 0.1) {
+            maxVal = minVal + 1;
+        } else {
+            const pad = (maxVal - minVal) * 0.12;
+            minVal -= pad;
+            maxVal += pad;
+        }
+    }
+
+    if (maxVal <= minVal) return '';
+
+    const parts = [];
+    samples.forEach((sample) => {
+        const raw = Number(getter(sample));
+        if (!isFinite(raw)) return;
+
+        const x = ((sample.ts - firstTs) / span) * 100;
+        const ratio = (raw - minVal) / (maxVal - minVal);
+        const y = 100 - (Math.max(0, Math.min(1, ratio)) * 100);
+        parts.push(`${parts.length === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`);
+    });
+
+    return parts.join(' ');
+}
+
+function updateVelocityTrendLines(speed, altitude) {
+    const speedLine = document.getElementById('velocity-speed-trend');
+    const altitudeLine = document.getElementById('velocity-altitude-trend');
+    if (!speedLine || !altitudeLine) return;
+
+    pushVelocityTrendPoint(speed, altitude);
+
+    const speedPath = buildTrendPath(velocityTrendData, (sample) => sample.speed, { min: 0, max: 180 });
+    const altitudePath = buildTrendPath(velocityTrendData, (sample) => sample.altitude);
+
+    speedLine.setAttribute('d', speedPath);
+    altitudeLine.setAttribute('d', altitudePath);
+}
+
+function updateVelocityStage(speed, altitude) {
     const speedText = document.getElementById('dash-speed-cinema');
     const status = document.getElementById('velocity-status');
     const trackFill = document.getElementById('velocity-track-fill');
@@ -80,6 +165,7 @@ function updateVelocityStage(speed) {
     const pct = Math.round(ratio * 100);
 
     speedText.textContent = s.toFixed(1);
+    updateVelocityTrendLines(s, altitude);
     trackFill.style.width = `${pct}%`;
     marker.style.left = `${pct}%`;
     stage.style.setProperty('--stage-shift', `${Math.round(ratio * 32)}px`);
@@ -169,7 +255,7 @@ function drawGforceGraph() {
 // 3. DATAN PÄIVITYS
 // =========================================================
 
-function updateSpeedometer(speed) {
+function updateSpeedometer(speed, altitude) {
     const speedElement = document.getElementById('dash-speed-gauge');
     const speedCinema = document.getElementById('dash-speed-cinema');
     if (speedCinema) speedCinema.textContent = (Math.max(0, Number(speed) || 0)).toFixed(1);
@@ -203,7 +289,7 @@ function updateSpeedometer(speed) {
     }
 
     updatePulseHud(speed);
-    updateVelocityStage(speed);
+    updateVelocityStage(speed, altitude);
 }
 
 function updateGraphs(speed, altitude, gforce) {

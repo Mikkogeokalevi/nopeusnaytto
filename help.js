@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.29 DASHBOARD MINI MAP)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.30 VELOCITY STAGE TREND LINES)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,10 +9,17 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
-                        <strong>🗺️ UUTTA v6.29: Kartta stats-ruutujen tilalle:</strong>
+                        <strong>� UUTTA v6.30: 5 min trendikäyrä Velocity Stageen:</strong>
+                        <ul>
+                            <li><strong>Taustalle piirtyy nopeuskäyrä</strong> viimeisen noin 5 minuutin ajalta.</li>
+                            <li><strong>Mukana myös korkeuskäyrä</strong> kevyempänä viivana.</li>
+                            <li><strong>Käyrät ovat nopeuslukeman taustalla</strong>, eivät numeron päällä.</li>
+                        </ul>
+
+                        <strong>�🗺️ UUTTA v6.29: Kartta stats-ruutujen tilalle:</strong>
                         <ul>
                             <li><strong>Asetuksiin lisätty valinta</strong> "Kartta stats-ruutujen tilalle".</li>
                             <li><strong>Dashboardissa 2x3-statistiikkaruudut</strong> voidaan korvata live mini-kartalla.</li>
@@ -445,9 +452,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>📈 NEW in v6.30: 5-minute trend lines in Velocity Stage:</strong>
+                        <ul>
+                            <li><strong>A speed trend line</strong> is now drawn for the latest ~5 minutes.</li>
+                            <li><strong>An altitude trend line</strong> is also included as a lighter layer.</li>
+                            <li><strong>Both lines stay behind the speed readout</strong>, not over the number.</li>
+                        </ul>
+
                         <strong>🗺️ NEW in v6.29: Map instead of stats cards:</strong>
                         <ul>
                             <li><strong>New settings option:</strong> "Map instead of stats cards".</li>
@@ -879,9 +893,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>📈 MỚI v6.30: đường xu hướng 5 phút trong Velocity Stage:</strong>
+                        <ul>
+                            <li><strong>Vẽ đường xu hướng tốc độ</strong> cho khoảng 5 phút gần nhất.</li>
+                            <li><strong>Có thêm đường xu hướng độ cao</strong> mảnh hơn ở nền.</li>
+                            <li><strong>Các đường nằm sau số tốc độ</strong>, không đè lên số.</li>
+                        </ul>
+
                         <strong>🗺️ MỚI v6.29: thay ô thống kê bằng bản đồ:</strong>
                         <ul>
                             <li><strong>Thêm tùy chọn trong cài đặt:</strong> "Bản đồ thay cho ô thống kê".</li>

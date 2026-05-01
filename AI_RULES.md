@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.29 (Dashboard mini-kartta valinnaisena)
+**Versio:** v6.30 (Velocity Stage trendikäyrät)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,9 +71,9 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.29):**
+### **Nykyinen tilanne (v6.30):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
-- Dashboard: Pulse HUD + Velocity Stage + valinnainen mini-kartta stats-ruutujen tilalle
+- Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + valinnainen mini-kartta
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
 - POI-toast: nostettu ylemmäs ettei peitä nopeuslukemaa
 
@@ -100,6 +100,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.30 - Velocity Stage trendikäyrät (5 min)**
+- ✅ Taustalle lisätty nopeuskäyrä viimeiseltä ~5 minuutin jaksolta
+- ✅ Lisätty myös korkeuskäyrä kevyempänä taustaviivana
+- ✅ Käyrät renderöidään nopeuslukeman taakse (ei numeron päälle)
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.29 - Dashboard mini-kartta (valinnainen)**
 - ✅ Asetuksiin lisätty toggle: "Kartta stats-ruutujen tilalle"

@@ -1154,7 +1154,7 @@ function updatePosition(position) {
 
         // UUSI V6.14: Päivitä visuaaliset elementit
         if (typeof updateSpeedometer === 'function') {
-            updateSpeedometer(speedKmh);
+            updateSpeedometer(speedKmh, alt);
         }
         
         if (typeof updateGraphs === 'function') {
