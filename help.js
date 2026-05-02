@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.34 DASHBOARD MINI-MAP LIVE TRAIL)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.35 HISTORY MAP POI VISIBILITY CLEANUP)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,15 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ UUTTA v6.35: Historiakartan POI-siivous pitkille reiteille:</strong>
+                        <ul>
+                            <li><strong>Kun avaat reitin historiasta kartalle, POI-pisteet piilotetaan automaattisesti</strong>, jotta reitti näkyy selkeämmin.</li>
+                            <li><strong>POI:t palautuvat takaisin</strong>, kun poistut historiakatselusta normaalitilaan.</li>
+                        </ul>
+
                         <strong>🗺️ UUTTA v6.34: Dashboard mini-karttaan ajoviiva liikkeessä:</strong>
                         <ul>
                             <li><strong>Mini-karttaan piirtyy nyt sama live-ajoviiva</strong> kuin isossa karttanäkymässä, kun liikut.</li>
@@ -478,9 +484,15 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ NEW in v6.35: History map POI cleanup for long routes:</strong>
+                        <ul>
+                            <li><strong>When opening a route from History on the map, POI markers are now hidden automatically</strong> so the route remains readable.</li>
+                            <li><strong>POIs are restored</strong> when leaving history route viewing back to normal map mode.</li>
+                        </ul>
+
                         <strong>🗺️ NEW in v6.34: Live movement trail on dashboard mini-map:</strong>
                         <ul>
                             <li><strong>The dashboard mini-map now draws the same live route line</strong> as the main map while moving.</li>
@@ -945,9 +957,15 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ MỚI v6.35: dọn POI trong bản đồ lịch sử cho tuyến dài:</strong>
+                        <ul>
+                            <li><strong>Khi mở tuyến từ Lịch sử trên bản đồ, marker POI sẽ tự ẩn</strong> để nhìn đường đi rõ hơn.</li>
+                            <li><strong>POI sẽ hiện lại</strong> khi thoát khỏi chế độ xem tuyến lịch sử về bản đồ thường.</li>
+                        </ul>
+
                         <strong>🗺️ MỚI v6.34: mini-map trên dashboard có đường đi live:</strong>
                         <ul>
                             <li><strong>Mini-map trên dashboard giờ vẽ cùng đường đi live</strong> như màn hình bản đồ lớn khi xe di chuyển.</li>

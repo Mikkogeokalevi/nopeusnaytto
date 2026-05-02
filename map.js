@@ -280,6 +280,15 @@ window.renderPOIsOnMap = function() {
     });
 }
 
+window.setHistoryMapPoiVisibility = function(show) {
+    if (!window._poiLayerGroup) return;
+    if (show) {
+        if (typeof window.renderPOIsOnMap === 'function') window.renderPOIsOnMap();
+        return;
+    }
+    window._poiLayerGroup.clearLayers();
+}
+
 window.centerMapOnPOI = function(poi) {
     if (!map || !poi) return;
     if (typeof poi.lat !== 'number' || typeof poi.lng !== 'number') return;
@@ -429,10 +438,16 @@ if (mapGpsToggle) {
             // GPS pois päältä kartalla (katselutila)
             mapGpsToggle.innerText = "📡 OFF";
             mapGpsToggle.classList.add('inactive');
+            if (typeof window.setHistoryMapPoiVisibility === 'function') {
+                window.setHistoryMapPoiVisibility(false);
+            }
         } else {
             // GPS päälle kartalla (seurantatila)
             mapGpsToggle.innerText = "📡 ON";
             mapGpsToggle.classList.remove('inactive');
+            if (typeof window.setHistoryMapPoiVisibility === 'function') {
+                window.setHistoryMapPoiVisibility(true);
+            }
             
             // Keskitä heti, jos sijainti on tiedossa
             if(lastLatLng && map) {
@@ -456,6 +471,9 @@ window.showRouteOnMap = (key) => {
     if(mapGpsToggle) {
         mapGpsToggle.innerText = "📡 OFF";
         mapGpsToggle.classList.add('inactive');
+    }
+    if (typeof window.setHistoryMapPoiVisibility === 'function') {
+        window.setHistoryMapPoiVisibility(false);
     }
     if(mapLegend) mapLegend.style.display = 'flex';
 

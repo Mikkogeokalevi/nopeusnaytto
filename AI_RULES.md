@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.34 (Dashboard mini-karttaan live-ajoviiva)
+**Versio:** v6.35 (Historiakartan POI-näkymän siivous)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,9 +71,10 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.34):**
+### **Nykyinen tilanne (v6.35):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
 - Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
+- Historiakartta: reittikatselussa POI-layer piilotetaan selkeyden vuoksi ja palautetaan poistuttaessa katselusta
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
 - POI-toast: nostettu ylemmäs ettei peitä nopeuslukemaa
 
@@ -100,6 +101,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.35 - Historiakartan POI-näkymän siivous**
+- ✅ Historiasta avatussa reittikatselussa POI-pisteet piilotetaan automaattisesti
+- ✅ POI-layer palautetaan automaattisesti, kun poistutaan historiakatselusta
+- ✅ GPS ON/OFF -karttatoggle noudattaa samaa näkyvyyslogiikkaa
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.34 - Dashboard mini-karttaan live-ajoviiva**
 - ✅ Lisätty mini-karttaan sama ajon aikainen live-viiva kuin isossa kartassa

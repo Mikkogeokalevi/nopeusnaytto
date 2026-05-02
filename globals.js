@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.34 (Dashboard mini-karttaan live-ajoviiva)
-const APP_VERSION = "6.34"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.35 (Historiakartan POI-näkymän siivous)
+const APP_VERSION = "6.35"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

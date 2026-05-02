@@ -1014,6 +1014,9 @@ function switchView(viewName) {
     if (viewName !== 'map') {
         if (typeof clearSavedRoute === 'function') clearSavedRoute();
         isViewingHistory = false;
+        if (typeof window.setHistoryMapPoiVisibility === 'function') {
+            window.setHistoryMapPoiVisibility(true);
+        }
         if(mapLegend) mapLegend.style.display = 'none';
     }
     if (viewName === 'map' && map) setTimeout(() => map.invalidateSize(), 100);

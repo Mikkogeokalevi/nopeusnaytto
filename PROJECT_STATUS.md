@@ -10,28 +10,29 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.34`
+- **Nykyversio:** `v6.35`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
   - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + mini-kartan mobiili/PWA-korjaukset + pikavaihto + live-ajoviiva)
+  - Historiakartan luettavuus pitkillä reiteillä (POI-pisteet piiloon reittikatselussa)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
 
-### v6.34 - Dashboard mini-karttaan live-ajoviiva
+### v6.35 - Historiakartan POI-näkymän siivous
 
 **Mitä muutettiin:**
-1. Dashboardin mini-karttaan lisättiin live-ajoviiva, joka piirtyy liikkeen mukana kuten isossa kartassa.
-2. Uuden ajon alussa mini-kartan ajoviiva nollataan samaan aikaan pääkartan live-viivan kanssa.
-3. Ajon jatkamisessa ja crash-palautuksessa mini-kartan viiva palautetaan tallennetusta reitistä.
-4. GPS-päivitys lisää uudet reittipisteet myös mini-kartan viivaan reaaliajassa.
+1. Kun reitti avataan historiasta kartalle, POI-layer piilotetaan automaattisesti.
+2. Tämä vähentää POI-pisteiden hälyä erityisesti pitkissä reiteissä ja tekee ajoviivasta selkeämmän.
+3. POI-layer palautetaan automaattisesti, kun poistutaan historiakatselusta takaisin normaaliin karttakäyttöön.
+4. Kartan GPS ON/OFF -toggle noudattaa samaa näkyvyyslogiikkaa.
 
 **Tiedostot:**
-- `map.js` (mini-kartan polyline + trail helper-funktiot)
-- `gps.js` (trailin nollaus/palautus/lisäys GPS-loopissa)
-- `help.js` (v6.34 changelog FI/EN/VI)
+- `map.js` (history POI visibility helper + showRouteOnMap/toggle-kytkennät)
+- `ui.js` (POI-layerin palautus kun poistutaan karttanäkymästä)
+- `help.js` (v6.35 changelog FI/EN/VI)
 - `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
 
 ---

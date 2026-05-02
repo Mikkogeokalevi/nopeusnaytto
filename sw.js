@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.34 dashboard mini-map live route trail
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.35 history map POI visibility cleanup
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.34-dashboard-mini-map-live-trail'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.35-history-map-poi-visibility-cleanup'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
