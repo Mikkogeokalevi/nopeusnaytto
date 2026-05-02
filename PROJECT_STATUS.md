@@ -10,29 +10,28 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.33`
+- **Nykyversio:** `v6.34`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
-  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + mini-kartan mobiili/PWA-korjaukset + pikavaihto)
+  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + mini-kartan mobiili/PWA-korjaukset + pikavaihto + live-ajoviiva)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
 
-### v6.33 - Dashboardin mini-kartan/stats-ruutujen pikavaihtonappi
+### v6.34 - Dashboard mini-karttaan live-ajoviiva
 
 **Mitä muutettiin:**
-1. Dashboardin alaosaan lisättiin uusi pikapainike sään vasemmalle puolelle.
-2. Nappi vaihtaa yhdellä painalluksella mini-kartan ja stats-ruutujen välillä.
-3. Napin teksti/tila vaihtuu automaattisesti (🗺️ / 📊), ja sama tila synkronoituu myös Asetukset-toggleen.
-4. Vaihto tallennetaan localStorageen kuten ennenkin, joten tila säilyy sovelluksen uudelleenkäynnistyksessä.
+1. Dashboardin mini-karttaan lisättiin live-ajoviiva, joka piirtyy liikkeen mukana kuten isossa kartassa.
+2. Uuden ajon alussa mini-kartan ajoviiva nollataan samaan aikaan pääkartan live-viivan kanssa.
+3. Ajon jatkamisessa ja crash-palautuksessa mini-kartan viiva palautetaan tallennetusta reitistä.
+4. GPS-päivitys lisää uudet reittipisteet myös mini-kartan viivaan reaaliajassa.
 
 **Tiedostot:**
-- `index.html` (uusi dashboard quick-toggle nappi)
-- `ui.js` (napin logiikka + tilaindikointi + toast)
-- `style.css` (quick-toggle napin tyyli + active-tila)
-- `help.js` (v6.33 changelog FI/EN/VI)
+- `map.js` (mini-kartan polyline + trail helper-funktiot)
+- `gps.js` (trailin nollaus/palautus/lisäys GPS-loopissa)
+- `help.js` (v6.34 changelog FI/EN/VI)
 - `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
 
 ---

@@ -19,6 +19,7 @@ const terrainMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png
 
 let dashboardMiniMap = null;
 let dashboardMiniMarker = null;
+let dashboardMiniPolyline = null;
 
 function scheduleDashboardMiniMapResize(delays) {
     if (!Array.isArray(delays)) return;
@@ -144,6 +145,16 @@ window.ensureDashboardMiniMap = function() {
         weight: 2
     }).addTo(dashboardMiniMap);
 
+    dashboardMiniPolyline = L.polyline([], {
+        color: '#47d2ff',
+        weight: 3,
+        opacity: 0.65
+    }).addTo(dashboardMiniMap);
+
+    if (Array.isArray(routePath) && routePath.length > 0) {
+        dashboardMiniPolyline.setLatLngs(routePath.map((p) => [p.lat, p.lng]));
+    }
+
     scheduleDashboardMiniMapResize([50, 180, 360]);
 
     return dashboardMiniMap;
@@ -169,6 +180,29 @@ window.updateDashboardMiniMap = function(lat, lng, coordsText) {
     if (coordsEl && typeof coordsText === 'string' && coordsText.trim()) {
         coordsEl.innerText = coordsText;
     }
+};
+
+window.addDashboardMiniMapTrailPoint = function(lat, lng) {
+    if (!isFinite(lat) || !isFinite(lng)) return;
+    const mapInst = window.ensureDashboardMiniMap();
+    if (!mapInst) return;
+    if (!dashboardMiniPolyline) return;
+    dashboardMiniPolyline.addLatLng([lat, lng]);
+};
+
+window.clearDashboardMiniMapTrail = function() {
+    if (!dashboardMiniPolyline) return;
+    dashboardMiniPolyline.setLatLngs([]);
+};
+
+window.setDashboardMiniMapTrailFromRoute = function(route) {
+    if (!Array.isArray(route)) return;
+    const mapInst = window.ensureDashboardMiniMap();
+    if (!mapInst || !dashboardMiniPolyline) return;
+    const latLngs = route
+        .filter((p) => p && isFinite(p.lat) && isFinite(p.lng))
+        .map((p) => [p.lat, p.lng]);
+    dashboardMiniPolyline.setLatLngs(latLngs);
 };
 
 window.addEventListener('resize', () => {

@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.33 (Dashboardin mini-kartan/stats-ruutujen pikavaihtonappi)
+**Versio:** v6.34 (Dashboard mini-karttaan live-ajoviiva)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,9 +71,9 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.33):**
+### **Nykyinen tilanne (v6.34):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
-- Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi
+- Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
 - POI-toast: nostettu ylemmäs ettei peitä nopeuslukemaa
 
@@ -100,6 +100,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.34 - Dashboard mini-karttaan live-ajoviiva**
+- ✅ Lisätty mini-karttaan sama ajon aikainen live-viiva kuin isossa kartassa
+- ✅ Mini-kartan viiva nollataan uuden ajon alussa
+- ✅ Mini-kartan viiva palautetaan ajon jatkossa ja crash-palautuksessa tallennetusta reitistä
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.33 - Dashboardin mini-kartan/stats-ruutujen pikavaihtonappi**
 - ✅ Lisätty dashboardiin nopea vaihtonappi sään vasemmalle puolelle

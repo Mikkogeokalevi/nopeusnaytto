@@ -816,6 +816,7 @@ function startRecordingSession(isContinue = false) {
         sessionStartDistance = 0; 
         
         if(realTimePolyline) realTimePolyline.setLatLngs([]);
+        if (typeof window.clearDashboardMiniMapTrail === 'function') window.clearDashboardMiniMapTrail();
         if(typeof clearSavedRoute === 'function') clearSavedRoute();
         currentDriveWeather = "";
         aggressiveEvents = 0;
@@ -895,6 +896,9 @@ window.continueDrive = function(driveData) {
                 const latLngs = routePath.map(p => [p.lat, p.lng]);
                 realTimePolyline.setLatLngs(latLngs);
             }
+        }
+        if (typeof window.setDashboardMiniMapTrailFromRoute === 'function') {
+            window.setDashboardMiniMapTrailFromRoute(routePath);
         }
         
         if(typeof clearSavedRoute === 'function') clearSavedRoute();
@@ -1141,6 +1145,9 @@ function updatePosition(position) {
         if (speedKmh > 3 || (lastLatLng && getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng) > 0.02)) {
             routePath.push({ lat: lat, lng: lng, spd: speedKmh });
             if(realTimePolyline) realTimePolyline.addLatLng([lat, lng]);
+            if (typeof window.addDashboardMiniMapTrailPoint === 'function') {
+                window.addDashboardMiniMapTrailPoint(lat, lng);
+            }
         }
 
         if (startTime) {
@@ -2017,6 +2024,9 @@ function restoreDrive(data) {
     if(realTimePolyline && routePath.length > 0) {
         const latLngs = routePath.map(pt => [pt.lat, pt.lng]);
         realTimePolyline.setLatLngs(latLngs);
+    }
+    if (typeof window.setDashboardMiniMapTrailFromRoute === 'function') {
+        window.setDashboardMiniMapTrailFromRoute(routePath);
     }
     
     showToast("Ajo palautettu onnistuneesti! ♻️");

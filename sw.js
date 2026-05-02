@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.33 dashboard quick map toggle
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.34 dashboard mini-map live route trail
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.33-dashboard-quick-map-toggle'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.34-dashboard-mini-map-live-trail'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

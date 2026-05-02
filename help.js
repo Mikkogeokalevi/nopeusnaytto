@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.33 DASHBOARD QUICK MAP TOGGLE)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.34 DASHBOARD MINI-MAP LIVE TRAIL)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,15 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ UUTTA v6.34: Dashboard mini-karttaan ajoviiva liikkeessä:</strong>
+                        <ul>
+                            <li><strong>Mini-karttaan piirtyy nyt sama live-ajoviiva</strong> kuin isossa karttanäkymässä, kun liikut.</li>
+                            <li><strong>Ajoviiva nollautuu uuden ajon alussa</strong> ja palautuu oikein, kun jatkat tai palautat kesken jääneen ajon.</li>
+                        </ul>
+
                         <strong>🗺️ UUTTA v6.33: Nopea dashboard-vaihtonappi kartalle/stats-ruuduille:</strong>
                         <ul>
                             <li><strong>Sään vasemmalle puolelle lisätty pikapainike</strong>, jolla vaihdat mini-kartan ja stats-ruutujen välillä yhdellä napautuksella.</li>
@@ -472,9 +478,15 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ NEW in v6.34: Live movement trail on dashboard mini-map:</strong>
+                        <ul>
+                            <li><strong>The dashboard mini-map now draws the same live route line</strong> as the main map while moving.</li>
+                            <li><strong>The trail clears on a new drive</strong> and restores correctly when continuing/restoring a drive.</li>
+                        </ul>
+
                         <strong>🗺️ NEW in v6.33: Quick dashboard toggle for mini-map/stats cards:</strong>
                         <ul>
                             <li><strong>A quick button was added to the left of weather</strong> so you can switch between mini-map and stats cards with one tap.</li>
@@ -933,9 +945,15 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ MỚI v6.34: mini-map trên dashboard có đường đi live:</strong>
+                        <ul>
+                            <li><strong>Mini-map trên dashboard giờ vẽ cùng đường đi live</strong> như màn hình bản đồ lớn khi xe di chuyển.</li>
+                            <li><strong>Đường đi được xóa khi bắt đầu chuyến mới</strong> và khôi phục đúng khi tiếp tục/khôi phục chuyến đi.</li>
+                        </ul>
+
                         <strong>🗺️ MỚI v6.33: nút chuyển nhanh mini-map/ô thống kê trên dashboard:</strong>
                         <ul>
                             <li><strong>Thêm nút nhanh bên trái phần thời tiết</strong> để đổi giữa mini-map và ô thống kê chỉ bằng một chạm.</li>
