@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.38 BIKE MODE VELOCITY STAGE + MINI-MAP)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.39 CYCLING MAP LAYER + BIKE AUTO-SWITCH)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,16 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ UUTTA v6.39: pyöräilykarttataso + automaattinen kartan vaihto pyörätilassa:</strong>
+                        <ul>
+                            <li><strong>Pääkarttaan lisätty uusi "Pyöräilykartta" (CyclOSM)</strong>, joka korostaa pyöräteitä ja pyöräilyyn sopivia reittejä.</li>
+                            <li><strong>Kun valitset ajoneuvoksi pyörän, kartta vaihtuu automaattisesti pyöräilykarttaan</strong> sekä pääkartassa että dashboardin mini-kartassa.</li>
+                            <li><strong>Kun poistut pyörätilasta, kartta palautuu aiempaan ei-pyörä-tasoon</strong> (esim. Peruskartta/Satelliitti/Maastokartta).</li>
+                        </ul>
+
                         <strong>🚲 UUTTA v6.38: pyörätilan Velocity Stage + pyöräystävällinen mini-kartta:</strong>
                         <ul>
                             <li><strong>Pyörää valittaessa näkymä käyttää Velocity Stagea</strong> ja nopeustrendi skaalautuu pyöräajoon (0–60 km/h).</li>
@@ -506,9 +513,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ NEW in v6.39: cycling map layer + automatic bike-map switching:</strong>
+                        <ul>
+                            <li><strong>Added a new "Pyöräilykartta" (CyclOSM) layer on the main map</strong> to better highlight bike paths and cycle-friendly routing.</li>
+                            <li><strong>When bike is selected, map switches automatically to cycling layer</strong> on both main map and dashboard mini-map.</li>
+                            <li><strong>When leaving bike mode, map restores previous non-bike layer</strong> (street/satellite/terrain).</li>
+                        </ul>
+
                         <strong>🚲 NEW in v6.38: bike-mode Velocity Stage + bike-friendly mini-map:</strong>
                         <ul>
                             <li><strong>When bike is selected, dashboard now uses Velocity Stage</strong> and speed trend scales to biking range (0–60 km/h).</li>
@@ -1001,9 +1015,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ MỚI v6.39: thêm lớp bản đồ xe đạp + tự chuyển bản đồ ở chế độ xe đạp:</strong>
+                        <ul>
+                            <li><strong>Thêm lớp "Pyöräilykartta" (CyclOSM) trên bản đồ chính</strong> để làm nổi bật đường xe đạp và tuyến phù hợp đạp xe.</li>
+                            <li><strong>Khi chọn xe đạp, bản đồ tự chuyển sang lớp xe đạp</strong> ở cả bản đồ chính và mini-map dashboard.</li>
+                            <li><strong>Khi rời chế độ xe đạp, bản đồ khôi phục lớp trước đó không phải xe đạp</strong> (thường/vệ tinh/địa hình).</li>
+                        </ul>
+
                         <strong>🚲 MỚI v6.38: Velocity Stage cho chế độ xe đạp + mini-map thân thiện đạp xe:</strong>
                         <ul>
                             <li><strong>Khi chọn xe đạp, dashboard dùng Velocity Stage</strong> và speed-trend đổi thang theo đạp xe (0–60 km/h).</li>

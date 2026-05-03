@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.38 (Pyörätila: Velocity Stage + mini-kartta + dashboard-siivous)
+**Versio:** v6.39 (Pyöräilykarttataso + automaattinen kartanvaihto pyörätilassa)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,11 +71,12 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.38):**
+### **Nykyinen tilanne (v6.39):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
 - Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
 - Pyörätila: Velocity Stage auto-aktivointi + pyöräkohtainen trendi/stage-skaala (0–60) + mini-kartan pyöräzoom/väritys
 - Pyörä/kävely: nopeusrajoituskortti piiloon + tiekohtainen rajoitushaku pois + nopeuskamerahälytykset estettynä
+- Karttatasot: uusi CyclOSM-pohjainen Pyöräilykartta + auto-vaihto pyörätilaan sekä palautus aiempaan tasoon poistuessa pyörätilasta
 - Nopeusmittari: fallback-liikenopeus + drop-guard + A/B/C-luottamusindikaattori + cruise-stability (50–90 km/h)
 - Historiakartta: reittikatselussa POI-layer piilotetaan selkeyden vuoksi ja palautetaan poistuttaessa katselusta
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
@@ -104,6 +105,13 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.39 - Pyöräilykarttataso + automaattinen kartanvaihto pyörätilassa**
+- ✅ Lisätty pääkarttaan Pyöräilykartta (CyclOSM)
+- ✅ Ajoneuvon vaihdossa pyörätilaan kartta vaihtuu automaattisesti pyöräilykarttaan
+- ✅ Poistuttaessa pyörätilasta pääkartta palautuu aiemmin käytettyyn ei-pyörä-tasoon
+- ✅ Dashboardin mini-kartan pohjakartta vaihtuu automaattisesti pyörä-/normaalitilan mukaan
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.38 - Pyörätila: Velocity Stage + mini-kartta + dashboard-siivous**
 - ✅ Pyörän valinta aktivoi automaattisesti Velocity Stage -näkymän

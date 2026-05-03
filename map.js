@@ -17,9 +17,77 @@ const terrainMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png
     attribution: '© OpenTopoMap' 
 });
 
+const cyclingMap = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+    maxZoom: 20,
+    attribution: '© OpenStreetMap contributors, © CyclOSM'
+});
+
 let dashboardMiniMap = null;
 let dashboardMiniMarker = null;
 let dashboardMiniPolyline = null;
+let dashboardMiniStreetLayer = null;
+let dashboardMiniCyclingLayer = null;
+let dashboardMiniBaseMode = 'street';
+let lastNonBikeMainLayer = 'street';
+
+function getActiveMainLayerKey() {
+    if (!map) return null;
+    if (map.hasLayer(streetMap)) return 'street';
+    if (map.hasLayer(satelliteMap)) return 'satellite';
+    if (map.hasLayer(terrainMap)) return 'terrain';
+    if (map.hasLayer(cyclingMap)) return 'cycling';
+    return null;
+}
+
+function setMainBaseLayer(layerKey) {
+    if (!map) return;
+    [streetMap, satelliteMap, terrainMap, cyclingMap].forEach((layer) => {
+        if (map.hasLayer(layer)) map.removeLayer(layer);
+    });
+
+    if (layerKey === 'satellite') {
+        satelliteMap.addTo(map);
+        return;
+    }
+    if (layerKey === 'terrain') {
+        terrainMap.addTo(map);
+        return;
+    }
+    if (layerKey === 'cycling') {
+        cyclingMap.addTo(map);
+        return;
+    }
+    streetMap.addTo(map);
+}
+
+function updateDashboardMiniMapBaseForVehicleType() {
+    if (!dashboardMiniMap || !dashboardMiniStreetLayer || !dashboardMiniCyclingLayer) return;
+    const wantCycling = currentCarType === 'bike';
+    const nextMode = wantCycling ? 'cycling' : 'street';
+    if (dashboardMiniBaseMode === nextMode) return;
+
+    if (wantCycling) {
+        if (dashboardMiniMap.hasLayer(dashboardMiniStreetLayer)) dashboardMiniMap.removeLayer(dashboardMiniStreetLayer);
+        if (!dashboardMiniMap.hasLayer(dashboardMiniCyclingLayer)) dashboardMiniCyclingLayer.addTo(dashboardMiniMap);
+    } else {
+        if (dashboardMiniMap.hasLayer(dashboardMiniCyclingLayer)) dashboardMiniMap.removeLayer(dashboardMiniCyclingLayer);
+        if (!dashboardMiniMap.hasLayer(dashboardMiniStreetLayer)) dashboardMiniStreetLayer.addTo(dashboardMiniMap);
+    }
+    dashboardMiniBaseMode = nextMode;
+}
+
+window.updateMapLayerForVehicleType = function() {
+    if (map) {
+        const active = getActiveMainLayerKey();
+        if (currentCarType === 'bike') {
+            if (active && active !== 'cycling') lastNonBikeMainLayer = active;
+            if (active !== 'cycling') setMainBaseLayer('cycling');
+        } else if (active === 'cycling') {
+            setMainBaseLayer(lastNonBikeMainLayer || 'street');
+        }
+    }
+    updateDashboardMiniMapBaseForVehicleType();
+};
 
 function scheduleDashboardMiniMapResize(delays) {
     if (!Array.isArray(delays)) return;
@@ -43,9 +111,15 @@ if (document.getElementById('map')) {
     // Lisätään tasovalitsin
     L.control.layers({ 
         "Peruskartta": streetMap, 
+        "Pyöräilykartta": cyclingMap,
         "Satelliitti": satelliteMap, 
         "Maastokartta": terrainMap 
     }).addTo(map);
+
+    map.on('baselayerchange', () => {
+        const active = getActiveMainLayerKey();
+        if (active && active !== 'cycling') lastNonBikeMainLayer = active;
+    });
 
     // Oma sijainti -merkki (sininen pallo)
     marker = L.circleMarker([64.0, 26.0], { 
@@ -119,13 +193,19 @@ window.ensureDashboardMiniMap = function() {
     if (!mapEl) return null;
     if (dashboardMiniMap) return dashboardMiniMap;
 
+    dashboardMiniStreetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OSM'
+    });
+    dashboardMiniCyclingLayer = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+        maxZoom: 20,
+        attribution: '© OpenStreetMap contributors, © CyclOSM'
+    });
+
     dashboardMiniMap = L.map('dashboard-mini-map', {
         center: [64.0, 26.0],
         zoom: 15,
-        layers: [L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OSM'
-        })],
+        layers: [dashboardMiniStreetLayer],
         zoomControl: false,
         attributionControl: false,
         dragging: false,
@@ -155,6 +235,8 @@ window.ensureDashboardMiniMap = function() {
         dashboardMiniPolyline.setLatLngs(routePath.map((p) => [p.lat, p.lng]));
     }
 
+    updateDashboardMiniMapBaseForVehicleType();
+
     scheduleDashboardMiniMapResize([50, 180, 360]);
 
     return dashboardMiniMap;
@@ -171,6 +253,7 @@ window.updateDashboardMiniMap = function(lat, lng, coordsText, speedKmh) {
     if (!isFinite(lat) || !isFinite(lng)) return;
     const mapInst = window.ensureDashboardMiniMap();
     if (!mapInst) return;
+    updateDashboardMiniMapBaseForVehicleType();
 
     const pos = [lat, lng];
     if (dashboardMiniMarker) dashboardMiniMarker.setLatLng(pos);

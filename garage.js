@@ -168,6 +168,10 @@ function updateCarTypeVariable() {
         const styleSelect = document.getElementById('speedometer-style');
         if (styleSelect) styleSelect.value = 'cinema';
     }
+
+    if (typeof window.updateMapLayerForVehicleType === 'function') {
+        window.updateMapLayerForVehicleType();
+    }
 }
 
 // 3. ASETUSNÄKYMÄN LISTAUS (SETTINGS)

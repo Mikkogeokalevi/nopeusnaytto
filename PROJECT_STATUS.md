@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.38`
+- **Nykyversio:** `v6.39`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
@@ -21,6 +21,22 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.39 - Pyöräilykarttataso + automaattinen kartanvaihto pyörätilassa
+
+**Mitä muutettiin:**
+1. Pääkarttaan lisättiin uusi `Pyöräilykartta` (CyclOSM), joka näyttää pyörätiet/polut selkeämmin.
+2. Ajoneuvoksi `pyörä` valittaessa kartta vaihtuu automaattisesti pyöräilykarttaan.
+3. Kun poistutaan pyörätilasta, pääkartta palautuu aiemmin käytettyyn ei-pyörä-tasoon (peruskartta/satelliitti/maastokartta).
+4. Dashboardin mini-kartta vaihtaa myös pohjakartan automaattisesti pyörä-/normaalitilan mukaan.
+
+**Tiedostot:**
+- `map.js` (CyclOSM layer + auto-switch logic + mini-map base switching)
+- `garage.js` (ajoneuvon vaihdossa `updateMapLayerForVehicleType`)
+- `help.js` (v6.39 changelog FI/EN/VI)
+- `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
+
+---
 
 ### v6.38 - Pyörätila: Velocity Stage + mini-kartta + dashboard-siivous
 
