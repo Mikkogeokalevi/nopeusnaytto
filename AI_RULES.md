@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.41 (Karttatasovalitsimen käytettävyyskorjaus)
+**Versio:** v6.42 (Karttatason valinnan pysyvyys + pyöräilykartan fallback)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,7 +71,7 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.41):**
+### **Nykyinen tilanne (v6.42):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
 - Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
 - Pyörätila: Velocity Stage auto-aktivointi + pyöräkohtainen trendi/stage-skaala (0–60) + mini-kartan pyöräzoom/väritys
@@ -79,6 +79,7 @@ nopeusnaytto-main/
 - Karttatasot: uusi CyclOSM-pohjainen Pyöräilykartta + auto-vaihto pyörätilaan sekä palautus aiempaan tasoon poistuessa pyörätilasta
 - Pyöräilykartan tile-endpoint korjattu luotettavampaan URL:iin (pääkartta + mini-kartta), jotta kartta ei jää tyhjäksi
 - Isokartan karttatasovalitsin siirretty vasempaan yläkulmaan + klikattavuusvahvistus (ei enää GPS-napin alla)
+- Pyörätilan auto-vaihto on nyt transition-only (ei ylikirjoita käsin valittua tasoa) + CyclOSM-varalähde automaattisella vaihtamisella
 - Nopeusmittari: fallback-liikenopeus + drop-guard + A/B/C-luottamusindikaattori + cruise-stability (50–90 km/h)
 - Historiakartta: reittikatselussa POI-layer piilotetaan selkeyden vuoksi ja palautetaan poistuttaessa katselusta
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
@@ -107,6 +108,13 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.42 - Karttatason valinnan pysyvyys + pyöräilykartan fallback**
+- ✅ Pyörätilan auto-vaihto pyöräilykarttaan muutettu transition-only -logiikkaan
+- ✅ Käsin valittu Satelliitti/Maastokartta/Peruskartta ei enää palaudu pakolla pyörätilassa
+- ✅ Pyöräilykartalle lisätty automaattinen varalähde, jos ensisijainen CyclOSM URL epäonnistuu
+- ✅ Sama fallback lisätty myös dashboardin mini-kartan pyöräilytasoon
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.41 - Karttatasovalitsimen käytettävyyskorjaus**
 - ✅ Isokartan tasovalitsin siirretty oikeasta yläkulmasta vasempaan yläkulmaan

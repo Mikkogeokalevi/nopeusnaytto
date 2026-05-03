@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.41 MAP LAYER CONTROL USABILITY FIX)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.42 MAP LAYER PERSISTENCE + CYCLING FALLBACK)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,15 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧩 UUTTA v6.42: karttatason valinnan pysyvyys + pyöräilykartan fallback:</strong>
+                        <ul>
+                            <li><strong>Pyörätilan auto-vaihto pyöräilykarttaan tehdään nyt vain siirtymähetkellä</strong>, joten voit vaihtaa käsin Satelliitti/Maastokartta/Peruskartta -tasoon ilman että valinta pakotetaan takaisin.</li>
+                            <li><strong>Pyöräilykartalle lisättiin automaattinen varalähde</strong>: jos ensisijainen CyclOSM-URL ei lataa tiilejä, sovellus vaihtaa toiseen lähteeseen.</li>
+                        </ul>
+
                         <strong>🧭 UUTTA v6.41: karttatasovalitsimen käytettävyyskorjaus:</strong>
                         <ul>
                             <li><strong>Isokartan tasovalitsin siirrettiin oikeasta yläkulmasta vasempaan yläkulmaan</strong>, jotta se ei jää GPS ON/OFF -napin alle.</li>
@@ -525,9 +531,15 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧩 NEW in v6.42: map layer selection persistence + cycling fallback:</strong>
+                        <ul>
+                            <li><strong>Bike auto-switch to cycling map now happens only on vehicle-type transition</strong>, so manual Street/Satellite/Terrain selection is no longer force-reset.</li>
+                            <li><strong>Cycling map now has an automatic fallback source</strong>: if primary CyclOSM tiles fail, app switches to secondary URL.</li>
+                        </ul>
+
                         <strong>🧭 NEW in v6.41: map layer selector usability fix:</strong>
                         <ul>
                             <li><strong>Main-map layer selector was moved from top-right to top-left</strong> so it no longer sits under the GPS ON/OFF button.</li>
@@ -1039,9 +1051,15 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧩 MỚI v6.42: giữ lựa chọn lớp bản đồ + fallback cho bản đồ xe đạp:</strong>
+                        <ul>
+                            <li><strong>Tự chuyển sang bản đồ xe đạp chỉ chạy khi vừa đổi loại phương tiện sang xe đạp</strong>, nên lựa chọn tay Thường/Vệ tinh/Địa hình không còn bị ép đổi lại.</li>
+                            <li><strong>Thêm nguồn dự phòng cho tile bản đồ xe đạp</strong>: nếu URL CyclOSM chính lỗi, ứng dụng tự chuyển sang URL phụ.</li>
+                        </ul>
+
                         <strong>🧭 MỚI v6.41: sửa trải nghiệm bộ chọn lớp bản đồ:</strong>
                         <ul>
                             <li><strong>Bộ chọn lớp bản đồ chính được chuyển từ góc phải trên sang góc trái trên</strong> để không bị nút GPS ON/OFF che mất.</li>

@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.41 (Karttatasovalitsimen sijainti- ja klikattavuuskorjaus)
-const APP_VERSION = "6.41"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.42 (Karttatasovalinnan pysyvyys + pyöräilykartan fallback)
+const APP_VERSION = "6.42"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.41 map layer control usability fix
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.42 map layer selection persistence + cycling fallback
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.41-map-layer-control-usability-fix'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.42-map-layer-selection-persistence-cycling-fallback'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
