@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.39 cycling map layer + bike auto-switch
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.40 cycling map tile URL fix
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.39-cycling-map-layer-bike-auto-switch'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.40-cycling-map-tile-url-fix'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.39 (Pyöräilykarttataso + automaattinen kartanvaihto pyörätilassa)
+**Versio:** v6.40 (Pyöräilykartan tiililatauksen korjaus)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,12 +71,13 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.39):**
+### **Nykyinen tilanne (v6.40):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
 - Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
 - Pyörätila: Velocity Stage auto-aktivointi + pyöräkohtainen trendi/stage-skaala (0–60) + mini-kartan pyöräzoom/väritys
 - Pyörä/kävely: nopeusrajoituskortti piiloon + tiekohtainen rajoitushaku pois + nopeuskamerahälytykset estettynä
 - Karttatasot: uusi CyclOSM-pohjainen Pyöräilykartta + auto-vaihto pyörätilaan sekä palautus aiempaan tasoon poistuessa pyörätilasta
+- Pyöräilykartan tile-endpoint korjattu luotettavampaan URL:iin (pääkartta + mini-kartta), jotta kartta ei jää tyhjäksi
 - Nopeusmittari: fallback-liikenopeus + drop-guard + A/B/C-luottamusindikaattori + cruise-stability (50–90 km/h)
 - Historiakartta: reittikatselussa POI-layer piilotetaan selkeyden vuoksi ja palautetaan poistuttaessa katselusta
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
@@ -105,6 +106,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.40 - Pyöräilykartan tiililatauksen korjaus**
+- ✅ Vaihdettu CyclOSM tile-URL luotettavampaan endpointiin
+- ✅ Sama korjaus tehty sekä pääkartan että mini-kartan pyöräilytasoon
+- ✅ Auto-vaihto pyörätilaan säilyy ennallaan
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.39 - Pyöräilykarttataso + automaattinen kartanvaihto pyörätilassa**
 - ✅ Lisätty pääkarttaan Pyöräilykartta (CyclOSM)

@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.39 CYCLING MAP LAYER + BIKE AUTO-SWITCH)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.40 CYCLING MAP TILE URL FIX)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,15 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧩 UUTTA v6.40: pyöräilykartan latauskorjaus:</strong>
+                        <ul>
+                            <li><strong>Pyöräilykartan tiilipalvelun URL vaihdettiin luotettavampaan endpointiin</strong>, jotta karttataso latautuu myös niillä laitteilla joissa se jäi tyhjäksi.</li>
+                            <li><strong>Korjaus tehtiin sekä pääkartan että dashboardin mini-kartan pyöräilytasoon</strong>.</li>
+                        </ul>
+
                         <strong>🗺️ UUTTA v6.39: pyöräilykarttataso + automaattinen kartan vaihto pyörätilassa:</strong>
                         <ul>
                             <li><strong>Pääkarttaan lisätty uusi "Pyöräilykartta" (CyclOSM)</strong>, joka korostaa pyöräteitä ja pyöräilyyn sopivia reittejä.</li>
@@ -513,9 +519,15 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧩 NEW in v6.40: cycling map loading fix:</strong>
+                        <ul>
+                            <li><strong>Cycling-map tile URL was switched to a more reliable endpoint</strong> so the layer no longer appears blank on affected devices.</li>
+                            <li><strong>Fix was applied to both main map and dashboard mini-map cycling layers</strong>.</li>
+                        </ul>
+
                         <strong>🗺️ NEW in v6.39: cycling map layer + automatic bike-map switching:</strong>
                         <ul>
                             <li><strong>Added a new "Pyöräilykartta" (CyclOSM) layer on the main map</strong> to better highlight bike paths and cycle-friendly routing.</li>
@@ -1015,9 +1027,15 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧩 MỚI v6.40: sửa lỗi tải bản đồ xe đạp:</strong>
+                        <ul>
+                            <li><strong>Đã đổi URL tile của bản đồ xe đạp sang endpoint ổn định hơn</strong> để tránh tình trạng lớp bản đồ bị trắng trên một số thiết bị.</li>
+                            <li><strong>Bản sửa áp dụng cho cả bản đồ chính và lớp xe đạp của mini-map dashboard</strong>.</li>
+                        </ul>
+
                         <strong>🗺️ MỚI v6.39: thêm lớp bản đồ xe đạp + tự chuyển bản đồ ở chế độ xe đạp:</strong>
                         <ul>
                             <li><strong>Thêm lớp "Pyöräilykartta" (CyclOSM) trên bản đồ chính</strong> để làm nổi bật đường xe đạp và tuyến phù hợp đạp xe.</li>

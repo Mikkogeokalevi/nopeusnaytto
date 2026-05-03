@@ -17,7 +17,7 @@ const terrainMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png
     attribution: '© OpenTopoMap' 
 });
 
-const cyclingMap = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+const cyclingMap = L.tileLayer('https://{s}.tile.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
     maxZoom: 20,
     attribution: '© OpenStreetMap contributors, © CyclOSM'
 });
@@ -197,7 +197,7 @@ window.ensureDashboardMiniMap = function() {
         maxZoom: 19,
         attribution: '© OSM'
     });
-    dashboardMiniCyclingLayer = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+    dashboardMiniCyclingLayer = L.tileLayer('https://{s}.tile.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
         maxZoom: 20,
         attribution: '© OpenStreetMap contributors, © CyclOSM'
     });
