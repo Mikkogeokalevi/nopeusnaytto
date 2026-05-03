@@ -143,7 +143,8 @@ function updateVelocityTrendLines(speed, altitude) {
 
     pushVelocityTrendPoint(speed, altitude);
 
-    const speedPath = buildTrendPath(velocityTrendData, (sample) => sample.speed, { min: 0, max: 180 });
+    const speedMax = (currentCarType === 'bike') ? 60 : 140;
+    const speedPath = buildTrendPath(velocityTrendData, (sample) => sample.speed, { min: 0, max: speedMax });
     const altitudePath = buildTrendPath(velocityTrendData, (sample) => sample.altitude);
 
     speedLine.setAttribute('d', speedPath);
@@ -161,7 +162,8 @@ function updateVelocityStage(speed, altitude) {
     if (!speedText || !status || !trackFill || !marker || !stage) return;
 
     const s = Math.max(0, Number(speed) || 0);
-    const ratio = Math.max(0, Math.min(1, s / 180));
+    const stageMaxSpeed = (currentCarType === 'bike') ? 60 : 180;
+    const ratio = Math.max(0, Math.min(1, s / stageMaxSpeed));
     const pct = Math.round(ratio * 100);
 
     speedText.textContent = s.toFixed(1);
@@ -171,9 +173,15 @@ function updateVelocityStage(speed, altitude) {
     stage.style.setProperty('--stage-shift', `${Math.round(ratio * 32)}px`);
 
     let state = 'PAIKALLAAN';
-    if (s >= 120) state = 'ERITTÄIN NOPEA';
-    else if (s >= 80) state = 'MAANTIE';
-    else if (s >= 30) state = 'TAAJAMA';
+    if (currentCarType === 'bike') {
+        if (s >= 45) state = 'KOVA VETO';
+        else if (s >= 28) state = 'REIPAS';
+        else if (s >= 12) state = 'RULLAA';
+    } else {
+        if (s >= 120) state = 'ERITTÄIN NOPEA';
+        else if (s >= 80) state = 'MAANTIE';
+        else if (s >= 30) state = 'TAAJAMA';
+    }
     status.textContent = state;
 
     const active = Math.round(ratio * lanes.length);

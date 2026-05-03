@@ -162,6 +162,12 @@ function updateCarTypeVariable() {
         const c = userCars.find(x => x.id === currentCarId);
         if (c) currentCarType = c.type;
     }
+
+    if (currentCarType === 'bike' && typeof window.updateSpeedometerStyle === 'function') {
+        window.updateSpeedometerStyle('cinema');
+        const styleSelect = document.getElementById('speedometer-style');
+        if (styleSelect) styleSelect.value = 'cinema';
+    }
 }
 
 // 3. ASETUSNÄKYMÄN LISTAUS (SETTINGS)

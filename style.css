@@ -704,6 +704,40 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     text-align: center; position: relative; 
     flex-shrink: 0; 
 }
+.speed-confidence-badge {
+    position: absolute;
+    top: 8px;
+    right: clamp(4px, 2.8vw, 18px);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9;
+    transition: all 0.25s ease;
+}
+.speed-confidence-badge.conf-a {
+    color: #00e676;
+    border-color: color-mix(in srgb, #00e676 65%, transparent);
+    background: color-mix(in srgb, #00e676 18%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, #00e676 32%, transparent);
+}
+.speed-confidence-badge.conf-b {
+    color: #ffca28;
+    border-color: color-mix(in srgb, #ffca28 65%, transparent);
+    background: color-mix(in srgb, #ffca28 16%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, #ffca28 28%, transparent);
+}
+.speed-confidence-badge.conf-c {
+    color: #ff6e6e;
+    border-color: color-mix(in srgb, #ff6e6e 65%, transparent);
+    background: color-mix(in srgb, #ff6e6e 15%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, #ff6e6e 26%, transparent);
+}
 .huge-speed {
     font-size: 16vh; 
     font-weight: 800; color: var(--speed-color); line-height: 0.9;
@@ -713,6 +747,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 @media (max-height: 700px) {
     .huge-speed { font-size: 14vh; }
+    .speed-confidence-badge { top: 2px; }
 }
 
 .huge-unit { font-size: 16px; color: var(--subtext-color); font-weight: 500; display: block; text-align: center; margin-top: 0px; text-transform: uppercase; letter-spacing: 2px; }

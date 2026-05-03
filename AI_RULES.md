@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.35 (Historiakartan POI-näkymän siivous)
+**Versio:** v6.38 (Pyörätila: Velocity Stage + mini-kartta + dashboard-siivous)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,9 +71,12 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.35):**
+### **Nykyinen tilanne (v6.38):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
 - Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
+- Pyörätila: Velocity Stage auto-aktivointi + pyöräkohtainen trendi/stage-skaala (0–60) + mini-kartan pyöräzoom/väritys
+- Pyörä/kävely: nopeusrajoituskortti piiloon + tiekohtainen rajoitushaku pois + nopeuskamerahälytykset estettynä
+- Nopeusmittari: fallback-liikenopeus + drop-guard + A/B/C-luottamusindikaattori + cruise-stability (50–90 km/h)
 - Historiakartta: reittikatselussa POI-layer piilotetaan selkeyden vuoksi ja palautetaan poistuttaessa katselusta
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
 - POI-toast: nostettu ylemmäs ettei peitä nopeuslukemaa
@@ -101,6 +104,27 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.38 - Pyörätila: Velocity Stage + mini-kartta + dashboard-siivous**
+- ✅ Pyörän valinta aktivoi automaattisesti Velocity Stage -näkymän
+- ✅ Velocity Stage/trendin skaalaus pyöräajoon (0–60 km/h)
+- ✅ Mini-kartta pyörätilassa: lähempi zoom + pyörä-värinen marker/reitti
+- ✅ Nopeusrajoituskortti piilotetaan pyörä-/kävelytilassa
+- ✅ Tiekohtainen nopeusrajoitushaku ohitetaan pyörä-/kävelytilassa
+- ✅ Nopeuskamerahälytykset pidetään estettyinä pyörätilassa
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
+
+### **v6.37 - Nopeuden luottamusindikaattori + cruise-stability mode**
+- ✅ Lisätty mittaristoon A/B/C-luottamusindikaattori (GPS/DER/EST)
+- ✅ Lisätty cruise-stability smoothing 50–90 km/h tasaiselle ajolle
+- ✅ Lisätty vakionopeusalueen drop-guard äkillisiä virheputouksia vastaan
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
+
+### **v6.36 - Nopeustrendin skaala + GPS-nopeuden luotettavuusparannus**
+- ✅ Speed-trendin kiinteä asteikko muutettu 0–140 km/h
+- ✅ GPS-nopeudelle lisätty fallback, jos laitenopeus puuttuu/epäonnistuu
+- ✅ Lisätty drop-guard äkillisiä epärealistisia nopeusputouksia vastaan
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.35 - Historiakartan POI-näkymän siivous**
 - ✅ Historiasta avatussa reittikatselussa POI-pisteet piilotetaan automaattisesti

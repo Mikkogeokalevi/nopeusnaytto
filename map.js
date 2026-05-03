@@ -167,14 +167,32 @@ window.refreshDashboardMiniMapSize = function() {
     try { dashboardMiniMap.invalidateSize(); } catch (e) {}
 };
 
-window.updateDashboardMiniMap = function(lat, lng, coordsText) {
+window.updateDashboardMiniMap = function(lat, lng, coordsText, speedKmh) {
     if (!isFinite(lat) || !isFinite(lng)) return;
     const mapInst = window.ensureDashboardMiniMap();
     if (!mapInst) return;
 
     const pos = [lat, lng];
     if (dashboardMiniMarker) dashboardMiniMarker.setLatLng(pos);
-    mapInst.setView(pos, 16, { animate: false });
+    let targetZoom = 16;
+    if (currentCarType === 'bike') {
+        const spd = Math.max(0, Number(speedKmh) || 0);
+        targetZoom = spd > 26 ? 17 : 18;
+        if (dashboardMiniMarker) {
+            dashboardMiniMarker.setStyle({ color: '#9dff63', fillColor: '#9dff63' });
+        }
+        if (dashboardMiniPolyline) {
+            dashboardMiniPolyline.setStyle({ color: '#7CFF8A', opacity: 0.75 });
+        }
+    } else {
+        if (dashboardMiniMarker) {
+            dashboardMiniMarker.setStyle({ color: '#47d2ff', fillColor: '#47d2ff' });
+        }
+        if (dashboardMiniPolyline) {
+            dashboardMiniPolyline.setStyle({ color: '#47d2ff', opacity: 0.65 });
+        }
+    }
+    mapInst.setView(pos, targetZoom, { animate: false });
 
     const coordsEl = document.getElementById('dashboard-map-coords');
     if (coordsEl && typeof coordsText === 'string' && coordsText.trim()) {

@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.35 (Historiakartan POI-näkymän siivous)
-const APP_VERSION = "6.35"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.38 (Pyörätila: Velocity Stage + mini-kartta + turhien autoelementtien piilotus)
+const APP_VERSION = "6.38"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

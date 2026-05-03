@@ -123,6 +123,7 @@ const fuelModalTitle = document.getElementById('fuel-modal-title');
 
 // Mittaristo
 const dashSpeedEl = document.getElementById('dash-speed');
+const speedConfidenceBadgeEl = document.getElementById('speed-confidence-badge');
 const dashMaxSpeedEl = document.getElementById('dash-max-speed');
 const dashDistEl = document.getElementById('dash-dist');
 const dashTimeEl = document.getElementById('dash-time');
@@ -1142,8 +1143,24 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     if(dashAltEl) dashAltEl.innerText = Math.round(alt);
 }
 
+window.updateSpeedConfidenceIndicator = function(level, source) {
+    if (!speedConfidenceBadgeEl) return;
+    const lv = String(level || 'B').trim().toUpperCase();
+    const safeLevel = (lv === 'A' || lv === 'B' || lv === 'C') ? lv : 'B';
+    const src = String(source || 'GPS').trim().toUpperCase() || 'GPS';
+    speedConfidenceBadgeEl.classList.remove('conf-a', 'conf-b', 'conf-c');
+    speedConfidenceBadgeEl.classList.add(`conf-${safeLevel.toLowerCase()}`);
+    speedConfidenceBadgeEl.textContent = `${src} ${safeLevel}`;
+};
+
 window.updateDashboardSpeedLimit = function(info) {
     if (!dashSpeedLimitEl || !dashSpeedLimitSourceEl || !dashLimitCardEl) return;
+
+    if (currentCarType === 'bike' || currentCarType === 'walking') {
+        dashLimitCardEl.style.display = 'none';
+        return;
+    }
+    dashLimitCardEl.style.display = '';
 
     const data = info || {};
     const val = Number(data.limitKmh);

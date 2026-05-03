@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.35 history map POI visibility cleanup
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.38 bike mode velocity stage + mini-map tuning
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.35-history-map-poi-visibility-cleanup'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.38-bike-mode-velocity-stage-mini-map'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

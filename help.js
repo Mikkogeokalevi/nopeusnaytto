@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.35 HISTORY MAP POI VISIBILITY CLEANUP)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.38 BIKE MODE VELOCITY STAGE + MINI-MAP)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,10 +9,32 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
-                        <strong>🗺️ UUTTA v6.35: Historiakartan POI-siivous pitkille reiteille:</strong>
+                        <strong>🚲 UUTTA v6.38: pyörätilan Velocity Stage + pyöräystävällinen mini-kartta:</strong>
+                        <ul>
+                            <li><strong>Pyörää valittaessa näkymä käyttää Velocity Stagea</strong> ja nopeustrendi skaalautuu pyöräajoon (0–60 km/h).</li>
+                            <li><strong>Mini-kartta käyttää pyörätilassa lähempää zoomia ja pyöräteemaisia värejä</strong> paremman luettavuuden vuoksi.</li>
+                            <li><strong>Nopeusrajoituskortti piilotetaan pyörä-/kävelytilassa</strong> ja turha tiekohtainen nopeusrajoitushaku ohitetaan.</li>
+                            <li><strong>Nopeuskamerahälytykset pysyvät poissa pyörätilassa</strong>, jotta käyttöliittymä ei häiritse pyöräilyä.</li>
+                        </ul>
+
+                        <strong>🎯 UUTTA v6.37: nopeuden luottamusindikaattori + cruise-stability:</strong>
+                        <ul>
+                            <li><strong>Mittariston viereen lisättiin A/B/C-luottamusmerkki</strong> (GPS/DER/EST), joka kertoo kuinka luotettava nopeusnäyte on juuri nyt.</li>
+                            <li><strong>Cruise-stability mode (50–90 km/h)</strong> vähentää pientä GPS-jitteriä tasaisessa ajossa.</li>
+                            <li><strong>Äkillisiä virheputouksia suodatetaan aiempaa tarkemmin</strong> etenkin vakionopeusalueella.</li>
+                        </ul>
+
+                        <strong>📉 UUTTA v6.36: nopeustrendin skaala + luotettavampi GPS-nopeus:</strong>
+                        <ul>
+                            <li><strong>Speed-trendin asteikko muutettu 0–140 km/h</strong> selkeämpää tulkintaa varten.</li>
+                            <li><strong>GPS-nopeuteen lisätty lisäsuojaus</strong> äkillisiä virheellisiä pudotuksia vastaan (heikko tarkkuus / puuttuva speed-arvo).</li>
+                            <li><strong>Puuttuva laitenopeus korvataan tarvittaessa liikkeestä johdetulla nopeudella</strong>, jolloin mittari käyttäytyy tasaisemmin vakaassa ajossa.</li>
+                        </ul>
+
+                        <strong>🗺️ UUTTA v6.35: Historiakartan POI-pisteiden piilottaminen pitkille reiteille:</strong>
                         <ul>
                             <li><strong>Kun avaat reitin historiasta kartalle, POI-pisteet piilotetaan automaattisesti</strong>, jotta reitti näkyy selkeämmin.</li>
                             <li><strong>POI:t palautuvat takaisin</strong>, kun poistut historiakatselusta normaalitilaan.</li>
@@ -484,9 +506,31 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🚲 NEW in v6.38: bike-mode Velocity Stage + bike-friendly mini-map:</strong>
+                        <ul>
+                            <li><strong>When bike is selected, dashboard now uses Velocity Stage</strong> and speed trend scales to biking range (0–60 km/h).</li>
+                            <li><strong>Mini-map now uses closer zoom and bike-themed colors in bike mode</strong> for clearer route reading.</li>
+                            <li><strong>Speed limit card is hidden in bike/walking mode</strong> and road speed-limit fetch is skipped for those modes.</li>
+                            <li><strong>Speed camera alerts remain disabled in bike mode</strong> to avoid irrelevant driving warnings.</li>
+                        </ul>
+
+                        <strong>🎯 NEW in v6.37: speed confidence indicator + cruise stability:</strong>
+                        <ul>
+                            <li><strong>An A/B/C confidence badge was added next to speed readout</strong> (GPS/DER/EST source) to show current speed reliability.</li>
+                            <li><strong>Cruise-stability mode (50–90 km/h)</strong> reduces minor GPS jitter during steady driving.</li>
+                            <li><strong>Abrupt bogus drops are now filtered more aggressively</strong> in the cruise speed band.</li>
+                        </ul>
+
+                        <strong>📉 NEW in v6.36: speed trend scale + more reliable GPS speed:</strong>
+                        <ul>
+                            <li><strong>Speed trend scale changed to 0–140 km/h</strong> for clearer reading.</li>
+                            <li><strong>Added extra guard against abrupt bogus speed drops</strong> during weak GPS accuracy / missing speed samples.</li>
+                            <li><strong>When device-reported speed is missing, movement-derived speed is used as fallback</strong> to keep speed readout steadier in constant driving.</li>
+                        </ul>
+
                         <strong>🗺️ NEW in v6.35: History map POI cleanup for long routes:</strong>
                         <ul>
                             <li><strong>When opening a route from History on the map, POI markers are now hidden automatically</strong> so the route remains readable.</li>
@@ -957,9 +1001,31 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🚲 MỚI v6.38: Velocity Stage cho chế độ xe đạp + mini-map thân thiện đạp xe:</strong>
+                        <ul>
+                            <li><strong>Khi chọn xe đạp, dashboard dùng Velocity Stage</strong> và speed-trend đổi thang theo đạp xe (0–60 km/h).</li>
+                            <li><strong>Mini-map ở chế độ xe đạp dùng zoom gần hơn và màu theo chủ đề xe đạp</strong> để dễ nhìn tuyến đường.</li>
+                            <li><strong>Thẻ giới hạn tốc độ được ẩn ở chế độ xe đạp/đi bộ</strong> và bỏ qua truy vấn giới hạn tốc độ theo đường.</li>
+                            <li><strong>Cảnh báo camera tốc độ vẫn tắt trong chế độ xe đạp</strong> để tránh cảnh báo lái xe không liên quan.</li>
+                        </ul>
+
+                        <strong>🎯 MỚI v6.37: chỉ báo độ tin cậy tốc độ + cruise stability:</strong>
+                        <ul>
+                            <li><strong>Thêm badge A/B/C bên cạnh tốc độ</strong> (nguồn GPS/DER/EST) để báo mức độ tin cậy hiện tại.</li>
+                            <li><strong>Cruise-stability mode (50–90 km/h)</strong> giảm rung nhẹ do GPS khi chạy đều.</li>
+                            <li><strong>Lọc mạnh hơn các nhịp tụt tốc độ ảo</strong> trong dải tốc độ hành trình.</li>
+                        </ul>
+
+                        <strong>📉 MỚI v6.36: thang speed-trend + tăng độ tin cậy tốc độ GPS:</strong>
+                        <ul>
+                            <li><strong>Thang speed-trend đổi thành 0–140 km/h</strong> để dễ đọc hơn.</li>
+                            <li><strong>Thêm cơ chế chặn tụt tốc độ ảo đột ngột</strong> khi GPS yếu hoặc mẫu tốc độ bị thiếu.</li>
+                            <li><strong>Khi tốc độ từ thiết bị bị thiếu, hệ thống dùng tốc độ suy ra từ chuyển động</strong> để số tốc độ ổn định hơn khi chạy đều.</li>
+                        </ul>
+
                         <strong>🗺️ MỚI v6.35: dọn POI trong bản đồ lịch sử cho tuyến dài:</strong>
                         <ul>
                             <li><strong>Khi mở tuyến từ Lịch sử trên bản đồ, marker POI sẽ tự ẩn</strong> để nhìn đường đi rõ hơn.</li>

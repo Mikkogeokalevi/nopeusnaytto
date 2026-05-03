@@ -51,6 +51,24 @@ const ROAD_LIMIT_FETCH_INTERVAL_MS = 45000;
 const ROAD_LIMIT_FETCH_MIN_MOVE_M = 120;
 const ROAD_LIMIT_EXACT_HOLD_MS = 90000;
 const ROAD_LIMIT_ESTIMATED_HOLD_MS = 45000;
+const SPEED_DERIVED_MAX_KMH = 220;
+const SPEED_DROP_GUARD_MIN_PREV_KMH = 22;
+const SPEED_DROP_GUARD_DELTA_KMH = 16;
+const SPEED_DROP_GUARD_MAX_ACC_M = 35;
+const CRUISE_STABILITY_MIN_KMH = 50;
+const CRUISE_STABILITY_MAX_KMH = 90;
+const CRUISE_STABILITY_MAX_ACC_M = 32;
+const CRUISE_STABILITY_SOFT_DELTA_KMH = 6;
+const BIKE_STABILITY_MIN_KMH = 12;
+const BIKE_STABILITY_MAX_KMH = 45;
+const BIKE_STABILITY_MAX_ACC_M = 26;
+const BIKE_STABILITY_SOFT_DELTA_KMH = 3.5;
+
+var speedSampleState = {
+    lastLat: null,
+    lastLng: null,
+    lastTs: 0
+};
 
 function clamp01(v) {
     const n = Number(v);
@@ -76,10 +94,79 @@ function smoothSpeedKmh(rawSpeedKmh, accM) {
         gpsFilterState.speedKmh = speed;
         return speed;
     }
-    const alpha = getAdaptiveSpeedAlpha(accM, speed);
+    let alpha = getAdaptiveSpeedAlpha(accM, speed);
+    const delta = speed - prev;
+    const isBike = (currentCarType === 'bike');
+    const cruiseBandMin = isBike ? BIKE_STABILITY_MIN_KMH : CRUISE_STABILITY_MIN_KMH;
+    const cruiseBandMax = isBike ? BIKE_STABILITY_MAX_KMH : CRUISE_STABILITY_MAX_KMH;
+    const cruiseAccMax = isBike ? BIKE_STABILITY_MAX_ACC_M : CRUISE_STABILITY_MAX_ACC_M;
+    const cruiseSoftDelta = isBike ? BIKE_STABILITY_SOFT_DELTA_KMH : CRUISE_STABILITY_SOFT_DELTA_KMH;
+    const inCruiseBand = prev >= cruiseBandMin
+        && prev <= cruiseBandMax
+        && speed >= (cruiseBandMin - 8)
+        && speed <= (cruiseBandMax + 8);
+
+    if (
+        inCruiseBand
+        && isFinite(accM)
+        && accM <= cruiseAccMax
+        && Math.abs(delta) <= cruiseSoftDelta
+    ) {
+        alpha *= 0.62;
+    }
+
+    if (delta < 0) {
+        alpha *= 0.72;
+        if (inCruiseBand && Math.abs(delta) <= 4.5) {
+            alpha *= 0.62;
+        }
+        if (isFinite(accM) && accM > 30 && prev > 18 && Math.abs(delta) > 10) {
+            alpha *= 0.45;
+        }
+    }
     const next = prev + alpha * (speed - prev);
     gpsFilterState.speedKmh = next;
     return next;
+}
+
+function deriveSpeedKmhFromFix(lat, lng, tsMs) {
+    const prevLat = Number(speedSampleState.lastLat);
+    const prevLng = Number(speedSampleState.lastLng);
+    const prevTs = Number(speedSampleState.lastTs);
+    if (!isFinite(prevLat) || !isFinite(prevLng) || !isFinite(prevTs) || prevTs <= 0) return NaN;
+
+    const dtSec = (Number(tsMs) - prevTs) / 1000;
+    if (!isFinite(dtSec) || dtSec < 0.7 || dtSec > 6) return NaN;
+
+    const distKm = getDistanceFromLatLonInKm(prevLat, prevLng, lat, lng);
+    if (!isFinite(distKm) || distKm < 0) return NaN;
+
+    const speedKmh = (distKm / dtSec) * 3600;
+    if (!isFinite(speedKmh) || speedKmh < 0 || speedKmh > SPEED_DERIVED_MAX_KMH) return NaN;
+    return speedKmh;
+}
+
+function commitSpeedSample(lat, lng, tsMs) {
+    speedSampleState.lastLat = lat;
+    speedSampleState.lastLng = lng;
+    speedSampleState.lastTs = Number(tsMs) || Date.now();
+}
+
+function computeSpeedConfidenceLevel(accM, hasRawSpeed, derivedSpeedKmh, rawSpeedKmh, filteredSpeedKmh) {
+    const acc = Number(accM);
+    const hasDerived = isFinite(derivedSpeedKmh);
+    const hasRaw = !!hasRawSpeed;
+    const hasAnySensor = hasRaw || hasDerived;
+    if (!hasAnySensor) return 'C';
+
+    const rawVal = Number(rawSpeedKmh);
+    const filtVal = Number(filteredSpeedKmh);
+    const drift = (isFinite(rawVal) && isFinite(filtVal)) ? Math.abs(rawVal - filtVal) : 99;
+
+    if (isFinite(acc) && acc <= 14 && hasRaw && drift <= 4.5) return 'A';
+    if (isFinite(acc) && acc <= 28 && drift <= 9.5) return 'B';
+    if (isFinite(acc) && acc <= 20 && hasDerived && drift <= 11) return 'B';
+    return 'C';
 }
 
 function smoothHeadingDeg(rawHeading, derivedHeading, speedKmh, accM) {
@@ -1094,6 +1181,11 @@ if (btnModalCancel) {
 
 function startGPS() {
     isGPSActive = true;
+    gpsFilterState.speedKmh = null;
+    gpsFilterState.headingDeg = null;
+    speedSampleState.lastLat = null;
+    speedSampleState.lastLng = null;
+    speedSampleState.lastTs = 0;
     requestWakeLock();
     if (navigator.geolocation) {
         watchId = navigator.geolocation.watchPosition(updatePosition, handleError, {
@@ -1110,9 +1202,52 @@ function updatePosition(position) {
     const acc = position.coords.accuracy;
     if (typeof acc === 'number' && isFinite(acc) && acc > 0) lastGpsAccuracyM = acc;
 
-    const speedMs = position.coords.speed || 0;
-    let rawSpeedKmh = speedMs * 3.6;
+    const posTs = (typeof position.timestamp === 'number' && isFinite(position.timestamp))
+        ? position.timestamp
+        : Date.now();
+
+    const hasRawSpeed = (typeof position.coords.speed === 'number')
+        && isFinite(position.coords.speed)
+        && position.coords.speed >= 0;
+    let rawSpeedKmh = hasRawSpeed ? (position.coords.speed * 3.6) : NaN;
+    const derivedSpeedKmh = deriveSpeedKmhFromFix(lat, lng, posTs);
+
+    if (!isFinite(rawSpeedKmh) && isFinite(derivedSpeedKmh)) {
+        rawSpeedKmh = derivedSpeedKmh;
+    }
+    if (!isFinite(rawSpeedKmh)) {
+        rawSpeedKmh = Number(gpsFilterState.speedKmh);
+    }
+    if (!isFinite(rawSpeedKmh)) rawSpeedKmh = 0;
+
+    const prevFilteredSpeed = Number(gpsFilterState.speedKmh);
+    if (
+        isFinite(prevFilteredSpeed)
+        && prevFilteredSpeed >= SPEED_DROP_GUARD_MIN_PREV_KMH
+        && rawSpeedKmh < (prevFilteredSpeed - SPEED_DROP_GUARD_DELTA_KMH)
+        && isFinite(lastGpsAccuracyM)
+        && lastGpsAccuracyM > SPEED_DROP_GUARD_MAX_ACC_M
+        && isFinite(derivedSpeedKmh)
+        && derivedSpeedKmh > (prevFilteredSpeed - (SPEED_DROP_GUARD_DELTA_KMH * 0.5))
+    ) {
+        rawSpeedKmh = Math.max(rawSpeedKmh, derivedSpeedKmh);
+    }
+
+    if (
+        isFinite(prevFilteredSpeed)
+        && prevFilteredSpeed >= ((currentCarType === 'bike') ? BIKE_STABILITY_MIN_KMH : CRUISE_STABILITY_MIN_KMH)
+        && prevFilteredSpeed <= ((currentCarType === 'bike') ? BIKE_STABILITY_MAX_KMH : CRUISE_STABILITY_MAX_KMH)
+        && rawSpeedKmh < (prevFilteredSpeed - 9)
+        && isFinite(lastGpsAccuracyM)
+        && lastGpsAccuracyM > ((currentCarType === 'bike') ? 18 : 22)
+        && isFinite(derivedSpeedKmh)
+        && derivedSpeedKmh > (prevFilteredSpeed - 5)
+    ) {
+        rawSpeedKmh = Math.max(rawSpeedKmh, derivedSpeedKmh);
+    }
+
     if (rawSpeedKmh < 1.0) rawSpeedKmh = 0;
+    commitSpeedSample(lat, lng, posTs);
 
     const prevLatLng = lastLatLng ? { lat: lastLatLng.lat, lng: lastLatLng.lng } : null;
     let derivedHeading = null;
@@ -1121,6 +1256,11 @@ function updatePosition(position) {
     }
     let speedKmh = smoothSpeedKmh(rawSpeedKmh, lastGpsAccuracyM);
     if (speedKmh < 0.6) speedKmh = 0;
+    const speedConfidenceLevel = computeSpeedConfidenceLevel(lastGpsAccuracyM, hasRawSpeed, derivedSpeedKmh, rawSpeedKmh, speedKmh);
+    const speedConfidenceSource = hasRawSpeed ? 'GPS' : (isFinite(derivedSpeedKmh) ? 'DER' : 'EST');
+    if (typeof window.updateSpeedConfidenceIndicator === 'function') {
+        window.updateSpeedConfidenceIndicator(speedConfidenceLevel, speedConfidenceSource);
+    }
     const headingFiltered = smoothHeadingDeg(heading, derivedHeading, speedKmh, lastGpsAccuracyM);
 
     let currentAvg = 0;
@@ -1131,7 +1271,11 @@ function updatePosition(position) {
         lastAddressFetchTime = now;
     }
 
-    requestRoadSpeedLimit(lat, lng, headingFiltered, speedKmh);
+    if (currentCarType === 'bike' || currentCarType === 'walking') {
+        resetRoadSpeedLimitState();
+    } else {
+        requestRoadSpeedLimit(lat, lng, headingFiltered, speedKmh);
+    }
 
     if (currentDriveWeather === "") fetchWeather(lat, lng);
 
@@ -1200,7 +1344,7 @@ function updatePosition(position) {
         if(mapSpeedEl) mapSpeedEl.innerText = speedKmh.toFixed(1);
         if(mapCoordsEl) mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
         if (typeof window.updateDashboardMiniMap === 'function') {
-            window.updateDashboardMiniMap(lat, lng, `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`);
+            window.updateDashboardMiniMap(lat, lng, `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`, speedKmh);
         }
     }
 
@@ -1719,6 +1863,9 @@ function resetRecordingUI() {
         statusEl.style.color = "var(--subtext-color)";
     }
     if(typeof updateDashboardUI === 'function') updateDashboardUI(0, 0, 0, 0, 0, 0);
+    if (typeof window.updateSpeedConfidenceIndicator === 'function') {
+        window.updateSpeedConfidenceIndicator('C', 'EST');
+    }
     resetRoadSpeedLimitState();
     if (typeof window.updateDashboardSpeedLimit === 'function') {
         window.updateDashboardSpeedLimit(null);

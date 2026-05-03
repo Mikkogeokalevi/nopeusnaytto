@@ -10,29 +10,52 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.35`
+- **Nykyversio:** `v6.38`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
   - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + mini-kartan mobiili/PWA-korjaukset + pikavaihto + live-ajoviiva)
+  - Nopeusnäytön luotettavuus (GPS-nopeuden pudotussuodatus + speed-trendin 0-140 asteikko + A/B/C-luottamusindikaattori + cruise-stability)
   - Historiakartan luettavuus pitkillä reiteillä (POI-pisteet piiloon reittikatselussa)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
 
-### v6.35 - Historiakartan POI-näkymän siivous
+### v6.38 - Pyörätila: Velocity Stage + mini-kartta + dashboard-siivous
 
 **Mitä muutettiin:**
-1. Kun reitti avataan historiasta kartalle, POI-layer piilotetaan automaattisesti.
-2. Tämä vähentää POI-pisteiden hälyä erityisesti pitkissä reiteissä ja tekee ajoviivasta selkeämmän.
-3. POI-layer palautetaan automaattisesti, kun poistutaan historiakatselusta takaisin normaaliin karttakäyttöön.
-4. Kartan GPS ON/OFF -toggle noudattaa samaa näkyvyyslogiikkaa.
+1. Pyörätilaan lisättiin Velocity Stage -skaalaus (stage 0–60 km/h, trendi 0–60 km/h), jotta nopeusviiva on pyöräajoon suhteutettu.
+2. Dashboardin mini-kartta käyttää pyörätilassa lähempää zoomia sekä pyöräystävällisiä marker/trail-värejä.
+3. Nopeusrajoituskortti piilotetaan pyörä-/kävelytilassa, eikä tiekohtaista rajoitushakua tehdä turhaan.
+4. Nopeuskamerahälytykset pysyvät estettynä pyörätilassa (sekä karttanäkymässä että alert-qualifierissa).
+5. Pyörävalinta pakottaa mittarityyliksi Velocity Stage (`cinema`) nopeamman käyttöönoton varmistamiseksi.
 
 **Tiedostot:**
-- `map.js` (history POI visibility helper + showRouteOnMap/toggle-kytkennät)
-- `ui.js` (POI-layerin palautus kun poistutaan karttanäkymästä)
-- `help.js` (v6.35 changelog FI/EN/VI)
+- `visuals.js` (pyörätilan stage/trend-skaala + status-tekstit)
+- `map.js` (mini-kartan pyöräzoom + pyörä-väritys)
+- `gps.js` (pyörätilan smoothing/drop-guard + nopeusrajoitushaun ohitus pyörä/kävely)
+- `ui.js` (nopeusrajoituskortin piilotus pyörä/kävely)
+- `garage.js` (pyörävalinta -> Velocity Stage auto-aktivointi)
+- `help.js` (v6.38 changelog FI/EN/VI)
+- `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
+
+---
+
+### v6.37 - Nopeuden luottamusindikaattori + cruise-stability mode
+
+**Mitä muutettiin:**
+1. Dashboardin nopeusnäkymään lisättiin A/B/C-luottamusindikaattori (GPS/DER/EST), joka kertoo näytteen luotettavuuden.
+2. Lisättiin cruise-stability mode 50–90 km/h alueelle vähentämään tasaisessa ajossa näkyvää jitteriä.
+3. Vakionopeusalueelle lisättiin tarkempi drop-guard, joka torjuu virheellisiä äkkipudotuksia.
+4. Muutos näkyy suoraan nopeusluvussa ja speed-trendissä vakaampana käyttäytymisenä.
+
+**Tiedostot:**
+- `index.html` (speed confidence badge mittariston viereen)
+- `style.css` (A/B/C confidence badge -tyylit)
+- `ui.js` (confidence badge updater)
+- `gps.js` (cruise-stability smoothing + confidence grade -laskenta)
+- `help.js` (v6.37 changelog FI/EN/VI)
 - `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
 
 ---
