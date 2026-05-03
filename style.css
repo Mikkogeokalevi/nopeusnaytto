@@ -958,6 +958,15 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     box-shadow: 0 4px 10px rgba(0,0,0,0.3); backdrop-filter: blur(5px);
 }
 .map-gps-btn.inactive { background-color: rgba(50,50,50,0.8); color: #aaa; border-color: #555; }
+.leaflet-top.leaflet-left .leaflet-control-layers {
+    margin-top: 14px;
+    margin-left: 14px;
+}
+#map-view .leaflet-control-layers,
+#map-view .leaflet-control-container .leaflet-top,
+#map-view .leaflet-control-container .leaflet-bottom {
+    z-index: 1100;
+}
 .map-legend {
     position: absolute; bottom: 100px; right: 15px; z-index: 1000;
     background-color: rgba(255,255,255,0.95); padding: 8px 12px;

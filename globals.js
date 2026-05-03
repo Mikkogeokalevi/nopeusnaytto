@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.40 (Pyöräilykartan tiili-URL-korjaus)
-const APP_VERSION = "6.40"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.41 (Karttatasovalitsimen sijainti- ja klikattavuuskorjaus)
+const APP_VERSION = "6.41"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

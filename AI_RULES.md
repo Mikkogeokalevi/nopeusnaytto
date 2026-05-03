@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.40 (Pyöräilykartan tiililatauksen korjaus)
+**Versio:** v6.41 (Karttatasovalitsimen käytettävyyskorjaus)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,13 +71,14 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.40):**
+### **Nykyinen tilanne (v6.41):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
 - Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
 - Pyörätila: Velocity Stage auto-aktivointi + pyöräkohtainen trendi/stage-skaala (0–60) + mini-kartan pyöräzoom/väritys
 - Pyörä/kävely: nopeusrajoituskortti piiloon + tiekohtainen rajoitushaku pois + nopeuskamerahälytykset estettynä
 - Karttatasot: uusi CyclOSM-pohjainen Pyöräilykartta + auto-vaihto pyörätilaan sekä palautus aiempaan tasoon poistuessa pyörätilasta
 - Pyöräilykartan tile-endpoint korjattu luotettavampaan URL:iin (pääkartta + mini-kartta), jotta kartta ei jää tyhjäksi
+- Isokartan karttatasovalitsin siirretty vasempaan yläkulmaan + klikattavuusvahvistus (ei enää GPS-napin alla)
 - Nopeusmittari: fallback-liikenopeus + drop-guard + A/B/C-luottamusindikaattori + cruise-stability (50–90 km/h)
 - Historiakartta: reittikatselussa POI-layer piilotetaan selkeyden vuoksi ja palautetaan poistuttaessa katselusta
 - Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
@@ -106,6 +107,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.41 - Karttatasovalitsimen käytettävyyskorjaus**
+- ✅ Isokartan tasovalitsin siirretty oikeasta yläkulmasta vasempaan yläkulmaan
+- ✅ Tasovalitsimen klikkausvarmuutta parannettu (z-index + marginaalit)
+- ✅ Satelliitti/Maastokartta/Peruskartta/Pyöräilykartta -vaihto toimii ilman GPS-napin päällekkäisyyttä
+- ✅ PWA versionosto tehty (APP_VERSION + SW cache + query-versionumerot)
 
 ### **v6.40 - Pyöräilykartan tiililatauksen korjaus**
 - ✅ Vaihdettu CyclOSM tile-URL luotettavampaan endpointiin

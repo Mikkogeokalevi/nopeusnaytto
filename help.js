@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.40 CYCLING MAP TILE URL FIX)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.41 MAP LAYER CONTROL USABILITY FIX)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,15 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧭 UUTTA v6.41: karttatasovalitsimen käytettävyyskorjaus:</strong>
+                        <ul>
+                            <li><strong>Isokartan tasovalitsin siirrettiin oikeasta yläkulmasta vasempaan yläkulmaan</strong>, jotta se ei jää GPS ON/OFF -napin alle.</li>
+                            <li><strong>Karttatasovalitsimen klikattavuus nostettiin varmaksi</strong> (z-index + marginaalit), jotta Satelliitti/Maastokartta/Peruskartta/Pyöräilykartta vaihtuvat oikein.</li>
+                        </ul>
+
                         <strong>🧩 UUTTA v6.40: pyöräilykartan latauskorjaus:</strong>
                         <ul>
                             <li><strong>Pyöräilykartan tiilipalvelun URL vaihdettiin luotettavampaan endpointiin</strong>, jotta karttataso latautuu myös niillä laitteilla joissa se jäi tyhjäksi.</li>
@@ -519,9 +525,15 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧭 NEW in v6.41: map layer selector usability fix:</strong>
+                        <ul>
+                            <li><strong>Main-map layer selector was moved from top-right to top-left</strong> so it no longer sits under the GPS ON/OFF button.</li>
+                            <li><strong>Layer selector clickability was reinforced</strong> (z-index + spacing), so Street/Satellite/Terrain/Cycling switching works reliably.</li>
+                        </ul>
+
                         <strong>🧩 NEW in v6.40: cycling map loading fix:</strong>
                         <ul>
                             <li><strong>Cycling-map tile URL was switched to a more reliable endpoint</strong> so the layer no longer appears blank on affected devices.</li>
@@ -1027,9 +1039,15 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧭 MỚI v6.41: sửa trải nghiệm bộ chọn lớp bản đồ:</strong>
+                        <ul>
+                            <li><strong>Bộ chọn lớp bản đồ chính được chuyển từ góc phải trên sang góc trái trên</strong> để không bị nút GPS ON/OFF che mất.</li>
+                            <li><strong>Tăng độ ưu tiên hiển thị/nhấn của bộ chọn lớp</strong> (z-index + khoảng cách), giúp đổi Thường/Vệ tinh/Địa hình/Xe đạp ổn định hơn.</li>
+                        </ul>
+
                         <strong>🧩 MỚI v6.40: sửa lỗi tải bản đồ xe đạp:</strong>
                         <ul>
                             <li><strong>Đã đổi URL tile của bản đồ xe đạp sang endpoint ổn định hơn</strong> để tránh tình trạng lớp bản đồ bị trắng trên một số thiết bị.</li>

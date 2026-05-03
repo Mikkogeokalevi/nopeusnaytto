@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.40`
+- **Nykyversio:** `v6.41`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
@@ -21,6 +21,21 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.41 - Karttatasovalitsimen käytettävyyskorjaus
+
+**Mitä muutettiin:**
+1. Isokartan tasovalitsin siirrettiin vasempaan yläkulmaan, jotta se ei ole GPS ON/OFF -napin alla.
+2. Leafletin tasovalitsimelle lisättiin varmempi klikattavuus (z-index + marginaalit), jolloin Satelliitti/Maastokartta/Peruskartta/Pyöräilykartta-vaihto toimii luotettavasti.
+3. Karttatasojen vaihtologiikka säilyi ennallaan, mutta UI-konflikti poistui.
+
+**Tiedostot:**
+- `map.js` (layer control position -> `topleft`)
+- `style.css` (leaflet layer control z-index + spacing)
+- `help.js` (v6.41 changelog FI/EN/VI)
+- `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
+
+---
 
 ### v6.40 - Pyöräilykartan tiililatauksen korjaus
 

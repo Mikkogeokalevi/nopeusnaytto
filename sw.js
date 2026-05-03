@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.40 cycling map tile URL fix
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.41 map layer control usability fix
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.40-cycling-map-tile-url-fix'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.41-map-layer-control-usability-fix'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

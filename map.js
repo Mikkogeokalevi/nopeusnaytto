@@ -108,12 +108,14 @@ if (document.getElementById('map')) {
         zoomControl: false 
     });
 
-    // Lisätään tasovalitsin
+    // Lisätään tasovalitsin (vasen yläkulma, ettei mene GPS-napin alle)
     L.control.layers({ 
         "Peruskartta": streetMap, 
         "Pyöräilykartta": cyclingMap,
         "Satelliitti": satelliteMap, 
         "Maastokartta": terrainMap 
+    }, null, {
+        position: 'topleft'
     }).addTo(map);
 
     map.on('baselayerchange', () => {
