@@ -3,39 +3,6 @@
 // =========================================================
 
 // 1. Määritellään karttatasot
-const CYCLING_TILE_URLS = [
-    'https://tile.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
-    'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png'
-];
-
-function createCyclingTileLayer() {
-    const layer = L.tileLayer(CYCLING_TILE_URLS[0], {
-        maxZoom: 20,
-        attribution: '© OpenStreetMap contributors, © CyclOSM'
-    });
-
-    let tileErrors = 0;
-    let sourceIndex = 0;
-
-    layer.on('tileerror', () => {
-        tileErrors += 1;
-        if (tileErrors < 6) return;
-        if (sourceIndex >= CYCLING_TILE_URLS.length - 1) return;
-
-        sourceIndex += 1;
-        tileErrors = 0;
-        layer.setUrl(CYCLING_TILE_URLS[sourceIndex]);
-        if (typeof showToast === 'function') {
-            showToast('Pyöräilykartan lähde vaihdettu varapalveluun.');
-        }
-    });
-
-    layer.on('load', () => {
-        tileErrors = 0;
-    });
-
-    return layer;
-}
 
 const streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
     maxZoom: 19, 
@@ -51,13 +18,11 @@ const terrainMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png
     attribution: '© OpenTopoMap' 
 });
 
-const cyclingMap = createCyclingTileLayer();
-
 let dashboardMiniMap = null;
 let dashboardMiniMarker = null;
 let dashboardMiniPolyline = null;
 let dashboardMiniStreetLayer = null;
-let dashboardMiniCyclingLayer = null;
+let dashboardMiniTerrainLayer = null;
 let dashboardMiniBaseMode = 'street';
 let lastNonBikeMainLayer = 'street';
 let lastVehicleTypeForMapLayer = currentCarType || 'car';
@@ -67,13 +32,12 @@ function getActiveMainLayerKey() {
     if (map.hasLayer(streetMap)) return 'street';
     if (map.hasLayer(satelliteMap)) return 'satellite';
     if (map.hasLayer(terrainMap)) return 'terrain';
-    if (map.hasLayer(cyclingMap)) return 'cycling';
     return null;
 }
 
 function setMainBaseLayer(layerKey) {
     if (!map) return;
-    [streetMap, satelliteMap, terrainMap, cyclingMap].forEach((layer) => {
+    [streetMap, satelliteMap, terrainMap].forEach((layer) => {
         if (map.hasLayer(layer)) map.removeLayer(layer);
     });
 
@@ -85,24 +49,20 @@ function setMainBaseLayer(layerKey) {
         terrainMap.addTo(map);
         return;
     }
-    if (layerKey === 'cycling') {
-        cyclingMap.addTo(map);
-        return;
-    }
     streetMap.addTo(map);
 }
 
 function updateDashboardMiniMapBaseForVehicleType() {
-    if (!dashboardMiniMap || !dashboardMiniStreetLayer || !dashboardMiniCyclingLayer) return;
-    const wantCycling = currentCarType === 'bike';
-    const nextMode = wantCycling ? 'cycling' : 'street';
+    if (!dashboardMiniMap || !dashboardMiniStreetLayer || !dashboardMiniTerrainLayer) return;
+    const wantTerrain = currentCarType === 'bike';
+    const nextMode = wantTerrain ? 'terrain' : 'street';
     if (dashboardMiniBaseMode === nextMode) return;
 
-    if (wantCycling) {
+    if (wantTerrain) {
         if (dashboardMiniMap.hasLayer(dashboardMiniStreetLayer)) dashboardMiniMap.removeLayer(dashboardMiniStreetLayer);
-        if (!dashboardMiniMap.hasLayer(dashboardMiniCyclingLayer)) dashboardMiniCyclingLayer.addTo(dashboardMiniMap);
+        if (!dashboardMiniMap.hasLayer(dashboardMiniTerrainLayer)) dashboardMiniTerrainLayer.addTo(dashboardMiniMap);
     } else {
-        if (dashboardMiniMap.hasLayer(dashboardMiniCyclingLayer)) dashboardMiniMap.removeLayer(dashboardMiniCyclingLayer);
+        if (dashboardMiniMap.hasLayer(dashboardMiniTerrainLayer)) dashboardMiniMap.removeLayer(dashboardMiniTerrainLayer);
         if (!dashboardMiniMap.hasLayer(dashboardMiniStreetLayer)) dashboardMiniStreetLayer.addTo(dashboardMiniMap);
     }
     dashboardMiniBaseMode = nextMode;
@@ -115,9 +75,9 @@ window.updateMapLayerForVehicleType = function() {
         const switchedFromBike = currentCarType !== 'bike' && lastVehicleTypeForMapLayer === 'bike';
 
         if (switchedToBike) {
-            if (active && active !== 'cycling') lastNonBikeMainLayer = active;
-            if (active !== 'cycling') setMainBaseLayer('cycling');
-        } else if (switchedFromBike && active === 'cycling') {
+            if (active) lastNonBikeMainLayer = active;
+            if (active !== 'terrain') setMainBaseLayer('terrain');
+        } else if (switchedFromBike && active === 'terrain') {
             setMainBaseLayer(lastNonBikeMainLayer || 'street');
         }
 
@@ -148,7 +108,6 @@ if (document.getElementById('map')) {
     // Lisätään tasovalitsin (vasen yläkulma, ettei mene GPS-napin alle)
     L.control.layers({ 
         "Peruskartta": streetMap, 
-        "Pyöräilykartta": cyclingMap,
         "Satelliitti": satelliteMap, 
         "Maastokartta": terrainMap 
     }, null, {
@@ -157,7 +116,7 @@ if (document.getElementById('map')) {
 
     map.on('baselayerchange', () => {
         const active = getActiveMainLayerKey();
-        if (active && active !== 'cycling') lastNonBikeMainLayer = active;
+        if (active && currentCarType !== 'bike') lastNonBikeMainLayer = active;
     });
 
     // Oma sijainti -merkki (sininen pallo)
@@ -236,7 +195,10 @@ window.ensureDashboardMiniMap = function() {
         maxZoom: 19,
         attribution: '© OSM'
     });
-    dashboardMiniCyclingLayer = createCyclingTileLayer();
+    dashboardMiniTerrainLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        maxZoom: 17,
+        attribution: '© OpenTopoMap'
+    });
 
     dashboardMiniMap = L.map('dashboard-mini-map', {
         center: [64.0, 26.0],

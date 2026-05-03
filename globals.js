@@ -45,8 +45,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.42 (Karttatasovalinnan pysyvyys + pyöräilykartan fallback)
-const APP_VERSION = "6.42"; 
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.43 (Pyörätilan oletuskartaksi maastokartta, pyöräilykartta poistettu)
+const APP_VERSION = "6.43"; 
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

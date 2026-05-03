@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.42`
+- **Nykyversio:** `v6.43`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
@@ -21,6 +21,21 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.43 - Pyöräilykartta poistettu, maastokartta pyörätilan oletukseksi
+
+**Mitä muutettiin:**
+1. Erillinen `Pyöräilykartta` poistettiin käytöstä, koska se ei toiminut luotettavasti kaikilla laitteilla.
+2. Pyörätilassa ison kartan oletuspohjakartta on nyt `Maastokartta`.
+3. Dashboardin mini-kartta käyttää pyörätilassa myös `Maastokartta`-tasoa.
+4. Isokartan valittavat tasot ovat nyt: `Peruskartta`, `Satelliitti`, `Maastokartta`.
+
+**Tiedostot:**
+- `map.js` (cycling-layer poisto + terrain default bike mode)
+- `help.js` (v6.43 changelog FI/EN/VI)
+- `globals.js`, `sw.js`, `index.html` (PWA version plumbing)
+
+---
 
 ### v6.42 - Karttatason valinnan pysyvyys + pyöräilykartan fallback
 

@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.42 map layer selection persistence + cycling fallback
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.43 terrain default for bike mode
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.42-map-layer-selection-persistence-cycling-fallback'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.43-terrain-default-bike-mode'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
