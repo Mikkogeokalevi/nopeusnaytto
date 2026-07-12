@@ -1698,16 +1698,21 @@ if (btnPoiDebugLogCopy) {
 
 if (btnPoiDebugRunTests) {
     btnPoiDebugRunTests.addEventListener('click', () => {
-        if (typeof window.runPoiRegressionTests !== 'function') {
-            if (typeof showToast === 'function') showToast('POI regressiotesti ei ole saatavilla');
-            return;
+        const outputs = [];
+
+        if (typeof window.runPoiRegressionTests === 'function') {
+            outputs.push(window.runPoiRegressionTests());
+        }
+        if (typeof window.runGpsSpeedRegressionTests === 'function') {
+            outputs.push(window.runGpsSpeedRegressionTests());
         }
 
-        const out = window.runPoiRegressionTests();
         refreshPoiDebugLogModal();
         if (typeof showToast === 'function') {
-            const msg = (out && out.summary) ? out.summary : 'POI regressiotesti suoritettu';
-            showToast(msg);
+            const summaries = outputs
+                .map(output => output && output.summary)
+                .filter(Boolean);
+            showToast(summaries.length > 0 ? summaries.join(' · ') : 'Regressiotestejä ei ole saatavilla');
         }
     });
 }

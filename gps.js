@@ -1645,6 +1645,69 @@ window.runPoiRegressionTests = function() {
     return { summary, results };
 }
 
+window.runGpsSpeedRegressionTests = function() {
+    const results = [];
+    const originalFilterState = { ...gpsFilterState };
+    const originalSampleState = { ...speedSampleState };
+    const originalCarType = currentCarType;
+    const originalAccuracy = lastGpsAccuracyM;
+
+    const setResult = (name, ok, details) => {
+        results.push({ name, ok: !!ok, details: String(details || '') });
+    };
+
+    try {
+        currentCarType = 'car';
+        lastGpsAccuracyM = 10;
+
+        gpsFilterState.speedKmh = null;
+        const cruiseSamples = [];
+        for (let i = 0; i < 20; i += 1) cruiseSamples.push(smoothSpeedKmh(80, 10));
+        const cruiseFinal = cruiseSamples[cruiseSamples.length - 1];
+        setResult('cruise-converges-to-80', cruiseFinal >= 76 && cruiseFinal <= 80.5, `final=${cruiseFinal.toFixed(2)} km/h`);
+
+        gpsFilterState.speedKmh = 80;
+        const guardedDrop = smoothSpeedKmh(0, 50);
+        setResult('weak-gps-drop-is-smoothed', guardedDrop >= 60, `80 -> ${guardedDrop.toFixed(2)} km/h`);
+
+        gpsFilterState.speedKmh = null;
+        const firstSample = smoothSpeedKmh(42, 8);
+        setResult('first-valid-sample-is-immediate', Math.abs(firstSample - 42) < 0.01, `sample=${firstSample.toFixed(2)} km/h`);
+
+        speedSampleState.lastLat = 0;
+        speedSampleState.lastLng = 0;
+        speedSampleState.lastTs = 1000;
+        const derived = deriveSpeedKmhFromFix(0, 0.001, 6000);
+        setResult('derived-speed-is-realistic', isFinite(derived) && derived > 70 && derived < 90, `derived=${isFinite(derived) ? derived.toFixed(2) : 'NaN'} km/h`);
+
+        const confidenceA = computeSpeedConfidenceLevel(10, true, 80, 80, 80);
+        const confidenceC = computeSpeedConfidenceLevel(100, false, NaN, NaN, 40);
+        setResult('confidence-grades-match-signal-quality', confidenceA === 'A' && confidenceC === 'C', `grades=${confidenceA}/${confidenceC}`);
+    } catch (e) {
+        setResult('gps-runner-exception', false, e && e.message ? e.message : String(e));
+    } finally {
+        gpsFilterState.speedKmh = originalFilterState.speedKmh;
+        gpsFilterState.headingDeg = originalFilterState.headingDeg;
+        speedSampleState.lastLat = originalSampleState.lastLat;
+        speedSampleState.lastLng = originalSampleState.lastLng;
+        speedSampleState.lastTs = originalSampleState.lastTs;
+        currentCarType = originalCarType;
+        lastGpsAccuracyM = originalAccuracy;
+    }
+
+    const passed = results.filter(r => r.ok).length;
+    const total = results.length;
+    const summary = `GPS regression: ${passed}/${total} passed`;
+    if (typeof window.appendPoiDebugLog === 'function') {
+        window.appendPoiDebugLog(summary);
+        results.forEach(r => {
+            window.appendPoiDebugLog(`${r.ok ? '✅' : '❌'} ${r.name} - ${r.details}`);
+        });
+    }
+    console.log(summary, results);
+    return { summary, results };
+};
+
 function getPoiLabel(poi) {
     const type = String(poi.type || 'other').trim().toLowerCase();
     if (poi.name && String(poi.name).trim()) return String(poi.name).trim();

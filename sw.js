@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.43 terrain default for bike mode
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.44 release and GPS regression tests
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.43-terrain-default-bike-mode'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.44-release-gps-regression-tests'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

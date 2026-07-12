@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.43`
+- **Nykyversio:** `v6.44`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
@@ -21,6 +21,24 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.44 - Julkaisuputken yhtenäistäminen + Firebase-alustus + GPS-regressiotestit
+
+**Mitä muutettiin:**
+1. HTML:n, CSS:n, scriptien, `APP_VERSION`-arvon ja Service Worker -cachen julkaisunumero yhtenäistettiin versioon 6.44.
+2. Firebase-konfiguraation myöhäinen `.env`-haku poistettiin, jotta Firebase alustuu deterministisesti ennen `auth.js`- ja muiden moduulien käyttöä.
+3. Debug-lokin regressiotestinappi ajaa nyt sekä POI- että GPS-nopeustestit.
+4. GPS-testit tarkistavat tasaisen nopeuden konvergoitumisen, heikon signaalin nopeuspudotuksen, ensimmäisen näytteen, johdetun nopeuden ja luottamusluokat. Testit palauttavat globaalin GPS-tilan ennalleen.
+
+**Tiedostot:**
+- `globals.js`
+- `index.html`
+- `sw.js`
+- `gps.js`
+- `ui.js`
+- `help.js`
+
+---
 
 ### v6.43 - Pyöräilykartta poistettu, maastokartta pyörätilan oletukseksi
 

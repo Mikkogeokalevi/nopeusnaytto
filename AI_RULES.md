@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.43 (Pyöräilykartta poistettu, maastokartta pyörätilan oletukseksi)
+**Versio:** v6.44 (julkaisuputki yhtenäistetty, Firebase-alustus deterministinen, GPS-regressiotestit lisätty)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,12 +71,15 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.43):**
+### **Nykyinen tilanne (v6.44):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
 - Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
 - Pyörätila: Velocity Stage auto-aktivointi + pyöräkohtainen trendi/stage-skaala (0–60) + mini-kartan pyöräzoom/väritys
 - Pyörä/kävely: nopeusrajoituskortti piiloon + tiekohtainen rajoitushaku pois + nopeuskamerahälytykset estettynä
 - Karttatasot: pyörätilassa oletuksena Maastokartta (CyclOSM-pohjainen pyöräilykartta poistettu)
+- Julkaisuputki: HTML/CSS/scriptit/APP_VERSION/Service Worker cache yhtenäistetty v6.44:ään
+- Firebase: selainkonfiguraatio alustetaan deterministisesti ilman myöhäistä `.env`-hakua
+- Regressiotestit: debug-loki ajaa POI- ja GPS-nopeustestit, jotka palauttavat globaalin GPS-tilan
 - Isokartan karttatasovalitsin siirretty vasempaan yläkulmaan + klikattavuusvahvistus (ei enää GPS-napin alla)
 - Pyörätilan auto-vaihto maastokarttaan on transition-only (ei ylikirjoita käsin valittua tasoa)
 - Nopeusmittari: fallback-liikenopeus + drop-guard + A/B/C-luottamusindikaattori + cruise-stability (50–90 km/h)
@@ -107,6 +110,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.44 - Julkaisuputki + Firebase-alustus + GPS-regressiotestit**
+- ✅ Yhtenäistetty PWA:n HTML-, CSS-, script-, APP_VERSION- ja Service Worker -versiot
+- ✅ Poistettu Firebase-konfiguraation myöhäinen `.env`-haku ja sen aiheuttama alustus-race
+- ✅ Lisätty GPS-nopeuden regressiotestit nykyiseen debug-testirunneriin
+- ✅ Regressiotestit palauttavat globaalin GPS-tilan ajon jälkeen
 
 ### **v6.43 - Pyöräilykartta poistettu, maastokartta pyörätilan oletukseksi**
 - ✅ Erillinen pyöräilykarttataso poistettu käytöstä luotettavuusongelmien vuoksi

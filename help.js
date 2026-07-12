@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.43 TERRAIN DEFAULT FOR BIKE MODE)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.44 RELEASE AND GPS REGRESSION TESTS)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,15 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧪 UUTTA v6.44: julkaisu- ja GPS-regressiotestit:</strong>
+                        <ul>
+                            <li><strong>PWA-versionumerot yhtenäistettiin</strong>, jotta HTML, scriptit ja Service Worker käyttävät samaa julkaisua.</li>
+                            <li><strong>Firebase-alustus muutettiin deterministiseksi</strong>: selain ei enää yritä hakea `.env`-tiedostoa liian myöhään Firebase-alustuksen jälkeen.</li>
+                            <li><strong>Debug-lokin regressiotestit</strong> ajavat nyt sekä POI- että GPS-nopeustestit ja palauttavat GPS:n globaalin tilan testin jälkeen.</li>
+                        </ul>
                         <strong>🧭 UUTTA v6.43: pyörätilan oletuskartta maastokartaksi:</strong>
                         <ul>
                             <li><strong>Erillinen "Pyöräilykartta" poistettiin</strong>, koska se ei latautunut luotettavasti kaikilla laitteilla.</li>
@@ -39,7 +45,7 @@ const helpData = {
 
                         <strong>🗺️ UUTTA v6.39: pyöräilykarttataso + automaattinen kartan vaihto pyörätilassa:</strong>
                         <ul>
-                            <li><strong>Pääkarttaan lisätty uusi "Pyöräilykartta" (CyclOSM)</strong>, joka korostaa pyöräteitä ja pyöräilyyn sopivia reittejä.</li>
+                            <li><strong>Pääkarttaan lisätty uusi "Pyöräilykartta" (CyclOSM)</strong>, joka korostaa pyöräteitä ja pyöräilyyn sopivia reittejä (huom: erillinen pyöräilykartta poistettiin myöhemmin v6.43:ssa luotettavuussyistä).</li>
                             <li><strong>Kun valitset ajoneuvoksi pyörän, kartta vaihtuu automaattisesti pyöräilykarttaan</strong> sekä pääkartassa että dashboardin mini-kartassa.</li>
                             <li><strong>Kun poistut pyörätilasta, kartta palautuu aiempaan ei-pyörä-tasoon</strong> (esim. Peruskartta/Satelliitti/Maastokartta).</li>
                         </ul>
@@ -538,9 +544,15 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧪 NEW in v6.44: release and GPS regression tests:</strong>
+                        <ul>
+                            <li><strong>PWA version numbers are now aligned</strong> across HTML, scripts, and the Service Worker.</li>
+                            <li><strong>Firebase initialization is deterministic</strong>; the browser no longer reads `.env` too late after Firebase initialization.</li>
+                            <li><strong>The debug regression runner</strong> now runs both POI and GPS speed tests and restores GPS global state afterward.</li>
+                        </ul>
                         <strong>🧭 NEW in v6.43: terrain as bike-mode default map:</strong>
                         <ul>
                             <li><strong>Separate "Pyöräilykartta" layer was removed</strong> because it was not loading reliably across devices.</li>
@@ -568,7 +580,7 @@ const helpData = {
 
                         <strong>🗺️ NEW in v6.39: cycling map layer + automatic bike-map switching:</strong>
                         <ul>
-                            <li><strong>Added a new "Pyöräilykartta" (CyclOSM) layer on the main map</strong> to better highlight bike paths and cycle-friendly routing.</li>
+                            <li><strong>Added a new "Pyöräilykartta" (CyclOSM) layer on the main map</strong> to better highlight bike paths and cycle-friendly routing (note: the separate cycling layer was later removed in v6.43 for reliability).</li>
                             <li><strong>When bike is selected, map switches automatically to cycling layer</strong> on both main map and dashboard mini-map.</li>
                             <li><strong>When leaving bike mode, map restores previous non-bike layer</strong> (street/satellite/terrain).</li>
                         </ul>
@@ -1065,9 +1077,15 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🧪 MỚI v6.44: kiểm thử phát hành và GPS:</strong>
+                        <ul>
+                            <li><strong>Đồng bộ số phiên bản PWA</strong> giữa HTML, script và Service Worker.</li>
+                            <li><strong>Khởi tạo Firebase hoạt động xác định</strong>; trình duyệt không còn đọc `.env` quá muộn sau khi Firebase đã khởi tạo.</li>
+                            <li><strong>Nút kiểm thử hồi quy</strong> chạy cả kiểm thử POI và tốc độ GPS, sau đó khôi phục trạng thái GPS toàn cục.</li>
+                        </ul>
                         <strong>🧭 MỚI v6.43: đặt bản đồ địa hình làm mặc định cho chế độ xe đạp:</strong>
                         <ul>
                             <li><strong>Đã bỏ lớp "Pyöräilykartta" riêng</strong> vì không tải ổn định trên mọi thiết bị.</li>
@@ -1095,7 +1113,7 @@ const helpData = {
 
                         <strong>🗺️ MỚI v6.39: thêm lớp bản đồ xe đạp + tự chuyển bản đồ ở chế độ xe đạp:</strong>
                         <ul>
-                            <li><strong>Thêm lớp "Pyöräilykartta" (CyclOSM) trên bản đồ chính</strong> để làm nổi bật đường xe đạp và tuyến phù hợp đạp xe.</li>
+                            <li><strong>Thêm lớp "Pyöräilykartta" (CyclOSM) trên bản đồ chính</strong> để làm nổi bật đường xe đạp và tuyến phù hợp đạp xe (lưu ý: lớp xe đạp riêng đã được gỡ bỏ sau đó ở v6.43 vì độ ổn định).</li>
                             <li><strong>Khi chọn xe đạp, bản đồ tự chuyển sang lớp xe đạp</strong> ở cả bản đồ chính và mini-map dashboard.</li>
                             <li><strong>Khi rời chế độ xe đạp, bản đồ khôi phục lớp trước đó không phải xe đạp</strong> (thường/vệ tinh/địa hình).</li>
                         </ul>
