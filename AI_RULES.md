@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.44 (julkaisuputki yhtenäistetty, Firebase-alustus deterministinen, GPS-regressiotestit lisätty)
+**Versio:** v6.45 (ensimmäisen GPS-näytteen ja POI-regressiotestin korjaus)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,15 +71,15 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.44):**
+### **Nykyinen tilanne (v6.45):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
 - Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
 - Pyörätila: Velocity Stage auto-aktivointi + pyöräkohtainen trendi/stage-skaala (0–60) + mini-kartan pyöräzoom/väritys
 - Pyörä/kävely: nopeusrajoituskortti piiloon + tiekohtainen rajoitushaku pois + nopeuskamerahälytykset estettynä
 - Karttatasot: pyörätilassa oletuksena Maastokartta (CyclOSM-pohjainen pyöräilykartta poistettu)
-- Julkaisuputki: HTML/CSS/scriptit/APP_VERSION/Service Worker cache yhtenäistetty v6.44:ään
+- Julkaisuputki: HTML/CSS/scriptit/APP_VERSION/Service Worker cache yhtenäistetty v6.45:een
 - Firebase: selainkonfiguraatio alustetaan deterministisesti ilman myöhäistä `.env`-hakua
-- Regressiotestit: debug-loki ajaa POI- ja GPS-nopeustestit, jotka palauttavat globaalin GPS-tilan
+- Regressiotestit: debug-loki ajaa POI- ja GPS-nopeustestit; POI-testi käyttää eristettyä GPS-tarkkuutta ja testit palauttavat globaalin tilan
 - Isokartan karttatasovalitsin siirretty vasempaan yläkulmaan + klikattavuusvahvistus (ei enää GPS-napin alla)
 - Pyörätilan auto-vaihto maastokarttaan on transition-only (ei ylikirjoita käsin valittua tasoa)
 - Nopeusmittari: fallback-liikenopeus + drop-guard + A/B/C-luottamusindikaattori + cruise-stability (50–90 km/h)
@@ -110,6 +110,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.45 - Ensimmäisen GPS-näytteen ja POI-regressiotestin korjaus**
+- ✅ Korjattu `null`-alkutilan virheellinen muuntuminen nollaksi nopeussuodatuksessa
+- ✅ Ensimmäinen validi GPS-nopeusnäyte tulee nyt mittariin heti
+- ✅ POI-regressiotesti käyttää tunnettua tarkkuutta eikä riipu sisätilan GPS-signaalista
+- ✅ PWA-versionosto tehty
 
 ### **v6.44 - Julkaisuputki + Firebase-alustus + GPS-regressiotestit**
 - ✅ Yhtenäistetty PWA:n HTML-, CSS-, script-, APP_VERSION- ja Service Worker -versiot

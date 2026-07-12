@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.44 RELEASE AND GPS REGRESSION TESTS)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.45 FIRST GPS SAMPLE AND POI REGRESSION FIX)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,14 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.45, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🛠️ UUTTA v6.45: ensimmäinen GPS-näyte ja POI-regressiotesti:</strong>
+                        <ul>
+                            <li><strong>Ensimmäinen validi GPS-nopeusnäyte näytetään nyt heti</strong> ilman virheellistä puolittumista.</li>
+                            <li><strong>POI-regressiotesti eristää laitteen GPS-tarkkuuden</strong>, joten sisätilan huono signaali ei aiheuta testille väärää hylkäystä.</li>
+                        </ul>
                         <strong>🧪 UUTTA v6.44: julkaisu- ja GPS-regressiotestit:</strong>
                         <ul>
                             <li><strong>PWA-versionumerot yhtenäistettiin</strong>, jotta HTML, scriptit ja Service Worker käyttävät samaa julkaisua.</li>
@@ -544,9 +549,14 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.45, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🛠️ NEW in v6.45: first GPS sample and POI regression fix:</strong>
+                        <ul>
+                            <li><strong>The first valid GPS speed sample is now shown immediately</strong> without incorrect halving.</li>
+                            <li><strong>The POI regression test isolates device GPS accuracy</strong>, so a weak indoor signal does not cause a false test failure.</li>
+                        </ul>
                         <strong>🧪 NEW in v6.44: release and GPS regression tests:</strong>
                         <ul>
                             <li><strong>PWA version numbers are now aligned</strong> across HTML, scripts, and the Service Worker.</li>
@@ -1077,9 +1087,14 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.45, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🛠️ MỚI v6.45: mẫu GPS đầu tiên và sửa kiểm thử POI:</strong>
+                        <ul>
+                            <li><strong>Mẫu tốc độ GPS hợp lệ đầu tiên hiển thị ngay lập tức</strong> mà không bị chia đôi sai.</li>
+                            <li><strong>Kiểm thử hồi quy POI cô lập độ chính xác GPS của thiết bị</strong>, nên tín hiệu yếu trong nhà không gây lỗi giả cho kiểm thử.</li>
+                        </ul>
                         <strong>🧪 MỚI v6.44: kiểm thử phát hành và GPS:</strong>
                         <ul>
                             <li><strong>Đồng bộ số phiên bản PWA</strong> giữa HTML, script và Service Worker.</li>

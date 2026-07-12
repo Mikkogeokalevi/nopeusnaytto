@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.44 release and GPS regression tests
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.45 first GPS sample and POI regression fix
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.44-release-gps-regression-tests'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.45-first-gps-sample-poi-regression-fix'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

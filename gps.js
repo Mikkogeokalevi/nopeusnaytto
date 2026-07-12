@@ -89,8 +89,9 @@ function getAdaptiveSpeedAlpha(accM, speedKmh) {
 
 function smoothSpeedKmh(rawSpeedKmh, accM) {
     const speed = Math.max(0, Number(rawSpeedKmh) || 0);
-    const prev = Number(gpsFilterState.speedKmh);
-    if (!isFinite(prev)) {
+    const previousValue = gpsFilterState.speedKmh;
+    const prev = Number(previousValue);
+    if (previousValue === null || previousValue === undefined || !isFinite(prev)) {
         gpsFilterState.speedKmh = speed;
         return speed;
     }
@@ -1552,6 +1553,9 @@ window.runPoiRegressionTests = function() {
     const originalShowPersistentToast = window.showPersistentToast;
     const originalHidePersistentToast = window.hidePersistentToast;
     const originalPlayPoiAlertBeep = window.playPoiAlertBeep;
+    const originalCurrentCarType = currentCarType;
+    const originalAccuracy = lastGpsAccuracyM;
+    const originalPoiRearmLocks = { ...poiRearmLocks };
 
     const setResult = (name, ok, details) => {
         results.push({ name, ok: !!ok, details: String(details || '') });
@@ -1559,6 +1563,9 @@ window.runPoiRegressionTests = function() {
 
     try {
         currentUser = currentUser || { uid: '__poi_test__' };
+        currentCarType = 'car';
+        lastGpsAccuracyM = 10;
+        poiRearmLocks = {};
         window.playPoiAlertBeep = () => {};
 
         let hideCount = 0;
@@ -1627,6 +1634,9 @@ window.runPoiRegressionTests = function() {
         activePoiAlert = originalActivePoiAlert;
         poiAlertState = originalPoiAlertState;
         currentUser = originalCurrentUser;
+        currentCarType = originalCurrentCarType;
+        lastGpsAccuracyM = originalAccuracy;
+        poiRearmLocks = originalPoiRearmLocks;
         window.showPersistentToast = originalShowPersistentToast;
         window.hidePersistentToast = originalHidePersistentToast;
         window.playPoiAlertBeep = originalPlayPoiAlertBeep;
