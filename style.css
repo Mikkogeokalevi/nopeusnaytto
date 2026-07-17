@@ -488,7 +488,7 @@ body.light-theme .clean-digital-unit {
     .velocity-lanes { gap: 3px; }
     .velocity-lane { height: 7px; }
     .clean-digital-speed {
-        font-size: clamp(64px, 16vw, 88px);
+        font-size: clamp(80px, 20vw, 110px);
     }
 }
 
