@@ -158,10 +158,6 @@ body.hud-theme-sunset-gold {
 
 /* Velocity Stage - uusi erikoisnäkymä */
 .velocity-stage-container {
-    --hud-primary: #47d2ff;
-    --hud-secondary: #00e676;
-    --hud-warn: #ffb300;
-    --hud-hot: #ff1744;
     --stage-shift: 0px;
     position: relative;
     width: min(390px, 96vw);
@@ -178,6 +174,53 @@ body.hud-theme-sunset-gold {
         0 20px 40px rgba(0,0,0,0.45),
         inset 0 0 34px rgba(255,255,255,0.04);
     padding: 18px 16px 14px;
+}
+
+/* Velocity Stage light-theme */
+body.light-theme .velocity-stage-container {
+    background:
+        radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--hud-primary) 20%, transparent), transparent 50%),
+        radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--hud-secondary) 20%, transparent), transparent 50%),
+        linear-gradient(155deg, rgba(240,242,245,0.98), rgba(255,255,255,0.94));
+    border: 1px solid color-mix(in srgb, var(--hud-primary) 40%, rgba(0,0,0,0.08));
+    box-shadow:
+        0 8px 24px rgba(0,0,0,0.12),
+        inset 0 0 20px rgba(0,0,0,0.02);
+}
+
+body.light-theme .velocity-scanline {
+    background: repeating-linear-gradient(to bottom, rgba(0,0,0,0.03), rgba(0,0,0,0.03) 2px, transparent 2px, transparent 6px);
+    mix-blend-mode: normal;
+}
+
+body.light-theme .velocity-grid {
+    background:
+        linear-gradient(to right, color-mix(in srgb, var(--hud-primary) 12%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in srgb, var(--hud-primary) 12%, transparent) 1px, transparent 1px);
+}
+
+body.light-theme .velocity-track-shell {
+    background: rgba(0,0,0,0.08);
+}
+
+body.light-theme .velocity-bar-label,
+body.light-theme .velocity-unit {
+    color: color-mix(in srgb, var(--hud-primary) 70%, #000);
+}
+
+body.light-theme .velocity-speed {
+    color: #121212;
+    text-shadow: none;
+}
+
+body.light-theme .velocity-status {
+    background: color-mix(in srgb, var(--hud-primary) 15%, rgba(0,0,0,0.05));
+    color: color-mix(in srgb, var(--hud-primary) 75%, #000);
+    border: 1px solid color-mix(in srgb, var(--hud-primary) 30%, rgba(0,0,0,0.1));
+}
+
+body.light-theme .velocity-lane {
+    background: rgba(0,0,0,0.1);
 }
 
 .velocity-scanline,
@@ -358,6 +401,77 @@ body.hud-theme-sunset-gold {
 @keyframes hudHaloPulse {
     0%, 100% { transform: scale(0.98); opacity: 0.75; }
     50% { transform: scale(1.03); opacity: 1; }
+}
+
+/* Clean Digital - minimalistinen näkymä */
+.clean-digital-container {
+    position: relative;
+    width: min(280px, 90vw);
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.clean-digital-ring {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+}
+
+.clean-digital-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.clean-digital-track {
+    stroke: rgba(255,255,255,0.15);
+}
+
+.clean-digital-progress {
+    stroke: var(--hud-primary);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease-out;
+}
+
+.clean-digital-readout {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.clean-digital-speed {
+    display: block;
+    font-size: clamp(48px, 13vw, 72px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.clean-digital-unit {
+    display: block;
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* Clean Digital light-theme */
+body.light-theme .clean-digital-track {
+    stroke: rgba(0,0,0,0.1);
+}
+
+body.light-theme .clean-digital-speed {
+    color: #121212;
+}
+
+body.light-theme .clean-digital-unit {
+    color: rgba(0,0,0,0.6);
 }
 
 @media (max-width: 420px) {

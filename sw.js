@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.45 first GPS sample and POI regression fix
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.47 Velocity Stage theme + Clean Digital view
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.45-first-gps-sample-poi-regression-fix'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.47-velocity-stage-theme-clean-digital'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

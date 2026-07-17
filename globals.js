@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.45 (ensimmäisen GPS-näytteen ja POI-regression testikorjaus)
-const APP_VERSION = "6.45";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.47 (Velocity Stage teema + Clean Digital -näkymä)
+const APP_VERSION = "6.47";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

@@ -1385,7 +1385,7 @@ function checkPoiAlerts(lat, lng, heading, speedKmh, prevLatLng) {
         const existing = poiData.find(p => p && p.id === activePoiAlert.id);
         const ok = existing && poiQualifies(existing, lat, lng, heading, speedKmh, prevLatLng);
         if (ok) {
-            updateActivePoiToast(existing, lat, lng, now);
+            updateActivePoiToast(existing, lat, lng, now, prevLatLng);
             return;
         } else {
             setPoiRearmLock(activePoiAlert.id);
@@ -1427,7 +1427,7 @@ function checkPoiAlerts(lat, lng, heading, speedKmh, prevLatLng) {
     if (best) {
         clearPoiRearmLock(best.id);
         activePoiAlert = { id: best.id, startedAt: now, lastShownAt: 0, minDistM: null, lastDistM: null };
-        updateActivePoiToast(best, lat, lng, now);
+        updateActivePoiToast(best, lat, lng, now, prevLatLng);
     } else {
         if (typeof hidePersistentToast === 'function') hidePersistentToast();
     }
@@ -1515,6 +1515,14 @@ function poiQualifies(poi, lat, lng, heading, speedKmh, prevLatLng) {
     if ((poiType === 'speedcamera') && useHeading && (heading !== null) && (!isNaN(heading))) {
         const bearingToPoi = calculateBearing(lat, lng, poiLat, poiLng);
         headingDiff = angularDiffDeg(heading, bearingToPoi);
+        // Harvassa GPS-datassa segmentti voi ylittää POI:n vaikka nykyinen piste olisi jo sen ohittanut.
+        // Tällöin nykyisen pisteen suunta POI:hin on vastakkainen, mutta segmentti osoittaa POI:ta kohti.
+        // Käytetään segmentin suuntaa lisäkriteerinä, jos segmentin lähin etäisyys on säteen sisällä.
+        if (prevLatLng && isFinite(segMinDistM) && segMinDistM <= radiusM && segMinDistM <= bestDistM + 1e-9) {
+            const segBearing = calculateBearing(prevLatLng.lat, prevLatLng.lng, lat, lng);
+            const segHeadingDiff = angularDiffDeg(heading, segBearing);
+            headingDiff = Math.min(headingDiff, segHeadingDiff);
+        }
         if (headingDiff > sensitivityCfg.headingRejectDeg) {
             poiDebug(`Nopeuskamera ei kelpaa (suunta): diff ${Math.round(headingDiff)}° > ${sensitivityCfg.headingRejectDeg}° (head ${Math.round(heading)}°)`);
             return false;
@@ -1728,7 +1736,7 @@ function getPoiLabel(poi) {
     return 'POI';
 }
 
-function updateActivePoiToast(poi, lat, lng, now) {
+function updateActivePoiToast(poi, lat, lng, now, prevLatLng) {
     const poiType = String(poi.type || 'other').trim().toLowerCase();
     const speedKmhNow = Math.max(0, Number(gpsFilterState.speedKmh) || 0);
     const baseRadiusM = Math.max(30, parseInt(poi.alertRadiusM || 350, 10));
@@ -1741,8 +1749,13 @@ function updateActivePoiToast(poi, lat, lng, now) {
 
     const distM = Math.max(0, getDistanceFromLatLonInKm(lat, lng, poiLat, poiLng) * 1000);
 
-    // Jos poistuttiin säteeltä, piilotetaan heti (ei jää roikkumaan).
-    if (distM > radiusM) {
+    // Harvoissa GPS-näytteissä segmentti voi ylittää POI:n säteen vaikka nykyinen piste olisi säteen ulkopuolella.
+    // Piilotetaan varoitus vain, jos sekä nykyinen piste että segmentti ovat säteen ulkopuolella.
+    let segMinDistM = Infinity;
+    if (prevLatLng && typeof prevLatLng.lat === 'number' && typeof prevLatLng.lng === 'number') {
+        segMinDistM = pointToSegmentDistanceMeters(prevLatLng.lat, prevLatLng.lng, lat, lng, poiLat, poiLng);
+    }
+    if (distM > radiusM && segMinDistM > radiusM) {
         if (activePoiAlert && activePoiAlert.id) setPoiRearmLock(activePoiAlert.id);
         activePoiAlert = null;
         if (typeof hidePersistentToast === 'function') hidePersistentToast();

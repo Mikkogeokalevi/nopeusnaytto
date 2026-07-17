@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.45</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.47</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.45">
+    <link rel="stylesheet" href="style.css?v=6.47">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -24,7 +24,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.45...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.47...</p>
             <p>Ladataan...</p>
         </div>
     </div>
@@ -253,6 +253,20 @@
                         <span class="huge-unit">km/h</span>
                     </div>
 
+                    <!-- UUSI: Clean Digital - minimalistinen näkymä -->
+                    <div class="clean-digital-container" id="clean-digital-container" style="display:none;">
+                        <div class="clean-digital-ring">
+                            <svg class="clean-digital-svg" viewBox="0 0 100 100">
+                                <circle class="clean-digital-track" cx="50" cy="50" r="45" fill="none" stroke-width="6"></circle>
+                                <circle class="clean-digital-progress" id="clean-digital-progress" cx="50" cy="50" r="45" fill="none" stroke-width="6" stroke-dasharray="283" stroke-dashoffset="283" transform="rotate(-90 50 50)"></circle>
+                            </svg>
+                            <div class="clean-digital-readout">
+                                <span id="clean-digital-speed" class="clean-digital-speed">0</span>
+                                <span class="clean-digital-unit">km/h</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <span id="speed-confidence-badge" class="speed-confidence-badge conf-b" title="Nopeuden luotettavuus">GPS B</span>
                 </div>
 
@@ -463,6 +477,7 @@
                             <option value="digital">Digitaalinen</option>
                             <option value="gauge">Pulse HUD</option>
                             <option value="cinema">Velocity Stage</option>
+                            <option value="clean">Clean Digital</option>
                             <option value="both">Molemmat</option>
                         </select>
                     </div>
@@ -935,16 +950,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.45"></script>
-    <script src="visuals.js?v=6.45"></script>
-    <script src="ui.js?v=6.45"></script>
-    <script src="auth.js?v=6.45"></script>
-    <script src="map.js?v=6.45"></script>
-    <script src="gps.js?v=6.45"></script>
-    <script src="garage.js?v=6.45"></script>
-    <script src="history.js?v=6.45"></script>
-    <script src="help.js?v=6.45"></script>
+    <script src="globals.js?v=6.47"></script>
+    <script src="visuals.js?v=6.47"></script>
+    <script src="ui.js?v=6.47"></script>
+    <script src="auth.js?v=6.47"></script>
+    <script src="map.js?v=6.47"></script>
+    <script src="gps.js?v=6.47"></script>
+    <script src="garage.js?v=6.47"></script>
+    <script src="history.js?v=6.47"></script>
+    <script src="help.js?v=6.47"></script>
     
-    <script src="app.js?v=6.45"></script>
+    <script src="app.js?v=6.47"></script>
 </body>
 </html>

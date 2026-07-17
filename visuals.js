@@ -42,6 +42,24 @@ function applyHudTheme(theme) {
 // 1. PULSE HUD - NOPEUSNÄYTTÖ
 // =========================================================
 
+function updateCleanDigital(speed) {
+    const progress = document.getElementById('clean-digital-progress');
+    const speedEl = document.getElementById('clean-digital-speed');
+    if (!progress || !speedEl) return;
+
+    // Määritä maksiminopeus skaalaukseen (auto 140, pyörä 60)
+    const maxSpeed = currentCarType === 'bike' ? 60 : 140;
+    const normalizedSpeed = Math.min(speed, maxSpeed) / maxSpeed;
+
+    // Päivitä progress ring (circumference = 2 * PI * 45 ≈ 283)
+    const circumference = 283;
+    const offset = circumference * (1 - normalizedSpeed);
+    progress.style.strokeDashoffset = offset;
+
+    // Päivitä nopeusnumero
+    speedEl.textContent = Math.round(speed);
+}
+
 function updatePulseHud(speed) {
     const arcFill = document.getElementById('speed-arc-fill');
     const speedState = document.getElementById('wow-speed-state');
@@ -298,6 +316,7 @@ function updateSpeedometer(speed, altitude) {
 
     updatePulseHud(speed);
     updateVelocityStage(speed, altitude);
+    updateCleanDigital(speed);
 }
 
 function updateGraphs(speed, altitude, gforce) {
@@ -346,37 +365,49 @@ function updateGIndicator(gx, gy) {
 // =========================================================
 
 function updateSpeedometerStyle(style) {
-    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'gauge') ? style : 'digital';
-    
+    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'gauge' || style === 'clean') ? style : 'digital';
+
     const digitalContainer = document.getElementById('digital-speed-container');
     const pulseHudContainer = document.getElementById('speedometer-container');
     const velocityStageContainer = document.getElementById('velocity-stage-container');
+    const cleanDigitalContainer = document.getElementById('clean-digital-container');
     const graphsContainer = document.getElementById('live-graphs-container');
-    
+
     // Näytä/piilota elementit
     switch(speedometerStyle) {
         case 'digital':
             if (digitalContainer) digitalContainer.style.display = 'block';
             if (pulseHudContainer) pulseHudContainer.style.display = 'none';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
+            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'gauge':
             if (digitalContainer) digitalContainer.style.display = 'none';
             if (pulseHudContainer) pulseHudContainer.style.display = 'block';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
+            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'cinema':
             if (digitalContainer) digitalContainer.style.display = 'none';
             if (pulseHudContainer) pulseHudContainer.style.display = 'none';
             if (velocityStageContainer) velocityStageContainer.style.display = 'block';
+            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
+            if (graphsContainer) graphsContainer.style.display = 'none';
+            break;
+        case 'clean':
+            if (digitalContainer) digitalContainer.style.display = 'none';
+            if (pulseHudContainer) pulseHudContainer.style.display = 'none';
+            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
+            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'block';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'both':
             if (digitalContainer) digitalContainer.style.display = 'none';
             if (pulseHudContainer) pulseHudContainer.style.display = 'block';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
+            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
             if (graphsContainer) graphsContainer.style.display = 'block';
             break;
     }

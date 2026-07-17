@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.45`
+- **Nykyversio:** `v6.47`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
@@ -22,12 +22,29 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 
 ## 2) Viimeisin muutos (latest shipped)
 
-### v6.45 - Ensimmäisen GPS-näytteen ja POI-regressiotestin korjaus
+### v6.47 - Velocity Stage teema + Clean Digital -näkymä
+
+**Mitä muutettiin:**
+1. Velocity Stage käyttää nyt HUD-teemamuuttujia (`--hud-primary`, `--hud-secondary` jne.) eikä kovakoodattuja värejä.
+2. Velocity Stage toimii nyt myös päivä-teemassa (light-theme): vaaleampi tausta ja parempi kontrasti teksteille.
+3. Uusi Clean Digital -näkymä: minimalistinen pyöreä progress bar + suuri numero, toimii sekä päivällä että yöllä.
+4. Clean Digital integroitu nopeusmittarin tyyli-valitsimeen (Asetukset-näkymä).
+
+**Tiedostot:**
+- `style.css`
+- `visuals.js`
+- `index.html`
+- `help.js`
+
+---
+
+### v6.46 - Ensimmäisen GPS-näytteen ja POI-regressiotestin korjaus
 
 **Mitä muutettiin:**
 1. Korjattiin tapaus, jossa `null`-alkutila muuttui `Number(null)`-muunnoksella nollaksi ja ensimmäinen validi nopeusnäyte puolittui.
 2. POI-regressiotesti käyttää nyt omaa tunnettua GPS-tarkkuutta ja palauttaa alkuperäisen tilan testin jälkeen.
-3. Julkaisu- ja PWA-versiot nostettiin versioon 6.45.
+3. Julkaisu- ja PWA-versiot nostettiin versioon 6.46.
+4. Korjattiin POI-nopeuskameran suunta-suodatus, jotta harvat GPS-pisteet eivät ohita kameraa silloin, kun GPS-segmentti ylittää kameran.
 
 **Tiedostot:**
 - `gps.js`

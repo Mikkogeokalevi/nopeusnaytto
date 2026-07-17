@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.45 (ensimmäisen GPS-näytteen ja POI-regressiotestin korjaus)
+**Versio:** v6.47 (Velocity Stage teema + Clean Digital -näkymä)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,13 +71,13 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.45):**
+### **Nykyinen tilanne (v6.46):**
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
 - Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
 - Pyörätila: Velocity Stage auto-aktivointi + pyöräkohtainen trendi/stage-skaala (0–60) + mini-kartan pyöräzoom/väritys
 - Pyörä/kävely: nopeusrajoituskortti piiloon + tiekohtainen rajoitushaku pois + nopeuskamerahälytykset estettynä
 - Karttatasot: pyörätilassa oletuksena Maastokartta (CyclOSM-pohjainen pyöräilykartta poistettu)
-- Julkaisuputki: HTML/CSS/scriptit/APP_VERSION/Service Worker cache yhtenäistetty v6.45:een
+- Julkaisuputki: HTML/CSS/scriptit/APP_VERSION/Service Worker cache yhtenäistetty versioon v6.46
 - Firebase: selainkonfiguraatio alustetaan deterministisesti ilman myöhäistä `.env`-hakua
 - Regressiotestit: debug-loki ajaa POI- ja GPS-nopeustestit; POI-testi käyttää eristettyä GPS-tarkkuutta ja testit palauttavat globaalin tilan
 - Isokartan karttatasovalitsin siirretty vasempaan yläkulmaan + klikattavuusvahvistus (ei enää GPS-napin alla)
@@ -111,11 +111,18 @@ nopeusnaytto-main/
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
 
-### **v6.45 - Ensimmäisen GPS-näytteen ja POI-regressiotestin korjaus**
+### **v6.47 - Velocity Stage teema + Clean Digital -näkymä**
+- ✅ Velocity Stage käyttää nyt HUD-teemamuuttujia eikä kovakoodattuja värejä
+- ✅ Velocity Stage toimii päivä-teemassa (light-theme): vaaleampi tausta ja parempi kontrasti
+- ✅ Uusi Clean Digital -näkymä: minimalistinen pyöreä progress bar + suuri numero
+- ✅ Clean Digital integroitu nopeusmittarin tyyli-valitsimeen
+
+### **v6.46 - Ensimmäisen GPS-näytteen ja POI-regressiotestin korjaus**
 - ✅ Korjattu `null`-alkutilan virheellinen muuntuminen nollaksi nopeussuodatuksessa
 - ✅ Ensimmäinen validi GPS-nopeusnäyte tulee nyt mittariin heti
 - ✅ POI-regressiotesti käyttää tunnettua tarkkuutta eikä riipu sisätilan GPS-signaalista
 - ✅ PWA-versionosto tehty
+- ✅ POI-nopeuskameran suunta-suodatus korjattu: harva GPS-segmentti, joka ylittää kameran, ei enää jätä varoitusta näyttämättä
 
 ### **v6.44 - Julkaisuputki + Firebase-alustus + GPS-regressiotestit**
 - ✅ Yhtenäistetty PWA:n HTML-, CSS-, script-, APP_VERSION- ja Service Worker -versiot
