@@ -56,8 +56,8 @@ function updateCleanDigital(speed) {
     const offset = circumference * (1 - normalizedSpeed);
     progress.style.strokeDashoffset = offset;
 
-    // Päivitä nopeusnumero
-    speedEl.textContent = Math.round(speed);
+    // Päivitä nopeusnumero (2 desimaalia)
+    speedEl.textContent = speed.toFixed(2);
 }
 
 function updatePulseHud(speed) {
