@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.47 (Velocity Stage teema + Clean Digital -näkymä)
+**Versio:** v6.48 (Time Circuit -näkymä)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -110,6 +110,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.48 - Time Circuit -näkymä**
+- ✅ Lisätty Back to the Future -tyylinen Time Circuit -nopeusmittari: kolme vaakasuuntaista LED-riviä
+- ✅ Punainen, vihreä ja keltainen rivi näyttävät nopeuden, matkan, ajan, keskinopeuden, korkeuden ja rajoituksen
+- ✅ Time Circuit on lisäasetuksena: aiemmat mittarit säilyvät ennallaan
+- ✅ PWA-versionosto tehty v6.48
 
 ### **v6.47 - Velocity Stage teema + Clean Digital -näkymä**
 - ✅ Velocity Stage käyttää nyt HUD-teemamuuttujia eikä kovakoodattuja värejä

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.47</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.48</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.47">
+    <link rel="stylesheet" href="style.css?v=6.48">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -24,7 +24,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.47...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.48...</p>
             <p>Ladataan...</p>
         </div>
     </div>
@@ -267,6 +267,61 @@
                         </div>
                     </div>
 
+                    <!-- UUSI: Time Circuit - BTTF DeLorean -näkymä -->
+                    <div class="time-circuit-container" id="time-circuit-container" style="display:none;" aria-label="Time Circuit">
+                        <div class="time-circuit-row time-circuit-red">
+                            <div class="time-circuit-labels">
+                                <span class="time-circuit-label">NOPEUS</span>
+                                <span class="time-circuit-label">MATKA</span>
+                                <span class="time-circuit-label">AIKA</span>
+                                <span class="time-circuit-label">MAX</span>
+                                <span class="time-circuit-label">RAJOITUS</span>
+                            </div>
+                            <div class="time-circuit-displays">
+                                <span class="time-circuit-digit" id="tc-red-speed">000</span>
+                                <span class="time-circuit-digit" id="tc-red-dist">00.0</span>
+                                <span class="time-circuit-digit" id="tc-red-time">0000</span>
+                                <span class="time-circuit-digit" id="tc-red-max">000</span>
+                                <span class="time-circuit-digit" id="tc-red-limit">000</span>
+                            </div>
+                            <div class="time-circuit-row-title">PRESENT TIME</div>
+                        </div>
+                        <div class="time-circuit-row time-circuit-green">
+                            <div class="time-circuit-labels">
+                                <span class="time-circuit-label">NOPEUS</span>
+                                <span class="time-circuit-label">MATKA</span>
+                                <span class="time-circuit-label">AIKA</span>
+                                <span class="time-circuit-label">KESKI</span>
+                                <span class="time-circuit-label">KORKEUS</span>
+                            </div>
+                            <div class="time-circuit-displays">
+                                <span class="time-circuit-digit" id="tc-green-speed">000</span>
+                                <span class="time-circuit-digit" id="tc-green-dist">00.0</span>
+                                <span class="time-circuit-digit" id="tc-green-time">0000</span>
+                                <span class="time-circuit-digit" id="tc-green-avg">000</span>
+                                <span class="time-circuit-digit" id="tc-green-alt">000</span>
+                            </div>
+                            <div class="time-circuit-row-title">DESTINATION TIME</div>
+                        </div>
+                        <div class="time-circuit-row time-circuit-amber">
+                            <div class="time-circuit-labels">
+                                <span class="time-circuit-label">NOPEUS</span>
+                                <span class="time-circuit-label">MATKA</span>
+                                <span class="time-circuit-label">AIKA</span>
+                                <span class="time-circuit-label">MAX</span>
+                                <span class="time-circuit-label">POLTTO</span>
+                            </div>
+                            <div class="time-circuit-displays">
+                                <span class="time-circuit-digit" id="tc-amber-speed">000</span>
+                                <span class="time-circuit-digit" id="tc-amber-dist">00.0</span>
+                                <span class="time-circuit-digit" id="tc-amber-time">0000</span>
+                                <span class="time-circuit-digit" id="tc-amber-max">000</span>
+                                <span class="time-circuit-digit" id="tc-amber-fuel">000</span>
+                            </div>
+                            <div class="time-circuit-row-title">LAST TIME DEPARTED</div>
+                        </div>
+                    </div>
+
                     <span id="speed-confidence-badge" class="speed-confidence-badge conf-b" title="Nopeuden luotettavuus">GPS B</span>
                 </div>
 
@@ -478,6 +533,7 @@
                             <option value="gauge">Pulse HUD</option>
                             <option value="cinema">Velocity Stage</option>
                             <option value="clean">Clean Digital</option>
+                            <option value="time">Time Circuit</option>
                             <option value="both">Molemmat</option>
                         </select>
                     </div>

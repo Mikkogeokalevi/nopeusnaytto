@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.47 VELOCITY STAGE THEME FIX + CLEAN DIGITAL)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.48 TIME CIRCUIT VIEW)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,15 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🕒 UUTTA v6.48: Time Circuit -näkymä:</strong>
+                        <ul>
+                            <li><strong>Uusi Back to the Future -tyylinen Time Circuit -näkymä</strong>: kolme vaakasuuntaista LED-riviä kuten DeLoreanin aikakoneessa.</li>
+                            <li><strong>Punainen, vihreä ja keltainen rivi</strong> näyttävät nopeuden, matkan, ajan, keskinopeuden, korkeuden ja rajoituksen.</li>
+                            <li>Time Circuit on lisäasetuksena: ei korvaa eikä poista muita nopeusmittareita.</li>
+                        </ul>
                         <strong>🎨 UUTTA v6.47: Velocity Stage teema + Clean Digital -näkymä:</strong>
                         <ul>
                             <li><strong>Velocity Stage käyttää nyt HUD-teemamuuttujia</strong>, joten värit vaihtuvat Cyber Blue/Sunset Gold -teemojen mukana.</li>
@@ -556,9 +562,15 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🕒 NEW in v6.48: Time Circuit view:</strong>
+                        <ul>
+                            <li><strong>New Back to the Future styled Time Circuit view</strong>: three horizontal LED rows like the DeLorean time machine.</li>
+                            <li><strong>Red, green and yellow rows</strong> show speed, distance, time, average speed, altitude and speed limit.</li>
+                            <li>Time Circuit is an additional option: it does not replace or remove other speedometer views.</li>
+                        </ul>
                         <strong>🎨 NEW in v6.47: Velocity Stage theme fix + Clean Digital view:</strong>
                         <ul>
                             <li><strong>Velocity Stage now uses HUD theme variables</strong>, so colors change with Cyber Blue/Sunset Gold themes.</li>
@@ -1101,9 +1113,15 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🕒 MỚI v6.48: giao diện Time Circuit:</strong>
+                        <ul>
+                            <li><strong>Giao diện Time Circuit theo phong cách Back to the Future mới</strong>: ba hàng LED nằm ngang như máy thời gian DeLorean.</li>
+                            <li><strong>Hàng đỏ, xanh lá và vàng</strong> hiển thị tốc độ, quãng đường, thời gian, tốc độ trung bình, độ cao và giới hạn tốc độ.</li>
+                            <li>Time Circuit là một tùy chọn bổ sung: không thay thế hoặc xóa các đồng hồ tốc độ khác.</li>
+                        </ul>
                         <strong>🎨 MỚI v6.47: sửa teema Velocity Stage + giao diện Clean Digital:</strong>
                         <ul>
                             <li><strong>Velocity Stage giờ sử dụng biến teema HUD</strong>, nên màu sắc thay đổi theo teema Cyber Blue/Sunset Gold.</li>

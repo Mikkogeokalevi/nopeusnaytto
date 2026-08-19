@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.47 Velocity Stage theme + Clean Digital view
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.48 Time Circuit -näkymä
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.47-velocity-stage-theme-clean-digital'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.48-time-circuit-view'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

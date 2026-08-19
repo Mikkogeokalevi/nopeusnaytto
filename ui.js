@@ -1141,6 +1141,12 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     // Muut (Matka, Aika, Korkeus) ovat yhteisiä
     if(dashDistEl) dashDistEl.innerText = dist.toFixed(2); 
     if(dashAltEl) dashAltEl.innerText = Math.round(alt);
+
+    // Päivitä Time Circuit -näkymä jos se on valittu
+    if (typeof updateTimeCircuit === 'function') {
+        const limit = dashSpeedLimitEl && dashSpeedLimitEl.textContent ? Number(dashSpeedLimitEl.textContent) : 0;
+        updateTimeCircuit(spd, max, dist, time, alt, avg, limit, 0);
+    }
 }
 
 window.updateSpeedConfidenceIndicator = function(level, source) {

@@ -492,6 +492,128 @@ body.light-theme .clean-digital-unit {
     }
 }
 
+/* Time Circuit - BTTF DeLorean -näkymä */
+.time-circuit-container {
+    position: relative;
+    width: min(480px, 98vw);
+    margin: 10px auto;
+    padding: 12px;
+    background:
+        linear-gradient(180deg, #1a1a1a 0%, #111 100%);
+    border: 3px solid #333;
+    border-radius: 14px;
+    box-shadow:
+        0 0 0 2px #000,
+        0 10px 30px rgba(0,0,0,0.6),
+        inset 0 0 20px rgba(0,0,0,0.5);
+    font-family: 'Courier New', Courier, monospace;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.time-circuit-row {
+    position: relative;
+    padding: 8px;
+    border-radius: 8px;
+    background: #151515;
+    border: 2px solid;
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.7);
+}
+
+.time-circuit-red {
+    border-color: #ff2a2a;
+    box-shadow:
+        inset 0 0 12px rgba(0,0,0,0.7),
+        0 0 10px rgba(255,42,42,0.25);
+}
+
+.time-circuit-green {
+    border-color: #2aff2a;
+    box-shadow:
+        inset 0 0 12px rgba(0,0,0,0.7),
+        0 0 10px rgba(42,255,42,0.25);
+}
+
+.time-circuit-amber {
+    border-color: #ffbd2a;
+    box-shadow:
+        inset 0 0 12px rgba(0,0,0,0.7),
+        0 0 10px rgba(255,189,42,0.25);
+}
+
+.time-circuit-row-title {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 4px;
+    text-shadow: 0 0 4px #000;
+}
+
+.time-circuit-labels,
+.time-circuit-displays {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.time-circuit-label {
+    flex: 1;
+    text-align: center;
+    font-size: 8px;
+    font-weight: 700;
+    color: #fff;
+    background: #c00;
+    padding: 1px 2px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.time-circuit-red .time-circuit-label { background: #c00; }
+.time-circuit-green .time-circuit-label { background: #0a0; }
+.time-circuit-amber .time-circuit-label { background: #b80; }
+
+.time-circuit-digit {
+    flex: 1;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: clamp(18px, 5vw, 28px);
+    font-weight: 700;
+    padding: 4px 2px;
+    border-radius: 4px;
+    background: #000;
+    color: #ff2a2a;
+    text-shadow:
+        0 0 4px #ff2a2a,
+        0 0 8px #ff2a2a;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.time-circuit-red .time-circuit-digit { color: #ff2a2a; text-shadow: 0 0 4px #ff2a2a, 0 0 8px #ff2a2a; }
+.time-circuit-green .time-circuit-digit { color: #2aff2a; text-shadow: 0 0 4px #2aff2a, 0 0 8px #2aff2a; }
+.time-circuit-amber .time-circuit-digit { color: #ffbd2a; text-shadow: 0 0 4px #ffbd2a, 0 0 8px #ffbd2a; }
+
+/* Time Circuit light-theme */
+body.light-theme .time-circuit-container {
+    background: linear-gradient(180deg, #e8e8e8 0%, #ddd 100%);
+    border-color: #999;
+    box-shadow: 0 0 0 2px #ccc, 0 10px 30px rgba(0,0,0,0.2);
+}
+
+body.light-theme .time-circuit-row { background: #f2f2f2; }
+body.light-theme .time-circuit-digit { background: #e0e0e0; }
+body.light-theme .time-circuit-row-title { color: #555; }
+
 /* Reaaliaikaiset graafit */
 .live-graphs-container {
     margin: 15px 10px;

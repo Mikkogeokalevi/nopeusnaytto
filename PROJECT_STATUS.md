@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.47`
+- **Nykyversio:** `v6.48`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
@@ -21,6 +21,25 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.48 - Time Circuit -näkymä
+
+**Mitä muutettiin:**
+1. Lisätty uusi Back to the Future -tyylinen Time Circuit -nopeusmittari: kolme vaakasuuntaista LED-riviä (punainen, vihreä, keltainen).
+2. Time Circuit näyttää nopeuden, matkan, ajan, keskinopeuden, korkeuden, huippunopeuden ja rajoituksen.
+3. Time Circuit on lisävaihtoehto: aiemmat mittarit (Digital, Pulse HUD, Velocity Stage, Clean Digital) säilyvät ennallaan.
+4. PWA- ja julkaisuversiot nostettiin v6.48:een.
+
+**Tiedostot:**
+- `index.html`
+- `style.css`
+- `visuals.js`
+- `ui.js`
+- `globals.js`
+- `sw.js`
+- `help.js`
+
+---
 
 ### v6.47 - Velocity Stage teema + Clean Digital -näkymä
 

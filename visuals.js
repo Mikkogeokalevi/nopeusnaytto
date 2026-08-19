@@ -60,6 +60,56 @@ function updateCleanDigital(speed) {
     speedEl.textContent = speed.toFixed(2);
 }
 
+function updateTimeCircuit(speed, max, dist, time, alt, avg, limit, fuel) {
+    const container = document.getElementById('time-circuit-container');
+    if (!container || container.style.display === 'none') return;
+
+    const s = Math.max(0, Number(speed) || 0);
+    const m = Math.max(0, Number(max) || 0);
+    const d = Math.max(0, Number(dist) || 0);
+    const t = Math.max(0, Number(time) || 0);
+    const a = Math.max(0, Number(avg) || 0);
+    const al = isFinite(alt) ? alt : 0;
+    const lim = Math.max(0, Number(limit) || 0);
+    const f = Math.max(0, Number(fuel) || 0);
+
+    // Apufunktio: muotoile kokonaisluku vähintään 3 numeroksi
+    const pad = (n, w) => String(Math.round(n)).padStart(w, '0');
+    // Apufunktio: muotoile pienet numerot nelinumeroksi (esim. aika mm:ss)
+    const toTime = (sec) => {
+        const total = Math.round(sec);
+        const min = Math.floor(total / 60);
+        const seconds = total % 60;
+        return `${String(min).padStart(2,'0')}${String(seconds).padStart(2,'0')}`;
+    };
+
+    // Punainen rivi: PRESENT (nopeus, matka, aika, max, rajoitus)
+    const setText = (id, v) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = v;
+    };
+
+    setText('tc-red-speed', pad(s, 3));
+    setText('tc-red-dist', d.toFixed(1));
+    setText('tc-red-time', toTime(t));
+    setText('tc-red-max', pad(m, 3));
+    setText('tc-red-limit', lim ? pad(lim, 3) : '---');
+
+    // Vihreä rivi: DESTINATION (nopeus, matka, aika, keski, korkeus)
+    setText('tc-green-speed', pad(s, 3));
+    setText('tc-green-dist', d.toFixed(1));
+    setText('tc-green-time', toTime(t));
+    setText('tc-green-avg', pad(a, 3));
+    setText('tc-green-alt', pad(al, 3));
+
+    // Keltainen rivi: LAST TIME DEPARTED (viimeisin trippi: toistaiseksi nykyiset arvot, polttoaine)
+    setText('tc-amber-speed', pad(m, 3));
+    setText('tc-amber-dist', d.toFixed(1));
+    setText('tc-amber-time', toTime(t));
+    setText('tc-amber-max', pad(m, 3));
+    setText('tc-amber-fuel', pad(f, 3));
+}
+
 function updatePulseHud(speed) {
     const arcFill = document.getElementById('speed-arc-fill');
     const speedState = document.getElementById('wow-speed-state');
@@ -365,12 +415,13 @@ function updateGIndicator(gx, gy) {
 // =========================================================
 
 function updateSpeedometerStyle(style) {
-    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'gauge' || style === 'clean') ? style : 'digital';
+    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'gauge' || style === 'clean' || style === 'time') ? style : 'digital';
 
     const digitalContainer = document.getElementById('digital-speed-container');
     const pulseHudContainer = document.getElementById('speedometer-container');
     const velocityStageContainer = document.getElementById('velocity-stage-container');
     const cleanDigitalContainer = document.getElementById('clean-digital-container');
+    const timeCircuitContainer = document.getElementById('time-circuit-container');
     const graphsContainer = document.getElementById('live-graphs-container');
 
     // Näytä/piilota elementit
@@ -401,6 +452,15 @@ function updateSpeedometerStyle(style) {
             if (pulseHudContainer) pulseHudContainer.style.display = 'none';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'block';
+            if (timeCircuitContainer) timeCircuitContainer.style.display = 'none';
+            if (graphsContainer) graphsContainer.style.display = 'none';
+            break;
+        case 'time':
+            if (digitalContainer) digitalContainer.style.display = 'none';
+            if (pulseHudContainer) pulseHudContainer.style.display = 'none';
+            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
+            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
+            if (timeCircuitContainer) timeCircuitContainer.style.display = 'block';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'both':
@@ -502,4 +562,5 @@ window.updateSpeedometer = updateSpeedometer;
 window.updateGraphs = updateGraphs;
 window.updateGIndicator = updateGIndicator;
 window.updateSpeedometerStyle = updateSpeedometerStyle;
+window.updateTimeCircuit = updateTimeCircuit;
 window.applyHudTheme = applyHudTheme;
