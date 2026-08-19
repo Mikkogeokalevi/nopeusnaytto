@@ -32,6 +32,7 @@ const mapReturnBtn = document.getElementById('map-return-btn');
 // Näkymät
 const views = {
     dashboard: document.getElementById('dashboard-view'),
+    lcars: document.getElementById('lcars-view'),
     map: document.getElementById('map-view'),
     history: document.getElementById('history-view'),
     stats: document.getElementById('stats-view'),
@@ -123,6 +124,8 @@ const fuelModalTitle = document.getElementById('fuel-modal-title');
 
 // Mittaristo
 const dashSpeedEl = document.getElementById('dash-speed');
+const dashboardStyleSelect = document.getElementById('dashboard-style');
+let currentDashboardStyle = localStorage.getItem('dashboardStyle') || 'default';
 const speedConfidenceBadgeEl = document.getElementById('speed-confidence-badge');
 const dashMaxSpeedEl = document.getElementById('dash-max-speed');
 const dashDistEl = document.getElementById('dash-dist');
@@ -1022,6 +1025,7 @@ function switchView(viewName) {
     }
     if (viewName === 'map' && map) setTimeout(() => map.invalidateSize(), 100);
     if (viewName === 'dashboard') {
+        applyDashboardStyle();
         const mapMode = localStorage.getItem('dashboardMapMode') === 'true';
         if (mapMode && typeof window.refreshDashboardMiniMapSize === 'function') {
             setTimeout(() => window.refreshDashboardMiniMapSize(), 100);
@@ -1147,6 +1151,23 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         const limit = dashSpeedLimitEl && dashSpeedLimitEl.textContent ? Number(dashSpeedLimitEl.textContent) : 0;
         updateTimeCircuit(spd, max, dist, time, alt, avg, limit, 0);
     }
+
+    // Päivitä LCARS-näkymä jos se on valittu
+    if (typeof updateLcarsView === 'function') {
+        const limit = dashSpeedLimitEl && dashSpeedLimitEl.textContent ? Number(dashSpeedLimitEl.textContent) : 0;
+        updateLcarsView(spd, max, dist, time, alt, avg, limit);
+    }
+}
+
+function applyDashboardStyle() {
+    const isLcars = currentDashboardStyle === 'lcars';
+
+    // Näytä/piilota oikea dashboard
+    if (views.dashboard) views.dashboard.style.display = isLcars ? 'none' : 'flex';
+    if (views.lcars) views.lcars.style.display = isLcars ? 'flex' : 'none';
+
+    // Valintaruudun tila
+    if (dashboardStyleSelect) dashboardStyleSelect.value = currentDashboardStyle;
 }
 
 window.updateSpeedConfidenceIndicator = function(level, source) {
@@ -1879,6 +1900,20 @@ window.addEventListener('DOMContentLoaded', () => {
         setDashboardMapMode(true);
     } else {
         setDashboardMapMode(false);
+    }
+
+    // Dashboard-tyyli (LCARS)
+    const savedDashboardStyle = localStorage.getItem('dashboardStyle') || 'default';
+    currentDashboardStyle = savedDashboardStyle;
+    if (dashboardStyleSelect) dashboardStyleSelect.value = currentDashboardStyle;
+    applyDashboardStyle();
+
+    if (dashboardStyleSelect) {
+        dashboardStyleSelect.addEventListener('change', (e) => {
+            currentDashboardStyle = e.target.value;
+            localStorage.setItem('dashboardStyle', currentDashboardStyle);
+            applyDashboardStyle();
+        });
     }
 
     // POI debug

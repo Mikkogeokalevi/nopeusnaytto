@@ -1,13 +1,14 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.48 Time Circuit -näkymä
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.49 LCARS-kokonäkymä
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.48-time-circuit-view'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.49-lcars-dashboard'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
     './manifest.json',
     './style.css',
+    './style-lcars.css',
     
     // Javascript-moduulit
     './globals.js',

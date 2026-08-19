@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.48 TIME CIRCUIT VIEW)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.49 LCARS DASHBOARD)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,16 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🖖 UUTTA v6.49: LCARS-kokonäkymä:</strong>
+                        <ul>
+                            <li><strong>Uusi LCARS-teema</strong> koko mittaristolle: Star Trek TNG -tyylinen hallintopaneeli oransseilla, violeteilla, punaisilla, keltaisilla ja sinisillä elementeillä.</li>
+                            <li><strong>LCARS on täysin oma näkymänsä</strong>: se ei muuta eikä poista oletusmittaristoa, vaan toimii valinnaisena kokonaisnäkymänä.</li>
+                            <li><strong>Valinta</strong>: Asetukset → Dashboard-tyyli → LCARS.</li>
+                            <li>Näyttää nopeuden, matkan, ajan, korkeuden, keskinopeuden ja rajoituksen LCARS-tyylisissä korteissa.</li>
+                        </ul>
                         <strong>🕒 UUTTA v6.48: Time Circuit -näkymä:</strong>
                         <ul>
                             <li><strong>Uusi Back to the Future -tyylinen Time Circuit -näkymä</strong>: kolme vaakasuuntaista LED-riviä kuten DeLoreanin aikakoneessa.</li>
@@ -562,9 +569,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🖖 NEW in v6.49: LCARS dashboard theme:</strong>
+                        <ul>
+                            <li><strong>New LCARS theme</strong> for the whole dashboard: Star Trek TNG style control panel with orange, purple, red, yellow and blue elements.</li>
+                            <li><strong>LCARS is a fully separate view</strong>: it does not change or remove the default dashboard; it is an optional full-screen theme.</li>
+                            <li><strong>Select</strong>: Settings → Dashboard style → LCARS.</li>
+                            <li>Shows speed, distance, time, altitude, average speed and speed limit in LCARS-styled cards.</li>
+                        </ul>
                         <strong>🕒 NEW in v6.48: Time Circuit view:</strong>
                         <ul>
                             <li><strong>New Back to the Future styled Time Circuit view</strong>: three horizontal LED rows like the DeLorean time machine.</li>
@@ -1113,9 +1127,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🖖 MỚI v6.49: giao diện LCARS:</strong>
+                        <ul>
+                            <li><strong>Giao diện LCARS mới</strong> cho toàn bộ bảng điều khiển: bảng điều khiển phong cách Star Trek TNG với các yếu tố màu cam, tím, đỏ, vàng và xanh dương.</li>
+                            <li><strong>LCARS là một chế độ xem riêng biệt hoàn toàn</strong>: nó không thay đổi hoặc xóa bảng điều khiển mặc định; đó là một chủ đề toàn màn hình tùy chọn.</li>
+                            <li><strong>Chọn</strong>: Cài đặt → Kiểu Dashboard → LCARS.</li>
+                            <li>Hiển thị tốc độ, quãng đường, thời gian, độ cao, tốc độ trung bình và giới hạn tốc độ trong các thẻ phong cách LCARS.</li>
+                        </ul>
                         <strong>🕒 MỚI v6.48: giao diện Time Circuit:</strong>
                         <ul>
                             <li><strong>Giao diện Time Circuit theo phong cách Back to the Future mới</strong>: ba hàng LED nằm ngang như máy thời gian DeLorean.</li>

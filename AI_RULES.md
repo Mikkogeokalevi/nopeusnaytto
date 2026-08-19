@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.48 (Time Circuit -näkymä)
+**Versio:** v6.49 (LCARS-kokonäkymä)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -110,6 +110,14 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.49 - LCARS-kokonäkymä**
+- ✅ Lisätty täysin uusi LCARS-teema koko mittaristolle (Star Trek TNG -tyylinen hallintopaneeli)
+- ✅ LCARS toimii valinnaisena kokonaisnäkymänä: oletusmittaristo säilyy ennallaan
+- ✅ Uusi asetus: Dashboard-tyyli (Oletus / LCARS)
+- ✅ LCARS näyttää nopeuden, matkan, ajan, korkeuden, keskinopeuden ja rajoituksen
+- ✅ Tyylit eristetty omaan `style-lcars.css` -tiedostoon
+- ✅ PWA-versionosto tehty v6.49
 
 ### **v6.48 - Time Circuit -näkymä**
 - ✅ Lisätty Back to the Future -tyylinen Time Circuit -nopeusmittari: kolme vaakasuuntaista LED-riviä

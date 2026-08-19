@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.48`
+- **Nykyversio:** `v6.49`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
@@ -21,6 +21,28 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.49 - LCARS-kokonäkymä
+
+**Mitä muutettiin:**
+1. Lisätty täysin uusi LCARS-teema koko mittaristolle (Star Trek TNG -tyylinen hallintopaneeli).
+2. LCARS ei muuta eikä poista oletusmittaristoa, vaan on valinnaisesti valittavissa oleva kokonaisnäkymä.
+3. Uusi asetus: Asetukset → Dashboard-tyyli → Oletus / LCARS.
+4. LCARS näyttää nopeuden, matkan, ajan, korkeuden, keskinopeuden ja rajoituksen värillisissä korteissa.
+5. Tyylit on eristetty omaan `style-lcars.css` -tiedostoon, jotta olemassa olevat tyylit säilyvät koskemattomina.
+6. PWA- ja julkaisuversiot nostettiin v6.49:ään.
+
+**Tiedostot:**
+- `index.html`
+- `style-lcars.css` (uusi)
+- `style.css`
+- `visuals.js`
+- `ui.js`
+- `globals.js`
+- `sw.js`
+- `help.js`
+
+---
 
 ### v6.48 - Time Circuit -näkymä
 

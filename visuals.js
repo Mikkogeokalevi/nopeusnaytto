@@ -60,6 +60,51 @@ function updateCleanDigital(speed) {
     speedEl.textContent = speed.toFixed(2);
 }
 
+function updateLcarsView(speed, max, dist, time, alt, avg, limit) {
+    const container = document.getElementById('lcars-view');
+    if (!container) return;
+
+    const s = Math.max(0, Number(speed) || 0);
+    const m = Math.max(0, Number(max) || 0);
+    const d = Math.max(0, Number(dist) || 0);
+    const t = Math.round(Math.max(0, Number(time) || 0));
+    const a = Math.max(0, Number(avg) || 0);
+    const al = isFinite(alt) ? Math.round(alt) : 0;
+    const lim = Number(limit) || 0;
+
+    const min = Math.floor(t / 60);
+    const sec = t % 60;
+    const timeStr = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+
+    const setText = (id, v) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = v;
+    };
+
+    // Pääkortit
+    setText('lcars-speed', String(Math.round(s)).padStart(3,'0'));
+    setText('lcars-dist', d.toFixed(1));
+    setText('lcars-time', timeStr);
+    setText('lcars-alt', String(al));
+    setText('lcars-avg', a ? String(Math.round(a)) : '0');
+    setText('lcars-limit', lim ? String(Math.round(lim)) : '--');
+
+    // Sivupalkki
+    setText('lcars-side-spd', String(Math.round(s)));
+    setText('lcars-side-max', String(Math.round(m)));
+    setText('lcars-side-dst', d.toFixed(1));
+    setText('lcars-side-alt', String(al));
+    setText('lcars-side-lim', lim ? String(Math.round(lim)) : '--');
+
+    const status = document.getElementById('lcars-status');
+    if (status) {
+        if (s <= 0) status.textContent = 'PAIKALLAAN';
+        else if (lim && s > lim) status.textContent = 'RAJOITUS YLITETTY';
+        else if (s > 120) status.textContent = 'SUURI NOPEUS';
+        else status.textContent = 'AJO AKTIIVINEN';
+    }
+}
+
 function updateTimeCircuit(speed, max, dist, time, alt, avg, limit, fuel) {
     const container = document.getElementById('time-circuit-container');
     if (!container || container.style.display === 'none') return;
@@ -563,4 +608,5 @@ window.updateGraphs = updateGraphs;
 window.updateGIndicator = updateGIndicator;
 window.updateSpeedometerStyle = updateSpeedometerStyle;
 window.updateTimeCircuit = updateTimeCircuit;
+window.updateLcarsView = updateLcarsView;
 window.applyHudTheme = applyHudTheme;

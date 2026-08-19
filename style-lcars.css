@@ -1,0 +1,290 @@
+/* =========================================================
+   LCARS - STAR TREK TNG STYLE THEME
+   Erillinen tiedosto, jotta ei sotke olemassa olevia tyylejä
+   ========================================================= */
+
+/* LCARS-värit */
+:root {
+    --lcars-orange: #ff9c00;
+    --lcars-purple: #9c6dce;
+    --lcars-red: #d96868;
+    --lcars-yellow: #f5e663;
+    --lcars-blue: #7a9cd6;
+    --lcars-salmon: #e06c6c;
+    --lcars-dark: #000;
+    --lcars-black: #050505;
+    --lcars-text: #f0f0f0;
+    --lcars-muted: #888;
+}
+
+.lcars-view {
+    background: var(--lcars-black);
+    color: var(--lcars-text);
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.lcars-frame {
+    width: min(720px, 100vw);
+    min-height: 100vh;
+    background: var(--lcars-black);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 12px;
+}
+
+/* Yläpalkki */
+.lcars-top-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    height: 48px;
+}
+
+.lcars-elbow {
+    width: 54px;
+    height: 48px;
+    background: var(--lcars-orange);
+    border-radius: 24px 0 0 24px;
+    flex-shrink: 0;
+}
+
+.lcars-elbow-right {
+    border-radius: 0 24px 24px 0;
+    margin-left: auto;
+}
+
+.lcars-header-title {
+    color: var(--lcars-orange);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 0 12px;
+    text-transform: uppercase;
+}
+
+.lcars-header-pill {
+    width: 64px;
+    height: 22px;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.lcars-pill-orange { background: var(--lcars-orange); }
+.lcars-pill-purple { background: var(--lcars-purple); }
+.lcars-pill-red { background: var(--lcars-red); }
+.lcars-pill-yellow { background: var(--lcars-yellow); }
+.lcars-pill-blue { background: var(--lcars-blue); }
+.lcars-pill-salmon { background: var(--lcars-salmon); }
+
+/* Pääalue */
+.lcars-main {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+}
+
+.lcars-sidebar {
+    width: 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 6px;
+    border-right: 3px solid var(--lcars-purple);
+}
+
+.lcars-sidebar .lcars-pill {
+    width: 100%;
+    height: 70px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.lcars-sidebar .lcars-pill::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #000;
+    letter-spacing: 1px;
+}
+
+.lcars-sidebar .lcars-pill span {
+    font-size: 18px;
+    font-weight: 800;
+    color: #000;
+    margin-top: 8px;
+}
+
+.lcars-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Korttiruudukko */
+.lcars-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.lcars-card {
+    background: var(--lcars-black);
+    border: 0;
+    border-radius: 22px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 120px;
+    position: relative;
+    box-shadow: inset 0 0 0 3px transparent;
+}
+
+.lcars-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 22px;
+    border-radius: 22px 22px 0 0;
+}
+
+.lcars-card-orange::before { background: var(--lcars-orange); }
+.lcars-card-purple::before { background: var(--lcars-purple); }
+.lcars-card-red::before { background: var(--lcars-red); }
+.lcars-card-yellow::before { background: var(--lcars-yellow); }
+.lcars-card-blue::before { background: var(--lcars-blue); }
+.lcars-card-salmon::before { background: var(--lcars-salmon); }
+
+.lcars-card-label {
+    color: var(--lcars-muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 8px;
+}
+
+.lcars-card-value {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--lcars-text);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.lcars-card-unit {
+    font-size: 11px;
+    color: var(--lcars-muted);
+    text-transform: uppercase;
+}
+
+/* Alapalkki */
+.lcars-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lcars-footer-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 38px;
+}
+
+.lcars-footer-elbow {
+    width: 48px;
+    height: 38px;
+    background: var(--lcars-purple);
+    border-radius: 0 19px 19px 0;
+    flex-shrink: 0;
+}
+
+.lcars-footer-pill {
+    width: 58px;
+    height: 18px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.lcars-status {
+    background: var(--lcars-orange);
+    color: #000;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 18px;
+    text-align: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Mobiili */
+@media (max-width: 420px) {
+    .lcars-frame {
+        padding: 8px;
+    }
+    .lcars-top-bar {
+        height: 38px;
+        gap: 6px;
+    }
+    .lcars-header-title {
+        font-size: 16px;
+    }
+    .lcars-elbow {
+        width: 36px;
+        height: 38px;
+        border-radius: 19px 0 0 19px;
+    }
+    .lcars-elbow-right {
+        border-radius: 0 19px 19px 0;
+    }
+    .lcars-sidebar {
+        width: 54px;
+    }
+    .lcars-sidebar .lcars-pill {
+        height: 52px;
+        border-radius: 12px;
+    }
+    .lcars-sidebar .lcars-pill::before {
+        font-size: 7px;
+    }
+    .lcars-card {
+        min-height: 90px;
+        padding: 12px;
+        border-radius: 16px;
+    }
+    .lcars-card::before {
+        height: 16px;
+        border-radius: 16px 16px 0 0;
+    }
+    .lcars-card-value {
+        font-size: 30px;
+    }
+    .lcars-grid {
+        gap: 8px;
+    }
+}

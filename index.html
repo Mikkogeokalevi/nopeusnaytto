@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.48</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.49</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,8 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.48">
+    <link rel="stylesheet" href="style.css?v=6.49">
+    <link rel="stylesheet" href="style-lcars.css?v=6.49">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -24,7 +25,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.48...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.49...</p>
             <p>Ladataan...</p>
         </div>
     </div>
@@ -427,6 +428,75 @@
                  </div>
             </div>
 
+            <!-- UUSI: LCARS - Star Trek -tyylinen kokonäkymä -->
+            <div id="lcars-view" class="view-section lcars-view" style="display:none;">
+                <div class="lcars-frame">
+                    <div class="lcars-top-bar">
+                        <div class="lcars-elbow lcars-elbow-left"></div>
+                        <div class="lcars-header-title">LCARS 1.0</div>
+                        <div class="lcars-header-pill lcars-pill-orange"></div>
+                        <div class="lcars-header-pill lcars-pill-purple"></div>
+                        <div class="lcars-header-pill lcars-pill-blue"></div>
+                        <div class="lcars-elbow lcars-elbow-right"></div>
+                    </div>
+
+                    <div class="lcars-main">
+                        <div class="lcars-sidebar">
+                            <div class="lcars-pill lcars-pill-orange" data-label="SPD" id="lcars-side-spd"></div>
+                            <div class="lcars-pill lcars-pill-purple" data-label="MAX" id="lcars-side-max"></div>
+                            <div class="lcars-pill lcars-pill-red" data-label="DST" id="lcars-side-dst"></div>
+                            <div class="lcars-pill lcars-pill-yellow" data-label="ALT" id="lcars-side-alt"></div>
+                            <div class="lcars-pill lcars-pill-blue" data-label="LIM" id="lcars-side-lim"></div>
+                        </div>
+
+                        <div class="lcars-content">
+                            <div class="lcars-grid">
+                                <div class="lcars-card lcars-card-orange">
+                                    <span class="lcars-card-label">NOPEUS</span>
+                                    <span class="lcars-card-value" id="lcars-speed">000</span>
+                                    <span class="lcars-card-unit">km/h</span>
+                                </div>
+                                <div class="lcars-card lcars-card-purple">
+                                    <span class="lcars-card-label">MATKA</span>
+                                    <span class="lcars-card-value" id="lcars-dist">0.0</span>
+                                    <span class="lcars-card-unit">km</span>
+                                </div>
+                                <div class="lcars-card lcars-card-red">
+                                    <span class="lcars-card-label">AIKA</span>
+                                    <span class="lcars-card-value" id="lcars-time">00:00</span>
+                                    <span class="lcars-card-unit"></span>
+                                </div>
+                                <div class="lcars-card lcars-card-yellow">
+                                    <span class="lcars-card-label">KORKEUS</span>
+                                    <span class="lcars-card-value" id="lcars-alt">0</span>
+                                    <span class="lcars-card-unit">m</span>
+                                </div>
+                                <div class="lcars-card lcars-card-blue">
+                                    <span class="lcars-card-label">KESKI</span>
+                                    <span class="lcars-card-value" id="lcars-avg">0</span>
+                                    <span class="lcars-card-unit">km/h</span>
+                                </div>
+                                <div class="lcars-card lcars-card-salmon">
+                                    <span class="lcars-card-label">RAJOITUS</span>
+                                    <span class="lcars-card-value" id="lcars-limit">--</span>
+                                    <span class="lcars-card-unit">km/h</span>
+                                </div>
+                            </div>
+
+                            <div class="lcars-footer">
+                                <div class="lcars-footer-bar">
+                                    <div class="lcars-footer-elbow"></div>
+                                    <div class="lcars-footer-pill lcars-pill-purple"></div>
+                                    <div class="lcars-footer-pill lcars-pill-orange"></div>
+                                    <div class="lcars-footer-pill lcars-pill-red"></div>
+                                </div>
+                                <div class="lcars-status" id="lcars-status">ODOTETAAN GPS-SIJAINTIA</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="map-view" class="view-section" style="display:none;">
                 <div class="map-overlay">
                     <div class="speed-container">
@@ -543,6 +613,14 @@
                         <select id="speed-hud-theme" class="subject-input" style="width:150px;">
                             <option value="cyber-blue">Cyber Blue</option>
                             <option value="sunset-gold">Sunset Gold</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:15px;">
+                        <span>Dashboard-tyyli:</span>
+                        <select id="dashboard-style" class="subject-input" style="width:150px;">
+                            <option value="default">Oletus</option>
+                            <option value="lcars">LCARS</option>
                         </select>
                     </div>
                     
@@ -1006,16 +1084,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.47"></script>
-    <script src="visuals.js?v=6.47"></script>
-    <script src="ui.js?v=6.47"></script>
-    <script src="auth.js?v=6.47"></script>
-    <script src="map.js?v=6.47"></script>
-    <script src="gps.js?v=6.47"></script>
-    <script src="garage.js?v=6.47"></script>
-    <script src="history.js?v=6.47"></script>
-    <script src="help.js?v=6.47"></script>
+    <script src="globals.js?v=6.49"></script>
+    <script src="visuals.js?v=6.49"></script>
+    <script src="ui.js?v=6.49"></script>
+    <script src="auth.js?v=6.49"></script>
+    <script src="map.js?v=6.49"></script>
+    <script src="gps.js?v=6.49"></script>
+    <script src="garage.js?v=6.49"></script>
+    <script src="history.js?v=6.49"></script>
+    <script src="help.js?v=6.49"></script>
     
-    <script src="app.js?v=6.47"></script>
+    <script src="app.js?v=6.49"></script>
 </body>
 </html>
