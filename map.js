@@ -528,6 +528,13 @@ window.saveMarkerAsPOI = function(driveKey, markerIndex) {
         });
 }
 
+const hideMultiRouteBtn = document.getElementById('btn-hide-multi-route-info');
+if (hideMultiRouteBtn) {
+    hideMultiRouteBtn.addEventListener('click', () => {
+        hideMultiRouteInfo();
+    });
+}
+
 // 3. GPS Toggle Kartalla (ON/OFF)
 if (mapGpsToggle) {
     mapGpsToggle.addEventListener('click', () => {
@@ -674,12 +681,28 @@ window.showMultiRouteOnMap = (keys) => {
 
     const h = Math.floor(totalMs / 3600000);
     const m = Math.floor((totalMs % 3600000) / 60000);
-    if (typeof showToast === 'function') {
-        showToast(`Yhdistetty reitti: ${drives.length} ajoa • ${totalDist.toFixed(1)} km • ${h}h ${m}min`);
-    }
+
+    // Pysyvä yhteenveto kartalle
+    updateMultiRouteInfo(drives.length, totalDist, totalMs);
 
     if (typeof switchView === 'function') switchView('map');
 };
+
+function updateMultiRouteInfo(count, totalDist, totalMs) {
+    const infoBox = document.getElementById('multi-route-info');
+    const infoText = document.getElementById('multi-route-info-text');
+    if (!infoBox || !infoText) return;
+
+    const h = Math.floor(totalMs / 3600000);
+    const m = Math.floor((totalMs % 3600000) / 60000);
+    infoText.innerText = `Yhdistetty reitti: ${count} ajoa • ${totalDist.toFixed(1)} km • ${h}h ${m}min`;
+    infoBox.style.display = 'flex';
+}
+
+function hideMultiRouteInfo() {
+    const infoBox = document.getElementById('multi-route-info');
+    if (infoBox) infoBox.style.display = 'none';
+}
 
 // Poistaa historian viivat kartalta
 function clearSavedRoute() {
@@ -698,6 +721,8 @@ function clearSavedRoute() {
         });
         window._driveMarkerLayers = [];
     }
+
+    hideMultiRouteInfo();
 }
 
 // Laskee värin nopeuden perusteella (PÄIVITETTY LOGIIKKA: KÄVELY LISÄTTY)

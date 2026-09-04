@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.50 (päiväkohtainen ajanjako + yhdistetty reitti)
+**Versio:** v6.51 (yhdistetyn reitin pysyvä yhteenveto kartalla)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -110,6 +110,11 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.51 - Yhdistetyn reitin pysyvä yhteenveto kartalla**
+- ✅ Yhdistetyn reitin tietolaatikko (ajojen määrä, km, aika) näkyy nyt pysyvästi kartan oikeassa alakulmassa
+- ✅ Laatikko suljetaan ruksista, ja se katoaa automaattisesti kun valitaan yksittäinen reitti tai palautetaan GPS-seuranta
+- ✅ PWA-versionosto tehty v6.51
 
 ### **v6.50 - Päiväkohtainen ajanjako ja yhdistetty reitti**
 - ✅ Pitkät ajot jaetaan automaattisesti päiväkohtaisiksi tallennusvaiheessa, kun ajo ylittää vuorokauden

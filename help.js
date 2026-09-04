@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.50 DAY SPLIT & COMBINED ROUTES)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.51 COMBINED ROUTE SUMMARY OVERLAY)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,14 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ UUTTA v6.51: Yhdistetyn reitin yhteenveto pysyy kartalla:</strong>
+                        <ul>
+                            <li>Kun useita ajoja näytetään yhdistettynä reitinä, tiedot (ajojen määrä, kilometrit ja aika) näkyvät nyt <strong>pysyvästi kartan oikeassa alakulmassa</strong>.</li>
+                            <li>Voit sulkea yhteenvedon itse ruksista, tai se katoaa automaattisesti kun valitset yhden reitin tai palautat GPS-seurannan.</li>
+                        </ul>
                         <strong>🗓️ UUTTA v6.50: Päiväkohtainen ajanjako ja yhdistetty reitti:</strong>
                         <ul>
                             <li><strong>Pitkät ajot jaetaan automaattisesti päiväkohtaisiksi</strong> tallennusvaiheessa, kun ajo ylittää vuorokauden (esim. monen päivän reissu).</li>
@@ -576,9 +581,14 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ NEW in v6.51: Combined route summary stays on map:</strong>
+                        <ul>
+                            <li>When multiple drives are shown as a combined route, the summary (number of drives, kilometres and time) now stays <strong>permanently in the bottom-right corner of the map</strong>.</li>
+                            <li>You can close the summary manually with the X, or it disappears automatically when you select a single route or resume GPS tracking.</li>
+                        </ul>
                         <strong>🗓️ NEW in v6.50: Day split & combined route:</strong>
                         <ul>
                             <li><strong>Long drives are automatically split by day</strong> during saving when the drive crosses midnight (e.g. multi-day trips).</li>
@@ -1141,9 +1151,14 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗺️ MỚI v6.51: Tóm tắt tuyến đường kết hợp hiển thị liên tục trên bản đồ:</strong>
+                        <ul>
+                            <li>Khi nhiều chuyến đi được hiển thị dưới dạng tuyến đường kết hợp, tóm tắt (số chuyến, số km và thời gian) giờ được hiển thị <strong>liên tục ở góc dưới bên phải của bản đồ</strong>.</li>
+                            <li>Bạn có thể tự đóng tóm tắt bằng nút X, hoặc nó sẽ tự biến mất khi chọn một tuyến đường đơn hoặc tiếp tục theo dõi GPS.</li>
+                        </ul>
                         <strong>🗓️ MỚI v6.50: Chia theo ngày & tuyến đường kết hợp:</strong>
                         <ul>
                             <li><strong>Các chuyến đi dài được tự động chia theo ngày</strong> trong quá trình lưu khi chuyến đi vượt quá nửa đêm (ví dụ: các chuyến đi kéo dài nhiều ngày).</li>

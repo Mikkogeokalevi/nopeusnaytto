@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.50 day-split-combined-route
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.51 combined-route-summary-overlay
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.50-day-split-combined-route'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.51-combined-route-summary-overlay'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

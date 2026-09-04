@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.50</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.51</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,8 +15,8 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.50">
-    <link rel="stylesheet" href="style-lcars.css?v=6.50">
+    <link rel="stylesheet" href="style.css?v=6.51">
+    <link rel="stylesheet" href="style-lcars.css?v=6.51">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -25,7 +25,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.50...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.51...</p>
             <p>Ladataan...</p>
         </div>
     </div>
@@ -508,6 +508,10 @@
                 <button id="map-return-btn" class="map-return-btn">🏎️ MITTARISTO</button>
                 <div id="map-legend" class="map-legend" style="display:none;">
                     <span>Hidas</span><div class="legend-gradient"></div><span>Nopea</span>
+                </div>
+                <div id="multi-route-info" class="multi-route-info" style="display:none;">
+                    <span id="multi-route-info-text"></span>
+                    <button id="btn-hide-multi-route-info" class="icon-btn" style="width:auto; padding:2px 6px; font-size:12px; background:transparent; color:#fff; margin-left:8px;">✕</button>
                 </div>
                 <div id="map"></div>
             </div>
@@ -1090,16 +1094,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.50"></script>
-    <script src="visuals.js?v=6.50"></script>
-    <script src="ui.js?v=6.50"></script>
-    <script src="auth.js?v=6.50"></script>
-    <script src="map.js?v=6.50"></script>
-    <script src="gps.js?v=6.50"></script>
-    <script src="garage.js?v=6.50"></script>
-    <script src="history.js?v=6.50"></script>
-    <script src="help.js?v=6.50"></script>
+    <script src="globals.js?v=6.51"></script>
+    <script src="visuals.js?v=6.51"></script>
+    <script src="ui.js?v=6.51"></script>
+    <script src="auth.js?v=6.51"></script>
+    <script src="map.js?v=6.51"></script>
+    <script src="gps.js?v=6.51"></script>
+    <script src="garage.js?v=6.51"></script>
+    <script src="history.js?v=6.51"></script>
+    <script src="help.js?v=6.51"></script>
     
-    <script src="app.js?v=6.50"></script>
+    <script src="app.js?v=6.51"></script>
 </body>
 </html>
