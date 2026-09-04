@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.49 LCARS-kokonäkymä
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.50 day-split-combined-route
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.49-lcars-dashboard'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.50-day-split-combined-route'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

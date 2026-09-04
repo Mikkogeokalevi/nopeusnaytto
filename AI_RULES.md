@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.49 (LCARS-kokonäkymä)
+**Versio:** v6.50 (päiväkohtainen ajanjako + yhdistetty reitti)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -110,6 +110,14 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.50 - Päiväkohtainen ajanjako ja yhdistetty reitti**
+- ✅ Pitkät ajot jaetaan automaattisesti päiväkohtaisiksi tallennusvaiheessa, kun ajo ylittää vuorokauden
+- ✅ Reittipisteisiin lisätty aikaleima (`ts`) päiväjaon mahdollistamiseksi
+- ✅ Historianäkymään lisätty ajojen monivalinta
+- ✅ Usean valitun ajon reitit voidaan piirtää kartalle yhtenä yhdistettynä reitinä
+- ✅ Valittujen ajojen yhteinen kilometrimäärä ja aika näytetään käyttäjälle
+- ✅ PWA-versionosto tehty v6.50
 
 ### **v6.49 - LCARS-kokonäkymä**
 - ✅ Lisätty täysin uusi LCARS-teema koko mittaristolle (Star Trek TNG -tyylinen hallintopaneeli)

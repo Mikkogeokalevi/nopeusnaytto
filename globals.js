@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.49 (LCARS-kokonäkymä)
-const APP_VERSION = "6.49";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.50 (päiväkohtainen ajanjako + yhdistetty reitti)
+const APP_VERSION = "6.50";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

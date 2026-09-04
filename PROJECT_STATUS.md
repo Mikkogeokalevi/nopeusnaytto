@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.49`
+- **Nykyversio:** `v6.50`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
@@ -21,6 +21,27 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.50 - Päiväkohtainen ajanjako ja yhdistetty reitti
+
+**Mitä muutettiin:**
+1. Pitkät ajot jaetaan automaattisesti päiväkohtaisiksi tallennusvaiheessa, kun ajo ylittää vuorokauden.
+2. Reittipisteisiin lisätty aikaleima (`ts`) päiväjaon mahdollistamiseksi.
+3. Historianäkymään lisätty monivalinta: ajojen rastitus ja "Näytä valitut kartalla" -painike.
+4. Usean valitun ajon reitit piirretään kartalle yhtenä yhdistettynä reitinä.
+5. Valittujen ajojen yhteinen kilometrimäärä ja aika näytetään toast-viestissä ja monivalintapalkissa.
+6. PWA- ja julkaisuversiot nostettiin v6.50:een.
+
+**Tiedostot:**
+- `gps.js`
+- `history.js`
+- `map.js`
+- `index.html`
+- `globals.js`
+- `sw.js`
+- `help.js`
+
+---
 
 ### v6.49 - LCARS-kokonäkymä
 

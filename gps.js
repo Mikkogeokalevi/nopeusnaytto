@@ -1288,7 +1288,7 @@ function updatePosition(position) {
         }
         
         if (speedKmh > 3 || (lastLatLng && getDistanceFromLatLonInKm(lastLatLng.lat, lastLatLng.lng, lat, lng) > 0.02)) {
-            routePath.push({ lat: lat, lng: lng, spd: speedKmh });
+            routePath.push({ lat: lat, lng: lng, spd: speedKmh, ts: posTs });
             if(realTimePolyline) realTimePolyline.addLatLng([lat, lng]);
             if (typeof window.addDashboardMiniMapTrailPoint === 'function') {
                 window.addDashboardMiniMapTrailPoint(lat, lng);

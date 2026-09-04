@@ -615,6 +615,72 @@ window.showRouteOnMap = (key) => {
 
 // 5. Apufunktiot
 
+// 4b. Usean ajon yhdistetty reitti
+window.showMultiRouteOnMap = (keys) => {
+    if (!Array.isArray(keys) || keys.length === 0) return;
+
+    const drives = keys.map(k => allHistoryData.find(d => d && d.key === k)).filter(d => d && d.route && d.route.length > 0);
+    if (drives.length === 0) { alert("Ei reittidataa valituista ajoista."); return; }
+
+    clearSavedRoute();
+
+    isViewingHistory = true;
+    if(mapGpsToggle) {
+        mapGpsToggle.innerText = "📡 OFF";
+        mapGpsToggle.classList.add('inactive');
+    }
+    if (typeof window.setHistoryMapPoiVisibility === 'function') {
+        window.setHistoryMapPoiVisibility(false);
+    }
+    if(mapLegend) mapLegend.style.display = 'flex';
+
+    let allPoints = [];
+    let totalDist = 0;
+    let totalMs = 0;
+
+    drives.forEach(drive => {
+        const isNewFormat = (drive.route.length > 0 && typeof drive.route[0] === 'object' && drive.route[0].lat);
+
+        if (isNewFormat) {
+            for (let i = 0; i < drive.route.length - 1; i++) {
+                const p1 = drive.route[i];
+                const p2 = drive.route[i + 1];
+                const color = getSpeedColor(p1.spd || 0, drive.carType);
+                const segment = L.polyline([[p1.lat, p1.lng], [p2.lat, p2.lng]], {
+                    color: color,
+                    weight: 5,
+                    opacity: 0.8
+                }).addTo(map);
+                savedRouteLayers.push(segment);
+            }
+            allPoints = allPoints.concat(drive.route.map(p => [p.lat, p.lng]));
+        } else {
+            const layer = L.polyline(drive.route, { color: '#ff9100', weight: 5, opacity: 0.8 }).addTo(map);
+            savedRouteLayers.push(layer);
+            allPoints = allPoints.concat(drive.route);
+        }
+
+        totalDist += parseFloat(drive.distanceKm) || 0;
+        totalMs += drive.durationMs || 0;
+
+        // Lisätään ajon markerit
+        renderDriveMarkersOnMap(drive, drive.key);
+    });
+
+    if (allPoints.length > 0) {
+        const bounds = L.latLngBounds(allPoints);
+        map.fitBounds(bounds, { padding: [50, 50] });
+    }
+
+    const h = Math.floor(totalMs / 3600000);
+    const m = Math.floor((totalMs % 3600000) / 60000);
+    if (typeof showToast === 'function') {
+        showToast(`Yhdistetty reitti: ${drives.length} ajoa • ${totalDist.toFixed(1)} km • ${h}h ${m}min`);
+    }
+
+    if (typeof switchView === 'function') switchView('map');
+};
+
 // Poistaa historian viivat kartalta
 function clearSavedRoute() {
     if(savedRouteLayers.length > 0) {

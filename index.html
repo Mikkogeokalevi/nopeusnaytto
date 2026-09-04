@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.49</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.50</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,8 +15,8 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.49">
-    <link rel="stylesheet" href="style-lcars.css?v=6.49">
+    <link rel="stylesheet" href="style.css?v=6.50">
+    <link rel="stylesheet" href="style-lcars.css?v=6.50">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -25,7 +25,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.49...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.50...</p>
             <p>Ladataan...</p>
         </div>
     </div>
@@ -523,6 +523,12 @@
                 <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
                     <button id="btn-open-report" class="action-btn" style="width:auto; font-size:13px; background-color: #00796b;">📄 Luo Raportti / Vie CSV</button>
                     <button id="btn-manual-drive" class="action-btn" style="width:auto; font-size:13px; background-color: #444;">+ Lisää käsin</button>
+                </div>
+
+                <div id="multi-select-bar" style="display:none; justify-content:center; align-items:center; gap:10px; margin-bottom:15px; flex-wrap:wrap; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;">
+                    <span id="multi-select-count" style="font-size:13px; font-weight:bold;">0 valittu</span>
+                    <button id="btn-show-selected-routes" class="action-btn" style="width:auto; font-size:13px; background-color:#1e88e5;">🗺️ Näytä valitut kartalla</button>
+                    <button id="btn-clear-multi-select" class="action-btn" style="width:auto; font-size:13px; background-color:#444;">Tyhjennä valinta</button>
                 </div>
 
                 <div id="history-summary" class="summary-box" style="display:none;">
@@ -1084,16 +1090,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.49"></script>
-    <script src="visuals.js?v=6.49"></script>
-    <script src="ui.js?v=6.49"></script>
-    <script src="auth.js?v=6.49"></script>
-    <script src="map.js?v=6.49"></script>
-    <script src="gps.js?v=6.49"></script>
-    <script src="garage.js?v=6.49"></script>
-    <script src="history.js?v=6.49"></script>
-    <script src="help.js?v=6.49"></script>
+    <script src="globals.js?v=6.50"></script>
+    <script src="visuals.js?v=6.50"></script>
+    <script src="ui.js?v=6.50"></script>
+    <script src="auth.js?v=6.50"></script>
+    <script src="map.js?v=6.50"></script>
+    <script src="gps.js?v=6.50"></script>
+    <script src="garage.js?v=6.50"></script>
+    <script src="history.js?v=6.50"></script>
+    <script src="help.js?v=6.50"></script>
     
-    <script src="app.js?v=6.49"></script>
+    <script src="app.js?v=6.50"></script>
 </body>
 </html>

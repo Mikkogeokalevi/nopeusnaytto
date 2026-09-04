@@ -37,6 +37,15 @@ function initOfflineManager() {
 }
 
 window.saveDriveSafely = function(driveData, updateKey = null) {
+    // Jaetaan pitkät ajot päiväkohtaisiksi (ellei ole jatka-ajon päivitys)
+    const splitList = (updateKey || !driveData.route || driveData.route.length === 0)
+        ? [driveData]
+        : splitDriveByDay(driveData);
+
+    if (splitList.length > 1) {
+        return saveMultipleDrives(splitList);
+    }
+
     if (navigator.onLine) {
         if (updateKey) {
             return db.ref('ajopaivakirja/' + currentUser.uid + '/' + updateKey).update(driveData)
@@ -112,6 +121,118 @@ window.syncOfflineDrives = function() {
             if(btn) { btn.disabled = false; }
         });
 };
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+function getDayKey(ts) {
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function splitDriveByDay(driveData) {
+    const route = driveData.route || [];
+    if (route.length === 0) return [driveData];
+
+    // Jos pisteillä ei ole aikaleimaa, ei voida jakaa
+    const firstTs = route[0].ts || new Date(driveData.startTime).getTime();
+    const lastTs = route[route.length - 1].ts || new Date(driveData.endTime).getTime();
+    if (!firstTs || !lastTs) return [driveData];
+
+    const startDay = getDayKey(firstTs);
+    const endDay = getDayKey(lastTs);
+    if (startDay === endDay) return [driveData];
+
+    // Ryhmittele pisteet päivän mukaan
+    const groups = {};
+    route.forEach(p => {
+        const ts = p.ts || firstTs;
+        const day = getDayKey(ts);
+        if (!groups[day]) groups[day] = [];
+        groups[day].push(p);
+    });
+
+    const result = [];
+    const sortedDays = Object.keys(groups).sort();
+
+    sortedDays.forEach((day, idx) => {
+        const points = groups[day];
+        const firstPoint = points[0];
+        const lastPoint = points[points.length - 1];
+
+        let dayDist = 0;
+        for (let i = 1; i < points.length; i++) {
+            dayDist += getDistanceFromLatLonInKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+        }
+
+        const startTs = firstPoint.ts || new Date(driveData.startTime).getTime() + idx * 24 * 60 * 60 * 1000;
+        const endTs = lastPoint.ts || startTs;
+        const durationMs = Math.max(0, endTs - startTs);
+
+        let maxSpd = 0;
+        points.forEach(p => { if (p.spd > maxSpd) maxSpd = p.spd; });
+
+        const avgSpd = durationMs > 0 ? (dayDist / (durationMs / 3600000)) : 0;
+
+        const startAddr = idx === 0 ? (driveData.startAddress || '') : '';
+        const endAddr = idx === sortedDays.length - 1 ? (driveData.endAddress || '') : '';
+
+        const dayMarkers = (driveData.markers || []).filter(m => {
+            if (!m || !m.ts) return false;
+            return getDayKey(m.ts) === day;
+        });
+
+        const sessionDate = new Date(startTs).toISOString();
+
+        result.push({
+            ...driveData,
+            startTime: new Date(startTs).toISOString(),
+            endTime: new Date(endTs).toISOString(),
+            distanceKm: dayDist.toFixed(2),
+            durationMs: durationMs,
+            maxSpeed: maxSpd.toFixed(1),
+            avgSpeed: avgSpd.toFixed(1),
+            route: points,
+            markers: dayMarkers,
+            startAddress: startAddr,
+            endAddress: endAddr,
+            sessions: [],
+            subject: (driveData.subject || '') + (sortedDays.length > 1 ? ` (${day})` : ''),
+            splitFrom: driveData.splitFrom || null
+        });
+    });
+
+    return result;
+}
+
+function saveMultipleDrives(driveList) {
+    if (driveList.length === 0) return Promise.resolve(true);
+    if (navigator.onLine) {
+        const promises = driveList.map(d => db.ref('ajopaivakirja/' + currentUser.uid).push().set(d));
+        return Promise.all(promises)
+            .then(() => {
+                if (typeof showToast === 'function') showToast(`${driveList.length} ajoa tallennettu! ☁️`);
+                return true;
+            })
+            .catch((err) => {
+                console.warn('Monen ajon pilvitallennus epäonnistui, tallennetaan paikallisesti.', err);
+                driveList.forEach(d => saveLocally(d));
+                return true;
+            });
+    } else {
+        driveList.forEach(d => saveLocally(d));
+        return Promise.resolve(true);
+    }
+}
 
 function updateSyncButton() {
     let container = document.getElementById('sync-container');
@@ -330,8 +451,10 @@ function renderHistoryList() {
 
             // UI Elementtien valmistelu
             let mapBtn = "";
+            let multiSelect = "";
             if (drive.route && drive.route.length > 0) {
                 mapBtn = `<button class="map-btn" onclick="window.showRouteOnMap('${drive.key}')" title="Näytä reitti">🗺️</button>`;
+                multiSelect = `<input type="checkbox" class="multi-select-drive" data-key="${drive.key}" title="Valitse yhdistettäväksi kartalle" style="margin-right:6px; transform:scale(1.3);" onchange="window.updateMultiSelectSummary()">`;
             }
             
             let continueBtn = "";
@@ -437,6 +560,7 @@ function renderHistoryList() {
                         <div class="log-car-big">${icon} ${carName} ${syncBadge}</div>
                     </div>
                     <div style="display:flex; align-items:center;">
+                        ${multiSelect}
                         ${!drive.isPending ? `${continueBtn} ${mapBtn} <button class="edit-btn" onclick="window.openEditLogModal('${drive.key}')">✏️</button> <button class="delete-btn" onclick="window.openDeleteLogModal('${drive.key}')">🗑</button>` : `<button class="delete-btn" onclick="window.deleteOfflineDrive('${drive.tempId}')">🗑</button>`}
                     </div>
                 </div>
@@ -476,6 +600,59 @@ function renderHistoryList() {
         historySummaryEl.style.display = 'none';
     }
 }
+
+window.updateMultiSelectSummary = function() {
+    const checkboxes = document.querySelectorAll('.multi-select-drive:checked');
+    const bar = document.getElementById('multi-select-bar');
+    const countEl = document.getElementById('multi-select-count');
+
+    if (checkboxes.length > 0) {
+        if (bar) bar.style.display = 'flex';
+
+        let totalKm = 0;
+        let totalMs = 0;
+        checkboxes.forEach(cb => {
+            const key = cb.getAttribute('data-key');
+            const drive = allHistoryData.find(d => d.key === key);
+            if (drive) {
+                totalKm += parseFloat(drive.distanceKm) || 0;
+                totalMs += drive.durationMs || 0;
+            }
+        });
+
+        const h = Math.floor(totalMs / 3600000);
+        const m = Math.floor((totalMs % 3600000) / 60000);
+        if (countEl) countEl.innerText = `${checkboxes.length} valittu • ${totalKm.toFixed(1)} km • ${h}h ${m}min`;
+    } else {
+        if (bar) bar.style.display = 'none';
+    }
+};
+
+window.clearMultiSelect = function() {
+    document.querySelectorAll('.multi-select-drive').forEach(cb => cb.checked = false);
+    window.updateMultiSelectSummary();
+};
+
+window.showSelectedRoutesOnMap = function() {
+    const keys = Array.from(document.querySelectorAll('.multi-select-drive:checked'))
+        .map(cb => cb.getAttribute('data-key'))
+        .filter(k => k);
+    if (keys.length === 0) {
+        if (typeof showToast === 'function') showToast('Valitse ensin ajoja.');
+        return;
+    }
+    if (typeof window.showMultiRouteOnMap === 'function') {
+        window.showMultiRouteOnMap(keys);
+    }
+};
+
+// DOMContentLoadedin jälkeen kuuntelijat
+setTimeout(() => {
+    const showBtn = document.getElementById('btn-show-selected-routes');
+    const clearBtn = document.getElementById('btn-clear-multi-select');
+    if (showBtn) showBtn.addEventListener('click', window.showSelectedRoutesOnMap);
+    if (clearBtn) clearBtn.addEventListener('click', window.clearMultiSelect);
+}, 1000);
 
 // VALMISTELE AJON JATKAMINEN
 window.prepareContinueDrive = function(key) {

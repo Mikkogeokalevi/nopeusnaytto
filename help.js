@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.49 LCARS DASHBOARD)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.50 DAY SPLIT & COMBINED ROUTES)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,16 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗓️ UUTTA v6.50: Päiväkohtainen ajanjako ja yhdistetty reitti:</strong>
+                        <ul>
+                            <li><strong>Pitkät ajot jaetaan automaattisesti päiväkohtaisiksi</strong> tallennusvaiheessa, kun ajo ylittää vuorokauden (esim. monen päivän reissu).</li>
+                            <li><strong>Historiassa voi valita useita ajoja</strong> rastittamalla ne ja painamalla <strong>"Näytä valitut kartalla"</strong>.</li>
+                            <li>Valittujen ajojen reitit piirretään kartalle peräkkäin yhdeksi yhdistetyksi reitiksi.</li>
+                            <li>Ruudulla näytetään valittujen ajojen yhteinen kilometrimäärä ja aika.</li>
+                        </ul>
                         <strong>🖖 UUTTA v6.49: LCARS-kokonäkymä:</strong>
                         <ul>
                             <li><strong>Uusi LCARS-teema</strong> koko mittaristolle: Star Trek TNG -tyylinen hallintopaneeli oransseilla, violeteilla, punaisilla, keltaisilla ja sinisillä elementeillä.</li>
@@ -569,9 +576,16 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗓️ NEW in v6.50: Day split & combined route:</strong>
+                        <ul>
+                            <li><strong>Long drives are automatically split by day</strong> during saving when the drive crosses midnight (e.g. multi-day trips).</li>
+                            <li><strong>In History you can select multiple drives</strong> by checking the boxes and tapping <strong>"Show selected on map"</strong>.</li>
+                            <li>The selected drives are drawn on the map sequentially as one combined route.</li>
+                            <li>The screen shows the combined distance and time of the selected drives.</li>
+                        </ul>
                         <strong>🖖 NEW in v6.49: LCARS dashboard theme:</strong>
                         <ul>
                             <li><strong>New LCARS theme</strong> for the whole dashboard: Star Trek TNG style control panel with orange, purple, red, yellow and blue elements.</li>
@@ -1127,9 +1141,16 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🗓️ MỚI v6.50: Chia theo ngày & tuyến đường kết hợp:</strong>
+                        <ul>
+                            <li><strong>Các chuyến đi dài được tự động chia theo ngày</strong> trong quá trình lưu khi chuyến đi vượt quá nửa đêm (ví dụ: các chuyến đi kéo dài nhiều ngày).</li>
+                            <li><strong>Trong Lịch sử, bạn có thể chọn nhiều chuyến đi</strong> bằng cách đánh dấu vào ô và nhấn <strong>"Hiển thị các chuyến đã chọn trên bản đồ"</strong>.</li>
+                            <li>Các chuyến đi đã chọn được vẽ trên bản đồ liên tiếp như một tuyến đường kết hợp.</li>
+                            <li>Màn hình hiển thị tổng quãng đường và thời gian của các chuyến đi đã chọn.</li>
+                        </ul>
                         <strong>🖖 MỚI v6.49: giao diện LCARS:</strong>
                         <ul>
                             <li><strong>Giao diện LCARS mới</strong> cho toàn bộ bảng điều khiển: bảng điều khiển phong cách Star Trek TNG với các yếu tố màu cam, tím, đỏ, vàng và xanh dương.</li>
