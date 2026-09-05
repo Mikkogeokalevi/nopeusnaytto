@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.51 combined-route-summary-overlay
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.52 wakelock-improvements
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.51-combined-route-summary-overlay'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.52-wakelock-improvements'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

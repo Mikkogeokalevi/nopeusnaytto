@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.51`
+- **Nykyversio:** `v6.52`
 - **Pääpaino juuri nyt:**
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
@@ -21,6 +21,25 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.52 - WakeLock-parannukset ja näytön pitämisen asetus
+
+**Mitä muutettiin:**
+1. Lisätty asetus "Pidä näyttö päällä ajon aikana" (oletuksena päällä).
+2. WakeLock haetaan nyt uudelleen 30 sekunnin välein, jos se on kadonnut.
+3. WakeLockin release-tapahtuma nollaa muuttujan, jotta uudelleenhaku toimii.
+4. Dokumentoitu iPadOS:n split-view-rajoitus: vain aktiivinen sovellus voi pitää näytön päällä.
+5. PWA- ja julkaisuversiot nostettiin v6.52:een.
+
+**Tiedostot:**
+- `gps.js`
+- `ui.js`
+- `index.html`
+- `globals.js`
+- `sw.js`
+- `help.js`
+
+---
 
 ### v6.51 - Yhdistetyn reitin pysyvä yhteenveto kartalla
 

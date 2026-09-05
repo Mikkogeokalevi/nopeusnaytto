@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - TRILINGUAL MASTER GUIDE (v6.51 COMBINED ROUTE SUMMARY OVERLAY)
+// HELP.JS - TRILINGUAL MASTER GUIDE (v6.52 WAKELOCK IMPROVEMENTS)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS / BẢN DỊCH ---
@@ -9,9 +9,15 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🔆 UUTTA v6.52: Näytön pitäminen päällä -asetus:</strong>
+                        <ul>
+                            <li>Asetuksiin lisätty <strong>"Pidä näyttö päällä ajon aikana"</strong> -valinta (oletuksena päällä).</li>
+                            <li>Sovellus hakee näytön pitämisen nyt myös <strong>30 sekunnin välein uudelleen</strong>, jos se on kadonnut.</li>
+                            <li><strong>Huom iPadOS:ssä:</strong> split-view-tilassa vain aktiivinen sovellus voi pitää näytön päällä. Varmista lisäksi iPadin asetuksista: Näyttö ja kirkkaus → Automaattinen lukitus → <strong>Ei koskaan</strong>.</li>
+                        </ul>
                         <strong>🗺️ UUTTA v6.51: Yhdistetyn reitin yhteenveto pysyy kartalla:</strong>
                         <ul>
                             <li>Kun useita ajoja näytetään yhdistettynä reitinä, tiedot (ajojen määrä, kilometrit ja aika) näkyvät nyt <strong>pysyvästi kartan oikeassa alakulmassa</strong>.</li>
@@ -581,9 +587,15 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🔆 NEW in v6.52: Keep screen on setting:</strong>
+                        <ul>
+                            <li>Added a <strong>"Keep screen on while driving"</strong> option in Settings (on by default).</li>
+                            <li>The app now also re-requests the screen wake lock <strong>every 30 seconds</strong> if it has been lost.</li>
+                            <li><strong>Note on iPadOS:</strong> in Split View only the active app can keep the screen on. Also check iPad Settings → Display & Brightness → Auto-Lock → <strong>Never</strong>.</li>
+                        </ul>
                         <strong>🗺️ NEW in v6.51: Combined route summary stays on map:</strong>
                         <ul>
                             <li>When multiple drives are shown as a combined route, the summary (number of drives, kilometres and time) now stays <strong>permanently in the bottom-right corner of the map</strong>.</li>
@@ -1151,9 +1163,15 @@ const helpData = {
         version: "Phiên bản",
         sections: [
             {
-                title: "🚀 1. Mới trong v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
+                title: "🚀 1. Mới trong v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & 6.12",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🔆 MỚI v6.52: Cài đặt giữ màn hình luôn bật:</strong>
+                        <ul>
+                            <li>Đã thêm tùy chọn <strong>"Giữ màn hình bật khi lái xe"</strong> trong Cài đặt (bật theo mặc định).</li>
+                            <li>Ứng dụng giờ cũng yêu cầu lại khóa đánh thức màn hình <strong>mỗi 30 giây</strong> nếu nó bị mất.</li>
+                            <li><strong>Lưu ý trên iPadOS:</strong> trong chế độ Split View chỉ ứng dụng đang hoạt động mới có thể giữ màn hình bật. Đồng thời kiểm tra Cài đặt iPad → Màn hình & Độ sáng → Tự động khóa → <strong>Không bao giờ</strong>.</li>
+                        </ul>
                         <strong>🗺️ MỚI v6.51: Tóm tắt tuyến đường kết hợp hiển thị liên tục trên bản đồ:</strong>
                         <ul>
                             <li>Khi nhiều chuyến đi được hiển thị dưới dạng tuyến đường kết hợp, tóm tắt (số chuyến, số km và thời gian) giờ được hiển thị <strong>liên tục ở góc dưới bên phải của bản đồ</strong>.</li>

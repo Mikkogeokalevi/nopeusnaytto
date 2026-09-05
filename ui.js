@@ -1916,6 +1916,19 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Näytön pitäminen päällä
+    const keepScreenOnEl = document.getElementById('toggle-keep-screen-on');
+    if (keepScreenOnEl) {
+        const savedKeepScreenOn = localStorage.getItem('keepScreenOn');
+        keepScreenOnEl.checked = (savedKeepScreenOn !== 'false');
+        keepScreenOnEl.addEventListener('change', (e) => {
+            localStorage.setItem('keepScreenOn', e.target.checked ? 'true' : 'false');
+            if (e.target.checked && isGPSActive) {
+                if (typeof requestWakeLock === 'function') requestWakeLock();
+            }
+        });
+    }
+
     // POI debug
     try {
         const savedPoiDebug = localStorage.getItem('poiDebug');

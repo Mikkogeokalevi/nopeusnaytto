@@ -2126,8 +2126,25 @@ document.addEventListener('visibilitychange', async () => {
     if (document.visibilityState === 'visible' && isGPSActive) requestWakeLock();
 });
 
+// Periodinen tarkistus: jos wakeLock on kadonnut, haetaan se uudelleen
+setInterval(() => {
+    if (isGPSActive && wakeLock === null) requestWakeLock();
+}, 30000);
+
 async function requestWakeLock() {
-    try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+    // Käyttäjän asetus: jos pois päältä, ei haeta wakeLockia
+    if (localStorage.getItem('keepScreenOn') === 'false') return;
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => {
+                wakeLock = null;
+            });
+        }
+    } catch (err) {
+        console.warn('WakeLock epäonnistui:', err);
+        wakeLock = null;
+    }
 }
 
 // =========================================================

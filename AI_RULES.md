@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.51 (yhdistetyn reitin pysyvä yhteenveto kartalla)
+**Versio:** v6.52 (wakeLock-parannukset + näytön pitämisen asetus)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -110,6 +110,13 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.52 - WakeLock-parannukset ja näytön pitämisen asetus**
+- ✅ Lisätty asetus "Pidä näyttö päällä ajon aikana" (oletuksena päällä)
+- ✅ WakeLock haetaan uudelleen 30 sekunnin välein, jos se on kadonnut
+- ✅ WakeLockin release-tapahtuma nollaa muuttujan uudelleenhakua varten
+- ✅ Dokumentoitu iPadOS split-view -rajoitus: vain aktiivinen sovellus pitää näytön päällä
+- ✅ PWA-versionosto tehty v6.52
 
 ### **v6.51 - Yhdistetyn reitin pysyvä yhteenveto kartalla**
 - ✅ Yhdistetyn reitin tietolaatikko (ajojen määrä, km, aika) näkyy nyt pysyvästi kartan oikeassa alakulmassa

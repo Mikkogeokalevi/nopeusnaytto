@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.51 (yhdistetyn reitin pysyvä yhteenveto kartalla)
-const APP_VERSION = "6.51";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.52 (wakeLock-parannukset + asetus)
+const APP_VERSION = "6.52";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

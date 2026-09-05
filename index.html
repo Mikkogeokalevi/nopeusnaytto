@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.51</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.52</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,8 +15,8 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.51">
-    <link rel="stylesheet" href="style-lcars.css?v=6.51">
+    <link rel="stylesheet" href="style.css?v=6.52">
+    <link rel="stylesheet" href="style-lcars.css?v=6.52">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -25,7 +25,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.51...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.52...</p>
             <p>Ladataan...</p>
         </div>
     </div>
@@ -648,6 +648,14 @@
                         <span>Tiivistetty historia</span>
                         <input type="checkbox" id="toggle-compact-history" style="transform: scale(1.5);">
                     </div>
+
+                    <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:15px;">
+                        <span>Pidä näyttö päällä ajon aikana</span>
+                        <input type="checkbox" id="toggle-keep-screen-on" style="transform: scale(1.5);" checked>
+                    </div>
+                    <div style="font-size:11px; color:var(--subtext-color); margin-top:4px; padding-left:2px;">
+                        Käyttää Wake Lock API:a. iPadOS:ssä split-view-tilassa näyttö voi sammua, jos toinen sovellus on aktiivinen.
+                    </div>
                 </div>
 
                 <div class="help-section" style="margin-bottom: 20px;">
@@ -1094,16 +1102,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.51"></script>
-    <script src="visuals.js?v=6.51"></script>
-    <script src="ui.js?v=6.51"></script>
-    <script src="auth.js?v=6.51"></script>
-    <script src="map.js?v=6.51"></script>
-    <script src="gps.js?v=6.51"></script>
-    <script src="garage.js?v=6.51"></script>
-    <script src="history.js?v=6.51"></script>
-    <script src="help.js?v=6.51"></script>
+    <script src="globals.js?v=6.52"></script>
+    <script src="visuals.js?v=6.52"></script>
+    <script src="ui.js?v=6.52"></script>
+    <script src="auth.js?v=6.52"></script>
+    <script src="map.js?v=6.52"></script>
+    <script src="gps.js?v=6.52"></script>
+    <script src="garage.js?v=6.52"></script>
+    <script src="history.js?v=6.52"></script>
+    <script src="help.js?v=6.52"></script>
     
-    <script src="app.js?v=6.51"></script>
+    <script src="app.js?v=6.52"></script>
 </body>
 </html>
