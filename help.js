@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - BILINGUAL MASTER GUIDE (v6.54 HELP FIX)
+// HELP.JS - BILINGUAL MASTER GUIDE (v6.55 PRO POLISH)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS ---
@@ -9,9 +9,32 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>✨ UUTTA v6.55: Ammattimainen viimeistely - SVG-ikonit, tasaiset numerot, saavutettavuus:</strong>
+                        <ul>
+                            <li><strong>Kaikki emoji-ikonit korvattu yhtenäisillä SVG-ikoneilla</strong> valikossa, alanavigaatiossa, napeissa ja otsikoissa - ikonit seuraavat korostusväriä ja näyttävät samalta kaikilla laitteilla.</li>
+                            <li><strong>Numerot eivät enää hyppi</strong> kun arvo vaihtuu: tasalevyiset numerot (tabular-nums) nopeudessa, kellossa, koordinaateissa ja tilastoissa.</li>
+                            <li><strong>Fonttikoot yhtenäistetty</strong> siistiin kokoskaalaan (10/12/14/16/20/24/28/34 px).</li>
+                            <li><strong>Vähennetty liike -tuki:</strong> jos puhelimen asetus "vähennä liikettä" on päällä, animaatiot ja tehosteet hiljenevät.</li>
+                            <li><strong>Offline-ilmaisin:</strong> oranssi banneri kertoo kun verkkoyhteys on poikki - ajot tallentuvat laitteelle ja synkronoituvat kun verkko palaa.</li>
+                            <li><strong>Selkokieliset GPS-virheet:</strong> esim. "Sijainnin käyttö estetty" teknisen virhetekstin sijaan.</li>
+                            <li>Splash-näyttöön latausindikaattori ja pehmeä haalistus; ikoninapeille ruudunlukijatekstit (aria-label).</li>
+                        </ul>
+                        <strong>🛠️ UUTTA v6.54: Ohjesivun korjaus:</strong>
+                        <ul>
+                            <li>Ohjenäkymä jäi tyhjäksi tiedoston latautumisvirheen vuoksi - korjattu, FI/EN-kielivalinnat toimivat.</li>
+                        </ul>
+                        <strong>🎨 UUTTA v6.53: Teemojen siivous ja ammattimaisempi ilme:</strong>
+                        <ul>
+                            <li><strong>Poistettu:</strong> Time Circuit, Pulse HUD ja LCARS -teemat sekä neulamittari - valittavana Digitaalinen, Velocity Stage, Clean Digital ja Digitaalinen + graafit.</li>
+                            <li><strong>Automaattinen tumma/vaalea teema</strong> seuraa puhelimen järjestelmäasetusta; ☀/☾-nappi toimii manuaalisena valintana.</li>
+                            <li><strong>Rajoituksen ylitys -hälytys:</strong> Clean Digital -rengas ja nopeusnumero pulssoivat punaisena ylinopeudella.</li>
+                            <li>Nappivärit yhtenäistetty; tilastokortit kolmeen sarakkeeseen isommilla näytöillä.</li>
+                            <li>Samsung Galaxy S24 Ultra -optimointi: suurempi Clean Digital -lukema ja tarkennetut mobiilimitat.</li>
+                            <li>Vietnaminkielinen ohje poistettu; POI-kehittäjätyökalut piilotettu "Kehittäjätyökalut"-osion taakse.</li>
+                        </ul>
                         <strong>🔆 UUTTA v6.52: Näytön pitäminen päällä -asetus:</strong>
                         <ul>
                             <li>Asetuksiin lisätty <strong>"Pidä näyttö päällä ajon aikana"</strong> -valinta (oletuksena päällä).</li>
@@ -565,9 +588,32 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>✨ NEW in v6.55: Professional polish - SVG icons, stable numbers, accessibility:</strong>
+                        <ul>
+                            <li><strong>All emoji icons replaced with a consistent SVG icon set</strong> in the menu, bottom navigation, buttons and headings - icons follow the accent color and look identical on all devices.</li>
+                            <li><strong>Numbers no longer jump</strong> when values change: tabular-nums on speed, clock, coordinates and statistics.</li>
+                            <li><strong>Font sizes unified</strong> into a clean scale (10/12/14/16/20/24/28/34 px).</li>
+                            <li><strong>Reduced-motion support:</strong> if the phone requests reduced motion, animations and effects are muted.</li>
+                            <li><strong>Offline indicator:</strong> an orange banner appears when the connection drops - drives are stored locally and sync when back online.</li>
+                            <li><strong>Plain-language GPS errors:</strong> e.g. "Location permission denied" instead of raw error text.</li>
+                            <li>Splash screen gained a loading indicator and a smooth fade-out; icon buttons got screen-reader labels (aria-label).</li>
+                        </ul>
+                        <strong>🛠️ NEW in v6.54: Help page fix:</strong>
+                        <ul>
+                            <li>The Help view stayed blank due to a file parse error - fixed, FI/EN language buttons work again.</li>
+                        </ul>
+                        <strong>🎨 NEW in v6.53: Theme cleanup and a more professional look:</strong>
+                        <ul>
+                            <li><strong>Removed:</strong> Time Circuit, Pulse HUD and LCARS themes plus the needle gauge - remaining options: Digital, Velocity Stage, Clean Digital and Digital + graphs.</li>
+                            <li><strong>Automatic light/dark theme</strong> follows the phone's system setting; the sun/moon button works as a manual override.</li>
+                            <li><strong>Speed limit exceeded alert:</strong> the Clean Digital ring and speed number pulse red when over the limit.</li>
+                            <li>Button colors unified; stat cards now use three columns on larger screens.</li>
+                            <li>Samsung Galaxy S24 Ultra optimization: larger Clean Digital readout and refined mobile dimensions.</li>
+                            <li>Vietnamese help removed; POI developer tools hidden behind a "Developer tools" section.</li>
+                        </ul>
                         <strong>🔆 NEW in v6.52: Keep screen on setting:</strong>
                         <ul>
                             <li>Added a <strong>"Keep screen on while driving"</strong> option in Settings (on by default).</li>

@@ -542,15 +542,13 @@ if (mapGpsToggle) {
         
         if(isViewingHistory) {
             // GPS pois päältä kartalla (katselutila)
-            mapGpsToggle.innerText = "📡 OFF";
-            mapGpsToggle.classList.add('inactive');
+            if (typeof window.setGpsToggleState === 'function') window.setGpsToggleState(mapGpsToggle, false);
             if (typeof window.setHistoryMapPoiVisibility === 'function') {
                 window.setHistoryMapPoiVisibility(false);
             }
         } else {
             // GPS päälle kartalla (seurantatila)
-            mapGpsToggle.innerText = "📡 ON";
-            mapGpsToggle.classList.remove('inactive');
+            if (typeof window.setGpsToggleState === 'function') window.setGpsToggleState(mapGpsToggle, true);
             if (typeof window.setHistoryMapPoiVisibility === 'function') {
                 window.setHistoryMapPoiVisibility(true);
             }
@@ -574,9 +572,8 @@ window.showRouteOnMap = (key) => {
     
     // Aktivoi katselutila
     isViewingHistory = true; 
-    if(mapGpsToggle) {
-        mapGpsToggle.innerText = "📡 OFF";
-        mapGpsToggle.classList.add('inactive');
+    if(mapGpsToggle && typeof window.setGpsToggleState === 'function') {
+        window.setGpsToggleState(mapGpsToggle, false);
     }
     if (typeof window.setHistoryMapPoiVisibility === 'function') {
         window.setHistoryMapPoiVisibility(false);
@@ -632,9 +629,8 @@ window.showMultiRouteOnMap = (keys) => {
     clearSavedRoute();
 
     isViewingHistory = true;
-    if(mapGpsToggle) {
-        mapGpsToggle.innerText = "📡 OFF";
-        mapGpsToggle.classList.add('inactive');
+    if(mapGpsToggle && typeof window.setGpsToggleState === 'function') {
+        window.setGpsToggleState(mapGpsToggle, false);
     }
     if (typeof window.setHistoryMapPoiVisibility === 'function') {
         window.setHistoryMapPoiVisibility(false);

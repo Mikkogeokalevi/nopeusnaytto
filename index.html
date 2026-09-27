@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.54</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.55</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,24 +15,65 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.54">
+    <link rel="stylesheet" href="style.css?v=6.55">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <!-- SVG-IKONISPRITE -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none;" aria-hidden="true">
+        <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l4.2-4.2"/><path d="M5 19h14"/></symbol>
+        <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14"/><path d="M15 6v14"/></symbol>
+        <symbol id="i-history" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h4"/></symbol>
+        <symbol id="i-stats" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M7 20v-7"/><path d="M12 20V6"/><path d="M17 20v-10"/></symbol>
+        <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 8h8M18 8h2M4 16h2M10 16h10"/><circle cx="16" cy="8" r="2"/><circle cx="7" cy="16" r="2"/></symbol>
+        <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1.1c0 1.6-2.4 2-2.4 3.2"/><circle cx="12" cy="17" r="0.8" fill="currentColor" stroke="none"/></symbol>
+        <symbol id="i-logout" viewBox="0 0 24 24"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/><path d="M3 12h10"/><path d="M9 8l-4 4 4 4"/></symbol>
+        <symbol id="i-fuel" viewBox="0 0 24 24"><path d="M4 21V6a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v15"/><path d="M3 21h11"/><path d="M13 10h3a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0V9.5a2 2 0 0 0-.6-1.4L19 6.5"/><path d="M7 7h3v4H7z"/></symbol>
+        <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5V5M12 19v2.5M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2.5 12H5M19 12h2.5M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 13.5A8 8 0 0 1 10.5 4 8 8 0 1 0 20 13.5z"/></symbol>
+        <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></symbol>
+        <symbol id="i-record" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5" fill="currentColor" stroke="none"/></symbol>
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9.5 5v14M14.5 5v14"/></symbol>
+        <symbol id="i-play" viewBox="0 0 24 24"><path d="M7.5 4.8 19 12 7.5 19.2z" fill="currentColor" stroke="none"/></symbol>
+        <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor" stroke="none"/></symbol>
+        <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-10.3a6.5 6.5 0 1 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.7" r="2.2"/></symbol>
+        <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M8.5 3v5h7V3"/><path d="M8 21v-7h8v7"/></symbol>
+        <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 7"/></symbol>
+        <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+        <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4.5 19.5l.9-3.8L16.6 4.5a2 2 0 0 1 2.9 2.9L8.3 18.6z"/><path d="M14.5 6.5l3 3"/></symbol>
+        <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l.9 13h9.2l.9-13"/><path d="M10 11v5.5M14 11v5.5"/></symbol>
+        <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/><path d="M9.5 12.5h5M9.5 16h5"/></symbol>
+        <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3.5v11"/><path d="M7.5 10.5 12 15l4.5-4.5"/><path d="M4 20.5h16"/></symbol>
+        <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V3.5"/><path d="M7.5 8 12 3.5 16.5 8"/><path d="M4 20.5h16"/></symbol>
+        <symbol id="i-signal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/><path d="M8.2 8.2a5.4 5.4 0 0 0 0 7.6M15.8 8.2a5.4 5.4 0 0 1 0 7.6M5.2 5.2a9.6 9.6 0 0 0 0 13.6M18.8 5.2a9.6 9.6 0 0 1 0 13.6"/></symbol>
+        <symbol id="i-car" viewBox="0 0 24 24"><path d="M4 16 5.7 10.4A2 2 0 0 1 7.6 8.8h8.8a2 2 0 0 1 1.9 1.6L20 16"/><path d="M4 16h16"/><circle cx="7.5" cy="18" r="1.5"/><circle cx="16.5" cy="18" r="1.5"/></symbol>
+        <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="7.5" width="16" height="12" rx="2"/><path d="M15 13.5h3"/></symbol>
+        <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.4 0 2-.9 1.6-1.9-.4-1.1.3-2.1 1.5-2.1h1.7a3.7 3.7 0 0 0 3.7-3.5c0-5.3-4.2-9.5-8.5-9.5z"/><circle cx="8" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="10" r="1" fill="currentColor" stroke="none"/></symbol>
+        <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+        <symbol id="i-chart-up" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M4 15l5-5 4 4 7-8"/><path d="M15.5 6H20v4.5"/></symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="13" r="7.5"/><path d="M12 9.5V13l2.7 1.8"/><path d="M9.5 2.5h5"/></symbol>
+        <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 20V5"/><path d="M6 11l6-6 6 6"/></symbol>
+        <symbol id="i-offline" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 4-2.7M12 6a10 10 0 0 1 7 2.9M8.5 15.8a5.5 5.5 0 0 1 2-1.3M12 13.2a5.5 5.5 0 0 1 3.4 1.3"/><circle cx="12" cy="18.7" r="1.1" fill="currentColor" stroke="none"/><path d="M4 4l16 16"/></symbol>
+        <symbol id="i-archive" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="4" rx="1"/><path d="M5.5 8v11h13V8"/><path d="M10 12h4"/></symbol>
+        <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M4.5 9a8 8 0 1 1-.5 7"/><path d="M4 4v5h5"/></symbol>
+    </svg>
+
 
     <div id="splash-screen">
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.54...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.55...</p>
+            <div class="splash-spinner" aria-hidden="true"></div>
         </div>
     </div>
 
     <div id="poi-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content" style="max-width:520px; text-align:left;">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
-                <h3 id="poi-modal-title" style="margin:0; color:var(--accent-color);">📍 POI</h3>
-                <button id="btn-poi-modal-close" class="icon-btn" style="width:auto; padding:8px 12px;">✕</button>
+                <h3 id="poi-modal-title" style="margin:0; color:var(--accent-color);"><svg class="svg-icon" aria-hidden="true"><use href="#i-pin"/></svg> POI</h3>
+                <button id="btn-poi-modal-close" class="icon-btn" style="width:auto; padding:8px 12px;" aria-label="Sulje"><svg class="svg-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
             </div>
 
             <input type="hidden" id="poi-modal-id" value="" />
@@ -139,7 +180,7 @@
             </button>
             
             <button id="btn-login-help" class="text-btn" style="margin-top: 20px;">
-                ❓ Lue käyttöohjeet
+                <svg class="svg-icon" aria-hidden="true"><use href="#i-help"/></svg> Lue käyttöohjeet
             </button>
         </div>
     </div>
@@ -149,17 +190,19 @@
         <div class="top-bar-container">
             <div style="display:flex; align-items:center; gap:10px;">
                 <img src="ajopaivakirja_logo.png?v=6.01" class="header-logo" id="app-logo" alt="App Logo" title="Palaa mittaristoon">
-                <select id="car-select" class="top-car-select">
+                <select id="car-select" class="top-car-select" aria-label="Valitse ajoneuvo">
                     <option value="all">Kaikki ajoneuvot</option>
                 </select>
             </div>
             
             <div class="top-buttons">
-                <button id="btn-hud" class="icon-btn" title="HUD-tila" style="font-weight:bold; font-size:14px;">HUD</button>
-                <button id="btn-theme" class="icon-btn" title="Teema">☀/☾</button>
-                <button id="btn-menu-toggle" class="icon-btn menu-btn">☰</button>
+                <button id="btn-hud" class="icon-btn" title="HUD-tila" aria-label="HUD-tila" style="font-weight:bold; font-size:14px;">HUD</button>
+                <button id="btn-theme" class="icon-btn" title="Vaihda teema" aria-label="Vaihda vaalea/tumma teema"><svg class="svg-icon" aria-hidden="true"><use href="#i-sun"/></svg></button>
+                <button id="btn-menu-toggle" class="icon-btn menu-btn" aria-label="Avaa valikko"><svg class="svg-icon" aria-hidden="true"><use href="#i-menu"/></svg></button>
             </div>
         </div>
+
+        <div id="offline-banner" class="offline-banner" style="display:none;" role="status"><svg class="svg-icon" aria-hidden="true"><use href="#i-offline"/></svg> Ei verkkoyhteytt&auml; &ndash; tallennukset odottavat</div>
 
         <div id="main-menu" class="menu-dropdown" style="display: none;">
             <div class="menu-header">
@@ -170,21 +213,21 @@
                 </div>
             </div>
             <div class="menu-items">
-                <button id="nav-dashboard" class="menu-item active-menu">🏎️ Mittaristo</button>
-                <button id="nav-map" class="menu-item">🗺 Kartta</button>
-                <button id="nav-history" class="menu-item">📋 Historia</button>
-                <button id="nav-stats" class="menu-item">📊 Tilastot</button>
-                <button id="nav-settings" class="menu-item">⚙️ Asetukset (Tallit)</button>
-                <button id="nav-help" class="menu-item">❓ Ohjeet / Help</button>
+                <button id="nav-dashboard" class="menu-item active-menu"><svg class="svg-icon" aria-hidden="true"><use href="#i-gauge"/></svg>Mittaristo</button>
+                <button id="nav-map" class="menu-item"><svg class="svg-icon" aria-hidden="true"><use href="#i-map"/></svg>Kartta</button>
+                <button id="nav-history" class="menu-item"><svg class="svg-icon" aria-hidden="true"><use href="#i-history"/></svg>Historia</button>
+                <button id="nav-stats" class="menu-item"><svg class="svg-icon" aria-hidden="true"><use href="#i-stats"/></svg>Tilastot</button>
+                <button id="nav-settings" class="menu-item"><svg class="svg-icon" aria-hidden="true"><use href="#i-settings"/></svg>Asetukset (Tallit)</button>
+                <button id="nav-help" class="menu-item"><svg class="svg-icon" aria-hidden="true"><use href="#i-help"/></svg>Ohjeet / Help</button>
                 <hr class="menu-divider">
-                <button id="btn-logout" class="menu-item logout-item">🚪 Kirjaudu ulos</button>
+                <button id="btn-logout" class="menu-item logout-item"><svg class="svg-icon" aria-hidden="true"><use href="#i-logout"/></svg>Kirjaudu ulos</button>
             </div>
         </div>
 
         <div class="main-content">
             
             <div id="dashboard-view" class="view-section watermark-bg">
-                <div id="side-tap-left" class="side-tap-zone">‹ KARTTA</div>
+                <div id="side-tap-left" class="side-tap-zone" role="button" tabindex="0" aria-label="Avaa karttanäkymä" title="Avaa kartta">‹ KARTTA</div>
 
                 <div id="live-status-bar" class="status-bar" style="opacity: 0;">
                     <span id="live-style-indicator" class="style-badge style-green">Taloudellinen</span>
@@ -196,8 +239,8 @@
                     </div>
                 </div>
 
-                <button id="btn-dashboard-minimal" class="dashboard-toggle-btn" title="Yksinkertaistettu tila">
-                    👁️
+                <button id="btn-dashboard-minimal" class="dashboard-toggle-btn" title="Yksinkertaistettu tila" aria-label="Yksinkertaistettu tila">
+                    <svg class="svg-icon" aria-hidden="true"><use href="#i-eye"/></svg>
                 </button>
 
                 <div class="huge-speed-container">
@@ -284,7 +327,7 @@
                     <div class="stat-card">
                         <span class="stat-label">Suunta</span>
                         <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
-                            <span style="font-size: 20px; display: inline-block; transition: transform 0.2s;" id="compass-arrow">⬆️</span>
+                            <span style="display: inline-flex; transition: transform 0.2s;" id="compass-arrow"><svg class="svg-icon" style="width:20px; height:20px;" aria-hidden="true"><use href="#i-arrow-up"/></svg></span>
                             <span class="stat-value" id="dash-heading" style="font-size: 16px;">--</span>
                         </div>
                     </div>
@@ -330,21 +373,21 @@
                 </div>
                 
                  <div class="address-container" style="text-align: center; margin-top: 5px;">
-                     <div id="dash-address" style="font-size: 13px; font-weight: bold; color: var(--text-color); margin-bottom: 2px;">Odottaa sijaintia...</div>
+                     <div id="dash-address" style="font-size:14px; font-weight: bold; color: var(--text-color); margin-bottom: 2px;">Odottaa sijaintia...</div>
                      <div class="coords-box" id="dash-coords">--° --.---'</div>
                  </div>
                  
                  <div class="time-weather-wrapper">
-                     <button id="btn-dashboard-map-quick" class="icon-btn dashboard-map-quick-btn" title="Näytä mini-kartta">
-                        🗺️
+                     <button id="btn-dashboard-map-quick" class="icon-btn dashboard-map-quick-btn" title="Näytä mini-kartta" aria-label="Näytä mini-kartta">
+                        <svg class="svg-icon" aria-hidden="true"><use href="#i-map"/></svg>
                      </button>
                      <div class="weather-huge" id="dash-weather">--</div>
                      <div class="time-right-col">
                          <div class="clock-box" id="dash-clock">--:--</div>
                          <div class="date-box" id="dash-date">--.--.----</div>
                      </div>
-                     <button id="btn-open-fuel" class="icon-btn dashboard-map-quick-btn" title="Lisää tankkaus">
-                        ⛽
+                     <button id="btn-open-fuel" class="icon-btn dashboard-map-quick-btn" title="Lisää tankkaus" aria-label="Lisää tankkaus">
+                        <svg class="svg-icon" aria-hidden="true"><use href="#i-fuel"/></svg>
                      </button>
                  </div>
 
@@ -361,14 +404,14 @@
                     </div>
                     <div id="map-coords" class="small-coords">--° --.---'</div>
                 </div>
-                <button id="map-gps-toggle" class="map-gps-btn">📡 ON</button>
-                <button id="map-return-btn" class="map-return-btn">🏎️ MITTARISTO</button>
+                <button id="map-gps-toggle" class="map-gps-btn" aria-label="GPS-seuranta päällä/pois"><svg class="svg-icon" aria-hidden="true"><use href="#i-signal"/></svg><span class="gps-label">GPS ON</span></button>
+                <button id="map-return-btn" class="map-return-btn"><svg class="svg-icon" aria-hidden="true"><use href="#i-gauge"/></svg> MITTARISTO</button>
                 <div id="map-legend" class="map-legend" style="display:none;">
                     <span>Hidas</span><div class="legend-gradient"></div><span>Nopea</span>
                 </div>
                 <div id="multi-route-info" class="multi-route-info" style="display:none;">
                     <span id="multi-route-info-text"></span>
-                    <button id="btn-hide-multi-route-info" class="icon-btn" style="width:auto; padding:2px 6px; font-size:12px; background:transparent; color:#fff; margin-left:8px;">✕</button>
+                    <button id="btn-hide-multi-route-info" class="icon-btn" style="width:auto; padding:2px 6px; font-size:12px; background:transparent; color:#fff; margin-left:8px;" aria-label="Piilota"><svg class="svg-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
                 </div>
                 <div id="map"></div>
             </div>
@@ -378,18 +421,18 @@
                 
                 <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px;">
                     <button id="tab-drives" class="action-btn blue-btn" style="width:auto; font-size:14px; padding:8px 15px;">Ajot</button>
-                    <button id="tab-fuel" class="action-btn secondary-btn" style="width:auto; font-size:14px; padding:8px 15px;">⛽ Tankkaukset</button>
+                    <button id="tab-fuel" class="action-btn secondary-btn" style="width:auto; font-size:14px; padding:8px 15px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-fuel"/></svg> Tankkaukset</button>
                 </div>
 
                 <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
-                    <button id="btn-open-report" class="action-btn secondary-btn" style="width:auto; font-size:13px;">📄 Luo Raportti / Vie CSV</button>
-                    <button id="btn-manual-drive" class="action-btn secondary-btn" style="width:auto; font-size:13px;">+ Lisää käsin</button>
+                    <button id="btn-open-report" class="action-btn secondary-btn" style="width:auto; font-size:14px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-doc"/></svg> Luo Raportti / Vie CSV</button>
+                    <button id="btn-manual-drive" class="action-btn secondary-btn" style="width:auto; font-size:14px;">+ Lisää käsin</button>
                 </div>
 
                 <div id="multi-select-bar" style="display:none; justify-content:center; align-items:center; gap:10px; margin-bottom:15px; flex-wrap:wrap; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;">
-                    <span id="multi-select-count" style="font-size:13px; font-weight:bold;">0 valittu</span>
-                    <button id="btn-show-selected-routes" class="action-btn blue-btn" style="width:auto; font-size:13px;">🗺️ Näytä valitut kartalla</button>
-                    <button id="btn-clear-multi-select" class="action-btn secondary-btn" style="width:auto; font-size:13px;">Tyhjennä valinta</button>
+                    <span id="multi-select-count" style="font-size:14px; font-weight:bold;">0 valittu</span>
+                    <button id="btn-show-selected-routes" class="action-btn blue-btn" style="width:auto; font-size:14px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-map"/></svg> Näytä valitut kartalla</button>
+                    <button id="btn-clear-multi-select" class="action-btn secondary-btn" style="width:auto; font-size:14px;">Tyhjennä valinta</button>
                 </div>
 
                 <div id="history-summary" class="summary-box" style="display:none;">
@@ -418,8 +461,8 @@
             <div id="stats-view" class="view-section watermark-bg" style="display:none; overflow-y:auto; padding:20px;">
                 <h2 style="text-align:center; color:var(--accent-color);">Tilastot</h2>
                 <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
-                    <button id="stat-tab-drives" class="action-btn blue-btn" style="width:auto; font-size:14px; padding:8px 15px;">🏎️ Ajotilastot</button>
-                    <button id="stat-tab-fuel" class="action-btn secondary-btn" style="width:auto; font-size:14px; padding:8px 15px;">⛽ Tankkaustilastot</button>
+                    <button id="stat-tab-drives" class="action-btn blue-btn" style="width:auto; font-size:14px; padding:8px 15px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-gauge"/></svg> Ajotilastot</button>
+                    <button id="stat-tab-fuel" class="action-btn secondary-btn" style="width:auto; font-size:14px; padding:8px 15px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-fuel"/></svg> Tankkaustilastot</button>
                 </div>
                 <div style="text-align:center; margin-bottom: 20px;">
                     <select id="stats-time-range" class="subject-input" style="width: auto; font-weight: bold; padding: 8px;">
@@ -430,11 +473,11 @@
                     </select>
                 </div>
                 <div id="stats-drives-container">
-                    <div class="chart-container"><h3 id="label-drive-trend">📈 Kilometrikehitys</h3><canvas id="chart-drive-trend"></canvas></div>
-                    <div class="chart-container" style="margin-top:20px;"><h3 id="label-drive-total">📅 Kilometrit yhteensä</h3><canvas id="chart-drive-monthly"></canvas></div>
-                    <div class="chart-container" style="margin-top:20px;"><h3>⏱️ Keskinopeus (km/h)</h3><canvas id="chart-drive-speed"></canvas></div>
-                    <div class="chart-container" style="margin-top:20px;"><h3>🚗 Ajoneuvojakauma (km)</h3><canvas id="chart-drive-vehicles"></canvas></div>
-                    <div class="chart-container" style="margin-top:20px;"><h3>🏎️ Ajotyyli (KPL)</h3><canvas id="chart-drive-style"></canvas></div>
+                    <div class="chart-container"><h3 id="label-drive-trend"><svg class="svg-icon" aria-hidden="true"><use href="#i-chart-up"/></svg> Kilometrikehitys</h3><canvas id="chart-drive-trend"></canvas></div>
+                    <div class="chart-container" style="margin-top:20px;"><h3 id="label-drive-total"><svg class="svg-icon" aria-hidden="true"><use href="#i-calendar"/></svg> Kilometrit yhteensä</h3><canvas id="chart-drive-monthly"></canvas></div>
+                    <div class="chart-container" style="margin-top:20px;"><h3><svg class="svg-icon" aria-hidden="true"><use href="#i-clock"/></svg> Keskinopeus (km/h)</h3><canvas id="chart-drive-speed"></canvas></div>
+                    <div class="chart-container" style="margin-top:20px;"><h3><svg class="svg-icon" aria-hidden="true"><use href="#i-car"/></svg> Ajoneuvojakauma (km)</h3><canvas id="chart-drive-vehicles"></canvas></div>
+                    <div class="chart-container" style="margin-top:20px;"><h3><svg class="svg-icon" aria-hidden="true"><use href="#i-gauge"/></svg> Ajotyyli (KPL)</h3><canvas id="chart-drive-style"></canvas></div>
                 </div>
                 <div id="stats-fuel-container" style="display:none;">
                     <div class="summary-box" style="margin-bottom:20px;">
@@ -442,10 +485,10 @@
                         <div class="summary-item"><span class="summary-val" id="stat-fuel-gas">0 L</span><span class="summary-label">Bensiini</span></div><div class="summary-sep">|</div>
                         <div class="summary-item"><span class="summary-val" id="stat-fuel-diesel">0 L</span><span class="summary-label">Diesel</span></div>
                     </div>
-                    <div class="chart-container"><h3>⛽ Polttoainejakauma (L)</h3><canvas id="chart-fuel-type"></canvas></div>
-                    <div class="chart-container" style="margin-top:20px;"><h3>💶 Polttoainekulut (€)</h3><canvas id="chart-fuel-monthly"></canvas></div>
-                    <div class="chart-container" style="margin-top:20px;"><h3>📈 Polttoaineen litrahinta (€/l)</h3><canvas id="chart-fuel-trend"></canvas></div>
-                    <div class="chart-container" style="margin-top:20px;"><h3>⛽ Kulut per auto (€)</h3><canvas id="chart-fuel-car"></canvas></div>
+                    <div class="chart-container"><h3><svg class="svg-icon" aria-hidden="true"><use href="#i-fuel"/></svg> Polttoainejakauma (L)</h3><canvas id="chart-fuel-type"></canvas></div>
+                    <div class="chart-container" style="margin-top:20px;"><h3><svg class="svg-icon" aria-hidden="true"><use href="#i-wallet"/></svg> Polttoainekulut (€)</h3><canvas id="chart-fuel-monthly"></canvas></div>
+                    <div class="chart-container" style="margin-top:20px;"><h3><svg class="svg-icon" aria-hidden="true"><use href="#i-chart-up"/></svg> Polttoaineen litrahinta (€/l)</h3><canvas id="chart-fuel-trend"></canvas></div>
+                    <div class="chart-container" style="margin-top:20px;"><h3><svg class="svg-icon" aria-hidden="true"><use href="#i-fuel"/></svg> Kulut per auto (€)</h3><canvas id="chart-fuel-car"></canvas></div>
                 </div>
             </div>
 
@@ -453,7 +496,7 @@
                 <h2 style="text-align:center; color:var(--accent-color);">Asetukset</h2>
                 
                 <div class="help-section" style="margin-bottom: 20px;">
-                    <h3>🎨 Ulkoasu</h3>
+                    <h3><svg class="svg-icon" aria-hidden="true"><use href="#i-palette"/></svg> Ulkoasu</h3>
                     <label style="display:block; margin-bottom:10px;">Korostusväri:</label>
                     <div id="color-picker" class="color-picker-container">
                         <div class="color-option selected" style="background-color:#2979ff;" data-color="#2979ff"></div>
@@ -500,13 +543,13 @@
                         <span>Pidä näyttö päällä ajon aikana</span>
                         <input type="checkbox" id="toggle-keep-screen-on" style="transform: scale(1.5);" checked>
                     </div>
-                    <div style="font-size:11px; color:var(--subtext-color); margin-top:4px; padding-left:2px;">
+                    <div style="font-size:12px; color:var(--subtext-color); margin-top:4px; padding-left:2px;">
                         Käyttää Wake Lock API:a. iPadOS:ssä split-view-tilassa näyttö voi sammua, jos toinen sovellus on aktiivinen.
                     </div>
                 </div>
 
                 <div class="help-section" style="margin-bottom: 20px;">
-                    <h3>💰 Matkalaskutus</h3>
+                    <h3><svg class="svg-icon" aria-hidden="true"><use href="#i-wallet"/></svg> Matkalaskutus</h3>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <span>Hinta per km (€):</span>
                         <input type="number" id="settings-price-per-km" class="subject-input" placeholder="0.57" step="0.01" style="width:100px; text-align:right;">
@@ -515,13 +558,13 @@
                 </div>
 
                 <div class="help-section" style="margin-bottom: 20px;">
-                    <h3>📍 Paikkamerkinnät (POI)</h3>
+                    <h3><svg class="svg-icon" aria-hidden="true"><use href="#i-pin"/></svg> Paikkamerkinnät (POI)</h3>
 
                     <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
                         <button id="btn-poi-add-here" class="action-btn secondary-btn" style="width:auto;">+ Lisää tähän sijaintiin</button>
                         <button id="btn-poi-add-coords" class="action-btn secondary-btn" style="width:auto;">+ Lisää koordinaateilla</button>
                         <button id="btn-poi-add-map" class="action-btn secondary-btn" style="width:auto;">+ Lisää kartalta</button>
-                        <button id="btn-poi-import-cameras" class="action-btn secondary-btn" style="width:auto;">⬆ Tuo nopeuskamerat (CSV/SVC)</button>
+                        <button id="btn-poi-import-cameras" class="action-btn secondary-btn" style="width:auto;"><svg class="svg-icon" aria-hidden="true"><use href="#i-upload"/></svg> Tuo nopeuskamerat (CSV/SVC)</button>
                         <input id="inp-poi-import-cameras" type="file" accept=".csv,.svc,text/csv,text/plain" multiple style="display:none;" />
                     </div>
 
@@ -539,7 +582,7 @@
                             Kun päällä, sovellus näyttää toastina miksi POI (erityisesti nopeuskamera) hylätään (säde/suunta/cooldown/alertEnabled).
                         </div>
                         <div style="display:flex; justify-content:center; margin:10px 0 0 0;">
-                            <button id="btn-poi-debug-log" class="action-btn secondary-btn" style="width:auto;">📋 Debug-loki</button>
+                            <button id="btn-poi-debug-log" class="action-btn secondary-btn" style="width:auto;"><svg class="svg-icon" aria-hidden="true"><use href="#i-doc"/></svg> Debug-loki</button>
                         </div>
                     </details>
 
@@ -637,7 +680,7 @@
                             <option value="reminder">Muistutus</option>
                             <option value="other">Muu</option>
                         </select>
-                        <button id="btn-poi-nearby" class="action-btn secondary-btn" style="width:auto;">📍 Lähimmät</button>
+                        <button id="btn-poi-nearby" class="action-btn secondary-btn" style="width:auto;"><svg class="svg-icon" aria-hidden="true"><use href="#i-pin"/></svg> Lähimmät</button>
                     </div>
 
                     <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
@@ -651,7 +694,7 @@
                 </div>
 
                 <div class="help-section">
-                    <h3>🚘 Kalusto</h3>
+                    <h3><svg class="svg-icon" aria-hidden="true"><use href="#i-car"/></svg> Kalusto</h3>
                     <div id="cars-list" style="margin-bottom: 20px;"><div class="loading">Ladataan...</div></div>
                     <button id="btn-add-car" class="action-btn blue-btn" style="width:100%;">+ Lisää ajoneuvo</button>
                 </div>
@@ -679,38 +722,38 @@
             <div id="rec-controls" style="display:none; flex-direction:column; align-items:center; gap:5px; width: 100%;">
                 
                 <div id="start-buttons-container" style="display:flex; gap:10px; width:100%; justify-content:center;">
-                    <button id="btn-start-rec" class="action-btn green-btn" style="flex:2;">🔴 ALOITA</button>
-                    <button id="btn-goto-history" class="action-btn blue-btn" style="flex:1; white-space:nowrap;">⏯ JATKA</button>
+                    <button id="btn-start-rec" class="action-btn green-btn" style="flex:2;"><svg class="svg-icon" aria-hidden="true"><use href="#i-record"/></svg> ALOITA</button>
+                    <button id="btn-goto-history" class="action-btn blue-btn" style="flex:1; white-space:nowrap;"><svg class="svg-icon" aria-hidden="true"><use href="#i-play"/></svg> JATKA</button>
                 </div>
 
                 <div id="active-rec-btns" style="display:none; width:100%; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                    <button id="btn-pause" class="action-btn yellow-btn" style="flex:1; max-width:170px;">⏸ TAUKO</button>
-                    <button id="btn-resume" class="action-btn blue-btn" style="display:none; flex:1; max-width:170px;">▶ JATKA</button>
-                    <button id="btn-drive-mark" class="action-btn secondary-btn" style="flex:1; max-width:170px;">📌 MERKKAA</button>
-                    <button id="btn-stop-rec" class="action-btn red-btn" style="flex:1; max-width:170px;">⬛ LOPETA</button>
+                    <button id="btn-pause" class="action-btn yellow-btn" style="flex:1; max-width:170px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-pause"/></svg> TAUKO</button>
+                    <button id="btn-resume" class="action-btn blue-btn" style="display:none; flex:1; max-width:170px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-play"/></svg> JATKA</button>
+                    <button id="btn-drive-mark" class="action-btn secondary-btn" style="flex:1; max-width:170px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-pin"/></svg> MERKKAA</button>
+                    <button id="btn-stop-rec" class="action-btn red-btn" style="flex:1; max-width:170px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-stop"/></svg> LOPETA</button>
                 </div>
             </div>
         </div>
 
         <div class="bottom-nav">
             <button class="bottom-nav-item active" id="bot-nav-dashboard">
-                <span class="bottom-nav-icon">🏎️</span>
+                <svg class="bottom-nav-icon svg-icon" aria-hidden="true"><use href="#i-gauge"/></svg>
                 <span>Ajo</span>
             </button>
             <button class="bottom-nav-item" id="bot-nav-map">
-                <span class="bottom-nav-icon">🗺️</span>
+                <svg class="bottom-nav-icon svg-icon" aria-hidden="true"><use href="#i-map"/></svg>
                 <span>Kartta</span>
             </button>
             <button class="bottom-nav-item" id="bot-nav-history">
-                <span class="bottom-nav-icon">📋</span>
+                <svg class="bottom-nav-icon svg-icon" aria-hidden="true"><use href="#i-history"/></svg>
                 <span>Historia</span>
             </button>
             <button class="bottom-nav-item" id="bot-nav-stats">
-                <span class="bottom-nav-icon">📊</span>
+                <svg class="bottom-nav-icon svg-icon" aria-hidden="true"><use href="#i-stats"/></svg>
                 <span>Tilastot</span>
             </button>
             <button class="bottom-nav-item" id="bot-nav-settings">
-                <span class="bottom-nav-icon">⚙️</span>
+                <svg class="bottom-nav-icon svg-icon" aria-hidden="true"><use href="#i-settings"/></svg>
                 <span>Asetukset</span>
             </button>
         </div>
@@ -719,7 +762,7 @@
 
     <div id="save-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
-            <h3 style="margin-top:0; color:var(--accent-color);">💾 Tallenna ajo?</h3>
+            <h3 style="margin-top:0; color:var(--accent-color);"><svg class="svg-icon" aria-hidden="true"><use href="#i-save"/></svg> Tallenna ajo?</h3>
             <div class="modal-summary">
                 <span id="modal-dist">0.0 km</span> • <span id="modal-time">00 min</span>
             </div>
@@ -738,15 +781,15 @@
 
             <input type="text" id="modal-subject" class="subject-input" placeholder="Kirjoita aihe..." style="margin: 15px 0;">
             <div style="display:flex; gap:10px; justify-content:center;">
-                <button id="btn-modal-cancel" class="action-btn secondary-btn" style="width:auto;">❌ Hylkää</button>
-                <button id="btn-modal-save" class="action-btn green-btn" style="width:auto;">✅ Tallenna</button>
+                <button id="btn-modal-cancel" class="action-btn secondary-btn" style="width:auto;"><svg class="svg-icon" aria-hidden="true"><use href="#i-x"/></svg> Hylkää</button>
+                <button id="btn-modal-save" class="action-btn green-btn" style="width:auto;"><svg class="svg-icon" aria-hidden="true"><use href="#i-check"/></svg> Tallenna</button>
             </div>
         </div>
     </div>
 
     <div id="report-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
-            <h3 style="margin-top:0; color:var(--accent-color);">📋 Luo raportti</h3>
+            <h3 style="margin-top:0; color:var(--accent-color);"><svg class="svg-icon" aria-hidden="true"><use href="#i-doc"/></svg> Luo raportti</h3>
             
             <label style="display:block; text-align:left; margin-bottom:5px;">Aikaväli:</label>
             <select id="report-period" class="subject-input" style="margin-bottom:15px;">
@@ -768,20 +811,20 @@
                 <label><input type="radio" name="report-type" value="private"> Vain Oma</label>
             </div>
 
-            <div id="report-preview-stats" style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-bottom:15px; font-size:13px; text-align:left;">
+            <div id="report-preview-stats" style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-bottom:15px; font-size:14px; text-align:left;">
                 Valitse ehdot nähdäksesi yhteenvedon.
             </div>
 
             <div style="display:flex; gap:10px; justify-content:center;">
                 <button id="btn-report-close" class="action-btn secondary-btn" style="width:auto;">Sulje</button>
-                <button id="btn-report-download" class="action-btn green-btn" style="width:auto;">📥 Lataa Excel</button>
+                <button id="btn-report-download" class="action-btn green-btn" style="width:auto;"><svg class="svg-icon" aria-hidden="true"><use href="#i-download"/></svg> Lataa Excel</button>
             </div>
         </div>
     </div>
 
     <div id="edit-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
-            <h3 style="margin-top:0; color:var(--accent-color);">✏️ Muokkaa tietoja</h3>
+            <h3 style="margin-top:0; color:var(--accent-color);"><svg class="svg-icon" aria-hidden="true"><use href="#i-edit"/></svg> Muokkaa tietoja</h3>
             <input type="hidden" id="edit-key">
             
             <div style="margin-bottom:10px; text-align:left;">
@@ -821,7 +864,7 @@
 
     <div id="manual-drive-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
-            <h3 style="margin-top:0; color:var(--accent-color);">📝 Lisää ajo manuaalisesti</h3>
+            <h3 style="margin-top:0; color:var(--accent-color);"><svg class="svg-icon" aria-hidden="true"><use href="#i-edit"/></svg> Lisää ajo manuaalisesti</h3>
             
             <div style="text-align:left; margin-bottom:8px;">
                 <label>Päivämäärä & Aika</label>
@@ -873,7 +916,7 @@
 
     <div id="delete-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
-            <h3 style="margin-top:0; color:#ff4444;">🗑 Poista merkintä?</h3>
+            <h3 style="margin-top:0; color:#ff4444;"><svg class="svg-icon" aria-hidden="true"><use href="#i-trash"/></svg> Poista merkintä?</h3>
             <p style="color:var(--text-color);">Haluatko varmasti poistaa tämän ajon pysyvästi?</p>
             <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
                 <button id="btn-delete-cancel" class="action-btn secondary-btn" style="width:auto;">Peruuta</button>
@@ -884,7 +927,7 @@
 
     <div id="fuel-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
-            <h3 id="fuel-modal-title" style="margin-top:0; color:var(--accent-color);">⛽ Uusi tankkaus</h3>
+            <h3 id="fuel-modal-title" style="margin-top:0; color:var(--accent-color);"><svg class="svg-icon" aria-hidden="true"><use href="#i-fuel"/></svg> Uusi tankkaus</h3>
             <input type="hidden" id="fuel-edit-key">
             <select id="fuel-car-select" class="subject-input" style="margin-bottom:15px; width:100%;"></select>
             <div style="display:flex; gap:10px; margin-bottom:15px;">
@@ -929,8 +972,8 @@
     <div id="poi-debug-log-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content" style="max-width:560px; text-align:left;">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
-                <h3 style="margin:0; color:var(--accent-color);">📋 POI debug -loki</h3>
-                <button id="btn-poi-debug-log-close" class="icon-btn" style="width:auto; padding:8px 12px;">✕</button>
+                <h3 style="margin:0; color:var(--accent-color);"><svg class="svg-icon" aria-hidden="true"><use href="#i-doc"/></svg> POI debug -loki</h3>
+                <button id="btn-poi-debug-log-close" class="icon-btn" style="width:auto; padding:8px 12px;" aria-label="Sulje"><svg class="svg-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
             </div>
             <div style="font-size:12px; color:var(--subtext-color); margin-bottom:10px;">
                 Voit kopioida nämä viestit ja lähettää ne kehittäjälle. Loki sisältää viimeisimmät debug-viestit.
@@ -951,16 +994,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.54"></script>
-    <script src="visuals.js?v=6.54"></script>
-    <script src="ui.js?v=6.54"></script>
-    <script src="auth.js?v=6.54"></script>
-    <script src="map.js?v=6.54"></script>
-    <script src="gps.js?v=6.54"></script>
-    <script src="garage.js?v=6.54"></script>
-    <script src="history.js?v=6.54"></script>
-    <script src="help.js?v=6.54"></script>
+    <script src="globals.js?v=6.55"></script>
+    <script src="visuals.js?v=6.55"></script>
+    <script src="ui.js?v=6.55"></script>
+    <script src="auth.js?v=6.55"></script>
+    <script src="map.js?v=6.55"></script>
+    <script src="gps.js?v=6.55"></script>
+    <script src="garage.js?v=6.55"></script>
+    <script src="history.js?v=6.55"></script>
+    <script src="help.js?v=6.55"></script>
     
-    <script src="app.js?v=6.54"></script>
+    <script src="app.js?v=6.55"></script>
 </body>
 </html>

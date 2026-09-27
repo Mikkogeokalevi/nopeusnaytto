@@ -8,7 +8,7 @@ const themeMediaQuery = window.matchMedia('(prefers-color-scheme: light)');
 
 function applyTheme(mode) {
     document.body.classList.toggle('light-theme', mode === 'light');
-    if (btnTheme) btnTheme.textContent = mode === 'light' ? '☾' : '☀';
+    if (btnTheme) btnTheme.innerHTML = window.uiIcon(mode === 'light' ? 'i-moon' : 'i-sun');
 }
 
 const savedTheme = localStorage.getItem('appTheme');
@@ -42,6 +42,15 @@ if ('serviceWorker' in navigator) {
             });
     });
 }
+
+// Verkkoyhteyden ilmaisin
+const offlineBanner = document.getElementById('offline-banner');
+function updateOnlineState() {
+    if (offlineBanner) offlineBanner.style.display = navigator.onLine ? 'none' : 'flex';
+}
+window.addEventListener('online', updateOnlineState);
+window.addEventListener('offline', updateOnlineState);
+updateOnlineState();
 
 // Tulostetaan versio konsoliin (Hakee APP_VERSION globals.js:stä)
 const ver = (typeof APP_VERSION !== 'undefined') ? APP_VERSION : "Unknown";

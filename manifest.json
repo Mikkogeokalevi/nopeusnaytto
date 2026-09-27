@@ -1,11 +1,15 @@
 {
   "name": "Ajopäiväkirja Pro",
   "short_name": "Ajo Pro",
+  "description": "GPS-nopeusnäyttö ja ajopäiväkirja – reaaliaikainen nopeus, rajoitusvaroitukset, reittien tallennus ja raportointi.",
+  "lang": "fi",
+  "dir": "ltr",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#121212",
-  "theme_color": "#1e1e1e",
+  "theme_color": "#121212",
   "orientation": "any",
+  "categories": ["navigation", "utilities", "travel"],
   "icons": [
     {
       "src": "ajopaivakirja_logo.png",

@@ -216,7 +216,7 @@ body.light-theme .velocity-lane {
 }
 
 .velocity-unit {
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 2.5px;
     text-transform: uppercase;
     color: color-mix(in srgb, var(--hud-primary) 85%, white);
@@ -228,7 +228,7 @@ body.light-theme .velocity-lane {
     margin: 8px auto 10px;
     padding: 3px 12px;
     border-radius: 999px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: 1.8px;
     color: #fff;
@@ -388,7 +388,7 @@ body.light-theme .clean-digital-unit {
 }
 
 .graph-label {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--subtext-color);
     display: block;
 }
@@ -534,7 +534,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .top-car-select {
     background-color: transparent; color: var(--text-color);
     border: 1px solid var(--border-color); border-radius: 20px;
-    padding: 4px 12px; font-size: 13px; font-weight: 600;
+    padding: 4px 12px; font-size: 14px; font-weight: 600;
     max-width: 160px; outline: none;
     transition: border-color 0.3s;
 }
@@ -567,12 +567,12 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border-color);
 }
 .menu-user-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent-color); }
-.menu-user-name { font-weight: bold; font-size: 15px; overflow: hidden; text-overflow: ellipsis; }
+.menu-user-name { font-weight: bold; font-size: 16px; overflow: hidden; text-overflow: ellipsis; }
 
 .menu-items { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
 .menu-item {
     background: none; border: none; color: var(--text-color); text-align: left;
-    padding: 12px 15px; font-size: 15px; cursor: pointer; border-radius: 8px;
+    padding: 12px 15px; font-size: 16px; cursor: pointer; border-radius: 8px;
     transition: background 0.2s, transform 0.1s; display: flex; align-items: center; gap: 10px;
 }
 .menu-item:active { transform: scale(0.98); }
@@ -613,13 +613,13 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 /* LIVE STATUS BAR (ECO) */
 .status-bar {
     display: flex; gap: 15px; align-items: center; justify-content: center;
-    font-size: 13px; color: var(--subtext-color);
+    font-size: 14px; color: var(--subtext-color);
     transition: opacity 0.5s; width: 100%; min-height: 25px;
     flex-shrink: 0; 
 }
 .style-badge {
     padding: 4px 10px; border-radius: 20px; font-weight: bold; border: 1px solid transparent;
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
     transition: all 0.3s;
 }
 .style-green { background-color: rgba(0, 200, 83, 0.15); color: #00c853; border-color: #00c853; box-shadow: 0 0 10px rgba(0,200,83,0.2); }
@@ -736,7 +736,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     align-items: center;
     justify-content: space-between;
     padding: 8px 10px;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.8px;
     text-transform: uppercase;
     color: var(--subtext-color);
@@ -780,9 +780,9 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 .light-theme .stat-card { border: 1px solid rgba(0,0,0,0.05); }
 
-.stat-label { font-size: 9px; color: var(--subtext-color); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1px; display: block; }
+.stat-label { font-size: 10px; color: var(--subtext-color); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1px; display: block; }
 .stat-value { font-size: 20px; font-weight: 700; color: var(--text-color); }
-.stat-unit { font-size: 11px; color: var(--subtext-color); font-weight: normal; }
+.stat-unit { font-size: 12px; color: var(--subtext-color); font-weight: normal; }
 .stat-hint { display: block; margin-top: 3px; font-size: 10px; color: var(--subtext-color); letter-spacing: 0.4px; }
 
 #dash-limit-card .stat-value {
@@ -797,7 +797,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 
 #dash-limit-card .stat-label {
-    font-size: 11px;
+    font-size: 12px;
     margin-bottom: 3px;
 }
 
@@ -806,7 +806,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 }
 
 #dash-limit-card .stat-hint {
-    font-size: 11px;
+    font-size: 12px;
 }
 
 #dash-limit-card.limit-exact .stat-value,
@@ -822,7 +822,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 #dash-limit-card.limit-unknown .stat-value {
     color: var(--subtext-color);
 }
-.coords-box { font-family: 'Roboto Mono', monospace; color: var(--accent-color); font-size: 11px; opacity: 0.8; margin-top: 5px; }
+.coords-box { font-family: 'Roboto Mono', monospace; color: var(--accent-color); font-size: 12px; opacity: 0.8; margin-top: 5px; }
 
 /* TIME & WEATHER */
 .time-weather-wrapper {
@@ -903,7 +903,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     position: absolute; bottom: 145px; right: 15px; z-index: 1001;
     background-color: rgba(30, 30, 30, 0.95); padding: 10px 14px;
     border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    font-size: 13px; color: #fff; display: flex; align-items: center; gap: 8px;
+    font-size: 14px; color: #fff; display: flex; align-items: center; gap: 8px;
     border: 1px solid var(--accent-color, #2979ff);
     max-width: 260px; flex-wrap: wrap;
 }
@@ -934,18 +934,18 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .delete-btn { color: #ef5350; } .edit-btn { color: var(--text-color); opacity: 0.6; } .map-btn { color: #fbc02d; }
 .log-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; text-align: center; }
 .log-stats div { display: flex; flex-direction: column; }
-.log-stats span.stat-label { font-size: 9px; margin-bottom: 2px; }
+.log-stats span.stat-label { font-size: 10px; margin-bottom: 2px; }
 .subject-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.1); color: var(--text-color); font-size: 14px; }
 .subject-input:focus { outline: none; border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.05); }
 
 /* AUTO LISTA */
 #cars-list { width: 100%; max-width: 600px; margin: 0 auto; }
 .car-item { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-.car-details { font-size: 13px; color: var(--subtext-color); margin-top: 4px; }
+.car-details { font-size: 14px; color: var(--subtext-color); margin-top: 4px; }
 .car-title { font-weight: 700; font-size: 16px; color: var(--text-color); display: flex; align-items: center; gap: 8px; }
 .car-actions { display: flex; gap: 5px; }
 .car-icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
-.car-icon-option { font-size: 22px; text-align: center; cursor: pointer; padding: 5px; border: 1px solid var(--border-color); border-radius: 8px; background-color: rgba(255,255,255,0.05); transition: background 0.2s; }
+.car-icon-option { font-size: 24px; text-align: center; cursor: pointer; padding: 5px; border: 1px solid var(--border-color); border-radius: 8px; background-color: rgba(255,255,255,0.05); transition: background 0.2s; }
 .car-icon-option.selected-icon { border-color: var(--accent-color); background-color: rgba(41, 121, 255, 0.2); }
 
 /* TAGIT & SUMMARY */
@@ -968,7 +968,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     box-shadow: 0 -5px 20px rgba(0,0,0,0.2); 
 }
 
-.action-btn { padding: 12px 20px; font-size: 15px; border: none; border-radius: 50px; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 350px; margin: 5px 0; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s, box-shadow 0.2s; background-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(0,0,0,0)); }
+.action-btn { padding: 12px 20px; font-size: 16px; border: none; border-radius: 50px; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 350px; margin: 5px 0; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s, box-shadow 0.2s; background-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(0,0,0,0)); }
 .action-btn:active { transform: scale(0.97); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 .secondary-btn { background-color: #3a3f4a; color: var(--text-color); }
 body.light-theme .secondary-btn { background-color: #dfe3ea; color: #333; }
@@ -1004,7 +1004,7 @@ body.light-theme .secondary-btn { background-color: #dfe3ea; color: #333; }
     animation: fadeInUp 0.3s ease-out; 
 }
 .modal-content select { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--accent-color); border-radius: 8px; }
-.modal-summary { margin-bottom: 20px; font-size: 22px; font-weight: bold; color: var(--text-color); }
+.modal-summary { margin-bottom: 20px; font-size: 24px; font-weight: bold; color: var(--text-color); }
 
 /* --- TOAST ILMOITUKSET --- */
 .toast {
@@ -1054,7 +1054,7 @@ body.light-theme .light-mode-img { display: block; }
 /* G-FORCE & EXTRAS */
 .g-meter-bg { width: 60px; height: 60px; border: 2px solid var(--accent-color); border-radius: 50%; position: relative; background: radial-gradient(circle, rgba(41,121,255,0.1) 0%, rgba(0,0,0,0.5) 100%); box-shadow: 0 0 10px rgba(41, 121, 255, 0.3); }
 .g-bubble { width: 12px; height: 12px; background-color: #fff; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 5px #fff; transition: transform 0.1s ease-out; }
-#dash-address { font-size: 13px; font-weight: bold; color: var(--text-color); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90vw; }
+#dash-address { font-size: 14px; font-weight: bold; color: var(--text-color); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90vw; }
 #compass-arrow { display: inline-block; transition: transform 0.3s cubic-bezier(0.4, 2.5, 0.5, 0.5); }
 
 /* --- VAAKATASO (LANDSCAPE) TUKI --- */
@@ -1100,7 +1100,7 @@ body.light-theme .light-mode-img { display: block; }
     .dashboard-map-quick-btn {
         width: 32px;
         height: 32px;
-        font-size: 15px;
+        font-size: 16px;
     }
     .clock-box { font-size: 24px; }
     .weather-huge { font-size: 24px; }
@@ -1156,7 +1156,7 @@ body.hud-mode #dashboard-view {
 }
 
 body.hud-mode .huge-speed { text-shadow: 0 0 10px #00ff00; }
-body.hud-mode .stat-value { font-size: 26px; font-weight: 900; }
+body.hud-mode .stat-value { font-size: 28px; font-weight: 900; }
 body.hud-mode .stat-card { border: 2px solid #004400; }
 
 /* ========================================= */
@@ -1298,7 +1298,7 @@ body.minimalist-mode #dashboard-view #dash-limit-card {
 
 /* Pienempi teksti päivämäärälle (kompaktissa) */
 #log-list.compact .log-date-line {
-    font-size: 13px !important;
+    font-size: 14px !important;
     color: var(--text-color) !important;
     margin-right: 10px;
 }
@@ -1365,11 +1365,72 @@ body.login-help-active #app-container {
     margin-top: 12px;
     border-top: 1px solid var(--border-color);
     padding-top: 12px;
-    font-size: 13px;
+    font-size: 14px;
 }
 .dev-tools summary {
     cursor: pointer;
     color: var(--subtext-color);
     font-weight: 600;
     user-select: none;
+}
+
+
+/* =========================================================
+   VIIMEISTELY (v6.55): SVG-ikonit, numerojitter, saavutettavuus
+   ========================================================= */
+
+/* SVG-ikonit */
+.svg-icon {
+    width: 1.15em; height: 1.15em;
+    vertical-align: -0.22em;
+    fill: none; stroke: currentColor; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+    flex-shrink: 0;
+}
+.menu-item .svg-icon { width: 19px; height: 19px; }
+svg.bottom-nav-icon { width: 22px; height: 22px; margin-bottom: 2px; }
+.icon-btn .svg-icon { width: 19px; height: 19px; }
+h2 .svg-icon, h3 .svg-icon { width: 0.95em; height: 0.95em; margin-right: 7px; }
+.map-gps-btn { display: inline-flex; align-items: center; gap: 6px; }
+.map-return-btn { display: inline-flex; align-items: center; gap: 6px; }
+#btn-theme { display: inline-flex; align-items: center; justify-content: center; }
+
+/* Tasalevyiset numerot: luvut eivat hypi leveyden vaihdellessa */
+.stat-value, #map-speed, .clock-box, .date-box, .coords-box, .small-coords,
+.summary-val, .dashboard-map-coords, #dash-heading, .weather-huge,
+#status, #fuel-price-calc, #poi-master-volume-value,
+#multi-select-count, .speed-confidence-badge, .modal-summary {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Offline-indikaattori */
+.offline-banner {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 7px 12px;
+    background: #b45309; color: #fff;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+/* Splash: latausspinneri + pehmea haalistus */
+#splash-screen { transition: opacity 0.45s ease; }
+#splash-screen.splash-hide { opacity: 0; pointer-events: none; }
+.splash-spinner {
+    width: 30px; height: 30px; margin: 16px auto 0;
+    border: 3px solid rgba(255,255,255,0.15);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: splashSpin 0.8s linear infinite;
+}
+@keyframes splashSpin { to { transform: rotate(360deg); } }
+
+/* Vahennetty liike: ajoturvallisuus ja saavutettavuus */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .velocity-scanline, .velocity-grid { display: none !important; }
 }

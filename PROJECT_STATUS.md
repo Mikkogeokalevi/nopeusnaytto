@@ -10,17 +10,80 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.52`
+- **Nykyversio:** `v6.55`
 - **Pääpaino juuri nyt:**
+  - Ammattimainen, siisti ulkoasu ajokäyttöön: Clean Digital päänäkymänä, SVG-ikonit, yhtenäinen typografia
   - POI-varoitusten luotettavuus ajossa
   - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
-  - Dashboardin luettavuus ajon aikana (Pulse HUD / Velocity Stage + 5min trenditausta + mini-kartan mobiili/PWA-korjaukset + pikavaihto + live-ajoviiva)
   - Nopeusnäytön luotettavuus (GPS-nopeuden pudotussuodatus + speed-trendin 0-140 asteikko + A/B/C-luottamusindikaattori + cruise-stability)
-  - Historiakartan luettavuus pitkillä reiteillä (POI-pisteet piiloon reittikatselussa)
+  - Saavutettavuus: prefers-reduced-motion, aria-labelit, selkokieliset virhetilat (GPS/offline)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.55 - Ammattimainen viimeistely: SVG-ikonit, numerostabiilius, saavutettavuus
+
+**Mitä muutettiin:**
+1. Kaikki emoji-ikonit korvattu 36-symbolisella SVG-spritellä (`index.html`): valikko, alanavigaatio, yläpalkin napit, modaalit, toimintonapit, otsikot, kompassinuoli.
+2. `window.uiIcon(id)`-apuri `ui.js`:ssä dynaamisille ikoneille; `window.setGpsToggleState(btn, on)` GPS-painikkeen tilanhallintaan (korvasi innerText-muutokset).
+3. `font-variant-numeric: tabular-nums` kaikkiin numeronäyttöihin (nopeus, kello, koordinaatit, stat-arvot) - luvut eivät enää hyppi leveyden mukaan.
+4. Fonttikoot normalisoitu skaalaan 10/12/14/16/20/24/28/34 px (CSS + inline-tyylit).
+5. `@media (prefers-reduced-motion: reduce)` -lohko: animaatiot/siirtymät pois, Velocity Stagen efektit piiloon.
+6. Offline-banneri (`#offline-banner`) näkyy kun `navigator.onLine` on false; kuuntelijat `app.js`:ssä.
+7. GPS-virheet selkokielelle `handleError()`-funktiossa (permission denied / no signal / timeout).
+8. Splash: latausspinneri + 450ms haalistus auth-ratkaisun jälkeen (`auth.js`).
+9. `manifest.json`: description, lang=fi, dir, categories, yhtenäinen theme/background-väri.
+10. aria-labelit ikoninapeille; side-tap-zone sai role/tabindex/title.
+11. PWA- ja julkaisuversiot nostettiin v6.55:een.
+
+**Tiedostot:**
+- `index.html` (SVG-sprite + ikonikorvaukset + aria-labelit + offline-banneri + splash-spinneri)
+- `style.css` (ikonityylit, tabular-nums, offline-banneri, splash-fade, reduced-motion, fonttinormalisointi)
+- `ui.js` (uiIcon/setGpsToggleState-apurit + dynaamisten nappien ikonit)
+- `app.js` (teemaikoni SVG:ksi + online/offline-kuuntelijat)
+- `gps.js` (status-tekstien emojit pois + handleError-uudistus)
+- `map.js` (GPS-toggle helperin kautta)
+- `garage.js` (autolistan nappi-ikonit SVG:ksi)
+- `history.js` (graafiotsikon ikoni)
+- `auth.js` (splash-haalistus)
+- `manifest.json`
+- `globals.js`, `sw.js`, `help.js` (versio + changelog)
+
+---
+
+### v6.54 - Ohjesivun tyhjä näkymä korjattu
+
+**Mitä muutettiin:**
+1. Korjattu `help.js`:n changelog-teksteissä ollut karkurbacktick (`.env` tekstin seassa), joka kaatoi koko tiedoston evaluoinnin - `renderHelp` ei rekisteröitynyt ja ohjenäkymä jäi tyhjäksi. Sama vika FI- ja EN-osioissa.
+2. `ui.js`:n ohjenapin kutsu eksplisiittiseksi `window.renderHelp('fi')`.
+3. PWA- ja julkaisuversiot nostettiin v6.54:ään.
+
+**Tiedostot:**
+- `help.js`
+- `ui.js`
+- `globals.js`, `sw.js`, `index.html` (versioputki)
+
+---
+
+### v6.53 - Teemojen siivous, automaattinen teema, S24 Ultra -optimointi
+
+**Mitä muutettiin:**
+1. Poistettu kokonaan: Time Circuit, Pulse HUD, LCARS -teema (`style-lcars.css` poistettu) ja neulamittari. Jäljelle: Digitaalinen, Velocity Stage, Clean Digital, Digitaalinen + graafit.
+2. Automaattinen tumma/vaalea teema `prefers-color-scheme`:n mukaan; ☀/☾-nappi manuaaliseksi ohitukseksi (tallentuu localStorageen).
+3. Rajoituksen ylitys -hälytys Clean Digitaliin (rengas + numero punaisena) ja digitaaliseen näkymään.
+4. Nappivärit yhtenäistetty `.secondary-btn`-luokkaan; stats-grid 3 sarakkeeseen >380px näytöillä.
+5. S24 Ultra -optimointi: breakpoint 420px -> 480px, Clean Digital rengas/lukema suuremmaksi.
+6. Vietnaminkielinen ohje poistettu; ohjekielet FI/EN.
+7. POI-kehittäjätyökalut "Kehittäjätyökalut" `<details>`-osion taakse.
+8. Kuollut CSS (route-background, weather-animation, pulse-jäänteet) poistettu.
+9. PWA- ja julkaisuversiot nostettiin v6.53:aan.
+
+**Tiedostot:**
+- `index.html`, `style.css`, `visuals.js`, `ui.js`, `app.js`, `help.js`, `globals.js`, `sw.js`
+- `style-lcars.css` (poistettu)
+
+---
 
 ### v6.52 - WakeLock-parannukset ja näytön pitämisen asetus
 
@@ -303,7 +366,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 - `auth.js`
   - kirjautuminen, käyttäjätilan vaihdot, datan ensilataus
 - `help.js`
-  - 3-kielinen ohjesisältö + changelog
+  - FI/EN-ohjesisältö + changelog
 - `sw.js`
   - offline-cache + päivitysstrategia
 
@@ -335,7 +398,7 @@ Jokaisessa shipattavassa muutoksessa:
 1. Päivitä `APP_VERSION` (`globals.js`)
 2. Päivitä `CACHE_NAME` (`sw.js`)
 3. Päivitä script queryt `?v=...` (`index.html`)
-4. Päivitä changelog/ohjeet (`help.js`, FI/EN/VI)
+4. Päivitä changelog/ohjeet (`help.js`, FI/EN)
 5. Päivitä tämä tiedosto (`PROJECT_STATUS.md`)
 6. Testaa mobiilissa (vähintään yksi PWA-asennus)
 

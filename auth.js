@@ -4,9 +4,10 @@
 
 // Kuunnellaan kirjautumistilan muutoksia
 auth.onAuthStateChanged((user) => {
-    // Piilotetaan latausruutu viiveellä
+    // Piilotetaan latausruutu pehmeällä haalistuksella kun auth-tila ratkennut
     if (splashScreen) {
-        setTimeout(() => { splashScreen.style.display = 'none'; }, 1000);
+        splashScreen.classList.add('splash-hide');
+        setTimeout(() => { splashScreen.style.display = 'none'; }, 500);
     }
 
     if (user) {

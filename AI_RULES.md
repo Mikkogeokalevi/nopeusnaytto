@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.52 (wakeLock-parannukset + näytön pitämisen asetus)
+**Versio:** v6.55 (SVG-ikonit + pro-viimeistely + teemasiivous)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -24,7 +24,7 @@ Tavoite: uusi sessio pääsee nopeasti "kärryille" ilman koko koodikannan kahla
 
 **Sovelluksen tarkoitus:**
 - GPS-pohjainen nopeusnäyttö ja ajopäiväkirja
-- Reaaliaikainen nopeusmittari (digi/neula/graafit)
+- Reaaliaikainen nopeusmittari (Digitaalinen / Velocity Stage / Clean Digital / Digitaalinen + graafit)
 - Ajoneuvokaluston hallinta
 - Polttoainekulutusten seuranta
 - Tilastot ja raportointi
@@ -45,7 +45,7 @@ Tavoite: uusi sessio pääsee nopeasti "kärryille" ilman koko koodikannan kahla
 - **Leaflet.js** - kartat
 - **Chart.js** - graafit ja tilastot
 - **Firebase** - autentikointi ja tietokanta
-- **Canvas API** - neulanenmittari
+- **Canvas API** - live-graafit
 
 ### **Tiedostorakenne:**
 ```
@@ -63,29 +63,32 @@ nopeusnaytto-main/
 ├── map.js              # Karttatoiminnot
 ├── garage.js           # Ajoneuvotietokanta
 ├── history.js          # Ajohistoria ja raportit
-├── help.js             # KATTAVAT OHJEET (3 kieltä)
-├── fuel.js             # Tankkaustiedot
+├── help.js             # KATTAVAT OHJEET (FI/EN)
+├── fuel.js             # Tankkaustiedot (legacy, ei ladattuna)
 ├── .env                # API-avaimet (EI GITHUBIIN)
 ├── .gitignore          # Git-säännöt
 ├── varmuuskopioi.bat   # Varmuuskopiointiskripti
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.46):**
+### **Nykyinen tilanne (v6.55):**
+- Ulkoasu: teemat siivottu - jäljellä Digitaalinen / Velocity Stage / Clean Digital / Digitaalinen + graafit (LCARS, Time Circuit, Pulse HUD ja neulamittari poistettu v6.53)
+- Ikonit: yhtenäinen SVG-sprite (36 symbolia), ei emoji-ikoneja UI-chromessa; `window.uiIcon(id)` dynaamisille ikoneille
+- Näytöt: `tabular-nums` kaikissa lukemissa; fonttiskaala 10/12/14/16/20/24/28/34 px
+- Teema: automaattinen vaalea/tumma `prefers-color-scheme`:n mukaan + manuaalinen ☀/☾-ohitus
+- Saavutettavuus: `prefers-reduced-motion` -tuki, aria-labelit ikoninapeissa
+- Virhetilat: selkokieliset GPS-virheet + offline-banneri (navigator.onLine)
 - POI-varoitukset: herkkyystilat + confidence + regressiotesti + re-arm
-- Dashboard: Pulse HUD + Velocity Stage + taustan 5min trendikäyrät + mini-kartan mobiili/PWA-korjaukset + pikavaihtonappi + live-ajoviiva
 - Pyörätila: Velocity Stage auto-aktivointi + pyöräkohtainen trendi/stage-skaala (0–60) + mini-kartan pyöräzoom/väritys
 - Pyörä/kävely: nopeusrajoituskortti piiloon + tiekohtainen rajoitushaku pois + nopeuskamerahälytykset estettynä
 - Karttatasot: pyörätilassa oletuksena Maastokartta (CyclOSM-pohjainen pyöräilykartta poistettu)
-- Julkaisuputki: HTML/CSS/scriptit/APP_VERSION/Service Worker cache yhtenäistetty versioon v6.46
 - Firebase: selainkonfiguraatio alustetaan deterministisesti ilman myöhäistä `.env`-hakua
 - Regressiotestit: debug-loki ajaa POI- ja GPS-nopeustestit; POI-testi käyttää eristettyä GPS-tarkkuutta ja testit palauttavat globaalin tilan
-- Isokartan karttatasovalitsin siirretty vasempaan yläkulmaan + klikattavuusvahvistus (ei enää GPS-napin alla)
 - Pyörätilan auto-vaihto maastokarttaan on transition-only (ei ylikirjoita käsin valittua tasoa)
 - Nopeusmittari: fallback-liikenopeus + drop-guard + A/B/C-luottamusindikaattori + cruise-stability (50–90 km/h)
 - Historiakartta: reittikatselussa POI-layer piilotetaan selkeyden vuoksi ja palautetaan poistuttaessa katselusta
-- Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus
-- POI-toast: nostettu ylemmäs ettei peitä nopeuslukemaa
+- Nopeusrajoitus: OSM/Overpass + tie-ehdokkaan pisteytys (etäisyys/suunta/tieluokka) + vakautus + ylityshälytys Clean Digitaliin
+- Ohjekielet: FI/EN (vietnam poistettu v6.53)
 
 ---
 
@@ -103,13 +106,35 @@ nopeusnaytto-main/
 
 ### **Versionhallinta:**
 1. **APP_VERSION** globals.js:ssä
-2. **Versiohistoria** help.js:ssä (3 kielellä)
+2. **Versiohistoria** help.js:ssä (FI/EN)
 3. **Service Worker** päivitetään jokaisella versiolla (CACHE_NAME + sw.js?v=APP_VERSION)
 4. **PROJECT_STATUS.md** päivitetään jokaisen merkittävän muutoksen yhteydessä
 
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.55 - Ammattimainen viimeistely**
+- ✅ Emoji-ikonit korvattu 36-symbolisella SVG-spritellä (valikko, navit, napit, otsikot, modaalit)
+- ✅ `tabular-nums` kaikkiin numeronäyttöihin + fonttiskaala yhtenäistetty
+- ✅ `prefers-reduced-motion`-tuki + aria-labelit ikoninapeille
+- ✅ Offline-banneri + selkokieliset GPS-virheet
+- ✅ Splash: latausindikaattori + pehmeä haalistus
+- ✅ `manifest.json` viilattu (description, lang, categories)
+- ✅ PWA-versionosto tehty v6.55
+
+### **v6.54 - Ohjesivun korjaus**
+- ✅ Karkurbacktick help.js:n changelog-tekstissä kaatoi tiedoston evaluoinnin -> tyhjä ohjenäkymä
+- ✅ Korjattu FI+EN-osioista; `window.renderHelp` eksplisiittiseksi ui.js:ssä
+- ✅ PWA-versionosto tehty v6.54
+
+### **v6.53 - Teemasiivous + automaattinen teema + S24 Ultra**
+- ✅ Poistettu Time Circuit, Pulse HUD, LCARS (`style-lcars.css`) ja neulamittari
+- ✅ Automaattinen vaalea/tumma teema + manuaalinen ohitus
+- ✅ Ylinopeushälytys Clean Digitaliin; nappivärit ja stats-grid yhtenäistetty
+- ✅ S24 Ultra -optimointi (480px breakpoint, isommat lukemat)
+- ✅ Vietnam poistettu ohjekielistä; POI-dev-työkalut details-osion taakse
+- ✅ PWA-versionosto tehty v6.53
 
 ### **v6.52 - WakeLock-parannukset ja näytön pitämisen asetus**
 - ✅ Lisätty asetus "Pidä näyttö päällä ajon aikana" (oletuksena päällä)
@@ -341,7 +366,7 @@ nopeusnaytto-main/
 
 ### **AINAKIN:**
 1. **Päivitä APP_VERSION** globals.js:ssä
-2. **Lisää versiohistoria** help.js:ään (3 kielellä)
+2. **Lisää versiohistoria** help.js:ään (FI/EN)
 3. **Päivitä sw.js** Service Worker
 4. **Päivitä PROJECT_STATUS.md** ("viimeisin muutos" + nykytila)
 5. **Testaa** mobiilissa
@@ -394,9 +419,11 @@ Marker-objekti:
 
 ## 🔄 **TYÖNKULKU PÄIVITYKSISSÄ**
 
+Tämä paketti tehdään **aina kun APP_VERSION nousee** - ei vain "julkaisuissa":
+
 1. **Tee muutokset** koodiin
-2. **Päivitä versio** (globals.js)
-3. **Päivitä help.js** (versiohistoria)
+2. **Päivitä versio** (globals.js `APP_VERSION` + index.html `?v=`-tunnisteet, title, splash)
+3. **Päivitä help.js** (versiohistoria FI+EN + section-titlen versiolista)
 4. **Päivitä sw.js** (uusi cache-versio / CACHE_NAME)
 5. **Päivitä PROJECT_STATUS.md** (mitä muuttui, miksi, mihin tiedostoihin)
 6. **Testaa** toiminnallisuus
@@ -432,49 +459,43 @@ Marker-objekti:
 
 ---
 
-## 🌐 **KIELITUKI (3 KIELTÄ)**
+## 🌐 **KIELITUKI (2 KIELTÄ)**
 
 ### **help.js-rakenne:**
 ```javascript
-{
-  title: { fi: "...", en: "...", vn: "..." },
-  content: { fi: "...", en: "...", vn: "..." }
+helpData = {
+  fi: { title: "Käyttöopas", sections: [{ title: "...", content: `...html...` }] },
+  en: { title: "User Guide", sections: [...] }
 }
 ```
 
 ### **Kielikoodit:**
-- **fi** - suomi
-- **en** - englanti  
-- **vn** - vietnam
+- **fi** - suomi (oletus)
+- **en** - englanti
 
 ### **ÄLÄ KOSKAAN:**
 - **Lyhennä ohjeita**
 - **Tiivistä sisältöä**
-- **Jätä kieliä puuttumaan**
+- **Jätä kieliä puuttumaan** (FI/EN aina molemmat)
+- **Käytä karkurbacktickeja** help.js:n HTML-templateissa - rikkovat koko tiedoston evaluoinnin (v6.54-bugi)
 
 ---
 
 ## 📊 **VERSIOHISTORIAN MUOTO**
 
 ### **help.js:**
-```javascript
-const VERSION_HISTORY = [
-  {
-    version: "6.14",
-    date: "2026-02-03",
-    title: {
-      fi: "Animoitu nopeusmittari & Live-graafit",
-      en: "Animated Speedometer & Live Graphs", 
-      vn: "Đồng hồ tốc độ động & Đồ thị trực tiếp"
-    },
-    features: [
-      { fi: "Neulanenmittari Canvas-pohjaisena", en: "Needle speedometer with Canvas", vn: "Đồng hồ tốc độ kim loại dựa trên Canvas" },
-      // ... lisää ominaisuudet kaikilla kielillä
-    ]
-  }
-  // ... vanhemmat versiot
-];
+Changelog on `sections[0]` (`title: "🚀 1. Uutta/New (...)"`) - uusi versio lisätään
+`<div class="help-step">`-lohkon alkuun HTML-muodossa:
+
+```html
+<strong>✨ UUTTA vX.YY: Otsikko:</strong>
+<ul>
+    <li><strong>Ominaisuus:</strong> kuvaus.</li>
+</ul>
 ```
+
+Muista päivittää myös section-titlen versiolista `(vX.YY, ...)`. Sama merkintä
+EN-osioon (`NEW in vX.YY:`). **Älä käytä backtickeja HTML-sisällössä.**
 
 ---
 

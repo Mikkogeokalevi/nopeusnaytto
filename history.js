@@ -839,7 +839,7 @@ function renderDriveStats() {
     });
 
     const moneyHeader = document.getElementById('label-drive-trend'); 
-    if(moneyHeader) moneyHeader.innerHTML = `📈 Kilometrikehitys <span style="font-size:12px; color:#00e676; display:block; margin-top:5px;">(Arvioidut korvaukset: ${totalEstimatedEuros.toFixed(2)} €)</span>`;
+    if(moneyHeader) moneyHeader.innerHTML = `${window.uiIcon('i-chart-up')} Kilometrikehitys <span style="font-size:12px; color:#00e676; display:block; margin-top:5px;">(Arvioidut korvaukset: ${totalEstimatedEuros.toFixed(2)} €)</span>`;
 
     const labels = Object.keys(timeData); 
     const values = Object.values(timeData).map(v => v.toFixed(1));

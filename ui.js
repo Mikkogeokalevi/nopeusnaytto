@@ -29,6 +29,19 @@ const menuVersionEl = document.getElementById('menu-version-el');
 const sideTapLeft = document.getElementById('side-tap-left');
 const mapReturnBtn = document.getElementById('map-return-btn');
 
+// SVG-ikoniapuri (sprite index.html:ssä)
+window.uiIcon = (id) => `<svg class="svg-icon" aria-hidden="true"><use href="#${id}"></use></svg>`;
+const uiIcon = window.uiIcon;
+
+// GPS-painikkeen tilan päivitys (säilyttää SVG-ikonin)
+window.setGpsToggleState = (btn, on) => {
+    if (!btn) return;
+    const label = btn.querySelector('.gps-label');
+    if (label) label.textContent = on ? 'GPS ON' : 'GPS OFF';
+    else btn.innerText = on ? 'GPS ON' : 'GPS OFF';
+    btn.classList.toggle('inactive', !on);
+};
+
 // Näkymät
 const views = {
     dashboard: document.getElementById('dashboard-view'),
@@ -253,8 +266,9 @@ function setDashboardMapMode(enable) {
     if (dashboardMapWindowEl) dashboardMapWindowEl.style.display = isOn ? 'flex' : 'none';
     if (toggleDashboardMap) toggleDashboardMap.checked = isOn;
     if (btnDashboardMapQuick) {
-        btnDashboardMapQuick.textContent = isOn ? '📊' : '🗺️';
+        btnDashboardMapQuick.innerHTML = uiIcon(isOn ? 'i-stats' : 'i-map');
         btnDashboardMapQuick.title = isOn ? 'Näytä stats-ruudut' : 'Näytä mini-kartta';
+        btnDashboardMapQuick.setAttribute('aria-label', btnDashboardMapQuick.title);
         btnDashboardMapQuick.setAttribute('aria-pressed', isOn ? 'true' : 'false');
         btnDashboardMapQuick.classList.toggle('active', isOn);
     }
@@ -611,7 +625,7 @@ function renderPoiList() {
         btnGroup.style.gap = '10px';
 
         const btnCenter = document.createElement('button');
-        btnCenter.innerText = '🗺️';
+        btnCenter.innerHTML = uiIcon('i-map');
         btnCenter.title = 'Näytä kartalla';
         btnCenter.className = 'icon-btn';
         btnCenter.onclick = () => {
@@ -620,13 +634,13 @@ function renderPoiList() {
         };
 
         const btnEdit = document.createElement('button');
-        btnEdit.innerText = '✏️';
+        btnEdit.innerHTML = uiIcon('i-edit');
         btnEdit.title = 'Muokkaa';
         btnEdit.className = 'icon-btn';
         btnEdit.onclick = () => openPoiEditor(poi);
 
         const btnDel = document.createElement('button');
-        btnDel.innerText = '🗑';
+        btnDel.innerHTML = uiIcon('i-trash');
         btnDel.title = 'Poista';
         btnDel.className = 'icon-btn';
         btnDel.style.color = '#ff4444';
@@ -656,7 +670,7 @@ function openPoiEditor(existingPoi = null, fixedCoords = null) {
     }
 
     const isEdit = !!existingPoi && !!existingPoi.id;
-    if (poiModalTitleEl) poiModalTitleEl.innerText = isEdit ? '📍 Muokkaa POI' : '📍 Lisää POI';
+    if (poiModalTitleEl) poiModalTitleEl.innerHTML = uiIcon('i-pin') + ' ' + (isEdit ? 'Muokkaa POI' : 'Lisää POI');
     if (poiModalIdEl) poiModalIdEl.value = isEdit ? existingPoi.id : '';
 
     const type = String(existingPoi?.type || 'speedcamera').trim().toLowerCase();
@@ -1287,7 +1301,7 @@ if (btnOpenFuel) {
         if(inpFuelEuros) inpFuelEuros.value = "";
         if(inpFuelCalc) inpFuelCalc.innerText = "0.00";
         if(inpFuelEditKey) inpFuelEditKey.value = ""; 
-        if(fuelModalTitle) fuelModalTitle.innerText = "⛽ Uusi tankkaus";
+        if(fuelModalTitle) fuelModalTitle.innerHTML = uiIcon('i-fuel') + ' Uusi tankkaus';
         const targetId = (currentCarId !== 'all' && currentCarId !== 'all_archived') ? currentCarId : null;
         populateFuelCarSelect(targetId);
         if(fuelModal) fuelModal.style.display = 'flex';
@@ -1314,7 +1328,7 @@ window.editRefueling = (key) => {
     if(inpFuelEuros) inpFuelEuros.value = ref.euros || "";
     if(inpFuelCalc) inpFuelCalc.innerText = ref.pricePerLiter || "0.00";
     if(inpFuelEditKey) inpFuelEditKey.value = key; 
-    if(fuelModalTitle) fuelModalTitle.innerText = "✏️ Muokkaa tankkausta";
+    if(fuelModalTitle) fuelModalTitle.innerHTML = uiIcon('i-edit') + ' Muokkaa tankkausta';
     populateFuelCarSelect(ref.carId);
     if(fuelModal) fuelModal.style.display = 'flex';
 };

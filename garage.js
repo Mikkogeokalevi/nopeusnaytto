@@ -243,20 +243,20 @@ function renderCarCard(car, container, isArchived) {
     btnGroup.style.gap = '10px';
 
     const editBtn = document.createElement('button');
-    editBtn.innerText = "✏️";
+    editBtn.innerHTML = window.uiIcon('i-edit');
     editBtn.className = "icon-btn";
     editBtn.style.border = "1px solid var(--border-color)";
     editBtn.onclick = () => openEditCar(car);
     
     const archiveBtn = document.createElement('button');
-    archiveBtn.innerText = isArchived ? "♻️" : "🗄️"; 
+    archiveBtn.innerHTML = window.uiIcon(isArchived ? 'i-refresh' : 'i-archive'); 
     archiveBtn.title = isArchived ? "Palauta käyttöön" : "Arkistoi (piilota)";
     archiveBtn.className = "icon-btn";
     archiveBtn.style.border = "1px solid var(--border-color)";
     archiveBtn.onclick = () => toggleCarArchive(car.id, !isArchived);
 
     const delBtn = document.createElement('button');
-    delBtn.innerText = "🗑";
+    delBtn.innerHTML = window.uiIcon('i-trash');
     delBtn.className = "icon-btn";
     delBtn.style.color = "#ff4444";
     delBtn.style.borderColor = "#ff4444";

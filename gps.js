@@ -883,9 +883,8 @@ function startRecordingSession(isContinue = false) {
         silentAudio.play().catch(e => console.warn(e));
     }
     
-    if(mapGpsToggle) {
-        mapGpsToggle.innerText = "📡 ON";
-        mapGpsToggle.classList.remove('inactive');
+    if(mapGpsToggle && typeof window.setGpsToggleState === 'function') {
+        window.setGpsToggleState(mapGpsToggle, true);
     }
 
     // Jos kyseessä on UUSI ajo (ei jatkettu), nollataan globaalit
@@ -937,7 +936,7 @@ function startRecordingSession(isContinue = false) {
     if (btnResume) btnResume.style.display = 'none';
     
     if(statusEl) {
-        statusEl.innerText = isContinue ? "🔴 JATKETAAN AJOA" : "🔴 TALLENNETAAN";
+        statusEl.innerText = isContinue ? "JATKETAAN AJOA" : "TALLENNETAAN";
         statusEl.style.color = "#ff4444";
     }
     
@@ -1018,7 +1017,7 @@ if (btnPause) {
         btnPause.style.display = 'none';
         btnResume.style.display = 'inline-block';
         if(statusEl) {
-            statusEl.innerText = "⏸ TAUKO";
+            statusEl.innerText = "TAUKO";
             statusEl.style.color = "#fbc02d";
         }
         saveCrashData(); // Tallenna tila myös tauolla
@@ -1039,7 +1038,7 @@ if (btnResume) {
         btnResume.style.display = 'none';
         btnPause.style.display = 'inline-block';
         if(statusEl) {
-            statusEl.innerText = currentDriveId ? "🔴 JATKETAAN AJOA" : "🔴 TALLENNETAAN";
+            statusEl.innerText = currentDriveId ? "JATKETAAN AJOA" : "TALLENNETAAN";
             statusEl.style.color = "#ff4444";
         }
         timerInterval = setInterval(updateTimer, 1000);
@@ -2095,8 +2094,16 @@ function getCardinalDirection(angle) {
     return directions[Math.round(angle / 45) % 8];
 }
 
-function handleError(e) { 
-    if(statusEl) statusEl.innerText = "GPS Virhe: " + e.message; 
+function handleError(e) {
+    let msg;
+    switch (e && e.code) {
+        case 1: msg = "Sijainnin käyttö estetty - salli sijainti selaimen asetuksista"; break;
+        case 2: msg = "GPS-signaalia ei saatavilla - siirry avoimempaan paikkaan"; break;
+        case 3: msg = "GPS-haun aikakatkaisu - yritetään uudelleen"; break;
+        default: msg = "GPS-virhe: " + ((e && e.message) ? e.message : "tuntematon");
+    }
+    if (statusEl) statusEl.innerText = msg;
+    if (typeof showToast === 'function' && e && e.code === 1) showToast(msg);
 }
 
 // TALLENNUSLOGIIKKA (PÄIVITETTY v6.05)
@@ -2261,12 +2268,12 @@ function restoreDrive(data) {
         pauseStartTime = data.pauseStartTime ? new Date(data.pauseStartTime) : new Date();
         if(btnPause) btnPause.style.display = 'none';
         if(btnResume) btnResume.style.display = 'inline-block';
-        if(statusEl) { statusEl.innerText = "⏸ TAUKO (PALAUTETTU)"; statusEl.style.color = "#fbc02d"; }
+        if(statusEl) { statusEl.innerText = "TAUKO (PALAUTETTU)"; statusEl.style.color = "#fbc02d"; }
     } else {
         isPaused = false;
         if(btnPause) btnPause.style.display = 'inline-block';
         if(btnResume) btnResume.style.display = 'none';
-        const statusText = currentDriveId ? "🔴 JATKETAAN AJOA (PALAUTETTU)" : "🔴 TALLENNETAAN (PALAUTETTU)";
+        const statusText = currentDriveId ? "JATKETAAN AJOA (PALAUTETTU)" : "TALLENNETAAN (PALAUTETTU)";
         if(statusEl) { statusEl.innerText = statusText; statusEl.style.color = "#ff4444"; }
         timerInterval = setInterval(updateTimer, 1000);
     }
