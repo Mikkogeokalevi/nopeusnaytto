@@ -1045,8 +1045,9 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         if (Math.abs(spd) >= 100) dashSpeedEl.classList.add('three-digits');
         else dashSpeedEl.classList.remove('three-digits');
         
-        if (spd >= 120) dashSpeedEl.style.color = '#ff1744'; 
-        else dashSpeedEl.style.color = ''; 
+        const lim = dashSpeedLimitEl ? Number(dashSpeedLimitEl.textContent) : 0;
+        if (spd >= 120 || (lim > 0 && spd > lim)) dashSpeedEl.style.color = '#ff1744';
+        else dashSpeedEl.style.color = '';
     }
 
     // --- KÄVELY-TILA (Walking Mode) ---
@@ -1536,16 +1537,16 @@ const historyFuelList = document.getElementById('fuel-list');
 
 if(tabDrives && tabFuel) {
     tabDrives.addEventListener('click', () => {
-        tabDrives.classList.add('blue-btn'); tabDrives.style.backgroundColor = '';
-        tabFuel.classList.remove('blue-btn'); tabFuel.style.backgroundColor = '#333';
+        tabDrives.classList.add('blue-btn'); tabDrives.classList.remove('secondary-btn');
+        tabFuel.classList.remove('blue-btn'); tabFuel.classList.add('secondary-btn');
         historyDrivesList.style.display = 'block';
         historyFuelList.style.display = 'none';
         if(window.renderHistoryList) window.renderHistoryList();
     });
 
     tabFuel.addEventListener('click', () => {
-        tabFuel.classList.add('blue-btn'); tabFuel.style.backgroundColor = '';
-        tabDrives.classList.remove('blue-btn'); tabDrives.style.backgroundColor = '#333';
+        tabFuel.classList.add('blue-btn'); tabFuel.classList.remove('secondary-btn');
+        tabDrives.classList.remove('blue-btn'); tabDrives.classList.add('secondary-btn');
         historyDrivesList.style.display = 'none';
         historyFuelList.style.display = 'block';
         if(window.renderFuelList) window.renderFuelList();
@@ -1559,16 +1560,16 @@ const statsFuelCont = document.getElementById('stats-fuel-container');
 
 if(statTabDrives && statTabFuel) {
     statTabDrives.addEventListener('click', () => {
-        statTabDrives.classList.add('blue-btn'); statTabDrives.style.backgroundColor = '';
-        statTabFuel.classList.remove('blue-btn'); statTabFuel.style.backgroundColor = '#333';
+        statTabDrives.classList.add('blue-btn'); statTabDrives.classList.remove('secondary-btn');
+        statTabFuel.classList.remove('blue-btn'); statTabFuel.classList.add('secondary-btn');
         statsDrivesCont.style.display = 'block';
         statsFuelCont.style.display = 'none';
         if(window.renderDriveStats) window.renderDriveStats();
     });
 
     statTabFuel.addEventListener('click', () => {
-        statTabFuel.classList.add('blue-btn'); statTabFuel.style.backgroundColor = '';
-        statTabDrives.classList.remove('blue-btn'); statTabDrives.style.backgroundColor = '#333';
+        statTabFuel.classList.add('blue-btn'); statTabFuel.classList.remove('secondary-btn');
+        statTabDrives.classList.remove('blue-btn'); statTabDrives.classList.add('secondary-btn');
         statsDrivesCont.style.display = 'none';
         statsFuelCont.style.display = 'block';
         if(window.renderFuelStats) window.renderFuelStats();

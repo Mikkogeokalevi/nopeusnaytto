@@ -2,11 +2,29 @@
 // APP.JS - SOVELLUKSEN KÄYNNISTYS (GLUE CODE)
 // =========================================================
 
-// Teeman vaihto (Logiikka joka ei mahtunut muihin tai on globaali)
+// Teema: auto (järjestelmä) -> manuaalinen valinta korvaa ja tallentuu
 const btnTheme = document.getElementById('btn-theme');
+const themeMediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+
+function applyTheme(mode) {
+    document.body.classList.toggle('light-theme', mode === 'light');
+    if (btnTheme) btnTheme.textContent = mode === 'light' ? '☾' : '☀';
+}
+
+const savedTheme = localStorage.getItem('appTheme');
+applyTheme(savedTheme || (themeMediaQuery.matches ? 'light' : 'dark'));
+
+if (themeMediaQuery.addEventListener) {
+    themeMediaQuery.addEventListener('change', (e) => {
+        if (!localStorage.getItem('appTheme')) applyTheme(e.matches ? 'light' : 'dark');
+    });
+}
+
 if (btnTheme) {
     btnTheme.addEventListener('click', () => {
-        document.body.classList.toggle('light-theme');
+        const next = document.body.classList.contains('light-theme') ? 'dark' : 'light';
+        applyTheme(next);
+        localStorage.setItem('appTheme', next);
     });
 }
 

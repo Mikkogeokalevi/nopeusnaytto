@@ -30,19 +30,6 @@ const helpData = {
                             <li>Valittujen ajojen reitit piirretään kartalle peräkkäin yhdeksi yhdistetyksi reitiksi.</li>
                             <li>Ruudulla näytetään valittujen ajojen yhteinen kilometrimäärä ja aika.</li>
                         </ul>
-                        <strong>🖖 UUTTA v6.49: LCARS-kokonäkymä:</strong>
-                        <ul>
-                            <li><strong>Uusi LCARS-teema</strong> koko mittaristolle: Star Trek TNG -tyylinen hallintopaneeli oransseilla, violeteilla, punaisilla, keltaisilla ja sinisillä elementeillä.</li>
-                            <li><strong>LCARS on täysin oma näkymänsä</strong>: se ei muuta eikä poista oletusmittaristoa, vaan toimii valinnaisena kokonaisnäkymänä.</li>
-                            <li><strong>Valinta</strong>: Asetukset → Dashboard-tyyli → LCARS.</li>
-                            <li>Näyttää nopeuden, matkan, ajan, korkeuden, keskinopeuden ja rajoituksen LCARS-tyylisissä korteissa.</li>
-                        </ul>
-                        <strong>🕒 UUTTA v6.48: Time Circuit -näkymä:</strong>
-                        <ul>
-                            <li><strong>Uusi Back to the Future -tyylinen Time Circuit -näkymä</strong>: kolme vaakasuuntaista LED-riviä kuten DeLoreanin aikakoneessa.</li>
-                            <li><strong>Punainen, vihreä ja keltainen rivi</strong> näyttävät nopeuden, matkan, ajan, keskinopeuden, korkeuden ja rajoituksen.</li>
-                            <li>Time Circuit on lisäasetuksena: ei korvaa eikä poista muita nopeusmittareita.</li>
-                        </ul>
                         <strong>🎨 UUTTA v6.47: Velocity Stage teema + Clean Digital -näkymä:</strong>
                         <ul>
                             <li><strong>Velocity Stage käyttää nyt HUD-teemamuuttujia</strong>, joten värit vaihtuvat Cyber Blue/Sunset Gold -teemojen mukana.</li>
@@ -168,13 +155,6 @@ const helpData = {
                             <li><strong>Nopeusmittarin tyyliin lisätty</strong> valinta "Velocity Stage".</li>
                         </ul>
 
-                        <strong>✨ UUTTA v6.27: Pulse HUD -mittarinäkymä:</strong>
-                        <ul>
-                            <li><strong>Neulanenmittari korvattu</strong> näyttävällä Pulse HUD -nopeusnäkymällä.</li>
-                            <li><strong>Reaktiivinen kaari + tilat</strong> (READY / CRUISE / FAST / HYPER) tekee nopeudesta selkeästi luettavan.</li>
-                            <li><strong>Asetuksissa mittarityyppi</strong> näyttää nyt valinnan "Pulse HUD".</li>
-                        </ul>
-
                         <strong>🛣️ UUTTA v6.23: Tien nopeusrajoitus näkyy mittaristossa:</strong>
                         <ul>
                             <li><strong>Tiekohtainen rajoitus</strong> haetaan OSM-datasta sijainnin perusteella.</li>
@@ -266,15 +246,13 @@ const helpData = {
                         <strong>🎨 UUTTA v6.14: Animoitu Nopeusmittari & Live-Graafit:</strong>
                         <p>Täysin uusi visuaalinen kokemus ajon aikana!</p>
                         <ul>
-                            <li><strong>🎯 Animoitu neulanenmittari</strong> - Perinteinen mittari modernilla Canvas-toteutuksella</li>
-                            <li><strong>🎨 Värilliset varoitukset</strong> - Vihreä (0-80km/h), Keltainen (80-120km/h), Punainen (120km/h+)</li>
+                            <li><strong> Värilliset varoitukset</strong> - Vihreä (0-80km/h), Keltainen (80-120km/h), Punainen (120km/h+ tai rajoituksen ylitys)</li>
                             <li><strong>📊 Live-graafit</strong> - Nopeuskäyrä (30s), korkeusgraafi, G-voiman visualisointi</li>
-                            <li><strong>⚙️ Asetuksista valittavissa</strong> - Digitaalinen / Neulanenmittari / Molemmat</li>
+                            <li><strong>⚙️ Asetuksista valittavissa</strong> - Digitaalinen / Velocity Stage / Clean Digital / Digitaalinen + graafit</li>
                             <li><strong>📱 Mobiilioptimoitu</strong> - Akkuystävälliset animaatiot ja GPU-kiihdytys</li>
-                            <li><strong>🔴 Tärinäefekti</strong> - Varoitus yli 140km/h nopeuksilla</li>
                             <li><strong>🎯 Mini G-voiman mittari</strong> - Reaaliaikainen kiihtyvyyden näyttö</li>
                         </ul>
-                        <p><strong>Käyttö:</strong> Asetuksista voit valita nopeusmittarin tyylin. "Molemmat"-tilassa näytetään neulanenmittari ja kaikki graafit samanaikaisesti!</p>
+                        <p><strong>Käyttö:</strong> Asetuksista voit valita nopeusmittarin tyylin. "Digitaalinen + graafit" -tilassa näytetään nopeusnumero ja kaikki graafit samanaikaisesti!</p>
                     </div>
 
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
@@ -608,19 +586,6 @@ const helpData = {
                             <li>The selected drives are drawn on the map sequentially as one combined route.</li>
                             <li>The screen shows the combined distance and time of the selected drives.</li>
                         </ul>
-                        <strong>🖖 NEW in v6.49: LCARS dashboard theme:</strong>
-                        <ul>
-                            <li><strong>New LCARS theme</strong> for the whole dashboard: Star Trek TNG style control panel with orange, purple, red, yellow and blue elements.</li>
-                            <li><strong>LCARS is a fully separate view</strong>: it does not change or remove the default dashboard; it is an optional full-screen theme.</li>
-                            <li><strong>Select</strong>: Settings → Dashboard style → LCARS.</li>
-                            <li>Shows speed, distance, time, altitude, average speed and speed limit in LCARS-styled cards.</li>
-                        </ul>
-                        <strong>🕒 NEW in v6.48: Time Circuit view:</strong>
-                        <ul>
-                            <li><strong>New Back to the Future styled Time Circuit view</strong>: three horizontal LED rows like the DeLorean time machine.</li>
-                            <li><strong>Red, green and yellow rows</strong> show speed, distance, time, average speed, altitude and speed limit.</li>
-                            <li>Time Circuit is an additional option: it does not replace or remove other speedometer views.</li>
-                        </ul>
                         <strong>🎨 NEW in v6.47: Velocity Stage theme fix + Clean Digital view:</strong>
                         <ul>
                             <li><strong>Velocity Stage now uses HUD theme variables</strong>, so colors change with Cyber Blue/Sunset Gold themes.</li>
@@ -746,13 +711,6 @@ const helpData = {
                             <li><strong>Speedometer style settings</strong> now include "Velocity Stage".</li>
                         </ul>
 
-                        <strong>✨ NEW in v6.27: Pulse HUD speed view:</strong>
-                        <ul>
-                            <li><strong>The old needle gauge was replaced</strong> with a premium Pulse HUD speed display.</li>
-                            <li><strong>Reactive arc + speed states</strong> (READY / CRUISE / FAST / HYPER) improve readability while driving.</li>
-                            <li><strong>Settings speedometer style</strong> now shows the option "Pulse HUD".</li>
-                        </ul>
-
                         <strong>🛣️ NEW in v6.23: Road speed limit on dashboard:</strong>
                         <ul>
                             <li><strong>Road-specific speed limit</strong> is fetched from OSM data near your location.</li>
@@ -844,15 +802,13 @@ const helpData = {
                         <strong>🎨 NEW in v6.14: Animated Speedometer & Live Graphs:</strong>
                         <p>Completely new visual experience during driving!</p>
                         <ul>
-                            <li><strong>🎯 Animated Needle Speedometer</strong> - Traditional speedometer with modern Canvas implementation</li>
-                            <li><strong>🎨 Color-coded Warnings</strong> - Green (0-80km/h), Yellow (80-120km/h), Red (120km/h+)</li>
+                            <li><strong> Color-coded Warnings</strong> - Green (0-80km/h), Yellow (80-120km/h), Red (120km/h+ or over speed limit)</li>
                             <li><strong>📊 Live Graphs</strong> - Speed curve (30s), altitude graph, G-force visualization</li>
-                            <li><strong>⚙️ Selectable in Settings</strong> - Digital / Needle / Both</li>
+                            <li><strong>⚙️ Selectable in Settings</strong> - Digital / Velocity Stage / Clean Digital / Digital + graphs</li>
                             <li><strong>📱 Mobile Optimized</strong> - Battery-friendly animations and GPU acceleration</li>
-                            <li><strong>🔴 Vibration Effect</strong> - Warning at speeds over 140km/h</li>
                             <li><strong>🎯 Mini G-force Gauge</strong> - Real-time acceleration display</li>
                         </ul>
-                        <p><strong>Usage:</strong> In Settings, choose speedometer style. "Both" mode shows needle speedometer and all graphs!</p>
+                        <p><strong>Usage:</strong> In Settings, choose speedometer style. "Digital + graphs" mode shows the speed number and all graphs at once!</p>
                     </div>
 
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">

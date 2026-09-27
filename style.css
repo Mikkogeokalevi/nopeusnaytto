@@ -291,6 +291,18 @@ body.light-theme .velocity-lane {
     transition: stroke-dashoffset 0.3s ease-out;
 }
 
+@keyframes cleanLimitPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+}
+.clean-digital-progress.over-limit {
+    stroke: #ff1744;
+    animation: cleanLimitPulse 0.8s ease-in-out infinite;
+}
+.clean-digital-speed.over-limit {
+    color: #ff1744 !important;
+}
+
 .clean-digital-readout {
     position: absolute;
     top: 50%;
@@ -410,28 +422,6 @@ body.light-theme .clean-digital-unit {
 .dashboard-view {
     position: relative;
     overflow: hidden;
-}
-
-.route-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.05;
-    z-index: 0;
-    pointer-events: none;
-}
-
-.weather-animation {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.1;
-    z-index: 0;
-    pointer-events: none;
 }
 
 /* =========================================================
@@ -717,10 +707,13 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 
 /* GRIDI */
 .stats-grid { 
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
     width: 100%; max-width: 450px; 
     position: relative; z-index: 60;
     flex-shrink: 1; 
+}
+@media (max-width: 380px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
 }
 
 .dashboard-map-window {
@@ -863,23 +856,6 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 .clock-box { font-size: 28px; font-weight: 300; color: var(--text-color); letter-spacing: 1px; line-height: 1; }
 .date-box { font-size: 12px; color: var(--accent-color); margin-top: 0px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
 
-/* TANKKAUSNAPPI */
-#btn-open-fuel {
-    position: absolute;
-    right: -50px; 
-    top: 50%;
-    transform: translateY(-50%);
-    width: 34px; height: 34px;
-    font-size: 18px;
-    background: transparent;
-    border: 1px solid var(--accent-color);
-    color: var(--accent-color);
-    border-radius: 8px;
-    cursor: pointer;
-    z-index: 100;
-}
-#btn-open-fuel:active { background-color: rgba(41, 121, 255, 0.2); }
-
 /* KARTTA */
 #map-view { display: flex; flex-direction: column; height: 100vh; width: 100%; position: relative; }
 #map { flex-grow: 1; width: 100%; height: 100%; z-index: 1; }
@@ -994,6 +970,8 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
 
 .action-btn { padding: 12px 20px; font-size: 15px; border: none; border-radius: 50px; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 350px; margin: 5px 0; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s, box-shadow 0.2s; background-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(0,0,0,0)); }
 .action-btn:active { transform: scale(0.97); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.secondary-btn { background-color: #3a3f4a; color: var(--text-color); }
+body.light-theme .secondary-btn { background-color: #dfe3ea; color: #333; }
 .blue-btn { background-color: var(--accent-color); }
 .green-btn { background-color: #00c853; }
 .red-btn { background-color: #d50000; }
@@ -1380,4 +1358,18 @@ body.login-help-active #app-container {
 .back-to-login-btn {
     margin-bottom: 20px;
     width: 100%;
+}
+
+/* Kehittäjätyökalut (piilossa oletuksena) */
+.dev-tools {
+    margin-top: 12px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+    font-size: 13px;
+}
+.dev-tools summary {
+    cursor: pointer;
+    color: var(--subtext-color);
+    font-weight: 600;
+    user-select: none;
 }

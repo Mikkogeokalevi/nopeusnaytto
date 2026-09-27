@@ -58,6 +58,13 @@ function updateCleanDigital(speed) {
 
     // Päivitä nopeusnumero (2 desimaalia)
     speedEl.textContent = speed.toFixed(2);
+
+    // Rajoituksen ylitys -> punainen välähdys
+    const limitEl = document.getElementById('dash-speed-limit');
+    const limit = limitEl ? Number(limitEl.textContent) : 0;
+    const overLimit = limit > 0 && speed > limit;
+    progress.classList.toggle('over-limit', overLimit);
+    speedEl.classList.toggle('over-limit', overLimit);
 }
 
 function pushVelocityTrendPoint(speed, altitude) {

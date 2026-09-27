@@ -25,7 +25,6 @@
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
             <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.53...</p>
-            <p>Ladataan...</p>
         </div>
     </div>
 
@@ -129,7 +128,7 @@
                 
                 <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
                     <button id="btn-email-login" class="action-btn blue-btn" style="width:auto; flex:1;">Kirjaudu</button>
-                    <button id="btn-email-register" class="action-btn" style="background-color:#555; width:auto; flex:1;">Luo tunnus</button>
+                    <button id="btn-email-register" class="action-btn secondary-btn" style="width:auto; flex:1;">Luo tunnus</button>
                 </div>
             </div>
 
@@ -176,7 +175,7 @@
                 <button id="nav-history" class="menu-item">📋 Historia</button>
                 <button id="nav-stats" class="menu-item">📊 Tilastot</button>
                 <button id="nav-settings" class="menu-item">⚙️ Asetukset (Tallit)</button>
-                <button id="nav-help" class="menu-item">❓ Ohjeet / Help / Hướng dẫn</button>
+                <button id="nav-help" class="menu-item">❓ Ohjeet / Help</button>
                 <hr class="menu-divider">
                 <button id="btn-logout" class="menu-item logout-item">🚪 Kirjaudu ulos</button>
             </div>
@@ -343,10 +342,10 @@
                      <div class="time-right-col">
                          <div class="clock-box" id="dash-clock">--:--</div>
                          <div class="date-box" id="dash-date">--.--.----</div>
-                         <button id="btn-open-fuel" class="icon-btn" style="position: absolute; right: -50px; top: 10px; border-color: var(--accent-color); color: var(--accent-color);" title="Lisää tankkaus">
-                            ⛽
-                         </button>
                      </div>
+                     <button id="btn-open-fuel" class="icon-btn dashboard-map-quick-btn" title="Lisää tankkaus">
+                        ⛽
+                     </button>
                  </div>
 
                  <div class="bottom-branding">
@@ -379,18 +378,18 @@
                 
                 <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px;">
                     <button id="tab-drives" class="action-btn blue-btn" style="width:auto; font-size:14px; padding:8px 15px;">Ajot</button>
-                    <button id="tab-fuel" class="action-btn" style="width:auto; font-size:14px; padding:8px 15px; background-color: #333;">⛽ Tankkaukset</button>
+                    <button id="tab-fuel" class="action-btn secondary-btn" style="width:auto; font-size:14px; padding:8px 15px;">⛽ Tankkaukset</button>
                 </div>
 
                 <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
-                    <button id="btn-open-report" class="action-btn" style="width:auto; font-size:13px; background-color: #00796b;">📄 Luo Raportti / Vie CSV</button>
-                    <button id="btn-manual-drive" class="action-btn" style="width:auto; font-size:13px; background-color: #444;">+ Lisää käsin</button>
+                    <button id="btn-open-report" class="action-btn secondary-btn" style="width:auto; font-size:13px;">📄 Luo Raportti / Vie CSV</button>
+                    <button id="btn-manual-drive" class="action-btn secondary-btn" style="width:auto; font-size:13px;">+ Lisää käsin</button>
                 </div>
 
                 <div id="multi-select-bar" style="display:none; justify-content:center; align-items:center; gap:10px; margin-bottom:15px; flex-wrap:wrap; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;">
                     <span id="multi-select-count" style="font-size:13px; font-weight:bold;">0 valittu</span>
-                    <button id="btn-show-selected-routes" class="action-btn" style="width:auto; font-size:13px; background-color:#1e88e5;">🗺️ Näytä valitut kartalla</button>
-                    <button id="btn-clear-multi-select" class="action-btn" style="width:auto; font-size:13px; background-color:#444;">Tyhjennä valinta</button>
+                    <button id="btn-show-selected-routes" class="action-btn blue-btn" style="width:auto; font-size:13px;">🗺️ Näytä valitut kartalla</button>
+                    <button id="btn-clear-multi-select" class="action-btn secondary-btn" style="width:auto; font-size:13px;">Tyhjennä valinta</button>
                 </div>
 
                 <div id="history-summary" class="summary-box" style="display:none;">
@@ -420,7 +419,7 @@
                 <h2 style="text-align:center; color:var(--accent-color);">Tilastot</h2>
                 <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
                     <button id="stat-tab-drives" class="action-btn blue-btn" style="width:auto; font-size:14px; padding:8px 15px;">🏎️ Ajotilastot</button>
-                    <button id="stat-tab-fuel" class="action-btn" style="width:auto; font-size:14px; padding:8px 15px; background-color: #333;">⛽ Tankkaustilastot</button>
+                    <button id="stat-tab-fuel" class="action-btn secondary-btn" style="width:auto; font-size:14px; padding:8px 15px;">⛽ Tankkaustilastot</button>
                 </div>
                 <div style="text-align:center; margin-bottom: 20px;">
                     <select id="stats-time-range" class="subject-input" style="width: auto; font-weight: bold; padding: 8px;">
@@ -519,10 +518,10 @@
                     <h3>📍 Paikkamerkinnät (POI)</h3>
 
                     <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
-                        <button id="btn-poi-add-here" class="action-btn" style="width:auto; background-color:#00796b;">+ Lisää tähän sijaintiin</button>
-                        <button id="btn-poi-add-coords" class="action-btn" style="width:auto; background-color:#444;">+ Lisää koordinaateilla</button>
-                        <button id="btn-poi-add-map" class="action-btn" style="width:auto; background-color:#333;">+ Lisää kartalta</button>
-                        <button id="btn-poi-import-cameras" class="action-btn" style="width:auto; background-color:#1e88e5;">⬆ Tuo nopeuskamerat (CSV/SVC)</button>
+                        <button id="btn-poi-add-here" class="action-btn secondary-btn" style="width:auto;">+ Lisää tähän sijaintiin</button>
+                        <button id="btn-poi-add-coords" class="action-btn secondary-btn" style="width:auto;">+ Lisää koordinaateilla</button>
+                        <button id="btn-poi-add-map" class="action-btn secondary-btn" style="width:auto;">+ Lisää kartalta</button>
+                        <button id="btn-poi-import-cameras" class="action-btn secondary-btn" style="width:auto;">⬆ Tuo nopeuskamerat (CSV/SVC)</button>
                         <input id="inp-poi-import-cameras" type="file" accept=".csv,.svc,text/csv,text/plain" multiple style="display:none;" />
                     </div>
 
@@ -530,17 +529,19 @@
                         POI:t näkyvät aina kartassa. Voit asettaa lähestymisvaroituksen (säde + cooldown) per merkintä.
                     </div>
 
-                    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:12px;">
-                        <span>POI debug (näytä hylkäyssyyt)</span>
-                        <input type="checkbox" id="toggle-poi-debug" style="transform: scale(1.5);">
-                    </div>
-                    <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
-                        Kun päällä, sovellus näyttää toastina miksi POI (erityisesti nopeuskamera) hylätään (säde/suunta/cooldown/alertEnabled).
-                    </div>
-
-                    <div style="display:flex; justify-content:center; margin:10px 0 0 0;">
-                        <button id="btn-poi-debug-log" class="action-btn" style="width:auto; background-color:#333;">📋 Debug-loki</button>
-                    </div>
+                    <details class="dev-tools">
+                        <summary>Kehittäjätyökalut</summary>
+                        <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                            <span>POI debug (näytä hylkäyssyyt)</span>
+                            <input type="checkbox" id="toggle-poi-debug" style="transform: scale(1.5);">
+                        </div>
+                        <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
+                            Kun päällä, sovellus näyttää toastina miksi POI (erityisesti nopeuskamera) hylätään (säde/suunta/cooldown/alertEnabled).
+                        </div>
+                        <div style="display:flex; justify-content:center; margin:10px 0 0 0;">
+                            <button id="btn-poi-debug-log" class="action-btn secondary-btn" style="width:auto;">📋 Debug-loki</button>
+                        </div>
+                    </details>
 
                     <div style="margin-top:12px; border-top:1px solid var(--border-color); padding-top:12px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -581,7 +582,7 @@
                                     <option value="single_chime">Single chime</option>
                                     <option value="soft_ping">Soft ping</option>
                                 </select>
-                                <button id="btn-test-poi-sound-speedcamera" class="action-btn" style="width:auto; background-color:#444;">Testaa</button>
+                                <button id="btn-test-poi-sound-speedcamera" class="action-btn secondary-btn" style="width:auto;">Testaa</button>
                             </div>
                             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 <label style="min-width:120px;">Vaara</label>
@@ -591,7 +592,7 @@
                                     <option value="single_chime">Single chime</option>
                                     <option value="soft_ping">Soft ping</option>
                                 </select>
-                                <button id="btn-test-poi-sound-danger" class="action-btn" style="width:auto; background-color:#444;">Testaa</button>
+                                <button id="btn-test-poi-sound-danger" class="action-btn secondary-btn" style="width:auto;">Testaa</button>
                             </div>
                             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 <label style="min-width:120px;">Asiakas</label>
@@ -601,7 +602,7 @@
                                     <option value="double_beep">Double beep</option>
                                     <option value="alarm_pulse">Alarm pulse</option>
                                 </select>
-                                <button id="btn-test-poi-sound-customer" class="action-btn" style="width:auto; background-color:#444;">Testaa</button>
+                                <button id="btn-test-poi-sound-customer" class="action-btn secondary-btn" style="width:auto;">Testaa</button>
                             </div>
                             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 <label style="min-width:120px;">Muistutus</label>
@@ -611,7 +612,7 @@
                                     <option value="double_beep">Double beep</option>
                                     <option value="alarm_pulse">Alarm pulse</option>
                                 </select>
-                                <button id="btn-test-poi-sound-reminder" class="action-btn" style="width:auto; background-color:#444;">Testaa</button>
+                                <button id="btn-test-poi-sound-reminder" class="action-btn secondary-btn" style="width:auto;">Testaa</button>
                             </div>
                             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 <label style="min-width:120px;">Muu</label>
@@ -621,7 +622,7 @@
                                     <option value="soft_ping">Soft ping</option>
                                     <option value="alarm_pulse">Alarm pulse</option>
                                 </select>
-                                <button id="btn-test-poi-sound-other" class="action-btn" style="width:auto; background-color:#444;">Testaa</button>
+                                <button id="btn-test-poi-sound-other" class="action-btn secondary-btn" style="width:auto;">Testaa</button>
                             </div>
                         </div>
                     </div>
@@ -636,12 +637,12 @@
                             <option value="reminder">Muistutus</option>
                             <option value="other">Muu</option>
                         </select>
-                        <button id="btn-poi-nearby" class="action-btn" style="width:auto; background-color:#424242;">📍 Lähimmät</button>
+                        <button id="btn-poi-nearby" class="action-btn secondary-btn" style="width:auto;">📍 Lähimmät</button>
                     </div>
 
                     <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
-                        <button id="btn-poi-show-more" class="action-btn" style="width:auto; background-color:#333;">Näytä lisää</button>
-                        <button id="btn-poi-show-all" class="action-btn" style="width:auto; background-color:#555;">Näytä kaikki</button>
+                        <button id="btn-poi-show-more" class="action-btn secondary-btn" style="width:auto;">Näytä lisää</button>
+                        <button id="btn-poi-show-all" class="action-btn secondary-btn" style="width:auto;">Näytä kaikki</button>
                     </div>
 
                     <div id="poi-list" style="margin-top:10px;">
@@ -650,7 +651,7 @@
                 </div>
 
                 <div class="help-section">
-                    <h3>� Kalusto</h3>
+                    <h3>🚘 Kalusto</h3>
                     <div id="cars-list" style="margin-bottom: 20px;"><div class="loading">Ladataan...</div></div>
                     <button id="btn-add-car" class="action-btn blue-btn" style="width:100%;">+ Lisää ajoneuvo</button>
                 </div>
@@ -673,7 +674,7 @@
         </div>
 
         <div class="controls-container">
-            <div id="status">Odottaa toimenpidettä</div>
+            <div id="status">Valmis</div>
             <button id="btn-activate-gps" class="action-btn blue-btn">Aktivoi Nopeusnäyttö</button>
             <div id="rec-controls" style="display:none; flex-direction:column; align-items:center; gap:5px; width: 100%;">
                 
@@ -685,7 +686,7 @@
                 <div id="active-rec-btns" style="display:none; width:100%; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
                     <button id="btn-pause" class="action-btn yellow-btn" style="flex:1; max-width:170px;">⏸ TAUKO</button>
                     <button id="btn-resume" class="action-btn blue-btn" style="display:none; flex:1; max-width:170px;">▶ JATKA</button>
-                    <button id="btn-drive-mark" class="action-btn" style="flex:1; max-width:170px; background-color:#424242;">📌 MERKKAA</button>
+                    <button id="btn-drive-mark" class="action-btn secondary-btn" style="flex:1; max-width:170px;">📌 MERKKAA</button>
                     <button id="btn-stop-rec" class="action-btn red-btn" style="flex:1; max-width:170px;">⬛ LOPETA</button>
                 </div>
             </div>
@@ -737,7 +738,7 @@
 
             <input type="text" id="modal-subject" class="subject-input" placeholder="Kirjoita aihe..." style="margin: 15px 0;">
             <div style="display:flex; gap:10px; justify-content:center;">
-                <button id="btn-modal-cancel" class="action-btn" style="background-color:#555; width:auto;">❌ Hylkää</button>
+                <button id="btn-modal-cancel" class="action-btn secondary-btn" style="width:auto;">❌ Hylkää</button>
                 <button id="btn-modal-save" class="action-btn green-btn" style="width:auto;">✅ Tallenna</button>
             </div>
         </div>
@@ -772,7 +773,7 @@
             </div>
 
             <div style="display:flex; gap:10px; justify-content:center;">
-                <button id="btn-report-close" class="action-btn" style="background-color:#555; width:auto;">Sulje</button>
+                <button id="btn-report-close" class="action-btn secondary-btn" style="width:auto;">Sulje</button>
                 <button id="btn-report-download" class="action-btn green-btn" style="width:auto;">📥 Lataa Excel</button>
             </div>
         </div>
@@ -812,7 +813,7 @@
             </div>
             
             <div style="display:flex; gap:10px; justify-content:center;">
-                <button id="btn-edit-cancel" class="action-btn" style="background-color:#555; width:auto;">Peruuta</button>
+                <button id="btn-edit-cancel" class="action-btn secondary-btn" style="width:auto;">Peruuta</button>
                 <button id="btn-edit-save" class="action-btn blue-btn" style="width:auto;">Tallenna</button>
             </div>
         </div>
@@ -864,7 +865,7 @@
             </div>
 
             <div style="display:flex; gap:10px; justify-content:center;">
-                <button id="btn-manual-cancel" class="action-btn" style="background-color:#555; width:auto;">Peruuta</button>
+                <button id="btn-manual-cancel" class="action-btn secondary-btn" style="width:auto;">Peruuta</button>
                 <button id="btn-manual-save" class="action-btn green-btn" style="width:auto;">Lisää</button>
             </div>
         </div>
@@ -875,7 +876,7 @@
             <h3 style="margin-top:0; color:#ff4444;">🗑 Poista merkintä?</h3>
             <p style="color:var(--text-color);">Haluatko varmasti poistaa tämän ajon pysyvästi?</p>
             <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
-                <button id="btn-delete-cancel" class="action-btn" style="background-color:#555; width:auto;">Peruuta</button>
+                <button id="btn-delete-cancel" class="action-btn secondary-btn" style="width:auto;">Peruuta</button>
                 <button id="btn-delete-confirm" class="action-btn red-btn" style="width:auto;">Poista</button>
             </div>
         </div>
@@ -908,7 +909,7 @@
                 Litrahminta: <span id="fuel-price-calc" style="color:var(--text-color); font-weight:bold;">0.00</span> €/l
             </div>
             <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
-                <button id="btn-fuel-cancel" class="action-btn" style="background-color:#555; width:auto;">Peruuta</button>
+                <button id="btn-fuel-cancel" class="action-btn secondary-btn" style="width:auto;">Peruuta</button>
                 <button id="btn-fuel-save" class="action-btn green-btn" style="width:auto;">Tallenna</button>
             </div>
         </div>
@@ -919,7 +920,7 @@
             <h3 id="confirm-title" style="margin-top:0; color:var(--accent-color);">Vahvista</h3>
             <p id="confirm-msg" style="color:var(--text-color);">Oletko varma?</p>
             <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
-                <button id="btn-confirm-no" class="action-btn" style="background-color:#555; width:auto;">Ei</button>
+                <button id="btn-confirm-no" class="action-btn secondary-btn" style="width:auto;">Ei</button>
                 <button id="btn-confirm-yes" class="action-btn red-btn" style="width:auto;">Kyllä</button>
             </div>
         </div>
@@ -937,8 +938,8 @@
             <textarea id="poi-debug-log-text" class="subject-input" style="width:100%; height:260px; font-family:monospace; font-size:12px;"></textarea>
             <div style="display:flex; gap:10px; margin-top:12px; justify-content:center; flex-wrap:wrap;">
                 <button id="btn-poi-debug-log-copy" class="action-btn blue-btn" style="width:auto;">Kopioi</button>
-                <button id="btn-poi-debug-log-clear" class="action-btn" style="width:auto; background-color:#555;">Tyhjennä</button>
-                <button id="btn-poi-debug-run-tests" class="action-btn" style="width:auto; background-color:#2e7d32;">Aja regressiotestit</button>
+                <button id="btn-poi-debug-log-clear" class="action-btn secondary-btn" style="width:auto;">Tyhjennä</button>
+                <button id="btn-poi-debug-run-tests" class="action-btn secondary-btn" style="width:auto;">Aja regressiotestit</button>
             </div>
         </div>
     </div>
