@@ -1,14 +1,13 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.52 wakelock-improvements
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.53 theme-cleanup
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.52-wakelock-improvements'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.53-theme-cleanup'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
     './manifest.json',
     './style.css',
-    './style-lcars.css',
     
     // Javascript-moduulit
     './globals.js',

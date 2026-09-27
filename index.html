@@ -15,8 +15,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.52">
-    <link rel="stylesheet" href="style-lcars.css?v=6.52">
+    <link rel="stylesheet" href="style.css?v=6.53">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -203,23 +202,6 @@
                 </button>
 
                 <div class="huge-speed-container">
-                    <!-- UUSI: Pulse HUD -wow-näkymä -->
-                    <div class="speedometer-container" id="speedometer-container" style="display:none;">
-                        <div class="speed-orb-halo"></div>
-                        <div class="speed-orb-core">
-                            <div class="speed-arc-track"></div>
-                            <div class="speed-arc-fill" id="speed-arc-fill"></div>
-                            <div class="speed-orb-inner">
-                                <span id="dash-speed-gauge" class="huge-speed-gauge">0</span>
-                                <span class="huge-unit-gauge">km/h</span>
-                                <span class="wow-speed-state" id="wow-speed-state">READY</span>
-                            </div>
-                        </div>
-                        <div class="wow-bars" id="wow-bars">
-                            <span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span><span class="wow-bar"></span>
-                        </div>
-                    </div>
-
                     <!-- UUSI: Velocity Stage - erityisnäkymä -->
                     <div class="velocity-stage-container" id="velocity-stage-container" style="display:none;">
                         <div class="velocity-scanline"></div>
@@ -265,61 +247,6 @@
                                 <span id="clean-digital-speed" class="clean-digital-speed">0</span>
                                 <span class="clean-digital-unit">km/h</span>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- UUSI: Time Circuit - BTTF DeLorean -näkymä -->
-                    <div class="time-circuit-container" id="time-circuit-container" style="display:none;" aria-label="Time Circuit">
-                        <div class="time-circuit-row time-circuit-red">
-                            <div class="time-circuit-labels">
-                                <span class="time-circuit-label">NOPEUS</span>
-                                <span class="time-circuit-label">MATKA</span>
-                                <span class="time-circuit-label">AIKA</span>
-                                <span class="time-circuit-label">MAX</span>
-                                <span class="time-circuit-label">RAJOITUS</span>
-                            </div>
-                            <div class="time-circuit-displays">
-                                <span class="time-circuit-digit" id="tc-red-speed">000</span>
-                                <span class="time-circuit-digit" id="tc-red-dist">00.0</span>
-                                <span class="time-circuit-digit" id="tc-red-time">0000</span>
-                                <span class="time-circuit-digit" id="tc-red-max">000</span>
-                                <span class="time-circuit-digit" id="tc-red-limit">000</span>
-                            </div>
-                            <div class="time-circuit-row-title">PRESENT TIME</div>
-                        </div>
-                        <div class="time-circuit-row time-circuit-green">
-                            <div class="time-circuit-labels">
-                                <span class="time-circuit-label">NOPEUS</span>
-                                <span class="time-circuit-label">MATKA</span>
-                                <span class="time-circuit-label">AIKA</span>
-                                <span class="time-circuit-label">KESKI</span>
-                                <span class="time-circuit-label">KORKEUS</span>
-                            </div>
-                            <div class="time-circuit-displays">
-                                <span class="time-circuit-digit" id="tc-green-speed">000</span>
-                                <span class="time-circuit-digit" id="tc-green-dist">00.0</span>
-                                <span class="time-circuit-digit" id="tc-green-time">0000</span>
-                                <span class="time-circuit-digit" id="tc-green-avg">000</span>
-                                <span class="time-circuit-digit" id="tc-green-alt">000</span>
-                            </div>
-                            <div class="time-circuit-row-title">DESTINATION TIME</div>
-                        </div>
-                        <div class="time-circuit-row time-circuit-amber">
-                            <div class="time-circuit-labels">
-                                <span class="time-circuit-label">NOPEUS</span>
-                                <span class="time-circuit-label">MATKA</span>
-                                <span class="time-circuit-label">AIKA</span>
-                                <span class="time-circuit-label">MAX</span>
-                                <span class="time-circuit-label">POLTTO</span>
-                            </div>
-                            <div class="time-circuit-displays">
-                                <span class="time-circuit-digit" id="tc-amber-speed">000</span>
-                                <span class="time-circuit-digit" id="tc-amber-dist">00.0</span>
-                                <span class="time-circuit-digit" id="tc-amber-time">0000</span>
-                                <span class="time-circuit-digit" id="tc-amber-max">000</span>
-                                <span class="time-circuit-digit" id="tc-amber-fuel">000</span>
-                            </div>
-                            <div class="time-circuit-row-title">LAST TIME DEPARTED</div>
                         </div>
                     </div>
 
@@ -426,75 +353,6 @@
                      <img src="alareunakuva_mu.png?v=6.01" class="footer-img dark-mode-img" alt="Footer Dark">
                      <img src="alareunakuva.png?v=6.01" class="footer-img light-mode-img" alt="Footer Light">
                  </div>
-            </div>
-
-            <!-- UUSI: LCARS - Star Trek -tyylinen kokonäkymä -->
-            <div id="lcars-view" class="view-section lcars-view" style="display:none;">
-                <div class="lcars-frame">
-                    <div class="lcars-top-bar">
-                        <div class="lcars-elbow lcars-elbow-left"></div>
-                        <div class="lcars-header-title">LCARS 1.0</div>
-                        <div class="lcars-header-pill lcars-pill-orange"></div>
-                        <div class="lcars-header-pill lcars-pill-purple"></div>
-                        <div class="lcars-header-pill lcars-pill-blue"></div>
-                        <div class="lcars-elbow lcars-elbow-right"></div>
-                    </div>
-
-                    <div class="lcars-main">
-                        <div class="lcars-sidebar">
-                            <div class="lcars-pill lcars-pill-orange" data-label="SPD" id="lcars-side-spd"></div>
-                            <div class="lcars-pill lcars-pill-purple" data-label="MAX" id="lcars-side-max"></div>
-                            <div class="lcars-pill lcars-pill-red" data-label="DST" id="lcars-side-dst"></div>
-                            <div class="lcars-pill lcars-pill-yellow" data-label="ALT" id="lcars-side-alt"></div>
-                            <div class="lcars-pill lcars-pill-blue" data-label="LIM" id="lcars-side-lim"></div>
-                        </div>
-
-                        <div class="lcars-content">
-                            <div class="lcars-grid">
-                                <div class="lcars-card lcars-card-orange">
-                                    <span class="lcars-card-label">NOPEUS</span>
-                                    <span class="lcars-card-value" id="lcars-speed">000</span>
-                                    <span class="lcars-card-unit">km/h</span>
-                                </div>
-                                <div class="lcars-card lcars-card-purple">
-                                    <span class="lcars-card-label">MATKA</span>
-                                    <span class="lcars-card-value" id="lcars-dist">0.0</span>
-                                    <span class="lcars-card-unit">km</span>
-                                </div>
-                                <div class="lcars-card lcars-card-red">
-                                    <span class="lcars-card-label">AIKA</span>
-                                    <span class="lcars-card-value" id="lcars-time">00:00</span>
-                                    <span class="lcars-card-unit"></span>
-                                </div>
-                                <div class="lcars-card lcars-card-yellow">
-                                    <span class="lcars-card-label">KORKEUS</span>
-                                    <span class="lcars-card-value" id="lcars-alt">0</span>
-                                    <span class="lcars-card-unit">m</span>
-                                </div>
-                                <div class="lcars-card lcars-card-blue">
-                                    <span class="lcars-card-label">KESKI</span>
-                                    <span class="lcars-card-value" id="lcars-avg">0</span>
-                                    <span class="lcars-card-unit">km/h</span>
-                                </div>
-                                <div class="lcars-card lcars-card-salmon">
-                                    <span class="lcars-card-label">RAJOITUS</span>
-                                    <span class="lcars-card-value" id="lcars-limit">--</span>
-                                    <span class="lcars-card-unit">km/h</span>
-                                </div>
-                            </div>
-
-                            <div class="lcars-footer">
-                                <div class="lcars-footer-bar">
-                                    <div class="lcars-footer-elbow"></div>
-                                    <div class="lcars-footer-pill lcars-pill-purple"></div>
-                                    <div class="lcars-footer-pill lcars-pill-orange"></div>
-                                    <div class="lcars-footer-pill lcars-pill-red"></div>
-                                </div>
-                                <div class="lcars-status" id="lcars-status">ODOTETAAN GPS-SIJAINTIA</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div id="map-view" class="view-section" style="display:none;">
@@ -610,11 +468,9 @@
                         <span>Nopeusmittarin tyyli:</span>
                         <select id="speedometer-style" class="subject-input" style="width:150px;">
                             <option value="digital">Digitaalinen</option>
-                            <option value="gauge">Pulse HUD</option>
                             <option value="cinema">Velocity Stage</option>
                             <option value="clean">Clean Digital</option>
-                            <option value="time">Time Circuit</option>
-                            <option value="both">Molemmat</option>
+                            <option value="both">Digitaalinen + graafit</option>
                         </select>
                     </div>
 
@@ -626,14 +482,6 @@
                         </select>
                     </div>
 
-                    <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:15px;">
-                        <span>Dashboard-tyyli:</span>
-                        <select id="dashboard-style" class="subject-input" style="width:150px;">
-                            <option value="default">Oletus</option>
-                            <option value="lcars">LCARS</option>
-                        </select>
-                    </div>
-                    
                     <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:15px;">
                         <span>Yksinkertaistettu mittaristo</span>
                         <input type="checkbox" id="toggle-minimalist" style="transform: scale(1.5);">
@@ -668,7 +516,7 @@
                 </div>
 
                 <div class="help-section" style="margin-bottom: 20px;">
-                    <h3>� Paikkamerkinnät (POI)</h3>
+                    <h3>📍 Paikkamerkinnät (POI)</h3>
 
                     <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
                         <button id="btn-poi-add-here" class="action-btn" style="width:auto; background-color:#00796b;">+ Lisää tähän sijaintiin</button>
@@ -1102,16 +950,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.52"></script>
-    <script src="visuals.js?v=6.52"></script>
-    <script src="ui.js?v=6.52"></script>
-    <script src="auth.js?v=6.52"></script>
-    <script src="map.js?v=6.52"></script>
-    <script src="gps.js?v=6.52"></script>
-    <script src="garage.js?v=6.52"></script>
-    <script src="history.js?v=6.52"></script>
-    <script src="help.js?v=6.52"></script>
+    <script src="globals.js?v=6.53"></script>
+    <script src="visuals.js?v=6.53"></script>
+    <script src="ui.js?v=6.53"></script>
+    <script src="auth.js?v=6.53"></script>
+    <script src="map.js?v=6.53"></script>
+    <script src="gps.js?v=6.53"></script>
+    <script src="garage.js?v=6.53"></script>
+    <script src="history.js?v=6.53"></script>
+    <script src="help.js?v=6.53"></script>
     
-    <script src="app.js?v=6.52"></script>
+    <script src="app.js?v=6.53"></script>
 </body>
 </html>

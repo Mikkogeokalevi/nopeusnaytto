@@ -22,7 +22,7 @@ var altitudeGraphCtx = null;
 var gforceGraphCtx = null;
 
 // Asetukset
-var speedometerStyle = 'digital'; // digital, gauge, cinema, both
+var speedometerStyle = 'digital'; // digital, cinema, clean, both
 var speedHudTheme = 'cyber-blue'; // cyber-blue, sunset-gold
 var showLiveGraphs = false;
 
@@ -39,7 +39,7 @@ function applyHudTheme(theme) {
 }
 
 // =========================================================
-// 1. PULSE HUD - NOPEUSNÄYTTÖ
+// 1. NOPEUSNÄKYMÄT
 // =========================================================
 
 function updateCleanDigital(speed) {
@@ -58,127 +58,6 @@ function updateCleanDigital(speed) {
 
     // Päivitä nopeusnumero (2 desimaalia)
     speedEl.textContent = speed.toFixed(2);
-}
-
-function updateLcarsView(speed, max, dist, time, alt, avg, limit) {
-    const container = document.getElementById('lcars-view');
-    if (!container) return;
-
-    const s = Math.max(0, Number(speed) || 0);
-    const m = Math.max(0, Number(max) || 0);
-    const d = Math.max(0, Number(dist) || 0);
-    const t = Math.round(Math.max(0, Number(time) || 0));
-    const a = Math.max(0, Number(avg) || 0);
-    const al = isFinite(alt) ? Math.round(alt) : 0;
-    const lim = Number(limit) || 0;
-
-    const min = Math.floor(t / 60);
-    const sec = t % 60;
-    const timeStr = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-
-    const setText = (id, v) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = v;
-    };
-
-    // Pääkortit
-    setText('lcars-speed', String(Math.round(s)).padStart(3,'0'));
-    setText('lcars-dist', d.toFixed(1));
-    setText('lcars-time', timeStr);
-    setText('lcars-alt', String(al));
-    setText('lcars-avg', a ? String(Math.round(a)) : '0');
-    setText('lcars-limit', lim ? String(Math.round(lim)) : '--');
-
-    // Sivupalkki
-    setText('lcars-side-spd', String(Math.round(s)));
-    setText('lcars-side-max', String(Math.round(m)));
-    setText('lcars-side-dst', d.toFixed(1));
-    setText('lcars-side-alt', String(al));
-    setText('lcars-side-lim', lim ? String(Math.round(lim)) : '--');
-
-    const status = document.getElementById('lcars-status');
-    if (status) {
-        if (s <= 0) status.textContent = 'PAIKALLAAN';
-        else if (lim && s > lim) status.textContent = 'RAJOITUS YLITETTY';
-        else if (s > 120) status.textContent = 'SUURI NOPEUS';
-        else status.textContent = 'AJO AKTIIVINEN';
-    }
-}
-
-function updateTimeCircuit(speed, max, dist, time, alt, avg, limit, fuel) {
-    const container = document.getElementById('time-circuit-container');
-    if (!container || container.style.display === 'none') return;
-
-    const s = Math.max(0, Number(speed) || 0);
-    const m = Math.max(0, Number(max) || 0);
-    const d = Math.max(0, Number(dist) || 0);
-    const t = Math.max(0, Number(time) || 0);
-    const a = Math.max(0, Number(avg) || 0);
-    const al = isFinite(alt) ? alt : 0;
-    const lim = Math.max(0, Number(limit) || 0);
-    const f = Math.max(0, Number(fuel) || 0);
-
-    // Apufunktio: muotoile kokonaisluku vähintään 3 numeroksi
-    const pad = (n, w) => String(Math.round(n)).padStart(w, '0');
-    // Apufunktio: muotoile pienet numerot nelinumeroksi (esim. aika mm:ss)
-    const toTime = (sec) => {
-        const total = Math.round(sec);
-        const min = Math.floor(total / 60);
-        const seconds = total % 60;
-        return `${String(min).padStart(2,'0')}${String(seconds).padStart(2,'0')}`;
-    };
-
-    // Punainen rivi: PRESENT (nopeus, matka, aika, max, rajoitus)
-    const setText = (id, v) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = v;
-    };
-
-    setText('tc-red-speed', pad(s, 3));
-    setText('tc-red-dist', d.toFixed(1));
-    setText('tc-red-time', toTime(t));
-    setText('tc-red-max', pad(m, 3));
-    setText('tc-red-limit', lim ? pad(lim, 3) : '---');
-
-    // Vihreä rivi: DESTINATION (nopeus, matka, aika, keski, korkeus)
-    setText('tc-green-speed', pad(s, 3));
-    setText('tc-green-dist', d.toFixed(1));
-    setText('tc-green-time', toTime(t));
-    setText('tc-green-avg', pad(a, 3));
-    setText('tc-green-alt', pad(al, 3));
-
-    // Keltainen rivi: LAST TIME DEPARTED (viimeisin trippi: toistaiseksi nykyiset arvot, polttoaine)
-    setText('tc-amber-speed', pad(m, 3));
-    setText('tc-amber-dist', d.toFixed(1));
-    setText('tc-amber-time', toTime(t));
-    setText('tc-amber-max', pad(m, 3));
-    setText('tc-amber-fuel', pad(f, 3));
-}
-
-function updatePulseHud(speed) {
-    const arcFill = document.getElementById('speed-arc-fill');
-    const speedState = document.getElementById('wow-speed-state');
-    const barsWrap = document.getElementById('wow-bars');
-    const bars = barsWrap ? barsWrap.querySelectorAll('.wow-bar') : [];
-    const root = document.getElementById('speedometer-container');
-    if (!arcFill || !speedState || !root) return;
-
-    const s = Math.max(0, Number(speed) || 0);
-    const ratio = Math.max(0, Math.min(1, s / 180));
-    const fillDeg = -215 + (ratio * 250);
-    arcFill.style.setProperty('--arc-end-deg', `${fillDeg}deg`);
-
-    let state = 'CRUISE';
-    if (s < 5) state = 'READY';
-    else if (s >= 130) state = 'HYPER';
-    else if (s >= 90) state = 'FAST';
-    speedState.textContent = state;
-
-    const activeBars = Math.round(ratio * bars.length);
-    bars.forEach((bar, idx) => {
-        if (idx < activeBars) bar.classList.add('active');
-        else bar.classList.remove('active');
-    });
 }
 
 function pushVelocityTrendPoint(speed, altitude) {
@@ -377,39 +256,9 @@ function drawGforceGraph() {
 // =========================================================
 
 function updateSpeedometer(speed, altitude) {
-    const speedElement = document.getElementById('dash-speed-gauge');
     const speedCinema = document.getElementById('dash-speed-cinema');
     if (speedCinema) speedCinema.textContent = (Math.max(0, Number(speed) || 0)).toFixed(1);
 
-    if (speedElement) {
-        speedElement.textContent = Math.round(speed);
-        
-        // Värin päivitys
-        const container = document.getElementById('speedometer-container');
-        if (container) {
-            container.classList.remove('speed-green', 'speed-yellow', 'speed-red', 'speed-warning');
-
-            // Neulan ja numeron väri nopeuden mukaan
-            let color = '#00e676';
-            if (speed > 120) color = '#ff1744';
-            else if (speed > 80) color = '#ff9800';
-
-            // Aseta väri suoraan numerolle (varmin tapa, ei riipu CSS-periytymisestä)
-            speedElement.style.color = color;
-
-            // Luokat edelleen käyttöön (tärinä jne.)
-            if (speed > 120) {
-                container.classList.add('speed-red');
-                if (speed > 140) container.classList.add('speed-warning');
-            } else if (speed > 80) {
-                container.classList.add('speed-yellow');
-            } else {
-                container.classList.add('speed-green');
-            }
-        }
-    }
-
-    updatePulseHud(speed);
     updateVelocityStage(speed, altitude);
     updateCleanDigital(speed);
 }
@@ -460,60 +309,38 @@ function updateGIndicator(gx, gy) {
 // =========================================================
 
 function updateSpeedometerStyle(style) {
-    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'gauge' || style === 'clean' || style === 'time') ? style : 'digital';
+    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'clean') ? style : 'digital';
 
     const digitalContainer = document.getElementById('digital-speed-container');
-    const pulseHudContainer = document.getElementById('speedometer-container');
     const velocityStageContainer = document.getElementById('velocity-stage-container');
     const cleanDigitalContainer = document.getElementById('clean-digital-container');
-    const timeCircuitContainer = document.getElementById('time-circuit-container');
     const graphsContainer = document.getElementById('live-graphs-container');
 
     // Näytä/piilota elementit
     switch(speedometerStyle) {
-        case 'digital':
-            if (digitalContainer) digitalContainer.style.display = 'block';
-            if (pulseHudContainer) pulseHudContainer.style.display = 'none';
-            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
-            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
-            if (graphsContainer) graphsContainer.style.display = 'none';
-            break;
-        case 'gauge':
-            if (digitalContainer) digitalContainer.style.display = 'none';
-            if (pulseHudContainer) pulseHudContainer.style.display = 'block';
-            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
-            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
-            if (graphsContainer) graphsContainer.style.display = 'none';
-            break;
         case 'cinema':
             if (digitalContainer) digitalContainer.style.display = 'none';
-            if (pulseHudContainer) pulseHudContainer.style.display = 'none';
             if (velocityStageContainer) velocityStageContainer.style.display = 'block';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'clean':
             if (digitalContainer) digitalContainer.style.display = 'none';
-            if (pulseHudContainer) pulseHudContainer.style.display = 'none';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'block';
-            if (timeCircuitContainer) timeCircuitContainer.style.display = 'none';
-            if (graphsContainer) graphsContainer.style.display = 'none';
-            break;
-        case 'time':
-            if (digitalContainer) digitalContainer.style.display = 'none';
-            if (pulseHudContainer) pulseHudContainer.style.display = 'none';
-            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
-            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
-            if (timeCircuitContainer) timeCircuitContainer.style.display = 'block';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'both':
-            if (digitalContainer) digitalContainer.style.display = 'none';
-            if (pulseHudContainer) pulseHudContainer.style.display = 'block';
+            if (digitalContainer) digitalContainer.style.display = 'block';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
             if (graphsContainer) graphsContainer.style.display = 'block';
+            break;
+        default:
+            if (digitalContainer) digitalContainer.style.display = 'block';
+            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
+            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
+            if (graphsContainer) graphsContainer.style.display = 'none';
             break;
     }
     
@@ -572,7 +399,6 @@ function initVisuals() {
 
     // Ensipiirto (ettei mittari/graafit näytä tyhjältä ennen ensimmäistä GPS-päivitystä)
     try {
-        updatePulseHud(0);
         updateVelocityStage(0);
         drawSpeedGraph();
         drawAltitudeGraph();
@@ -607,6 +433,4 @@ window.updateSpeedometer = updateSpeedometer;
 window.updateGraphs = updateGraphs;
 window.updateGIndicator = updateGIndicator;
 window.updateSpeedometerStyle = updateSpeedometerStyle;
-window.updateTimeCircuit = updateTimeCircuit;
-window.updateLcarsView = updateLcarsView;
 window.applyHudTheme = applyHudTheme;

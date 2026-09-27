@@ -17,145 +17,6 @@ body.hud-theme-sunset-gold {
     --hud-hot: #ff2e63;
 }
 
-/* Pulse HUD - wow-näkymä */
-.speedometer-container {
-    --hud-primary: #47d2ff;
-    --hud-secondary: #00e676;
-    --hud-warn: #ffb300;
-    --hud-hot: #ff1744;
-    position: relative;
-    width: 235px;
-    height: 235px;
-    margin: 0 auto;
-    display: grid;
-    place-items: center;
-}
-
-.speed-orb-halo {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background:
-        radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--hud-primary) 30%, transparent) 0%, rgba(41,121,255,0.03) 58%, transparent 72%),
-        conic-gradient(from 0deg, color-mix(in srgb, var(--hud-secondary) 70%, transparent), color-mix(in srgb, var(--hud-primary) 70%, transparent), color-mix(in srgb, var(--hud-warn) 72%, transparent), color-mix(in srgb, var(--hud-secondary) 70%, transparent));
-    filter: blur(16px) saturate(130%);
-    opacity: 0.9;
-    animation: hudHaloPulse 2.8s ease-in-out infinite;
-}
-
-.speed-orb-core {
-    position: absolute;
-    inset: 14px;
-    border-radius: 50%;
-    background:
-        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.02) 28%, rgba(11,13,18,0.96) 72%),
-        linear-gradient(165deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01));
-    box-shadow:
-        inset 0 0 20px rgba(255,255,255,0.05),
-        inset 0 -24px 45px rgba(0,0,0,0.45),
-        0 14px 40px rgba(0,0,0,0.42);
-}
-
-.speed-arc-track,
-.speed-arc-fill {
-    position: absolute;
-    inset: 14px;
-    border-radius: 50%;
-    pointer-events: none;
-}
-
-.speed-arc-track {
-    background: conic-gradient(from -215deg, rgba(255,255,255,0.09) 0deg 250deg, transparent 250deg 360deg);
-    -webkit-mask: radial-gradient(circle, transparent 70%, #000 72%);
-    mask: radial-gradient(circle, transparent 70%, #000 72%);
-}
-
-.speed-arc-fill {
-    --arc-end-deg: -215deg;
-    background:
-        conic-gradient(
-            from -215deg,
-            var(--hud-secondary) 0deg,
-            var(--hud-primary) 105deg,
-            var(--hud-warn) 195deg,
-            var(--hud-hot) 250deg,
-            transparent 250deg 360deg
-        );
-    -webkit-mask: radial-gradient(circle, transparent 70%, #000 72%);
-    mask: radial-gradient(circle, transparent 70%, #000 72%);
-    clip-path: polygon(50% 50%, 0% 0%, 100% 0%, 100% 100%, 0% 100%);
-    transform: rotate(calc(var(--arc-end-deg) + 215deg));
-    transform-origin: 50% 50%;
-    transition: transform 0.32s ease-out;
-}
-
-.speed-orb-inner {
-    position: absolute;
-    inset: 35px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: radial-gradient(circle at 50% 32%, rgba(41,121,255,0.15), rgba(255,255,255,0.01) 68%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-}
-
-.huge-speed-gauge {
-    font-size: 64px;
-    font-weight: 900;
-    letter-spacing: -1px;
-    color: var(--speed-color);
-    display: block;
-    line-height: 0.9;
-    text-shadow: 0 0 18px color-mix(in srgb, var(--hud-primary) 65%, transparent);
-}
-
-.huge-unit-gauge {
-    font-size: 12px;
-    color: var(--subtext-color);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 2px;
-}
-
-.wow-speed-state {
-    margin-top: 8px;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 1.8px;
-    color: color-mix(in srgb, var(--hud-primary) 75%, white);
-    background: color-mix(in srgb, var(--hud-primary) 18%, transparent);
-    border: 1px solid color-mix(in srgb, var(--hud-primary) 45%, transparent);
-    padding: 3px 10px;
-    border-radius: 999px;
-}
-
-.wow-bars {
-    position: absolute;
-    bottom: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(210px, 88vw);
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 4px;
-}
-
-.wow-bar {
-    height: 6px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.15);
-    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.wow-bar.active {
-    background: linear-gradient(90deg, var(--hud-secondary), var(--hud-primary));
-    box-shadow: 0 0 8px color-mix(in srgb, var(--hud-primary) 75%, transparent);
-    transform: scaleY(1.35);
-}
-
 /* Velocity Stage - uusi erikoisnäkymä */
 .velocity-stage-container {
     --stage-shift: 0px;
@@ -398,11 +259,6 @@ body.light-theme .velocity-lane {
     transform: scaleY(1.28);
 }
 
-@keyframes hudHaloPulse {
-    0%, 100% { transform: scale(0.98); opacity: 0.75; }
-    50% { transform: scale(1.03); opacity: 1; }
-}
-
 /* Clean Digital - minimalistinen näkymä */
 .clean-digital-container {
     position: relative;
@@ -475,12 +331,6 @@ body.light-theme .clean-digital-unit {
 }
 
 @media (max-width: 420px) {
-    .speedometer-container {
-        width: 205px;
-        height: 205px;
-    }
-    .huge-speed-gauge { font-size: 54px; }
-    .wow-bars { width: min(180px, 86vw); }
     .velocity-stage-container {
         min-height: 178px;
         padding: 14px 12px 12px;
@@ -491,128 +341,6 @@ body.light-theme .clean-digital-unit {
         font-size: clamp(80px, 20vw, 110px);
     }
 }
-
-/* Time Circuit - BTTF DeLorean -näkymä */
-.time-circuit-container {
-    position: relative;
-    width: min(480px, 98vw);
-    margin: 10px auto;
-    padding: 12px;
-    background:
-        linear-gradient(180deg, #1a1a1a 0%, #111 100%);
-    border: 3px solid #333;
-    border-radius: 14px;
-    box-shadow:
-        0 0 0 2px #000,
-        0 10px 30px rgba(0,0,0,0.6),
-        inset 0 0 20px rgba(0,0,0,0.5);
-    font-family: 'Courier New', Courier, monospace;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.time-circuit-row {
-    position: relative;
-    padding: 8px;
-    border-radius: 8px;
-    background: #151515;
-    border: 2px solid;
-    box-shadow: inset 0 0 12px rgba(0,0,0,0.7);
-}
-
-.time-circuit-red {
-    border-color: #ff2a2a;
-    box-shadow:
-        inset 0 0 12px rgba(0,0,0,0.7),
-        0 0 10px rgba(255,42,42,0.25);
-}
-
-.time-circuit-green {
-    border-color: #2aff2a;
-    box-shadow:
-        inset 0 0 12px rgba(0,0,0,0.7),
-        0 0 10px rgba(42,255,42,0.25);
-}
-
-.time-circuit-amber {
-    border-color: #ffbd2a;
-    box-shadow:
-        inset 0 0 12px rgba(0,0,0,0.7),
-        0 0 10px rgba(255,189,42,0.25);
-}
-
-.time-circuit-row-title {
-    text-align: center;
-    font-size: 10px;
-    font-weight: 700;
-    color: #999;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 4px;
-    text-shadow: 0 0 4px #000;
-}
-
-.time-circuit-labels,
-.time-circuit-displays {
-    display: flex;
-    justify-content: space-between;
-    gap: 4px;
-}
-
-.time-circuit-label {
-    flex: 1;
-    text-align: center;
-    font-size: 8px;
-    font-weight: 700;
-    color: #fff;
-    background: #c00;
-    padding: 1px 2px;
-    border-radius: 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    min-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.time-circuit-red .time-circuit-label { background: #c00; }
-.time-circuit-green .time-circuit-label { background: #0a0; }
-.time-circuit-amber .time-circuit-label { background: #b80; }
-
-.time-circuit-digit {
-    flex: 1;
-    text-align: center;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: clamp(18px, 5vw, 28px);
-    font-weight: 700;
-    padding: 4px 2px;
-    border-radius: 4px;
-    background: #000;
-    color: #ff2a2a;
-    text-shadow:
-        0 0 4px #ff2a2a,
-        0 0 8px #ff2a2a;
-    min-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.time-circuit-red .time-circuit-digit { color: #ff2a2a; text-shadow: 0 0 4px #ff2a2a, 0 0 8px #ff2a2a; }
-.time-circuit-green .time-circuit-digit { color: #2aff2a; text-shadow: 0 0 4px #2aff2a, 0 0 8px #2aff2a; }
-.time-circuit-amber .time-circuit-digit { color: #ffbd2a; text-shadow: 0 0 4px #ffbd2a, 0 0 8px #ffbd2a; }
-
-/* Time Circuit light-theme */
-body.light-theme .time-circuit-container {
-    background: linear-gradient(180deg, #e8e8e8 0%, #ddd 100%);
-    border-color: #999;
-    box-shadow: 0 0 0 2px #ccc, 0 10px 30px rgba(0,0,0,0.2);
-}
-
-body.light-theme .time-circuit-row { background: #f2f2f2; }
-body.light-theme .time-circuit-digit { background: #e0e0e0; }
-body.light-theme .time-circuit-row-title { color: #555; }
 
 /* Reaaliaikaiset graafit */
 .live-graphs-container {
@@ -676,23 +404,6 @@ body.light-theme .time-circuit-row-title { color: #555; }
     transform: translate(-50%, -50%);
     transition: all 0.3s ease;
     box-shadow: 0 0 10px var(--accent-color);
-}
-
-/* Nopeusmittarin värit */
-.speed-green { color: #00e676 !important; }
-.speed-yellow { color: #ff9800 !important; }
-.speed-red { color: #ff1744 !important; }
-
-/* Tärinäefekti */
-@keyframes speed-vibration {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-1px); }
-    75% { transform: translateX(1px); }
-}
-
-.speed-warning {
-    animation: speed-vibration 0.2s infinite;
-    color: #ff1744 !important;
 }
 
 /* Dynaaminen tausta */
