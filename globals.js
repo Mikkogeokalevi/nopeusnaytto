@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.52 (wakeLock-parannukset + asetus)
-const APP_VERSION = "6.52";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.53 (teemojen siivous + S24 Ultra -optimointi)
+const APP_VERSION = "6.53";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

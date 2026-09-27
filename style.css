@@ -262,7 +262,7 @@ body.light-theme .velocity-lane {
 /* Clean Digital - minimalistinen näkymä */
 .clean-digital-container {
     position: relative;
-    width: min(280px, 90vw);
+    width: min(320px, 92vw);
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -301,7 +301,7 @@ body.light-theme .velocity-lane {
 
 .clean-digital-speed {
     display: block;
-    font-size: clamp(48px, 13vw, 72px);
+    font-size: clamp(72px, 20vw, 110px);
     font-weight: 700;
     color: #fff;
     line-height: 1;
@@ -330,7 +330,7 @@ body.light-theme .clean-digital-unit {
     color: rgba(0,0,0,0.6);
 }
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
     .velocity-stage-container {
         min-height: 178px;
         padding: 14px 12px 12px;
@@ -338,7 +338,7 @@ body.light-theme .clean-digital-unit {
     .velocity-lanes { gap: 3px; }
     .velocity-lane { height: 7px; }
     .clean-digital-speed {
-        font-size: clamp(80px, 20vw, 110px);
+        font-size: clamp(84px, 23vw, 120px);
     }
 }
 
@@ -768,7 +768,7 @@ body.light-theme .watermark-bg::before { background-image: url('ajopaivakirja_lo
     display: none;
 }
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
     #dashboard-mini-map {
         height: 165px;
         min-height: 150px;
