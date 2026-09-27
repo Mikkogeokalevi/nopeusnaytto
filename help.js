@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - BILINGUAL MASTER GUIDE (v6.53 THEME CLEANUP)
+// HELP.JS - BILINGUAL MASTER GUIDE (v6.54 HELP FIX)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS ---
@@ -45,7 +45,7 @@ const helpData = {
                         <strong>🧪 UUTTA v6.44: julkaisu- ja GPS-regressiotestit:</strong>
                         <ul>
                             <li><strong>PWA-versionumerot yhtenäistettiin</strong>, jotta HTML, scriptit ja Service Worker käyttävät samaa julkaisua.</li>
-                            <li><strong>Firebase-alustus muutettiin deterministiseksi</strong>: selain ei enää yritä hakea `.env`-tiedostoa liian myöhään Firebase-alustuksen jälkeen.</li>
+                            <li><strong>Firebase-alustus muutettiin deterministiseksi</strong>: selain ei enää yritä hakea .env-tiedostoa liian myöhään Firebase-alustuksen jälkeen.</li>
                             <li><strong>Debug-lokin regressiotestit</strong> ajavat nyt sekä POI- että GPS-nopeustestit ja palauttavat GPS:n globaalin tilan testin jälkeen.</li>
                         </ul>
                         <strong>🧭 UUTTA v6.43: pyörätilan oletuskartta maastokartaksi:</strong>
@@ -601,7 +601,7 @@ const helpData = {
                         <strong>🧪 NEW in v6.44: release and GPS regression tests:</strong>
                         <ul>
                             <li><strong>PWA version numbers are now aligned</strong> across HTML, scripts, and the Service Worker.</li>
-                            <li><strong>Firebase initialization is deterministic</strong>; the browser no longer reads `.env` too late after Firebase initialization.</li>
+                            <li><strong>Firebase initialization is deterministic</strong>; the browser no longer reads .env too late after Firebase initialization.</li>
                             <li><strong>The debug regression runner</strong> now runs both POI and GPS speed tests and restores GPS global state afterward.</li>
                         </ul>
                         <strong>🧭 NEW in v6.43: terrain as bike-mode default map:</strong>

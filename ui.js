@@ -1211,7 +1211,7 @@ if (navBtns.stats) navBtns.stats.addEventListener('click', () => switchView('sta
 if (navBtns.settings) navBtns.settings.addEventListener('click', () => switchView('settings'));
 if (navBtns.help) navBtns.help.addEventListener('click', () => {
     switchView('help');
-    if(typeof renderHelp === 'function') renderHelp('fi');
+    if(typeof window.renderHelp === 'function') window.renderHelp('fi');
 });
 
 // Alapalkki
