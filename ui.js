@@ -201,6 +201,7 @@ const btnPoiDebugLog = document.getElementById('btn-poi-debug-log');
 const poiMasterVolumeEl = document.getElementById('poi-master-volume');
 const poiMasterVolumeValueEl = document.getElementById('poi-master-volume-value');
 const poiSensitivityEl = document.getElementById('settings-poi-sensitivity');
+const winterLimitsEl = document.getElementById('settings-winter-limits');
 const poiRearmDistanceEl = document.getElementById('settings-poi-rearm-distance');
 const poiSoundSelectSpeedcamera = document.getElementById('settings-poi-sound-speedcamera');
 const poiSoundSelectDanger = document.getElementById('settings-poi-sound-danger');
@@ -1186,7 +1187,10 @@ window.updateDashboardSpeedLimit = function(info) {
 
     if (isFinite(val) && val > 0) {
         dashSpeedLimitEl.innerText = String(Math.round(val));
-        if (source === 'estimated') {
+        if (data.winter) {
+            dashSpeedLimitSourceEl.innerText = (data.winterSource === 'estimate') ? 'Talvirajoitus (arvio)' : 'Talvirajoitus';
+            dashLimitCardEl.classList.add(data.winterSource === 'estimate' ? 'limit-estimated' : 'limit-exact');
+        } else if (source === 'estimated') {
             dashSpeedLimitSourceEl.innerText = 'Yleisrajoitus-arvio';
             dashLimitCardEl.classList.add('limit-estimated');
         } else {
@@ -1777,6 +1781,21 @@ if (poiSensitivityEl) {
     });
 }
 
+if (winterLimitsEl) {
+    winterLimitsEl.addEventListener('change', () => {
+        const mode = String(winterLimitsEl.value || 'auto').trim().toLowerCase();
+        const normalized = (mode === 'winter' || mode === 'summer') ? mode : 'auto';
+        localStorage.setItem('winterSpeedLimitMode', normalized);
+        if (typeof window.updateDashboardSpeedLimit === 'function' && typeof getRoadSpeedLimitSnapshot === 'function') {
+            window.updateDashboardSpeedLimit(getRoadSpeedLimitSnapshot());
+        }
+        if (typeof showToast === 'function') {
+            const txt = normalized === 'winter' ? 'Talvi päällä' : (normalized === 'summer' ? 'Kesä päällä' : 'Auto (15.10–15.4)');
+            showToast(`Talvirajoitukset: ${txt}`);
+        }
+    });
+}
+
 if (poiRearmDistanceEl) {
     poiRearmDistanceEl.addEventListener('change', () => {
         const raw = parseInt(poiRearmDistanceEl.value || '400', 10);
@@ -1920,6 +1939,11 @@ window.addEventListener('DOMContentLoaded', () => {
         const sensitivityMode = String(localStorage.getItem('poiSensitivityMode') || 'normal').trim().toLowerCase();
         if (poiSensitivityEl) {
             poiSensitivityEl.value = (sensitivityMode === 'strict' || sensitivityMode === 'sensitive') ? sensitivityMode : 'normal';
+        }
+
+        const winterMode = String(localStorage.getItem('winterSpeedLimitMode') || 'auto').trim().toLowerCase();
+        if (winterLimitsEl) {
+            winterLimitsEl.value = (winterMode === 'winter' || winterMode === 'summer') ? winterMode : 'auto';
         }
 
         const rawRearm = parseInt(localStorage.getItem('poiRearmDistanceM') || '400', 10);

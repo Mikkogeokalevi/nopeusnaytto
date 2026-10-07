@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.55 theme-cleanup
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.56 winter-limits
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.55-theme-cleanup'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.56-winter-limits'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

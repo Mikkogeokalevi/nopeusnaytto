@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - BILINGUAL MASTER GUIDE (v6.55 PRO POLISH)
+// HELP.JS - BILINGUAL MASTER GUIDE (v6.56 WINTER SPEED LIMITS)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS ---
@@ -9,9 +9,17 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>❄️ UUTTA v6.56: Talvinopeusrajoitukset:</strong>
+                        <ul>
+                            <li><strong>Virallinen talvirajoitusdata:</strong> talvi-ikkunassa sovellus hakee tiekohtaisen talvi-/pimeänajanrajoituksen Väyläviraston avoimesta aineistosta (perustuu ELY-keskusten nopeusrajoituspäätöksiin, kattaa valtion tiet).</li>
+                            <li><strong>OSM-tuki:</strong> jos tiellä on OSM:n maxspeed:winter- tai ehdollinen maxspeed:conditional-tagi, sitä käytetään suoraan.</li>
+                            <li><strong>Moottoritie-varmistus:</strong> jos aineistosta ei löydy tietoa, moottoritie 120 km/h näytetään talvi-ikkunassa arviona 100 km/h.</li>
+                            <li><strong>Asetukset:</strong> Asetukset → Talvinopeusrajoitukset: Auto (15.10-15.4) / Talvi päällä / Kesä päällä - siirtymäviikkoina voit pakottaa tilan itse.</li>
+                            <li>Rajoituskortin lähde kertoo kun kyseessä on talvirajoitus; tulokset välimuistitetaan, joten ne toimivat myös ilman verkkoa.</li>
+                        </ul>
                         <strong>✨ UUTTA v6.55: Ammattimainen viimeistely - SVG-ikonit, tasaiset numerot, saavutettavuus:</strong>
                         <ul>
                             <li><strong>Kaikki emoji-ikonit korvattu yhtenäisillä SVG-ikoneilla</strong> valikossa, alanavigaatiossa, napeissa ja otsikoissa - ikonit seuraavat korostusväriä ja näyttävät samalta kaikilla laitteilla.</li>
@@ -588,9 +596,17 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>❄️ NEW in v6.56: Winter speed limits:</strong>
+                        <ul>
+                            <li><strong>Official winter limit data:</strong> during the winter window the app fetches the road-specific winter/dark-time limit from the Finnish Transport Infrastructure Agency open data (based on ELY centre decisions, covers state roads).</li>
+                            <li><strong>OSM support:</strong> maxspeed:winter and conditional maxspeed:conditional tags are used directly when present.</li>
+                            <li><strong>Motorway fallback:</strong> if no data is found, a 120 km/h motorway shows an estimated 100 km/h during the winter window.</li>
+                            <li><strong>Settings:</strong> Settings → Winter speed limits: Auto (Oct 15 - Apr 15) / Winter on / Summer on - useful during the sign-change transition weeks.</li>
+                            <li>The limit card shows when a winter limit is active; results are cached so they also work offline.</li>
+                        </ul>
                         <strong>✨ NEW in v6.55: Professional polish - SVG icons, stable numbers, accessibility:</strong>
                         <ul>
                             <li><strong>All emoji icons replaced with a consistent SVG icon set</strong> in the menu, bottom navigation, buttons and headings - icons follow the accent color and look identical on all devices.</li>

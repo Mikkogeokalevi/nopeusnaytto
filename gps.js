@@ -44,7 +44,9 @@ var roadSpeedLimitState = {
     lastFetchTs: 0,
     lastFetchLat: null,
     lastFetchLng: null,
-    inFlight: false
+    inFlight: false,
+    osmWinterKmh: null,
+    lastKnownOsmWinterKmh: null
 };
 
 const ROAD_LIMIT_FETCH_INTERVAL_MS = 45000;
@@ -328,14 +330,17 @@ function resetRoadSpeedLimitState() {
     roadSpeedLimitState.lastFetchLat = null;
     roadSpeedLimitState.lastFetchLng = null;
     roadSpeedLimitState.inFlight = false;
+    roadSpeedLimitState.osmWinterKmh = null;
+    roadSpeedLimitState.lastKnownOsmWinterKmh = null;
 }
 
-function setRoadSpeedLimitState(limitKmh, source, roadName, roadType, roadWayId) {
+function setRoadSpeedLimitState(limitKmh, source, roadName, roadType, roadWayId, winterKmh) {
     const limit = Number(limitKmh);
     const src = String(source || 'unknown').toLowerCase();
     const rn = String(roadName || '').trim();
     const rt = String(roadType || '').trim().toLowerCase();
     const rwid = (roadWayId === null || roadWayId === undefined) ? null : String(roadWayId);
+    const wk = Number(winterKmh);
 
     if (isFinite(limit) && limit > 0 && (src === 'exact' || src === 'estimated')) {
         roadSpeedLimitState.limitKmh = Math.round(limit);
@@ -343,12 +348,14 @@ function setRoadSpeedLimitState(limitKmh, source, roadName, roadType, roadWayId)
         roadSpeedLimitState.roadName = rn;
         roadSpeedLimitState.roadType = rt;
         roadSpeedLimitState.roadWayId = rwid;
+        roadSpeedLimitState.osmWinterKmh = (isFinite(wk) && wk > 0) ? Math.round(wk) : null;
 
         roadSpeedLimitState.lastKnownLimitKmh = Math.round(limit);
         roadSpeedLimitState.lastKnownSource = src;
         roadSpeedLimitState.lastKnownRoadName = rn;
         roadSpeedLimitState.lastKnownRoadType = rt;
         roadSpeedLimitState.lastKnownRoadWayId = rwid;
+        roadSpeedLimitState.lastKnownOsmWinterKmh = roadSpeedLimitState.osmWinterKmh;
         roadSpeedLimitState.lastKnownTs = Date.now();
         return;
     }
@@ -358,6 +365,7 @@ function setRoadSpeedLimitState(limitKmh, source, roadName, roadType, roadWayId)
     roadSpeedLimitState.roadName = rn;
     roadSpeedLimitState.roadType = rt;
     roadSpeedLimitState.roadWayId = rwid;
+    roadSpeedLimitState.osmWinterKmh = null;
 }
 
 function getRoadSpeedLimitSnapshot() {
@@ -371,26 +379,232 @@ function getRoadSpeedLimitSnapshot() {
         const holdMs = (lastSrc === 'exact') ? ROAD_LIMIT_EXACT_HOLD_MS : ROAD_LIMIT_ESTIMATED_HOLD_MS;
         const ageMs = now - Number(roadSpeedLimitState.lastKnownTs || 0);
         if (isFinite(lastLimit) && lastLimit > 0 && ageMs >= 0 && ageMs <= holdMs && (lastSrc === 'exact' || lastSrc === 'estimated')) {
-            return {
+            return applyWinterSpeedLimitOverlay({
                 limitKmh: lastLimit,
                 source: lastSrc,
                 roadName: roadSpeedLimitState.lastKnownRoadName,
                 roadType: roadSpeedLimitState.lastKnownRoadType,
                 roadWayId: roadSpeedLimitState.lastKnownRoadWayId,
+                osmWinterKmh: roadSpeedLimitState.lastKnownOsmWinterKmh,
                 fetchedAt: roadSpeedLimitState.lastKnownTs,
                 stale: true
-            };
+            });
         }
     }
 
-    return {
+    return applyWinterSpeedLimitOverlay({
         limitKmh: roadSpeedLimitState.limitKmh,
         source: roadSpeedLimitState.source,
         roadName: roadSpeedLimitState.roadName,
         roadType: roadSpeedLimitState.roadType,
         roadWayId: roadSpeedLimitState.roadWayId,
+        osmWinterKmh: roadSpeedLimitState.osmWinterKmh,
         fetchedAt: roadSpeedLimitState.lastFetchTs
-    };
+    });
+}
+
+// --- TALVINOPEUSRAJOITUKSET ---
+// Lähteet prioriteettijärjestyksessä:
+// 1) OSM maxspeed:winter / maxspeed:conditional (tiekohtainen tagi samalla tiellä)
+// 2) Väyläviraston WFS (tiestotiedot:talvi_ja_kesanopeusrajoitukset, virallinen päätösdata)
+// 3) Heuristiikka: moottoritie/trunk 120 -> 100 talvi-ikkunassa (merkitään arvioksi)
+const WINTER_LIMIT_MODE_KEY = 'winterSpeedLimitMode';
+const WINTER_LIMIT_CACHE_KEY = 'winterLimitCacheV1';
+const WINTER_LIMIT_CELL_DEG = 0.004;
+const WINTER_LIMIT_CACHE_TTL_MS = 7 * 24 * 3600 * 1000;
+const WINTER_LIMIT_CACHE_MAX = 400;
+const WINTER_LIMIT_MATCH_MAX_M = 50;
+var winterLimitInFlight = {};
+
+function getWinterLimitMode() {
+    try {
+        const m = String(localStorage.getItem(WINTER_LIMIT_MODE_KEY) || 'auto').trim().toLowerCase();
+        if (m === 'winter' || m === 'summer') return m;
+    } catch (e) {}
+    return 'auto';
+}
+
+function isWinterLimitSeason() {
+    const mode = getWinterLimitMode();
+    if (mode === 'winter') return true;
+    if (mode === 'summer') return false;
+    const now = new Date();
+    const m = now.getMonth();
+    const d = now.getDate();
+    // Auto-ikkuna 15.10 - 15.4: kyltit käännetään tyypillisesti loka-marraskuussa ja maalis-huhtikuussa.
+    if (m === 10 || m === 11 || m <= 2) return true;
+    if (m === 9 && d >= 15) return true;
+    if (m === 3 && d <= 15) return true;
+    return false;
+}
+
+function isMonthInWinterRange(startM, endM, curM) {
+    if (!isFinite(startM) || !isFinite(endM)) return false;
+    if (startM <= endM) return curM >= startM && curM <= endM;
+    return curM >= startM || curM <= endM;
+}
+
+function parseWinterMaxspeedFromTags(tags) {
+    if (!tags) return null;
+    const direct = parseMaxspeedToKmh(
+        tags['maxspeed:winter'] || tags['maxspeed:seasonal:winter'] || tags['maxspeed:forward:winter']
+    );
+    if (isFinite(direct) && direct > 0) return direct;
+
+    const cond = String(tags['maxspeed:conditional'] || tags['maxspeed:forward:conditional'] || '');
+    if (!cond) return null;
+    const MONTHS = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+    const parts = cond.split(';');
+    for (let i = 0; i < parts.length; i++) {
+        const m = parts[i].trim().match(/^(\d+)\s*@\s*(.+)$/);
+        if (!m) continue;
+        const val = parseInt(m[1], 10);
+        const c = m[2].toLowerCase();
+        if (!isFinite(val) || val <= 0) continue;
+        if (c.indexOf('winter') !== -1) return val;
+        const range = c.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[^a-z0-9]{0,12}(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/);
+        if (range && isMonthInWinterRange(MONTHS[range[1]], MONTHS[range[2]], new Date().getMonth())) return val;
+    }
+    return null;
+}
+
+function winterCellKey(lat, lng) {
+    return (Math.round(lat / WINTER_LIMIT_CELL_DEG) * WINTER_LIMIT_CELL_DEG).toFixed(3) + '_' +
+           (Math.round(lng / WINTER_LIMIT_CELL_DEG) * WINTER_LIMIT_CELL_DEG).toFixed(3);
+}
+
+function getWinterLimitCache() {
+    try {
+        const c = JSON.parse(localStorage.getItem(WINTER_LIMIT_CACHE_KEY) || '{}');
+        return (c && typeof c === 'object') ? c : {};
+    } catch (e) { return {}; }
+}
+
+function setWinterLimitCacheEntry(key, valueKmh) {
+    try {
+        const cache = getWinterLimitCache();
+        cache[key] = { v: (isFinite(valueKmh) && valueKmh > 0) ? Math.round(valueKmh) : null, ts: Date.now() };
+        const keys = Object.keys(cache);
+        if (keys.length > WINTER_LIMIT_CACHE_MAX) {
+            keys.sort((a, b) => (cache[a].ts || 0) - (cache[b].ts || 0));
+            keys.slice(0, keys.length - WINTER_LIMIT_CACHE_MAX).forEach((k) => { delete cache[k]; });
+        }
+        localStorage.setItem(WINTER_LIMIT_CACHE_KEY, JSON.stringify(cache));
+    } catch (e) {}
+}
+
+function getWinterLimitCached(lat, lng) {
+    if (!isFinite(lat) || !isFinite(lng)) return { status: 'hit', value: null };
+    const e = getWinterLimitCache()[winterCellKey(lat, lng)];
+    if (!e || !isFinite(e.ts) || (Date.now() - e.ts) > WINTER_LIMIT_CACHE_TTL_MS) return { status: 'miss' };
+    return { status: 'hit', value: e.v };
+}
+
+function distPointToSegmentM(lat, lng, lat1, lng1, lat2, lng2) {
+    const R = 6371000;
+    const toR = Math.PI / 180;
+    const cx = Math.cos(lat * toR);
+    const ax = (lng1 - lng) * cx * R * toR;
+    const ay = (lat1 - lat) * R * toR;
+    const bx = (lng2 - lng) * cx * R * toR;
+    const by = (lat2 - lat) * R * toR;
+    const dx = bx - ax;
+    const dy = by - ay;
+    const len2 = dx * dx + dy * dy;
+    let t = (len2 > 0) ? (-(ax * dx + ay * dy)) / len2 : 0;
+    t = Math.max(0, Math.min(1, t));
+    const qx = ax + dx * t;
+    const qy = ay + dy * t;
+    return Math.sqrt(qx * qx + qy * qy);
+}
+
+function distPointToGeometryM(lat, lng, geom) {
+    if (!geom || !geom.coordinates) return Infinity;
+    const lines = (geom.type === 'MultiLineString') ? geom.coordinates : [geom.coordinates];
+    let min = Infinity;
+    for (const line of lines) {
+        if (!Array.isArray(line)) continue;
+        for (let i = 0; i < line.length - 1; i++) {
+            const d = distPointToSegmentM(lat, lng, line[i][1], line[i][0], line[i + 1][1], line[i + 1][0]);
+            if (d < min) min = d;
+        }
+    }
+    return min;
+}
+
+function fetchWinterLimitVayla(lat, lng) {
+    if (!isFinite(lat) || !isFinite(lng)) return;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+    const key = winterCellKey(lat, lng);
+    if (winterLimitInFlight[key]) return;
+    winterLimitInFlight[key] = true;
+
+    const dLat = 0.0035;
+    const dLon = 0.0035 / Math.max(0.25, Math.cos(lat * Math.PI / 180));
+    const bbox = (lng - dLon).toFixed(5) + ',' + (lat - dLat).toFixed(5) + ',' +
+                 (lng + dLon).toFixed(5) + ',' + (lat + dLat).toFixed(5) + ',EPSG:4326';
+    const url = 'https://avoinapi.vaylapilvi.fi/vaylatiedot/wfs?service=WFS&version=2.0.0&request=GetFeature' +
+        '&typeNames=tiestotiedot:talvi_ja_kesanopeusrajoitukset&srsName=EPSG:4326&outputFormat=application/json' +
+        '&bbox=' + encodeURIComponent(bbox);
+
+    fetch(url)
+        .then((res) => {
+            if (!res.ok) throw new Error('wfs ' + res.status);
+            return res.json();
+        })
+        .then((data) => {
+            let best = null;
+            let bestD = WINTER_LIMIT_MATCH_MAX_M;
+            const feats = (data && Array.isArray(data.features)) ? data.features : [];
+            feats.forEach((f) => {
+                const w = parseInt(f && f.properties && f.properties.talven_ja_pimean_nopeusrajoitus, 10);
+                if (!isFinite(w) || w <= 0 || !f.geometry) return;
+                const d = distPointToGeometryM(lat, lng, f.geometry);
+                if (d < bestD) { bestD = d; best = w; }
+            });
+            setWinterLimitCacheEntry(key, best);
+            if (typeof window.updateDashboardSpeedLimit === 'function') {
+                window.updateDashboardSpeedLimit(getRoadSpeedLimitSnapshot());
+            }
+        })
+        .catch(() => {})
+        .finally(() => {
+            delete winterLimitInFlight[key];
+        });
+}
+
+function applyWinterSpeedLimitOverlay(snap) {
+    if (!snap || !isFinite(snap.limitKmh) || snap.limitKmh <= 0) return snap;
+    if (!isWinterLimitSeason()) return snap;
+    if (typeof currentCarType !== 'undefined' && (currentCarType === 'bike' || currentCarType === 'walking')) return snap;
+
+    const lat = roadSpeedLimitState.lastFetchLat;
+    const lng = roadSpeedLimitState.lastFetchLng;
+    const osmW = Number(snap.osmWinterKmh);
+    if (isFinite(osmW) && osmW > 0 && osmW < snap.limitKmh) {
+        snap.limitKmh = Math.round(osmW);
+        snap.winter = true;
+        snap.winterSource = 'osm';
+        return snap;
+    }
+
+    const cached = getWinterLimitCached(lat, lng);
+    if (cached.status === 'miss') fetchWinterLimitVayla(lat, lng);
+    if (cached.status === 'hit' && isFinite(cached.value) && cached.value > 0 && cached.value < snap.limitKmh) {
+        snap.limitKmh = Math.round(cached.value);
+        snap.winter = true;
+        snap.winterSource = 'vayla';
+        return snap;
+    }
+
+    const rt = String(snap.roadType || '').toLowerCase();
+    if ((rt === 'motorway' || rt === 'trunk') && snap.limitKmh === 120) {
+        snap.limitKmh = 100;
+        snap.winter = true;
+        snap.winterSource = 'estimate';
+        snap.source = 'estimated';
+    }
+    return snap;
 }
 
 function parseMaxspeedToKmh(raw) {
@@ -612,19 +826,20 @@ function requestRoadSpeedLimit(lat, lng, headingDeg, speedKmh) {
             const roadWayId = (best.id === undefined || best.id === null) ? null : String(best.id);
 
             const rawMax = tags.maxspeed || tags['maxspeed:forward'] || tags['maxspeed:backward'] || '';
+            const osmWinter = parseWinterMaxspeedFromTags(tags);
             const exact = parseMaxspeedToKmh(rawMax);
             if (isFinite(exact) && exact > 0) {
-                setRoadSpeedLimitState(exact, 'exact', roadName, roadType, roadWayId);
+                setRoadSpeedLimitState(exact, 'exact', roadName, roadType, roadWayId, osmWinter);
                 return;
             }
 
             const estimated = estimateSpeedLimitFromRoadType(roadType);
             if (isFinite(estimated) && estimated > 0) {
-                setRoadSpeedLimitState(estimated, 'estimated', roadName, roadType, roadWayId);
+                setRoadSpeedLimitState(estimated, 'estimated', roadName, roadType, roadWayId, osmWinter);
                 return;
             }
 
-            setRoadSpeedLimitState(null, 'unknown', roadName, roadType, roadWayId);
+            setRoadSpeedLimitState(null, 'unknown', roadName, roadType, roadWayId, osmWinter);
         })
         .catch(() => {
             // Jos haku epäonnistuu, pidä vanha arvo jos sellainen on.

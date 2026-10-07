@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.55 (SVG-ikonit + pro-viimeistely + teemasiivous)
+**Versio:** v6.56 (talvinopeusrajoitukset: Väylä WFS + OSM conditional)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,7 +71,8 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.55):**
+### **Nykyinen tilanne (v6.56):**
+- Talvirajoitukset: Väyläviraston WFS (`tiestotiedot:talvi_ja_kesanopeusrajoitukset`) + OSM maxspeed:winter/conditional + moottoritie 120->100-varmistus; kausi-ikkuna 15.10-15.4, ohitus Asetukset -> Talvinopeusrajoitukset
 - Ulkoasu: teemat siivottu - jäljellä Digitaalinen / Velocity Stage / Clean Digital / Digitaalinen + graafit (LCARS, Time Circuit, Pulse HUD ja neulamittari poistettu v6.53)
 - Ikonit: yhtenäinen SVG-sprite (36 symbolia), ei emoji-ikoneja UI-chromessa; `window.uiIcon(id)` dynaamisille ikoneille
 - Näytöt: `tabular-nums` kaikissa lukemissa; fonttiskaala 10/12/14/16/20/24/28/34 px
@@ -113,6 +114,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.56 - Talvinopeusrajoitukset**
+- ✅ Väyläviraston WFS-aineisto (avoinapi.vaylapilvi.fi, CORS-avoin, ilmainen) tiekohtaiseen talvirajoitukseen
+- ✅ OSM maxspeed:winter / maxspeed:conditional -parsinta + moottoritie 120->100-varmistus
+- ✅ Asetus Auto (15.10-15.4) / Talvi / Kesä; rajoituskortti näyttää "Talvirajoitus"-lähteen
+- ✅ PWA-versionosto tehty v6.56
 
 ### **v6.55 - Ammattimainen viimeistely**
 - ✅ Emoji-ikonit korvattu 36-symbolisella SVG-spritellä (valikko, navit, napit, otsikot, modaalit)

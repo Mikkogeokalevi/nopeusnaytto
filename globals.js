@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.55 (teemojen siivous + S24 Ultra -optimointi)
-const APP_VERSION = "6.55";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.56 (talvinopeusrajoitukset - Vayla WFS + OSM conditional)
+const APP_VERSION = "6.56";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

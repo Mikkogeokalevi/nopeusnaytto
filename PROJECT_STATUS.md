@@ -10,17 +10,38 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.55`
+- **Nykyversio:** `v6.56`
 - **Pääpaino juuri nyt:**
   - Ammattimainen, siisti ulkoasu ajokäyttöön: Clean Digital päänäkymänä, SVG-ikonit, yhtenäinen typografia
   - POI-varoitusten luotettavuus ajossa
-  - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM)
+  - Tiekohtaisen nopeusrajoituksen osumatarkkuus (OSM + Väyläviraston talvirajoitusaineisto)
   - Nopeusnäytön luotettavuus (GPS-nopeuden pudotussuodatus + speed-trendin 0-140 asteikko + A/B/C-luottamusindikaattori + cruise-stability)
   - Saavutettavuus: prefers-reduced-motion, aria-labelit, selkokieliset virhetilat (GPS/offline)
 
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.56 - Talvinopeusrajoitukset (Väylävirasto WFS + OSM conditional)
+
+**Mitä muutettiin:**
+1. `gps.js`: talvirajoituskerros rajoituskorttiin - `isWinterLimitSeason()` (auto-ikkuna 1.11-15.4, ohitus asetuksesta), `parseWinterMaxspeedFromTags()` (OSM maxspeed:winter + maxspeed:conditional kuukausialueet), `fetchWinterLimitVayla()` hakee `tiestotiedot:talvi_ja_kesanopeusrajoitukset`-featureja bbox:lla (EPSG:4326, JSON), lähin viivageometria pistematchauksella (<50 m), välimuisti localStorageen ruudukoitettuna (0.004° solu, 7 pv TTL).
+2. `applyWinterSpeedLimitOverlay()` -prioriteetti: OSM winter-tag → Väylä WFS → moottoritie 120→100-arvio. Overlay lasketaan snapshotissa, joten asetuksen vaihto ja myöhässä palaava WFS-haku päivittävät näytön ilman uutta OSM-hakua.
+3. `ui.js` `updateDashboardSpeedLimit`: lähteeksi "Talvirajoitus" / "Talvirajoitus (arvio)" kun overlay aktiivinen.
+4. Asetukset → Talvinopeusrajoitukset: Auto / Talvi päällä / Kesä päällä (localStorage `winterSpeedLimitMode`).
+5. `i-snowflake`-ikoni spriteen; talvirajoitus ei koske bike/walking-tiloja.
+6. PWA- ja julkaisuversiot nostettiin v6.56:een.
+
+**Tiedostot:**
+- `gps.js` (talvirajoituslogiikka + WFS-haku + välimuisti)
+- `ui.js` (rajoituskortin talviteksti + asetuksen kytkentä)
+- `index.html` (asetusosio + snowflake-symbole)
+- `help.js` (v6.56 changelog FI/EN)
+- `globals.js`, `sw.js` (versioputki)
+
+**Huomio:** `tiestotiedot:talvi_ja_kesanopeusrajoitukset` WFS-kerros sisältää vain osuudet joissa rajoitus todella laskee talveksi (`talven_ja_pimean_nopeusrajoitus`-kenttä). Digiroad-nimiavaruuden kerrokset ovat vanhentuneita (ylläpito siirtyi Fintrafficille 2026) - käytetään Tierekisteri/Velho-pohjaista tiestotiedot-nimiavaruutta.
+
+---
 
 ### v6.55 - Ammattimainen viimeistely: SVG-ikonit, numerostabiilius, saavutettavuus
 
