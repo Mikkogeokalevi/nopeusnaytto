@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.56 (talvinopeusrajoitukset: Väylä WFS + OSM conditional)
+**Versio:** v6.57 (S24 Ultra suorituskykyoptimointi)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,7 +71,8 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.56):**
+### **Nykyinen tilanne (v6.57):**
+- Suorituskyky: Velocity-elementit transform-pohjaisia (GPU), piilossa olevien näkymien DOM-kirjoitukset skipataan, crash-varmuuskopio throttlettu 10 s, WakeLock-cooldown, ylinopeuden haptiikka
 - Talvirajoitukset: Väyläviraston WFS (`tiestotiedot:talvi_ja_kesanopeusrajoitukset`) + OSM maxspeed:winter/conditional + moottoritie 120->100-varmistus; kausi-ikkuna 15.10-15.4, ohitus Asetukset -> Talvinopeusrajoitukset
 - Ulkoasu: teemat siivottu - jäljellä Digitaalinen / Velocity Stage / Clean Digital / Digitaalinen + graafit (LCARS, Time Circuit, Pulse HUD ja neulamittari poistettu v6.53)
 - Ikonit: yhtenäinen SVG-sprite (36 symbolia), ei emoji-ikoneja UI-chromessa; `window.uiIcon(id)` dynaamisille ikoneille
@@ -114,6 +115,13 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.57 - S24 Ultra suorituskykyoptimointi**
+- ✅ Velocity Stage width/left-animaatiot -> transform (GPU, ei layout-thrashia)
+- ✅ Piilossa olevien näkymien DOM-kirjoitukset skipataan; graafit vain 'both'-tilassa
+- ✅ saveCrashData throttle 10 s; WakeLock-retry cooldown; välimuistit (rajoitus, accent, lanet)
+- ✅ Ylinopeuden haptiikka; icon-btn 42 px; vaakamoodin safe-area-reunat
+- ✅ PWA-versionosto tehty v6.57
 
 ### **v6.56 - Talvinopeusrajoitukset**
 - ✅ Väyläviraston WFS-aineisto (avoinapi.vaylapilvi.fi, CORS-avoin, ilmainen) tiekohtaiseen talvirajoitukseen

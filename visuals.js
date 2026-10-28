@@ -25,6 +25,9 @@ var gforceGraphCtx = null;
 var speedometerStyle = 'digital'; // digital, cinema, clean, both
 var speedHudTheme = 'cyber-blue'; // cyber-blue, sunset-gold
 var showLiveGraphs = false;
+var velocityLanesCache = null;
+var velocityLastActiveLanes = -1;
+var cachedAccentColor = null;
 
 function applyHudTheme(theme) {
     const body = document.body;
@@ -34,6 +37,7 @@ function applyHudTheme(theme) {
     body.classList.remove('hud-theme-cyber-blue', 'hud-theme-sunset-gold');
     body.classList.add(`hud-theme-${normalized}`);
     speedHudTheme = normalized;
+    cachedAccentColor = null; // Varmuudeksi: päivitetään G-indikaattorin väriuudelleenlaskenta
 
     localStorage.setItem('speedHudTheme', normalized);
 }
@@ -59,9 +63,8 @@ function updateCleanDigital(speed) {
     // Päivitä nopeusnumero (2 desimaalia)
     speedEl.textContent = speed.toFixed(2);
 
-    // Rajoituksen ylitys -> punainen välähdys
-    const limitEl = document.getElementById('dash-speed-limit');
-    const limit = limitEl ? Number(limitEl.textContent) : 0;
+    // Rajoituksen ylitys -> punainen välähdys (välimuistitettu arvo, ei DOM-lukua per tiki)
+    const limit = Number(window.lastShownSpeedLimitKmh) || 0;
     const overLimit = limit > 0 && speed > limit;
     progress.classList.toggle('over-limit', overLimit);
     speedEl.classList.toggle('over-limit', overLimit);
@@ -151,24 +154,30 @@ function updateVelocityTrendLines(speed, altitude) {
 }
 
 function updateVelocityStage(speed, altitude) {
+    const s = Math.max(0, Number(speed) || 0);
+
+    // Trendidata kerätään aina (kevyt), jotta käyttäjä näkee historian
+    // myös näkymään juuri vaihdettaessa. DOM-kirjoitukset vain kun näkymä on auki.
+    updateVelocityTrendLines(s, altitude);
+
+    if (speedometerStyle !== 'cinema') return;
+
     const speedText = document.getElementById('dash-speed-cinema');
     const status = document.getElementById('velocity-status');
-    const trackFill = document.getElementById('velocity-track-fill');
-    const marker = document.getElementById('velocity-track-marker');
     const stage = document.getElementById('velocity-stage-container');
+    const trackShell = stage ? stage.querySelector('.velocity-track-shell') : null;
     const lanesWrap = document.getElementById('velocity-lanes');
-    const lanes = lanesWrap ? lanesWrap.querySelectorAll('.velocity-lane') : [];
-    if (!speedText || !status || !trackFill || !marker || !stage) return;
+    if (!velocityLanesCache && lanesWrap) velocityLanesCache = lanesWrap.querySelectorAll('.velocity-lane');
+    const lanes = velocityLanesCache || [];
+    if (!speedText || !status || !stage || !trackShell) return;
 
-    const s = Math.max(0, Number(speed) || 0);
     const stageMaxSpeed = (currentCarType === 'bike') ? 60 : 180;
     const ratio = Math.max(0, Math.min(1, s / stageMaxSpeed));
-    const pct = Math.round(ratio * 100);
 
     speedText.textContent = s.toFixed(1);
-    updateVelocityTrendLines(s, altitude);
-    trackFill.style.width = `${pct}%`;
-    marker.style.left = `${pct}%`;
+    // Transform-pohjainen päivitys (GPU) - ei layout-rekalkkia per tiki
+    trackShell.style.setProperty('--p', ratio.toFixed(3));
+    trackShell.style.setProperty('--marker-x', `${Math.round(ratio * trackShell.clientWidth)}px`);
     stage.style.setProperty('--stage-shift', `${Math.round(ratio * 32)}px`);
 
     let state = 'PAIKALLAAN';
@@ -184,10 +193,13 @@ function updateVelocityStage(speed, altitude) {
     status.textContent = state;
 
     const active = Math.round(ratio * lanes.length);
-    lanes.forEach((lane, idx) => {
-        if (idx < active) lane.classList.add('active');
-        else lane.classList.remove('active');
-    });
+    if (active !== velocityLastActiveLanes) {
+        velocityLastActiveLanes = active;
+        lanes.forEach((lane, idx) => {
+            if (idx < active) lane.classList.add('active');
+            else lane.classList.remove('active');
+        });
+    }
 }
 
 // =========================================================
@@ -263,14 +275,18 @@ function drawGforceGraph() {
 // =========================================================
 
 function updateSpeedometer(speed, altitude) {
-    const speedCinema = document.getElementById('dash-speed-cinema');
-    if (speedCinema) speedCinema.textContent = (Math.max(0, Number(speed) || 0)).toFixed(1);
-
-    updateVelocityStage(speed, altitude);
-    updateCleanDigital(speed);
+    // Päivitä vain aktiivisena oleva näkymä - piilossa olevien DOM-kirjoitukset
+    // ovat turhaa työtä jokaisella GPS-tikillä.
+    if (speedometerStyle === 'cinema' || speedometerStyle === 'clean' || speedometerStyle === 'both') {
+        updateVelocityStage(speed, altitude);
+        if (speedometerStyle === 'clean') updateCleanDigital(speed);
+    }
 }
 
 function updateGraphs(speed, altitude, gforce) {
+    // Piirretään vain kun graafinäkymä on käytössä ja ruutu näkyvissä
+    if (speedometerStyle !== 'both' || document.hidden) return;
+
     // Lisää data puskuriin
     speedGraphData.push(speed);
     altitudeGraphData.push(altitude);
@@ -306,8 +322,11 @@ function updateGIndicator(gx, gy) {
         indicator.style.background = '#ff9800';
         indicator.style.boxShadow = '0 0 10px #ff9800';
     } else {
-        indicator.style.background = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
-        indicator.style.boxShadow = '0 0 10px var(--accent-color)';
+        if (!cachedAccentColor) {
+            cachedAccentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#2979ff';
+        }
+        indicator.style.background = cachedAccentColor;
+        indicator.style.boxShadow = `0 0 10px ${cachedAccentColor}`;
     }
 }
 

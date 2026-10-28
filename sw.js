@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.56 winter-limits
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.57 perf
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.56-winter-limits'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.57-perf'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

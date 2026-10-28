@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.56`
+- **Nykyversio:** `v6.57`
 - **Pääpaino juuri nyt:**
   - Ammattimainen, siisti ulkoasu ajokäyttöön: Clean Digital päänäkymänä, SVG-ikonit, yhtenäinen typografia
   - POI-varoitusten luotettavuus ajossa
@@ -21,6 +21,21 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.57 - S24 Ultra suorituskykyoptimointi
+
+**Mitä muutettiin:**
+1. `style.css`: `.velocity-track-fill`/`marker` layout-animaatioista (width/left) transform-pohjaisiksi (`scaleX(--p)` + `translateX(--marker-x)` + `will-change`) - ei enää layout-rekalkkia jokaisella GPS-tikillä. `transition: all` -> tarkennetut ominaisuudet 4 paikassa. `.icon-btn` 34->42 px kosketusalue. safe-area-inset-left/right headeriin ja alanavigaatioon.
+2. `visuals.js`: piilossa olevan näkymän DOM-kirjoitukset skipataan (`speedometerStyle`-guard); graafit piirretään vain 'both'-tilassa ja kun dokumentti näkyy; Velocity-lanet välimuistitetaan ja aktiivisten määrän muutoksessa vasta kirjoitetaan; `getComputedStyle` G-indikaattorissa välimuistitetaan; Clean Digitalin rajoituslukema välimuistista (`window.lastShownSpeedLimitKmh`) DOM-parsinnan sijaan.
+3. `ui.js`: `updateDashboardUI` - label/unit-tekstit kirjoitetaan vain tilan vaihtuessa (oli joka tiki), kuumat kentät `textContent`+dirty-check, rajoitus välimuistista, ylinopeuden haptiikka (`navigator.vibrate(90)` kerran per ylitys).
+4. `gps.js`: `saveCrashData` throttle 10 s (oli joka GPS-tikki -> koko reitin JSON-sarjallistus/sekunti); tauko-tallennus pakotetaan; `requestWakeLock` cooldown 10 s (ei spämmiä jos API kieltäytyy).
+5. PWA- ja julkaisuversiot nostettiin v6.57:een.
+
+**Tiedostot:**
+- `style.css`, `visuals.js`, `ui.js`, `gps.js`
+- `globals.js`, `sw.js`, `index.html`, `help.js` (versioputki + changelog)
+
+---
 
 ### v6.56 - Talvinopeusrajoitukset (Väylävirasto WFS + OSM conditional)
 

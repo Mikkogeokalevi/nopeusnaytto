@@ -1235,7 +1235,7 @@ if (btnPause) {
             statusEl.innerText = "TAUKO";
             statusEl.style.color = "#fbc02d";
         }
-        saveCrashData(); // Tallenna tila myös tauolla
+        saveCrashData(true); // Tallenna tila myös tauolla (pakotettu, ei throttlettu)
     });
 }
 
@@ -2353,9 +2353,15 @@ setInterval(() => {
     if (isGPSActive && wakeLock === null) requestWakeLock();
 }, 30000);
 
+var lastWakeLockAttemptTs = 0;
+
 async function requestWakeLock() {
     // Käyttäjän asetus: jos pois päältä, ei haeta wakeLockia
     if (localStorage.getItem('keepScreenOn') === 'false') return;
+    // Cooldown: jos API kieltäytyy/puuttuu, älä yritä joka GPS-tikissä
+    const now = Date.now();
+    if (now - lastWakeLockAttemptTs < 10000) return;
+    lastWakeLockAttemptTs = now;
     try {
         if ('wakeLock' in navigator) {
             wakeLock = await navigator.wakeLock.request('screen');
@@ -2373,8 +2379,16 @@ async function requestWakeLock() {
 // 4. CRASH RECOVERY LOGIIKKA (PÄIVITETTY v6.12 SESSION SUPPORT)
 // =========================================================
 
-function saveCrashData() {
+var lastCrashSaveTs = 0;
+const CRASH_SAVE_MIN_INTERVAL_MS = 10000;
+
+function saveCrashData(force) {
     if (!isRecording) return;
+    // GPS-tikki kutsuu tätä joka sekunti - throttle: reitin JSON-sarjallistus
+    // koko historian osalta on merkittävin CPU/akku-kustannus ajossa.
+    const now = Date.now();
+    if (force !== true && (now - lastCrashSaveTs) < CRASH_SAVE_MIN_INTERVAL_MS) return;
+    lastCrashSaveTs = now;
     const crashData = {
         startTime: startTime ? startTime.toISOString() : null,
         totalPauseTime: totalPauseTime,

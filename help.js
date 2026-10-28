@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - BILINGUAL MASTER GUIDE (v6.56 WINTER SPEED LIMITS)
+// HELP.JS - BILINGUAL MASTER GUIDE (v6.57 S24 ULTRA PERFORMANCE)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS ---
@@ -9,9 +9,18 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>⚡ UUTTA v6.57: Suorituskykyoptimointi (S24 Ultra):</strong>
+                        <ul>
+                            <li><strong>GPU-piirto:</strong> Velocity Stagen progress-palkki ja markkeri siirtyivät layout-ominaisuuksista (width/left) transform-animaatioihin - ei enää layout-rekalkkia jokaisella GPS-päivityksellä.</li>
+                            <li><strong>Akkusäästö:</strong> crash-varmuuskopion reittisarjallistus throttlettiin 10 sekuntiin (oli joka sekunti).</li>
+                            <li><strong>Piilossa olevan näkymän työ loppui:</strong> toisena olevat mittaristot eivät enää kirjoita DOM:iin kun ne ovat pois käytöstä; graafit piirretään vain "Digitaalinen + graafit" -tilassa.</li>
+                            <li><strong>Välimuistit:</strong> rajoituslukema, HUD-väri ja Velocity-lanet välimuistitetaan - ei DOM-parsintaa tai getComputedStyle-kutsuja per tiki.</li>
+                            <li><strong>Ylinopeuden haptiikka:</strong> laite tärähtää kerran kun rajoitus ylittyy.</li>
+                            <li><strong>Kosketusalueet ja safe-area:</strong> ikoninapit 34→42 px; vaakamoodin safe-area-inset-reunat headeriin ja alanavigaatioon.</li>
+                        </ul>
                         <strong>❄️ UUTTA v6.56: Talvinopeusrajoitukset:</strong>
                         <ul>
                             <li><strong>Virallinen talvirajoitusdata:</strong> talvi-ikkunassa sovellus hakee tiekohtaisen talvi-/pimeänajanrajoituksen Väyläviraston avoimesta aineistosta (perustuu ELY-keskusten nopeusrajoituspäätöksiin, kattaa valtion tiet).</li>
@@ -596,9 +605,18 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>⚡ NEW in v6.57: Performance optimization (S24 Ultra):</strong>
+                        <ul>
+                            <li><strong>GPU rendering:</strong> Velocity Stage progress bar and marker moved from layout properties (width/left) to transform animations - no more layout recalculation on every GPS tick.</li>
+                            <li><strong>Battery savings:</strong> crash-backup route serialization throttled to 10 seconds (was every second).</li>
+                            <li><strong>No wasted work:</strong> hidden speedometer views no longer write to the DOM; live graphs draw only in "Digital + graphs" mode.</li>
+                            <li><strong>Caches:</strong> speed limit value, HUD accent color and Velocity lanes are cached - no DOM parsing or getComputedStyle calls per tick.</li>
+                            <li><strong>Overspeed haptics:</strong> the device vibrates once when the speed limit is exceeded.</li>
+                            <li><strong>Touch targets & safe area:</strong> icon buttons 34→42 px; landscape safe-area-inset margins on the header and bottom navigation.</li>
+                        </ul>
                         <strong>❄️ NEW in v6.56: Winter speed limits:</strong>
                         <ul>
                             <li><strong>Official winter limit data:</strong> during the winter window the app fetches the road-specific winter/dark-time limit from the Finnish Transport Infrastructure Agency open data (based on ELY centre decisions, covers state roads).</li>

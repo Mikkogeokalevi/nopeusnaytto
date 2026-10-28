@@ -1054,30 +1054,53 @@ function switchView(viewName) {
     }
 }
 
+var dashUiLastMode = null;
+var overLimitHapticArmed = true;
+
 function updateDashboardUI(spd, max, dist, time, alt, avg) {
+    const lim = Number(window.lastShownSpeedLimitKmh) || 0;
+
     if(dashSpeedEl) {
-        dashSpeedEl.innerText = spd.toFixed(1);
+        const txt = spd.toFixed(1);
+        if (dashSpeedEl._lastTxt !== txt) {
+            dashSpeedEl._lastTxt = txt;
+            dashSpeedEl.textContent = txt;
+        }
         if (Math.abs(spd) >= 100) dashSpeedEl.classList.add('three-digits');
         else dashSpeedEl.classList.remove('three-digits');
-        
-        const lim = dashSpeedLimitEl ? Number(dashSpeedLimitEl.textContent) : 0;
+
         if (spd >= 120 || (lim > 0 && spd > lim)) dashSpeedEl.style.color = '#ff1744';
         else dashSpeedEl.style.color = '';
     }
 
+    // Ylinopeuden haptiikka: tärähdys kerran kun rajoitus ylittyy, aseistautuu uudelleen alittaessa
+    if (lim > 0 && spd > lim) {
+        if (overLimitHapticArmed) {
+            overLimitHapticArmed = false;
+            if (navigator.vibrate) navigator.vibrate(90);
+        }
+    } else if (!overLimitHapticArmed && spd <= lim) {
+        overLimitHapticArmed = true;
+    }
+
     // --- KÄVELY-TILA (Walking Mode) ---
     // Vaihdetaan tietyt ruudut näyttämään askeleita, tahtia ja kaloreita
-    if (currentCarType === 'walking') {
-        
+    const uiMode = (currentCarType === 'walking') ? 'walking' : 'car';
+    const modeChanged = (uiMode !== dashUiLastMode);
+    dashUiLastMode = uiMode;
+
+    if (uiMode === 'walking') {
+
         // 1. Max Speed -> Askeleet (Arvio: 1312 askelta / km)
         const steps = Math.floor(dist * 1312);
         if(dashMaxSpeedEl) {
-            dashMaxSpeedEl.innerText = steps;
-            // Etsitään label ja unit
-            const label = dashMaxSpeedEl.parentElement.querySelector('.stat-label');
-            const unit = dashMaxSpeedEl.parentElement.querySelector('.stat-unit');
-            if(label) label.innerText = "Askeleet";
-            if(unit) unit.innerText = "kpl (arvio)";
+            dashMaxSpeedEl.textContent = String(steps);
+            if (modeChanged) {
+                const label = dashMaxSpeedEl.parentElement.querySelector('.stat-label');
+                const unit = dashMaxSpeedEl.parentElement.querySelector('.stat-unit');
+                if(label) label.textContent = "Askeleet";
+                if(unit) unit.textContent = "kpl (arvio)";
+            }
         }
 
         // 2. Avg Speed -> Tahti (min/km)
@@ -1090,27 +1113,30 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
             const pMin = Math.floor(pace);
             const pSec = Math.round((pace - pMin) * 60);
             const pSecStr = pSec < 10 ? "0"+pSec : pSec;
-            dashAvgEl.innerText = (pMin > 99) ? "--:--" : `${pMin}:${pSecStr}`;
-            
-            const label = dashAvgEl.parentElement.querySelector('.stat-label');
-            const unit = dashAvgEl.parentElement.querySelector('.stat-unit');
-            if(label) label.innerText = "Tahti";
-            if(unit) unit.innerText = "min/km";
+            dashAvgEl.textContent = (pMin > 99) ? "--:--" : `${pMin}:${pSecStr}`;
+
+            if (modeChanged) {
+                const label = dashAvgEl.parentElement.querySelector('.stat-label');
+                const unit = dashAvgEl.parentElement.querySelector('.stat-unit');
+                if(label) label.textContent = "Tahti";
+                if(unit) unit.textContent = "min/km";
+            }
         }
 
         // 3. Suunta -> Kalorit (Arvio: 55 kcal / km)
         const cals = Math.floor(dist * 55);
         if(dashHeadingEl) {
-            dashHeadingEl.innerText = cals;
+            dashHeadingEl.textContent = String(cals);
             // Koska suunta-ruudussa on nuoli, piilotetaan se
             if(compassArrowEl) compassArrowEl.style.display = 'none';
             dashHeadingEl.style.fontSize = "20px"; // Palautetaan fonttikoko
 
-            // Etsitään label (Suunta-ruudun rakenne on erilainen)
-            const card = dashHeadingEl.closest('.stat-card');
-            if(card) {
-                const label = card.querySelector('.stat-label');
-                if(label) label.innerText = "Kalorit";
+            if (modeChanged) {
+                const card = dashHeadingEl.closest('.stat-card');
+                if(card) {
+                    const label = card.querySelector('.stat-label');
+                    if(label) label.textContent = "Kalorit";
+                }
             }
         }
         // Piilota G-pallo
@@ -1118,45 +1144,59 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
 
     } else {
         // --- AUTO-TILA (Palautetaan normaalit) ---
-        
+
         // 1. Max Speed
         if(dashMaxSpeedEl) {
-            dashMaxSpeedEl.innerText = max.toFixed(1);
-            const label = dashMaxSpeedEl.parentElement.querySelector('.stat-label');
-            const unit = dashMaxSpeedEl.parentElement.querySelector('.stat-unit');
-            if(label) label.innerText = "Huippu";
-            if(unit) unit.innerText = "km/h";
+            const txt = max.toFixed(1);
+            if (dashMaxSpeedEl._lastTxt !== txt) { dashMaxSpeedEl._lastTxt = txt; dashMaxSpeedEl.textContent = txt; }
+            if (modeChanged) {
+                const label = dashMaxSpeedEl.parentElement.querySelector('.stat-label');
+                const unit = dashMaxSpeedEl.parentElement.querySelector('.stat-unit');
+                if(label) label.textContent = "Huippu";
+                if(unit) unit.textContent = "km/h";
+            }
         }
 
         // 2. Avg Speed
         if(dashAvgEl) {
-            if(avg !== undefined) dashAvgEl.innerText = avg.toFixed(1);
-            const label = dashAvgEl.parentElement.querySelector('.stat-label');
-            const unit = dashAvgEl.parentElement.querySelector('.stat-unit');
-            if(label) label.innerText = "Ø Nopeus";
-            if(unit) unit.innerText = "km/h";
+            if(avg !== undefined) {
+                const txt = avg.toFixed(1);
+                if (dashAvgEl._lastTxt !== txt) { dashAvgEl._lastTxt = txt; dashAvgEl.textContent = txt; }
+            }
+            if (modeChanged) {
+                const label = dashAvgEl.parentElement.querySelector('.stat-label');
+                const unit = dashAvgEl.parentElement.querySelector('.stat-unit');
+                if(label) label.textContent = "Ø Nopeus";
+                if(unit) unit.textContent = "km/h";
+            }
         }
 
         // 3. Suunta
-        if(dashHeadingEl) {
+        if(dashHeadingEl && modeChanged) {
             // Suunnan päivitys hoidetaan gps.js:ssä, mutta varmistetaan elementit
             if(compassArrowEl) compassArrowEl.style.display = 'inline-block';
-            
+
             const card = dashHeadingEl.closest('.stat-card');
             if(card) {
                 const label = card.querySelector('.stat-label');
-                if(label) label.innerText = "Suunta";
+                if(label) label.textContent = "Suunta";
             }
         }
         // Näytä G-pallo (paitsi jos minimalistinen)
-        if(gBubbleEl && !document.body.classList.contains('minimalist-mode')) {
+        if(gBubbleEl && modeChanged && !document.body.classList.contains('minimalist-mode')) {
             gBubbleEl.parentElement.parentElement.style.display = 'block';
         }
     }
 
     // Muut (Matka, Aika, Korkeus) ovat yhteisiä
-    if(dashDistEl) dashDistEl.innerText = dist.toFixed(2); 
-    if(dashAltEl) dashAltEl.innerText = Math.round(alt);
+    if(dashDistEl) {
+        const txt = dist.toFixed(2);
+        if (dashDistEl._lastTxt !== txt) { dashDistEl._lastTxt = txt; dashDistEl.textContent = txt; }
+    }
+    if(dashAltEl) {
+        const txt = String(Math.round(alt));
+        if (dashAltEl._lastTxt !== txt) { dashAltEl._lastTxt = txt; dashAltEl.textContent = txt; }
+    }
 
 }
 
@@ -1175,6 +1215,7 @@ window.updateDashboardSpeedLimit = function(info) {
 
     if (currentCarType === 'bike' || currentCarType === 'walking') {
         dashLimitCardEl.style.display = 'none';
+        window.lastShownSpeedLimitKmh = 0;
         return;
     }
     dashLimitCardEl.style.display = '';
@@ -1182,6 +1223,10 @@ window.updateDashboardSpeedLimit = function(info) {
     const data = info || {};
     const val = Number(data.limitKmh);
     const source = String(data.source || 'unknown').toLowerCase();
+
+    // Välimuistitetaan viimeisin näytetty rajoitus: updateDashboardUI ja
+    // updateCleanDigital käyttävät tätä suoraan ilman DOM-parsintaa per tiki.
+    window.lastShownSpeedLimitKmh = (isFinite(val) && val > 0) ? Math.round(val) : 0;
 
     dashLimitCardEl.classList.remove('limit-exact', 'limit-estimated', 'limit-unknown');
 
