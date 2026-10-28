@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.58`
+- **Nykyversio:** `v6.59`
 - **Pääpaino juuri nyt:**
   - Ammattimainen, siisti ulkoasu ajokäyttöön: Clean Digital päänäkymänä, SVG-ikonit, yhtenäinen typografia
   - POI-varoitusten luotettavuus ajossa
@@ -21,6 +21,23 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.59 - Yhdistetyt äänet + POI/ylitys-puhetekstit
+
+**Mitä muutettiin:**
+1. Uusi "Äänet ja varoitukset" -osio asetuksissa: master-voimakkuus, POI-ääniprofiilit+testit, herkkyys/rearm ja kaikki puheilmoitukset samassa paikassa (siirretty POI-osasta).
+2. POI-puheilmoitukset: `poiVoiceText_<type>` localStorageen per tyyppi; nopeuskameralle oletus "Nopeuskamera". Laukeaa samalla cooldown-reunalla kuin äänimerkki (gps.js updateActivePoiToast).
+3. Muokattava ylitysteksti: `voiceOverspeedText` + `window.getOverspeedVoiceText()`; äänivaroitus-toggle siirretty uuteen osioon.
+4. `window.speakFi` kunnioittaa poiBeepMasterGain-voimakkuutta; testinapit kaikille teksteille.
+5. `i-volume`-symboli spriteen. PWA- ja julkaisuversiot nostettiin v6.59:een.
+
+**Tiedostot:**
+- `index.html` (uusi ääniosio + i-volume; ääniblokki siirretty POI-osasta)
+- `ui.js` (speakFi-voimakkuus, getOverspeedVoiceText, getPoiVoiceText, input-kytkennät)
+- `gps.js` (POI-puhe cooldown-blokkiin)
+- `globals.js`, `sw.js`, `help.js` (versioputki + changelog)
+
+---
 
 ### v6.58 - Ajo-ominaisuudet: yhteenveto, pit-näyttö, aurinko, puhe, telemetria, zone-ahead
 

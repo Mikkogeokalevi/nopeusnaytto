@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - BILINGUAL MASTER GUIDE (v6.58 DRIVE FEATURES)
+// HELP.JS - BILINGUAL MASTER GUIDE (v6.59 UNIFIED SOUNDS)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS ---
@@ -9,10 +9,17 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
-                        <strong>🚗 UUTTA v6.58: Ajo-ominaisuudet ja ajonäytöt:</strong>
+                        <strong>� UUTTA v6.59: Yhdistetyt äänet ja puheilmoitukset:</strong>
+                        <ul>
+                            <li><strong>Uusi "Äänet ja varoitukset" -osio</strong> asetuksissa: kaikki ääni-/hälytysasetukset yhdessä paikassa (voimakkuus, POI-äänet, puheilmoitukset).</li>
+                            <li><strong>POI-puheilmoitukset:</strong> kirjoita oma teksti per POI-tyyppi - esim. "Nopeuskamera" sanotaan ääneen kameravaroituksessa (oletuksena päällä). Testipainike joka tekstille.</li>
+                            <li><strong>Muokattava ylitysvaroitus:</strong> "Nopeusrajoitus ylitetty" -teksti on vaihdettavissa vapaasti.</li>
+                            <li>Puheilmoitukset kunnioittavat master-äänenvoimakkuutta.</li>
+                        </ul>
+                        <strong>�🚗 UUTTA v6.58: Ajo-ominaisuudet ja ajonäytöt:</strong>
                         <ul>
                             <li><strong>Ajon yhteenveto:</strong> tallennusikkuna näyttää nopeuskäyrän, nopeuskaistojen osuudet (0-50/50-80/80-100/100+) ja huippu-G:n.</li>
                             <li><strong>Päivän ajot:</strong> dashboardin "Tänään: X ajoa · Y km" -palkki, napautus avaa historian.</li>
@@ -617,10 +624,17 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
-                        <strong>🚗 NEW in v6.58: Drive features and drive displays:</strong>
+                        <strong>� NEW in v6.59: Unified sounds and voice alerts:</strong>
+                        <ul>
+                            <li><strong>New "Sounds and alerts" section</strong> in settings: all audio/alert settings in one place (volume, POI sounds, voice alerts).</li>
+                            <li><strong>POI voice alerts:</strong> write your own phrase per POI type - e.g. "Speed camera" is spoken on camera warnings (on by default). Test button for each phrase.</li>
+                            <li><strong>Custom overspeed text:</strong> the "Speed limit exceeded" phrase is freely editable.</li>
+                            <li>Voice alerts respect the master volume setting.</li>
+                        </ul>
+                        <strong>�🚗 NEW in v6.58: Drive features and drive displays:</strong>
                         <ul>
                             <li><strong>Drive summary:</strong> the save dialog shows a speed sparkline, speed-band shares (0-50/50-80/80-100/100+) and peak G-force.</li>
                             <li><strong>Today's drives:</strong> a "Today: X drives · Y km" chip on the dashboard, tap to open history.</li>

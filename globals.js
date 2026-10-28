@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.58 (ajo-ominaisuudet: yhteenveto, pit, aurinko, puhe, telemetria, zone-ahead)
-const APP_VERSION = "6.58";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.59 (yhdistetty äänet + POI/ylitys-puhetekstit)
+const APP_VERSION = "6.59";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

@@ -2094,6 +2094,12 @@ function updateActivePoiToast(poi, lat, lng, now, prevLatLng) {
         poiAlertState[poi.id] = now;
         if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
         if (poi.beepEnabled !== false && typeof window.playPoiAlertBeep === 'function') window.playPoiAlertBeep(poiType, poi.soundProfile || '');
+        // POI-puheilmoitus (v6.59): tyyppikohtainen käyttäjän määrittämä teksti
+        try {
+            const savedVoice = localStorage.getItem('poiVoiceText_' + poiType);
+            const voiceTxt = String((savedVoice !== null) ? savedVoice : (poiType === 'speedcamera' ? 'Nopeuskamera' : '')).trim();
+            if (voiceTxt && typeof window.speakFi === 'function') window.speakFi(voiceTxt);
+        } catch (e) {}
     }
 
     // Kun ollaan käytännössä perillä, voidaan piilottaa varoitus

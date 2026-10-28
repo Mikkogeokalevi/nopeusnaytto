@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.58 (ajo-ominaisuudet: pit, aurinko, puhe, telemetria, zone-ahead)
+**Versio:** v6.59 (yhdistetyt äänet + POI/ylitys-puhetekstit)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,7 +71,8 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.58):**
+### **Nykyinen tilanne (v6.59):**
+- Äänet: yhdistetty "Äänet ja varoitukset" -osio; POI-puheilmoitukset per tyyppi (`poiVoiceText_*`), muokattava ylitysteksti (`voiceOverspeedText`), master-voimakkuus koskee myös puhetta
 - Ajo-ominaisuudet: ajon yhteenveto save-modaalissa, päivän ajot -palkki, pit-näyttö (👁️-kierto), aurinkotila, äänivaroitus ylityksestä, G-telemetria + peakG, POI-ETA, tuleva nopeusalue (zone-ahead), GPS-tarkkuuspulssi
 - Suorituskyky: Velocity-elementit transform-pohjaisia (GPU), piilossa olevien näkymien DOM-kirjoitukset skipataan, crash-varmuuskopio throttlettu 10 s, WakeLock-cooldown, ylinopeuden haptiikka
 - Talvirajoitukset: Väyläviraston WFS (`tiestotiedot:talvi_ja_kesanopeusrajoitukset`) + OSM maxspeed:winter/conditional + moottoritie 120->100-varmistus; kausi-ikkuna 15.10-15.4, ohitus Asetukset -> Talvinopeusrajoitukset
@@ -116,6 +117,12 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.59 - Yhdistetyt äänet + puheilmoitukset**
+- ✅ "Äänet ja varoitukset" -osio: master-voimakkuus + POI-äänet + puhe samassa paikassa
+- ✅ POI-puheilmoitukset per tyyppi (oletus: nopeuskamera = "Nopeuskamera")
+- ✅ Muokattava ylitysvaroitusteksti + testinapit; puhe kunnioittaa voimakkuutta
+- ✅ PWA-versionosto tehty v6.59
 
 ### **v6.58 - Ajo-ominaisuudet ja ajonäytöt**
 - ✅ Ajon yhteenveto (sparkline + nopeuskaistat + peakG) save-modaaliin

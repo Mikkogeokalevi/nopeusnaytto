@@ -1079,7 +1079,7 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
             overLimitHapticArmed = false;
             if (navigator.vibrate) navigator.vibrate(90);
             if (localStorage.getItem('voiceOverspeed') === 'true' && typeof window.speakFi === 'function') {
-                window.speakFi('Nopeusrajoitus ylitetty');
+                window.speakFi(typeof window.getOverspeedVoiceText === 'function' ? window.getOverspeedVoiceText() : 'Nopeusrajoitus ylitetty');
             }
         }
     } else if (!overLimitHapticArmed && spd <= lim) {
@@ -1804,9 +1804,59 @@ window.speakFi = function(text) {
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'fi-FI';
         u.rate = 1.15;
+        try {
+            const g = parseFloat(localStorage.getItem('poiBeepMasterGain') || '0.45');
+            u.volume = isFinite(g) ? Math.max(0, Math.min(1, g)) : 0.45;
+        } catch (e2) {}
         window.speechSynthesis.speak(u);
     } catch (e) {}
 };
+
+// Puhetekstit: ylitys + POI-tyyppikohtaiset (v6.59)
+const voiceOverspeedTextEl = document.getElementById('voice-overspeed-text');
+const btnTestVoiceOverspeed = document.getElementById('btn-test-voice-overspeed');
+const POI_VOICE_TYPES = ['speedcamera', 'danger', 'customer', 'reminder', 'other'];
+const POI_VOICE_DEFAULTS = { speedcamera: 'Nopeuskamera' };
+
+function getPoiVoiceText(type) {
+    const saved = localStorage.getItem('poiVoiceText_' + type);
+    if (saved !== null) return saved;
+    return POI_VOICE_DEFAULTS[type] || '';
+}
+
+window.getOverspeedVoiceText = function() {
+    const t = String(localStorage.getItem('voiceOverspeedText') || '').trim();
+    return t || 'Nopeusrajoitus ylitetty';
+};
+
+if (voiceOverspeedTextEl) {
+    voiceOverspeedTextEl.value = String(localStorage.getItem('voiceOverspeedText') || '');
+    voiceOverspeedTextEl.addEventListener('change', () => {
+        localStorage.setItem('voiceOverspeedText', voiceOverspeedTextEl.value.trim());
+    });
+}
+if (btnTestVoiceOverspeed) {
+    btnTestVoiceOverspeed.addEventListener('click', () => {
+        if (typeof window.speakFi === 'function') window.speakFi(window.getOverspeedVoiceText());
+    });
+}
+POI_VOICE_TYPES.forEach((t) => {
+    const inp = document.getElementById('poi-voice-' + t);
+    const btn = document.getElementById('btn-test-poi-voice-' + t);
+    if (inp) {
+        inp.value = getPoiVoiceText(t);
+        inp.addEventListener('change', () => {
+            localStorage.setItem('poiVoiceText_' + t, inp.value.trim());
+        });
+    }
+    if (btn) {
+        btn.addEventListener('click', () => {
+            const txt = inp ? inp.value.trim() : '';
+            if (txt && typeof window.speakFi === 'function') window.speakFi(txt);
+            else if (typeof showToast === 'function') showToast('Kirjoita ensin puheteksti');
+        });
+    }
+});
 
 // Zone-ahead: tuleva nopeusalue
 var zoneAheadShownAt = 0;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.58</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.59</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.58">
+    <link rel="stylesheet" href="style.css?v=6.59">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -58,6 +58,7 @@
         <symbol id="i-archive" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="4" rx="1"/><path d="M5.5 8v11h13V8"/><path d="M10 12h4"/></symbol>
         <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M4.5 9a8 8 0 1 1-.5 7"/><path d="M4 4v5h5"/></symbol>
         <symbol id="i-snowflake" viewBox="0 0 24 24"><path d="M12 3v18M5.6 6.4l12.8 11.2M18.4 6.4 5.6 17.6"/><path d="M12 3l-1.8 1.8M12 3l1.8 1.8M12 21l-1.8-1.8M12 21l1.8-1.8"/></symbol>
+        <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6.5 9H3v6h3.5L11 19V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12"/></symbol>
     </svg>
 
 
@@ -65,7 +66,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.58...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.59...</p>
             <div class="splash-spinner" aria-hidden="true"></div>
         </div>
     </div>
@@ -561,14 +562,6 @@
                     </div>
 
                     <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:15px;">
-                        <span>Äänivaroitus rajoituksen ylityksestä</span>
-                        <input type="checkbox" id="toggle-voice-overspeed" style="transform: scale(1.5);">
-                    </div>
-                    <div style="font-size:12px; color:var(--subtext-color); margin-top:4px; padding-left:2px;">
-                        "Nopeusrajoitus ylitetty" -ilmoitus puheena (Speech API), ylinopeuden haptiikan lisäksi.
-                    </div>
-
-                    <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:15px;">
                         <span>Pit-näyttö (ajoasema)</span>
                         <input type="checkbox" id="toggle-pit-mode" style="transform: scale(1.5);">
                     </div>
@@ -605,47 +598,71 @@
                 </div>
 
                 <div class="help-section" style="margin-bottom: 20px;">
-                    <h3><svg class="svg-icon" aria-hidden="true"><use href="#i-pin"/></svg> Paikkamerkinnät (POI)</h3>
+                    <h3><svg class="svg-icon" aria-hidden="true"><use href="#i-volume"/></svg> Äänet ja varoitukset</h3>
 
-                    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
-                        <button id="btn-poi-add-here" class="action-btn secondary-btn" style="width:auto;">+ Lisää tähän sijaintiin</button>
-                        <button id="btn-poi-add-coords" class="action-btn secondary-btn" style="width:auto;">+ Lisää koordinaateilla</button>
-                        <button id="btn-poi-add-map" class="action-btn secondary-btn" style="width:auto;">+ Lisää kartalta</button>
-                        <button id="btn-poi-import-cameras" class="action-btn secondary-btn" style="width:auto;"><svg class="svg-icon" aria-hidden="true"><use href="#i-upload"/></svg> Tuo nopeuskamerat (CSV/SVC)</button>
-                        <input id="inp-poi-import-cameras" type="file" accept=".csv,.svc,text/csv,text/plain" multiple style="display:none;" />
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <span>Hälytysten voimakkuus</span>
+                        <div style="display:flex; align-items:center; gap:8px; min-width:200px;">
+                            <input id="poi-master-volume" type="range" min="0" max="1" step="0.01" style="flex:1;" />
+                            <strong id="poi-master-volume-value" style="min-width:44px; text-align:right;">45%</strong>
+                        </div>
+                    </div>
+                    <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
+                        Vihje: jos hälytys ei kuulu kunnolla, nosta tämä ensin 70-100%:iin. Vaikuttaa äänimerkkeihin ja puheilmoituksiin.
                     </div>
 
-                    <div style="font-size:12px; color:var(--subtext-color); margin-bottom:10px;">
-                        POI:t näkyvät aina kartassa. Voit asettaa lähestymisvaroituksen (säde + cooldown) per merkintä.
-                    </div>
-
-                    <details class="dev-tools">
-                        <summary>Kehittäjätyökalut</summary>
-                        <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                            <span>POI debug (näytä hylkäyssyyt)</span>
-                            <input type="checkbox" id="toggle-poi-debug" style="transform: scale(1.5);">
-                        </div>
-                        <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
-                            Kun päällä, sovellus näyttää toastina miksi POI (erityisesti nopeuskamera) hylätään (säde/suunta/cooldown/alertEnabled).
-                        </div>
-                        <div style="display:flex; justify-content:center; margin:10px 0 0 0;">
-                            <button id="btn-poi-debug-log" class="action-btn secondary-btn" style="width:auto;"><svg class="svg-icon" aria-hidden="true"><use href="#i-doc"/></svg> Debug-loki</button>
-                        </div>
-                    </details>
-
-                    <div style="margin-top:12px; border-top:1px solid var(--border-color); padding-top:12px;">
+                    <div style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
+                        <div style="font-size:13px; font-weight:600; margin-bottom:8px;">Rajoituksen ylitys</div>
                         <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-                            <span>POI äänen voimakkuus</span>
-                            <div style="display:flex; align-items:center; gap:8px; min-width:200px;">
-                                <input id="poi-master-volume" type="range" min="0" max="1" step="0.01" style="flex:1;" />
-                                <strong id="poi-master-volume-value" style="min-width:44px; text-align:right;">45%</strong>
+                            <span>Äänivaroitus</span>
+                            <input type="checkbox" id="toggle-voice-overspeed" style="transform: scale(1.5);">
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:8px; align-items:center;">
+                            <input id="voice-overspeed-text" class="subject-input" type="text" placeholder="Nopeusrajoitus ylitetty" style="flex:1;" maxlength="80" />
+                            <button id="btn-test-voice-overspeed" class="icon-btn" style="width:auto; padding:8px 10px;" aria-label="Testaa puhe"><svg class="svg-icon" aria-hidden="true"><use href="#i-volume"/></svg></button>
+                        </div>
+                        <div style="font-size:12px; color:var(--subtext-color); margin-top:4px;">
+                            Puheilmoitus kun rajoitus ylittyy. Kirjoita oma teksti - tyhjä = oletusteksti. Ylinopeus myös täräyttää laitetta.
+                        </div>
+                    </div>
+
+                    <div style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
+                        <div style="font-size:13px; font-weight:600; margin-bottom:8px;">POI-puheilmoitukset</div>
+                        <div style="font-size:12px; color:var(--subtext-color); margin-bottom:8px;">
+                            Kirjoita teksti jonka sovellus sanoo varoittaessa kyseisestä POI-tyypistä. Tyhjä = ei puhetta, pelkkä äänimerkki.
+                        </div>
+                        <div style="display:grid; gap:8px;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label style="min-width:110px;">Nopeuskamera</label>
+                                <input id="poi-voice-speedcamera" class="subject-input" type="text" placeholder="esim. Nopeuskamera" style="flex:1;" maxlength="60" />
+                                <button id="btn-test-poi-voice-speedcamera" class="icon-btn" style="width:auto; padding:8px 10px;" aria-label="Testaa"><svg class="svg-icon" aria-hidden="true"><use href="#i-volume"/></svg></button>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label style="min-width:110px;">Vaara</label>
+                                <input id="poi-voice-danger" class="subject-input" type="text" placeholder="esim. Vaarapaikka" style="flex:1;" maxlength="60" />
+                                <button id="btn-test-poi-voice-danger" class="icon-btn" style="width:auto; padding:8px 10px;" aria-label="Testaa"><svg class="svg-icon" aria-hidden="true"><use href="#i-volume"/></svg></button>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label style="min-width:110px;">Asiakas</label>
+                                <input id="poi-voice-customer" class="subject-input" type="text" placeholder="esim. Asiakas lähellä" style="flex:1;" maxlength="60" />
+                                <button id="btn-test-poi-voice-customer" class="icon-btn" style="width:auto; padding:8px 10px;" aria-label="Testaa"><svg class="svg-icon" aria-hidden="true"><use href="#i-volume"/></svg></button>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label style="min-width:110px;">Muistutus</label>
+                                <input id="poi-voice-reminder" class="subject-input" type="text" placeholder="esim. Muistutus" style="flex:1;" maxlength="60" />
+                                <button id="btn-test-poi-voice-reminder" class="icon-btn" style="width:auto; padding:8px 10px;" aria-label="Testaa"><svg class="svg-icon" aria-hidden="true"><use href="#i-volume"/></svg></button>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label style="min-width:110px;">Muu</label>
+                                <input id="poi-voice-other" class="subject-input" type="text" placeholder="esim. Merkintä lähellä" style="flex:1;" maxlength="60" />
+                                <button id="btn-test-poi-voice-other" class="icon-btn" style="width:auto; padding:8px 10px;" aria-label="Testaa"><svg class="svg-icon" aria-hidden="true"><use href="#i-volume"/></svg></button>
                             </div>
                         </div>
-                        <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
-                            Vihje: jos hälytys ei kuulu kunnolla, nosta tämä ensin 70-100%:iin.
-                        </div>
+                    </div>
 
-                        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+                    <div style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
+                        <div style="font-size:13px; font-weight:600; margin-bottom:8px;">POI-hälytyksen asetukset</div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
                             <div style="flex:1; min-width:200px;">
                                 <label style="display:block; margin-bottom:6px;">POI herkkyys</label>
                                 <select id="settings-poi-sensitivity" class="subject-input" style="width:100%;">
@@ -716,6 +733,36 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="help-section" style="margin-bottom: 20px;">
+                    <h3><svg class="svg-icon" aria-hidden="true"><use href="#i-pin"/></svg> Paikkamerkinnät (POI)</h3>
+
+                    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
+                        <button id="btn-poi-add-here" class="action-btn secondary-btn" style="width:auto;">+ Lisää tähän sijaintiin</button>
+                        <button id="btn-poi-add-coords" class="action-btn secondary-btn" style="width:auto;">+ Lisää koordinaateilla</button>
+                        <button id="btn-poi-add-map" class="action-btn secondary-btn" style="width:auto;">+ Lisää kartalta</button>
+                        <button id="btn-poi-import-cameras" class="action-btn secondary-btn" style="width:auto;"><svg class="svg-icon" aria-hidden="true"><use href="#i-upload"/></svg> Tuo nopeuskamerat (CSV/SVC)</button>
+                        <input id="inp-poi-import-cameras" type="file" accept=".csv,.svc,text/csv,text/plain" multiple style="display:none;" />
+                    </div>
+
+                    <div style="font-size:12px; color:var(--subtext-color); margin-bottom:10px;">
+                        POI:t näkyvät aina kartassa. Voit asettaa lähestymisvaroituksen (säde + cooldown) per merkintä.
+                    </div>
+
+                    <details class="dev-tools">
+                        <summary>Kehittäjätyökalut</summary>
+                        <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                            <span>POI debug (näytä hylkäyssyyt)</span>
+                            <input type="checkbox" id="toggle-poi-debug" style="transform: scale(1.5);">
+                        </div>
+                        <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
+                            Kun päällä, sovellus näyttää toastina miksi POI (erityisesti nopeuskamera) hylätään (säde/suunta/cooldown/alertEnabled).
+                        </div>
+                        <div style="display:flex; justify-content:center; margin:10px 0 0 0;">
+                            <button id="btn-poi-debug-log" class="action-btn secondary-btn" style="width:auto;"><svg class="svg-icon" aria-hidden="true"><use href="#i-doc"/></svg> Debug-loki</button>
+                        </div>
+                    </details>
 
                     <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
                         <input id="poi-search" class="subject-input" type="text" placeholder="Hae POI (nimi / tyyppi)" style="flex:1; min-width:220px; max-width:360px;" />
@@ -1046,16 +1093,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.58"></script>
-    <script src="visuals.js?v=6.58"></script>
-    <script src="ui.js?v=6.58"></script>
-    <script src="auth.js?v=6.58"></script>
-    <script src="map.js?v=6.58"></script>
-    <script src="gps.js?v=6.58"></script>
-    <script src="garage.js?v=6.58"></script>
-    <script src="history.js?v=6.58"></script>
-    <script src="help.js?v=6.58"></script>
+    <script src="globals.js?v=6.59"></script>
+    <script src="visuals.js?v=6.59"></script>
+    <script src="ui.js?v=6.59"></script>
+    <script src="auth.js?v=6.59"></script>
+    <script src="map.js?v=6.59"></script>
+    <script src="gps.js?v=6.59"></script>
+    <script src="garage.js?v=6.59"></script>
+    <script src="history.js?v=6.59"></script>
+    <script src="help.js?v=6.59"></script>
     
-    <script src="app.js?v=6.58"></script>
+    <script src="app.js?v=6.59"></script>
 </body>
 </html>
