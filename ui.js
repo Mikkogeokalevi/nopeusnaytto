@@ -1073,15 +1073,20 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         else dashSpeedEl.style.color = '';
     }
 
-    // Ylinopeuden haptiikka: tärähdys kerran kun rajoitus ylittyy, aseistautuu uudelleen alittaessa
+    // Ylinopeuden haptiikka + äänivaroitus: tärähdys/puhe kerran kun rajoitus ylittyy
     if (lim > 0 && spd > lim) {
         if (overLimitHapticArmed) {
             overLimitHapticArmed = false;
             if (navigator.vibrate) navigator.vibrate(90);
+            if (localStorage.getItem('voiceOverspeed') === 'true' && typeof window.speakFi === 'function') {
+                window.speakFi('Nopeusrajoitus ylitetty');
+            }
         }
     } else if (!overLimitHapticArmed && spd <= lim) {
         overLimitHapticArmed = true;
     }
+
+    if (typeof window.expireSpeedZoneAhead === 'function') window.expireSpeedZoneAhead();
 
     // --- KÄVELY-TILA (Walking Mode) ---
     // Vaihdetaan tietyt ruudut näyttämään askeleita, tahtia ja kaloreita
@@ -1199,6 +1204,102 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     }
 
 }
+
+// --- AJON YHTEENVETO (v6.58) ---
+window.renderDriveSummary = function(d) {
+    const canvas = document.getElementById('drive-summary-chart');
+    const bandsEl = document.getElementById('drive-summary-bands');
+    const metaEl = document.getElementById('drive-summary-meta');
+    if (!canvas || !bandsEl || !metaEl || !d) return;
+
+    const route = Array.isArray(d.route) ? d.route : [];
+    const speeds = route.map(p => Number(p && p.spd)).filter(v => isFinite(v) && v >= 0);
+
+    // Sparkline nopeudesta ajon aikana
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    if (speeds.length > 1) {
+        const maxS = Math.max(60, ...speeds);
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 1;
+        for (let i = 1; i <= 3; i++) {
+            const y = (H / 4) * i;
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.strokeStyle = 'var(--accent-color)';
+        try { ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-color') || '#2979ff'; } catch (e) {}
+        ctx.lineWidth = 2;
+        speeds.forEach((s, i) => {
+            const x = (i / (speeds.length - 1)) * W;
+            const y = H - (Math.min(s, maxS) / maxS) * (H - 6) - 3;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+    } else {
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.font = '11px sans-serif';
+        ctx.fillText('Ei reittidataa (vanha tietue)', 8, H / 2);
+    }
+
+    // Nopeuskaistat: osuus ajasta per kaista
+    const BANDS = [
+        { label: '0-50', color: '#2979ff' },
+        { label: '50-80', color: '#00e676' },
+        { label: '80-100', color: '#ffea00' },
+        { label: '100+', color: '#ff1744' }
+    ];
+    const counts = [0, 0, 0, 0];
+    speeds.forEach(s => {
+        if (s < 50) counts[0]++;
+        else if (s < 80) counts[1]++;
+        else if (s < 100) counts[2]++;
+        else counts[3]++;
+    });
+    const total = Math.max(1, speeds.length);
+    bandsEl.innerHTML = '';
+    counts.forEach((c, i) => {
+        if (c === 0) return;
+        const seg = document.createElement('div');
+        seg.className = 'band-seg';
+        seg.style.width = ((c / total) * 100).toFixed(1) + '%';
+        seg.style.background = BANDS[i].color;
+        bandsEl.appendChild(seg);
+    });
+
+    const peakG = Number(d.peakG) || 0;
+    const parts = [];
+    parts.push(`Huippu: ${Number(d.maxSpeed || 0).toFixed(1)} km/h`);
+    parts.push(`Keskiarvo: ${Number(d.avgSpeed || 0).toFixed(1)} km/h`);
+    if (peakG > 0) parts.push(`Huippu G: ${peakG.toFixed(2)}`);
+    if (speeds.length > 0) {
+        const legendTxt = counts.map((c, i) => c > 0 ? `<span class="band-legend" style="background:${BANDS[i].color}"></span>${BANDS[i].label} ${Math.round((c / total) * 100)}%` : '').filter(Boolean).join(' &nbsp; ');
+        metaEl.innerHTML = `${parts.join(' &nbsp;·&nbsp; ')}<br>${legendTxt}`;
+    } else {
+        metaEl.innerHTML = parts.join(' &nbsp;·&nbsp; ');
+    }
+};
+
+// --- PÄIVÄN AJOT (v6.58) ---
+window.updateTodaySummary = function() {
+    const el = document.getElementById('today-summary');
+    if (!el) return;
+    const today = new Date();
+    const key = today.getFullYear() + '-' + today.getMonth() + '-' + today.getDate();
+    let count = 0, km = 0;
+    (allHistoryData || []).forEach(d => {
+        if (!d || !d.startTime) return;
+        const t = new Date(d.startTime);
+        if (t.getFullYear() === today.getFullYear() && t.getMonth() === today.getMonth() && t.getDate() === today.getDate()) {
+            count++;
+            km += parseFloat(d.distanceKm) || 0;
+        }
+    });
+    if (count === 0) { el.style.display = 'none'; return; }
+    el.style.display = 'flex';
+    el.textContent = `Tänään: ${count} ${count === 1 ? 'ajo' : 'ajoa'} · ${km.toFixed(1)} km`;
+};
 
 window.updateSpeedConfidenceIndicator = function(level, source) {
     if (!speedConfidenceBadgeEl) return;
@@ -1659,8 +1760,12 @@ if (colorOptions.length > 0) {
     });
 }
 
-// 2. MINIMALISTINEN TILA
+// 2. MINIMALISTINEN TILA + PIT-NÄYTTÖ
 const toggleMinimal = document.getElementById('toggle-minimalist');
+const togglePitMode = document.getElementById('toggle-pit-mode');
+const toggleSunlight = document.getElementById('toggle-sunlight');
+const toggleVoiceOverspeed = document.getElementById('toggle-voice-overspeed');
+const todaySummaryEl = document.getElementById('today-summary');
 
 function setMinimalistMode(enable) {
     if (enable) {
@@ -1672,6 +1777,58 @@ function setMinimalistMode(enable) {
     }
     localStorage.setItem('minimalistMode', enable ? 'true' : 'false');
 }
+
+function setPitMode(enable) {
+    if (enable) {
+        document.body.classList.add('pit-mode');
+        document.body.classList.remove('minimalist-mode');
+        if(toggleMinimal) toggleMinimal.checked = false;
+        if(togglePitMode) togglePitMode.checked = true;
+    } else {
+        document.body.classList.remove('pit-mode');
+        if(togglePitMode) togglePitMode.checked = false;
+    }
+    localStorage.setItem('pitMode', enable ? 'true' : 'false');
+}
+
+function setSunlightMode(enable) {
+    document.body.classList.toggle('sunlight-mode', enable);
+    if (toggleSunlight) toggleSunlight.checked = enable;
+    localStorage.setItem('sunlightMode', enable ? 'true' : 'false');
+}
+
+window.speakFi = function(text) {
+    try {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'fi-FI';
+        u.rate = 1.15;
+        window.speechSynthesis.speak(u);
+    } catch (e) {}
+};
+
+// Zone-ahead: tuleva nopeusalue
+var zoneAheadShownAt = 0;
+window.updateSpeedZoneAhead = function(distM, limitKmh) {
+    const el = document.getElementById('dash-speed-limit-ahead');
+    if (!el) return;
+    if (isFinite(limitKmh) && limitKmh > 0 && isFinite(distM)) {
+        el.textContent = `${Math.round(limitKmh)} km/h ~${Math.round(distM)} m`;
+        el.style.display = 'block';
+        zoneAheadShownAt = Date.now();
+    } else {
+        el.style.display = 'none';
+        zoneAheadShownAt = 0;
+    }
+};
+window.expireSpeedZoneAhead = function() {
+    const el = document.getElementById('dash-speed-limit-ahead');
+    if (el && zoneAheadShownAt && (Date.now() - zoneAheadShownAt) > 25000) {
+        el.style.display = 'none';
+        zoneAheadShownAt = 0;
+    }
+};
 
 if (toggleMinimal) {
     toggleMinimal.addEventListener('change', (e) => {
@@ -1701,9 +1858,42 @@ if (btnDashboardMapQuick) {
 
 if (btnDashMinimal) {
     btnDashMinimal.addEventListener('click', () => {
+        // Kierto: normaali -> yksinkertainen -> pit -> normaali
+        const isPit = document.body.classList.contains('pit-mode');
         const isMin = document.body.classList.contains('minimalist-mode');
-        setMinimalistMode(!isMin); 
-        showToast(!isMin ? "Yksinkertaistettu tila: PÄÄLLÄ" : "Yksinkertaistettu tila: POIS");
+        if (!isMin && !isPit) {
+            setMinimalistMode(true);
+            showToast("Yksinkertaistettu tila: PÄÄLLÄ");
+        } else if (isMin && !isPit) {
+            setPitMode(true);
+            showToast("Pit-näyttö: PÄÄLLÄ");
+        } else {
+            setPitMode(false);
+            setMinimalistMode(false);
+            showToast("Normaali näkymä");
+        }
+    });
+}
+
+if (togglePitMode) {
+    togglePitMode.addEventListener('change', (e) => {
+        setPitMode(e.target.checked);
+    });
+}
+if (toggleSunlight) {
+    toggleSunlight.addEventListener('change', (e) => {
+        setSunlightMode(e.target.checked);
+    });
+}
+if (toggleVoiceOverspeed) {
+    toggleVoiceOverspeed.addEventListener('change', (e) => {
+        localStorage.setItem('voiceOverspeed', e.target.checked ? 'true' : 'false');
+    });
+}
+if (todaySummaryEl) {
+    todaySummaryEl.addEventListener('click', () => switchView('history'));
+    todaySummaryEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') switchView('history');
     });
 }
 
@@ -1935,6 +2125,19 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    const savedPit = localStorage.getItem('pitMode') === 'true';
+    if (savedPit) setPitMode(true);
+    else if (togglePitMode) togglePitMode.checked = false;
+
+    const savedSunlight = localStorage.getItem('sunlightMode') === 'true';
+    if (savedSunlight) setSunlightMode(true);
+    else if (toggleSunlight) toggleSunlight.checked = false;
+
+    const savedVoice = localStorage.getItem('voiceOverspeed') === 'true';
+    if (toggleVoiceOverspeed) toggleVoiceOverspeed.checked = savedVoice;
+
+    if (typeof window.updateTodaySummary === 'function') window.updateTodaySummary();
+
     const savedMinimal = localStorage.getItem('minimalistMode');
     if (savedMinimal === 'true') {
         setMinimalistMode(true);

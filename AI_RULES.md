@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.57 (S24 Ultra suorituskykyoptimointi)
+**Versio:** v6.58 (ajo-ominaisuudet: pit, aurinko, puhe, telemetria, zone-ahead)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 
@@ -71,7 +71,8 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.57):**
+### **Nykyinen tilanne (v6.58):**
+- Ajo-ominaisuudet: ajon yhteenveto save-modaalissa, päivän ajot -palkki, pit-näyttö (👁️-kierto), aurinkotila, äänivaroitus ylityksestä, G-telemetria + peakG, POI-ETA, tuleva nopeusalue (zone-ahead), GPS-tarkkuuspulssi
 - Suorituskyky: Velocity-elementit transform-pohjaisia (GPU), piilossa olevien näkymien DOM-kirjoitukset skipataan, crash-varmuuskopio throttlettu 10 s, WakeLock-cooldown, ylinopeuden haptiikka
 - Talvirajoitukset: Väyläviraston WFS (`tiestotiedot:talvi_ja_kesanopeusrajoitukset`) + OSM maxspeed:winter/conditional + moottoritie 120->100-varmistus; kausi-ikkuna 15.10-15.4, ohitus Asetukset -> Talvinopeusrajoitukset
 - Ulkoasu: teemat siivottu - jäljellä Digitaalinen / Velocity Stage / Clean Digital / Digitaalinen + graafit (LCARS, Time Circuit, Pulse HUD ja neulamittari poistettu v6.53)
@@ -115,6 +116,13 @@ nopeusnaytto-main/
 ---
 
 ## 📝 **TEHTYÄ TYÖTÄ (HISTORIA)**
+
+### **v6.58 - Ajo-ominaisuudet ja ajonäytöt**
+- ✅ Ajon yhteenveto (sparkline + nopeuskaistat + peakG) save-modaaliin
+- ✅ Päivän ajot -palkki dashboardilla; POI-aikalaskuri (~Xs)
+- ✅ Pit-näyttö (eye-kierto), aurinkotila, äänivaroitus, GPS-tarkkuuspulssi
+- ✅ Telemetria: live G + huippu-G yhteenvetoon; tuleva nopeusalue (OSM lookahead)
+- ✅ Reittilegendan numeroarvot; PWA-versionosto tehty v6.58
 
 ### **v6.57 - S24 Ultra suorituskykyoptimointi**
 - ✅ Velocity Stage width/left-animaatiot -> transform (GPU, ei layout-thrashia)

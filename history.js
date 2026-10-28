@@ -306,7 +306,8 @@ function loadHistory() {
         allRefuelings.sort((a, b) => new Date(b.date) - new Date(a.date));
         
         if(typeof populateFilter === 'function') populateFilter();
-        
+        if(typeof window.updateTodaySummary === 'function') window.updateTodaySummary();
+
         updateSyncButton();
         
         // Pakotetaan päivitys kaikkiin näkymiin

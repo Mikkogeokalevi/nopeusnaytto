@@ -1442,3 +1442,71 @@ h2 .svg-icon, h3 .svg-icon { width: 0.95em; height: 0.95em; margin-right: 7px; }
     }
     .velocity-scanline, .velocity-grid { display: none !important; }
 }
+
+/* ========================================= */
+/* v6.58 - AJO-OMINAISUUDET (S24 Ultra)      */
+/* ========================================= */
+
+/* Päivän ajot -yhteenvetopalkki */
+.today-summary {
+    width: 100%; max-width: 450px;
+    display: flex; justify-content: center; align-items: center; gap: 8px;
+    padding: 7px 12px; margin-bottom: 4px;
+    font-size: 12px; font-weight: 600; color: var(--subtext-color);
+    background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 999px;
+    cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.today-summary:active { transform: scale(0.98); }
+
+/* PIT-NÄYTTÖ: vain nopeus + rajoitus + POI */
+body.pit-mode #dashboard-view .stats-grid,
+body.pit-mode #dashboard-view .address-container,
+body.pit-mode #dashboard-view .g-force-wrapper,
+body.pit-mode #dashboard-view .side-tap-zone,
+body.pit-mode #dashboard-view .status-bar,
+body.pit-mode #dashboard-view .dashboard-map-window,
+body.pit-mode #dashboard-view .live-graphs-container,
+body.pit-mode #dashboard-view .bottom-branding,
+body.pit-mode #dashboard-view .today-summary,
+body.pit-mode .top-bar-container,
+body.pit-mode .bottom-nav {
+    display: none !important;
+}
+body.pit-mode #dashboard-view .huge-speed-container { transform: scale(1.35); margin: 24px 0; }
+body.pit-mode #dashboard-view { justify-content: center; }
+body.pit-mode .toast-notification { z-index: 6000; }
+
+/* AURINKOTILA: maksimikontrasti suoraan auringonvaloon */
+body.sunlight-mode {
+    --bg-color: #000000;
+    --panel-bg: #050505;
+    --card-bg: rgba(8, 8, 8, 0.96);
+    --subtext-color: #bdbdbd;
+    --border-color: #555;
+}
+body.sunlight-mode .huge-speed {
+    font-size: 20vh;
+    color: #ffffff;
+    text-shadow: 0 0 26px rgba(255,255,255,0.55), 0 0 60px var(--accent-color);
+}
+body.sunlight-mode .stat-card { border: 2px solid var(--border-color); background: var(--card-bg); }
+body.sunlight-mode .stat-value { color: #ffffff; }
+body.sunlight-mode .bottom-branding, body.sunlight-mode .watermark-bg::before { display: none; }
+body.sunlight-mode .clean-digital-speed { text-shadow: 0 0 30px rgba(255,255,255,0.4); }
+body.sunlight-mode .velocity-speed { text-shadow: 0 0 30px rgba(255,255,255,0.5); }
+body.sunlight-mode .huge-unit, body.sunlight-mode .stat-label, body.sunlight-mode .stat-unit { color: #cccccc; }
+
+/* GPS-tarkkuuden varoituspulssi (accuracy > 40 m) */
+@keyframes gpsPoorPulse {
+    0%, 100% { box-shadow: 0 0 6px color-mix(in srgb, #ff6e6e 30%, transparent); }
+    50% { box-shadow: 0 0 16px color-mix(in srgb, #ff6e6e 70%, transparent); }
+}
+.speed-confidence-badge.gps-poor { animation: gpsPoorPulse 1.5s ease-in-out infinite; }
+
+/* Ajon nopeusprofiili -vyöhykepalkki (save-modal) */
+.band-seg { height: 100%; }
+.band-legend { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:4px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .speed-confidence-badge.gps-poor { animation: none; }
+}

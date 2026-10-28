@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.57 (S24 Ultra suorituskykyoptimointi)
-const APP_VERSION = "6.57";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.58 (ajo-ominaisuudet: yhteenveto, pit, aurinko, puhe, telemetria, zone-ahead)
+const APP_VERSION = "6.58";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
@@ -70,6 +70,7 @@ var map = null;
 // Sää ja Ajotapa
 var currentDriveWeather = ""; 
 var aggressiveEvents = 0;
+var peakGForce = 0;
 var lastMotionTime = 0;
 var styleResetTimer = null; 
 

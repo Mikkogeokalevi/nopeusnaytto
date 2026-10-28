@@ -852,6 +852,66 @@ function requestRoadSpeedLimit(lat, lng, headingDeg, speedKmh) {
         });
 }
 
+// --- TULEVA NOPEUSALUE (v6.58) ---
+// Hakee ~10 sekunnin ajon päässä olevan tien maxspeedin OSM:stä ja näyttää
+// "80 km/h ~500 m" jos se poikkeaa nykyisestä rajoituksesta.
+var speedZoneAheadState = { lastFetchTs: 0, inFlight: false };
+
+function projectPointAheadM(lat, lng, headingDeg, distM) {
+    const R = 6371000;
+    const br = headingDeg * Math.PI / 180;
+    const d = distM / R;
+    const la = lat * Math.PI / 180;
+    const lo = lng * Math.PI / 180;
+    const la2 = Math.asin(Math.sin(la) * Math.cos(d) + Math.cos(la) * Math.sin(d) * Math.cos(br));
+    const lo2 = lo + Math.atan2(Math.sin(br) * Math.sin(d) * Math.cos(la), Math.cos(d) - Math.sin(la) * Math.sin(la2));
+    return { lat: la2 * 180 / Math.PI, lng: lo2 * 180 / Math.PI };
+}
+
+function maybeFetchSpeedZoneAhead(lat, lng, headingDeg, speedKmh) {
+    // Piilota kun hidasta tai suunta tuntematon
+    if (!isFinite(headingDeg) || !isFinite(speedKmh) || speedKmh < 30) {
+        if (typeof window.updateSpeedZoneAhead === 'function') window.updateSpeedZoneAhead(null, null);
+        return;
+    }
+    const now = Date.now();
+    if (speedZoneAheadState.inFlight || (now - speedZoneAheadState.lastFetchTs) < 15000) return;
+    speedZoneAheadState.lastFetchTs = now;
+    speedZoneAheadState.inFlight = true;
+
+    // Katsotaan ~10 sekunnin ajoetäisyys eteenpäin (raja 300-900 m)
+    const distM = Math.max(300, Math.min(900, (speedKmh / 3.6) * 10));
+    const p = projectPointAheadM(lat, lng, headingDeg, distM);
+    const query = `[out:json][timeout:8];way(around:110,${p.lat},${p.lng})["maxspeed"];out tags center geom 24;`;
+    const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+
+    fetch(url)
+        .then((res) => {
+            if (!res.ok) throw new Error('zone ' + res.status);
+            return res.json();
+        })
+        .then((data) => {
+            const best = pickNearestRoadElement(data && data.elements ? data.elements : [], p.lat, p.lng, headingDeg, speedKmh);
+            if (!best || !best.tags) {
+                if (typeof window.updateSpeedZoneAhead === 'function') window.updateSpeedZoneAhead(null, null);
+                return;
+            }
+            const tags = best.tags || {};
+            const rawMax = tags.maxspeed || tags['maxspeed:forward'] || tags['maxspeed:backward'] || '';
+            const aheadLimit = parseMaxspeedToKmh(rawMax);
+            const curLimit = Number(window.lastShownSpeedLimitKmh) || 0;
+            if (isFinite(aheadLimit) && aheadLimit > 0 && aheadLimit !== curLimit) {
+                if (typeof window.updateSpeedZoneAhead === 'function') window.updateSpeedZoneAhead(distM, aheadLimit);
+            } else {
+                if (typeof window.updateSpeedZoneAhead === 'function') window.updateSpeedZoneAhead(null, null);
+            }
+        })
+        .catch(() => {})
+        .finally(() => {
+            speedZoneAheadState.inFlight = false;
+        });
+}
+
 window.ensurePoiAudioContext = function() {
     try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -1122,6 +1182,7 @@ function startRecordingSession(isContinue = false) {
         if(typeof clearSavedRoute === 'function') clearSavedRoute();
         currentDriveWeather = "";
         aggressiveEvents = 0;
+        peakGForce = 0;
         currentDriveId = null; // Varmistetaan että ID on null (uusi ajo)
     } else {
         // Jos jatketaan, asetetaan session aloitusmatka nykyiseen kokonaismatkaan
@@ -1285,6 +1346,8 @@ if (btnStopRec) {
         const segmentDist = totalDistance - sessionStartDistance;
         const segmentDurationMs = (endTime - sessionStartTime) - sessionPauseTime;
         
+        tempDriveData.peakG = peakGForce;
+
         // Luodaan uusi osio-objekti
         // Varmistetaan, ettei luoda "tyhjää" osiota
         if (segmentDurationMs > 1000 || segmentDist > 0.01) {
@@ -1350,6 +1413,7 @@ if (btnStopRec) {
 
         if(saveModal) saveModal.style.display = 'flex';
         if(liveStatusBar) liveStatusBar.style.opacity = '0';
+        if (typeof window.renderDriveSummary === 'function') window.renderDriveSummary(tempDriveData);
     });
 }
 
@@ -1416,6 +1480,10 @@ function updatePosition(position) {
     const heading = position.coords.heading;
     const acc = position.coords.accuracy;
     if (typeof acc === 'number' && isFinite(acc) && acc > 0) lastGpsAccuracyM = acc;
+    // Heikon GPS-tarkkuuden visuaalinen indikaattori (v6.58): pulssi kun accuracy > 40 m
+    if (typeof speedConfidenceBadgeEl !== 'undefined' && speedConfidenceBadgeEl) {
+        speedConfidenceBadgeEl.classList.toggle('gps-poor', isFinite(acc) && acc > 40);
+    }
 
     const posTs = (typeof position.timestamp === 'number' && isFinite(position.timestamp))
         ? position.timestamp
@@ -1490,6 +1558,7 @@ function updatePosition(position) {
         resetRoadSpeedLimitState();
     } else {
         requestRoadSpeedLimit(lat, lng, headingFiltered, speedKmh);
+        maybeFetchSpeedZoneAhead(lat, lng, headingFiltered, speedKmh);
     }
 
     if (currentDriveWeather === "") fetchWeather(lat, lng);
@@ -2007,10 +2076,16 @@ function updateActivePoiToast(poi, lat, lng, now, prevLatLng) {
 
     const label = getPoiLabel(poi);
     const meters = Math.round(distM);
+    // Aika-arvio perille (v6.58): sekunteina kun nopeus > 1.5 km/h
+    let etaTxt = '';
+    if (typeof speedKmh === 'number' && speedKmh > 1.5 && meters > 0) {
+        const etaSec = Math.max(1, Math.round(meters / (speedKmh / 3.6)));
+        etaTxt = ` · ~${etaSec} s`;
+    }
     if (typeof showPersistentToast === 'function') {
-        showPersistentToast(`📍 ${label}: ${meters} m`);
+        showPersistentToast(`📍 ${label}: ${meters} m${etaTxt}`);
     } else if (typeof showToast === 'function') {
-        showToast(`📍 ${label}: ${meters} m`);
+        showToast(`📍 ${label}: ${meters} m${etaTxt}`);
     }
 
     // Värinä + "hälytys" vain cooldownin mukaan (ei joka päivitys)
@@ -2118,10 +2193,19 @@ function handleMotion(event) {
 
     if (currentCarType === 'bike' || currentCarType === 'walking') return;
     
+    // Telemetria: live G-lukema + ajon huippu-G (v6.58)
+    const gNow = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z) / 9.81;
+    if (gNow > peakGForce) peakGForce = gNow;
+    const gReadoutEl = document.getElementById('g-readout');
+    if (gReadoutEl && (Date.now() - (gReadoutEl._lastUpd || 0)) > 250) {
+        gReadoutEl._lastUpd = Date.now();
+        gReadoutEl.textContent = 'G ' + gNow.toFixed(1);
+    }
+
     const now = Date.now();
-    if (now - lastMotionTime < 500) return; 
+    if (now - lastMotionTime < 500) return;
     lastMotionTime = now;
-    
+
     const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
     if (magnitude > 3.5) {
         aggressiveEvents++;
@@ -2178,6 +2262,7 @@ function resetRecordingUI() {
     existingSessions = [];
     sessionStartDistance = 0;
     sessionStartAddress = "";
+    peakGForce = 0;
     
     if(silentAudio) {
         silentAudio.pause();

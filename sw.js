@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.57 perf
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.58 drive-features
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.57-perf'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.58-drive-features'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

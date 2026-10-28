@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - BILINGUAL MASTER GUIDE (v6.57 S24 ULTRA PERFORMANCE)
+// HELP.JS - BILINGUAL MASTER GUIDE (v6.58 DRIVE FEATURES)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS ---
@@ -9,9 +9,21 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🚗 UUTTA v6.58: Ajo-ominaisuudet ja ajonäytöt:</strong>
+                        <ul>
+                            <li><strong>Ajon yhteenveto:</strong> tallennusikkuna näyttää nopeuskäyrän, nopeuskaistojen osuudet (0-50/50-80/80-100/100+) ja huippu-G:n.</li>
+                            <li><strong>Päivän ajot:</strong> dashboardin "Tänään: X ajoa · Y km" -palkki, napautus avaa historian.</li>
+                            <li><strong>Pit-näyttö:</strong> minimalistisin ajonäyttö - vain nopeus, rajoitus ja POI-etäisyys. 👁️-nappi kiertää: normaali → yksinkertainen → pit.</li>
+                            <li><strong>Aurinkotila:</strong> musta tausta, kirkkaammat lukemat ja isompi nopeus suoraa auringonvaloa varten (Asetukset).</li>
+                            <li><strong>Äänivaroitus:</strong> "Nopeusrajoitus ylitetty" -puheilmoitus ylityksessä (Asetukset, oletus pois).</li>
+                            <li><strong>GPS-tarkkuusindikaattori:</strong> luottamusmerkki pulssoi kun tarkkuus on heikko (&gt;40 m).</li>
+                            <li><strong>Telemetria:</strong> live G-lukema G-pallon yläpuolella + huippu-G ajokohtaiseen yhteenvetoon.</li>
+                            <li><strong>Tuleva nopeusalue:</strong> rajoituskortti näyttää "80 km/h ~500 m" kun edessä on eri rajoitus (~10 s ajon päässä, OSM).</li>
+                            <li><strong>POI-aikalaskuri:</strong> kameravaroituksessa aika-arvio perille ("320 m · ~9 s").</li>
+                        </ul>
                         <strong>⚡ UUTTA v6.57: Suorituskykyoptimointi (S24 Ultra):</strong>
                         <ul>
                             <li><strong>GPU-piirto:</strong> Velocity Stagen progress-palkki ja markkeri siirtyivät layout-ominaisuuksista (width/left) transform-animaatioihin - ei enää layout-rekalkkia jokaisella GPS-päivityksellä.</li>
@@ -605,9 +617,21 @@ const helpData = {
         version: "Version",
         sections: [
             {
-                title: "🚀 1. New (v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. New (v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🚗 NEW in v6.58: Drive features and drive displays:</strong>
+                        <ul>
+                            <li><strong>Drive summary:</strong> the save dialog shows a speed sparkline, speed-band shares (0-50/50-80/80-100/100+) and peak G-force.</li>
+                            <li><strong>Today's drives:</strong> a "Today: X drives · Y km" chip on the dashboard, tap to open history.</li>
+                            <li><strong>Pit display:</strong> the most minimal drive view - only speed, limit and POI distance. The eye button cycles: normal → minimal → pit.</li>
+                            <li><strong>Sunlight mode:</strong> black background, brighter readouts and a larger speed for direct sunlight (Settings).</li>
+                            <li><strong>Voice alert:</strong> "Speed limit exceeded" spoken notification on overrun (Settings, off by default).</li>
+                            <li><strong>GPS accuracy indicator:</strong> the confidence badge pulses when accuracy is poor (&gt;40 m).</li>
+                            <li><strong>Telemetry:</strong> live G readout above the G bubble + peak G in the drive summary.</li>
+                            <li><strong>Upcoming speed zone:</strong> the limit card shows "80 km/h ~500 m" when a different limit lies ahead (~10 s of driving, OSM).</li>
+                            <li><strong>POI countdown:</strong> camera warnings show an ETA ("320 m · ~9 s").</li>
+                        </ul>
                         <strong>⚡ NEW in v6.57: Performance optimization (S24 Ultra):</strong>
                         <ul>
                             <li><strong>GPU rendering:</strong> Velocity Stage progress bar and marker moved from layout properties (width/left) to transform animations - no more layout recalculation on every GPS tick.</li>

@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.57`
+- **Nykyversio:** `v6.58`
 - **Pääpaino juuri nyt:**
   - Ammattimainen, siisti ulkoasu ajokäyttöön: Clean Digital päänäkymänä, SVG-ikonit, yhtenäinen typografia
   - POI-varoitusten luotettavuus ajossa
@@ -21,6 +21,31 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.58 - Ajo-ominaisuudet: yhteenveto, pit-näyttö, aurinko, puhe, telemetria, zone-ahead
+
+**Mitä muutettiin:**
+1. Ajon yhteenveto save-modaaliin (`window.renderDriveSummary`, ui.js): nopeus-sparkline canvasiin, nopeuskaistojen osuudet (0-50/50-80/80-100/100+) värillisenä palkkina, huippu/ka/peakG meta-rivi. `tempDriveData.peakG` gps.js:ssä.
+2. Päivän ajot: `#today-summary`-palkki dashboardilla (`window.updateTodaySummary`, kutsutaan history.js:n latauksen jälkeen) - klikkaus avaa historian.
+3. POI-aikalaskuri: `updateActivePoiToast` näyttää "~X s" ETA:n nopeudesta (gps.js).
+4. Aurinkotila: `body.sunlight-mode` CSS-mooditila (musta tausta, +20vh nopeus, kirkkaammat lukemat) + Asetukset-toggle (`sunlightMode`).
+5. GPS-tarkkuus: `speed-confidence-badge.gps-poor`-pulssi kun accuracy > 40 m.
+6. Äänivaroitus: `window.speakFi` (SpeechSynthesis fi-FI) + `voiceOverspeed`-asetus; laukeaa samalla reunalla kuin haptiikka.
+7. Pit-näyttö: `body.pit-mode` - kaikki paitsi nopeus/rajoitus/POI piiloon; 👁️-nappi kiertää normaali -> minimalist -> pit. Asetus `pitMode`.
+8. Telemetria: `peakGForce` (globals.js) seurataan handleMotionissa (magnitude/9.81), G-lukema `#g-readout`-elementissä (250 ms throttle), peakG yhteenvetoon.
+9. Tuleva nopeusalue (B6): `maybeFetchSpeedZoneAhead` - projisoi sijainnin ~10 s ajon päähän, hakee maxspeedin Overpassista, näyttää `dash-speed-limit-ahead`-hintinä "80 km/h ~500 m"; throttle 15 s, vain >30 km/h ja suunta tiedossa; `window.expireSpeedZoneAhead` vanentaa 25 s.
+10. Reittivärjäys: getSpeedColor oli jo olemassa - legenda tarkennettu numeroarvoilla (0/60/90+).
+11. PWA- ja julkaisuversiot nostettiin v6.58:een.
+
+**Tiedostot:**
+- `index.html` (save-summary, today-summary, zone-hint, g-readout, 3 asetustoggleta, legenda)
+- `style.css` (v6.58-lohko: pit/sunlight-mode, today-summary, gps-poor)
+- `ui.js` (renderDriveSummary, updateTodaySummary, setPitMode/setSunlightMode/speakFi/zone-ahead, eye-cycle, voice, settings init)
+- `gps.js` (peakG/G-readout, POI ETA, gps-poor, zone-ahead-fetch, renderDriveSummary-kutsu)
+- `history.js` (updateTodaySummary-kutsu)
+- `globals.js` (peakGForce + versio), `sw.js`, `help.js` (versioputki + changelog)
+
+---
 
 ### v6.57 - S24 Ultra suorituskykyoptimointi
 
