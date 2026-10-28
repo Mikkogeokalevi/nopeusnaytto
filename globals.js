@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.59 (yhdistetty äänet + POI/ylitys-puhetekstit)
-const APP_VERSION = "6.59";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.60 (TTS-korjaus: cancel+speak-viive)
+const APP_VERSION = "6.60";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

@@ -3,7 +3,7 @@
 ## 📋 **PROJEKTIN YLEISKUVAUS**
 
 **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-**Versio:** v6.59 (yhdistetyt äänet + POI/ylitys-puhetekstit)
+**Versio:** v6.60 (TTS-korjaus: cancel+speak-viive)
 **Kehittäjä:** Mikkogeokalevi
 **AI-assistentti:** Cascade
 

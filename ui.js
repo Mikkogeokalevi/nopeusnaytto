@@ -1800,7 +1800,7 @@ function setSunlightMode(enable) {
 window.speakFi = function(text) {
     try {
         if (!('speechSynthesis' in window)) return;
-        window.speechSynthesis.cancel();
+        const synth = window.speechSynthesis;
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'fi-FI';
         u.rate = 1.15;
@@ -1808,9 +1808,24 @@ window.speakFi = function(text) {
             const g = parseFloat(localStorage.getItem('poiBeepMasterGain') || '0.45');
             u.volume = isFinite(g) ? Math.max(0, Math.min(1, g)) : 0.45;
         } catch (e2) {}
-        window.speechSynthesis.speak(u);
+        // Android/Chrome -bugi: cancel() + speak() samassa tikissä nielee utterancen
+        // äänettömästi. Lähetetään pienellä viiveellä jotta keskeytys ehtii mennä perille.
+        if (window.speakFi._timer) clearTimeout(window.speakFi._timer);
+        if (synth.speaking || synth.pending) synth.cancel();
+        window.speakFi._timer = setTimeout(() => {
+            try { synth.speak(u); } catch (e3) { console.warn('speakFi failed:', e3); }
+        }, 90);
     } catch (e) {}
 };
+
+// Lämmitetään TTS-äänien lista heti (Androidilla lista latautuu laiskasti,
+// ja ensimmäinen speak() voi muuten epäonnistua äänettömästi)
+try {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.getVoices();
+        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+    }
+} catch (e) {}
 
 // Puhetekstit: ylitys + POI-tyyppikohtaiset (v6.59)
 const voiceOverspeedTextEl = document.getElementById('voice-overspeed-text');

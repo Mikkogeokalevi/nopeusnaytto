@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v6.59`
+- **Nykyversio:** `v6.60`
 - **Pääpaino juuri nyt:**
   - Ammattimainen, siisti ulkoasu ajokäyttöön: Clean Digital päänäkymänä, SVG-ikonit, yhtenäinen typografia
   - POI-varoitusten luotettavuus ajossa
@@ -21,6 +21,13 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ---
 
 ## 2) Viimeisin muutos (latest shipped)
+
+### v6.60 - TTS-korjaus: puhe ei kuulunut Androidilla
+1. `speakFi`: `cancel()` + `speak()` samassa tikissä nielee utterancen Android/Chrome:lla - speak() nyt 90 ms viiveellä; cancel vain jos speaking/pending.
+2. TTS-äänten esilataus `getVoices()` + `onvoiceschanged` alussa (laiska lataus saattoi kaataa ensimmäisen puheen).
+3. PWA-versionosto v6.60. Tiedostot: `ui.js`, `globals.js`, `sw.js`, `index.html`, `help.js`.
+
+---
 
 ### v6.59 - Yhdistetyt äänet + POI/ylitys-puhetekstit
 
