@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.60 (TTS-korjaus: cancel+speak-viive)
-const APP_VERSION = "6.60";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.61 (LOPETA-napin korjaus: peakG-jarjestys)
+const APP_VERSION = "6.61";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

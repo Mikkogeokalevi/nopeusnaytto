@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.60 tts-fix
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.61 stop-fix
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.60-tts-fix'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.61-stop-fix'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

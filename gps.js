@@ -1346,8 +1346,6 @@ if (btnStopRec) {
         const segmentDist = totalDistance - sessionStartDistance;
         const segmentDurationMs = (endTime - sessionStartTime) - sessionPauseTime;
         
-        tempDriveData.peakG = peakGForce;
-
         // Luodaan uusi osio-objekti
         // Varmistetaan, ettei luoda "tyhjää" osiota
         if (segmentDurationMs > 1000 || segmentDist > 0.01) {
@@ -1395,6 +1393,7 @@ if (btnStopRec) {
             carIcon: selectedCarIcon, 
             carId: currentCarId,
             carType: currentCarType,
+            peakG: peakGForce,
             route: routePath,
             markers: driveMarkers,
             // OSOITTEET
