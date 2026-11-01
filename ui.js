@@ -1799,6 +1799,7 @@ function setSunlightMode(enable) {
 
 window.speakFi = function(text) {
     try {
+        if (localStorage.getItem('soundMuted') === '1') return;
         if (!('speechSynthesis' in window)) return;
         const synth = window.speechSynthesis;
         const u = new SpeechSynthesisUtterance(text);
@@ -2295,3 +2296,28 @@ window.addEventListener('DOMContentLoaded', () => {
         initVisuals();
     }
 });
+
+// ===== SOUND MUTE v6.64 - yleinen mykistysnappi =====
+window.setSoundMuted = function(mute) {
+    localStorage.setItem('soundMuted', mute ? '1' : '0');
+    document.querySelectorAll('.mute-icon use').forEach((u) => {
+        u.setAttribute('href', mute ? '#i-volume-x' : '#i-volume');
+    });
+    if (mute && 'speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+    if (typeof showToast === 'function') showToast(mute ? 'Äänet mykistetty' : 'Äänet päällä');
+};
+
+(function initSoundMute() {
+    const muted = localStorage.getItem('soundMuted') === '1';
+    document.querySelectorAll('.mute-icon use').forEach((u) => {
+        u.setAttribute('href', muted ? '#i-volume-x' : '#i-volume');
+    });
+    ['btn-mute', 'btn-map-mute'].forEach((id) => {
+        const b = document.getElementById(id);
+        if (b) b.addEventListener('click', () => {
+            window.setSoundMuted(localStorage.getItem('soundMuted') !== '1');
+        });
+    });
+})();

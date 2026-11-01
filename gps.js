@@ -985,6 +985,7 @@ window.playPoiAlertBeep = function(poiType = 'other', overrideProfile = '') {
     // 1 = päällä, 0 = pois
     const enabled = localStorage.getItem('poiBeepEnabled');
     if (enabled === '0') return;
+    if (localStorage.getItem('soundMuted') === '1') return;
 
     const ctx = window.ensurePoiAudioContext();
     if (!ctx) return;

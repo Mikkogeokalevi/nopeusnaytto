@@ -91,22 +91,23 @@ function navBearingDeg(lat1, lng1, lat2, lng2) {
 }
 
 // --- UI ---
-function navPanelEl() { return document.getElementById('nav-panel'); }
-
 function navShowPanel(show) {
-    const p = navPanelEl();
-    if (p) p.style.display = show ? 'flex' : 'none';
+    ['nav-panel', 'nav-dash-panel'].forEach((id) => {
+        const p = document.getElementById(id);
+        if (p) p.style.display = show ? 'flex' : 'none';
+    });
 }
 
 function navUpdatePanel(icon, text, sub) {
-    const p = navPanelEl();
-    if (!p) return;
-    const i = document.getElementById('nav-panel-icon');
-    const t = document.getElementById('nav-panel-text');
-    const s = document.getElementById('nav-panel-sub');
-    if (i) i.innerText = icon;
-    if (t) t.innerText = text;
-    if (s) s.innerText = sub;
+    [['nav-panel-icon', 'nav-panel-text', 'nav-panel-sub'],
+     ['nav-dash-icon', 'nav-dash-text', 'nav-dash-sub']].forEach((ids) => {
+        const i = document.getElementById(ids[0]);
+        const t = document.getElementById(ids[1]);
+        const s = document.getElementById(ids[2]);
+        if (i) i.innerText = icon;
+        if (t) t.innerText = text;
+        if (s) s.innerText = sub;
+    });
 }
 
 function navSpeak(text) {
@@ -421,6 +422,8 @@ window.navPickFromMap = function() {
     if (close) close.addEventListener('click', window.closeNavDestModal);
     const stop = document.getElementById('btn-nav-stop');
     if (stop) stop.addEventListener('click', window.stopNavigation);
+    const stopDash = document.getElementById('btn-nav-stop-dash');
+    if (stopDash) stopDash.addEventListener('click', window.stopNavigation);
     const goAddr = document.getElementById('btn-nav-go-address');
     if (goAddr) goAddr.addEventListener('click', window.navUseAddress);
     const goCoords = document.getElementById('btn-nav-go-coords');

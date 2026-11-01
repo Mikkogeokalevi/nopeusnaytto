@@ -1514,7 +1514,7 @@ body.sunlight-mode .huge-unit, body.sunlight-mode .stat-label, body.sunlight-mod
 
 /* ===== NAVIGAATIO v6.62 ===== */
 #nav-panel {
-  position: absolute; top: calc(env(safe-area-inset-top, 0px) + 10px);
+  position: absolute; top: calc(env(safe-area-inset-top, 0px) + 66px);
   left: 10px; right: 10px; z-index: 500;
   display: flex; align-items: center; gap: 10px;
   background: rgba(10, 16, 30, 0.92); border: 1px solid rgba(41, 121, 255, 0.5);
@@ -1531,6 +1531,22 @@ body.sunlight-mode .huge-unit, body.sunlight-mode .stat-label, body.sunlight-mod
   border: 1px solid rgba(255, 80, 80, 0.4); font-size: 16px; cursor: pointer;
 }
 .nav-open-btn { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 64px) !important; }
+.nav-mute-btn { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 118px) !important; }
+#nav-dash-panel {
+  display: flex; align-items: center; gap: 10px;
+  margin: 8px 12px 0; padding: 8px 12px;
+  background: rgba(10, 16, 30, 0.9); border: 1px solid rgba(41, 121, 255, 0.5);
+  border-radius: 12px; color: #fff;
+}
+body.light-mode #nav-dash-panel { background: rgba(240, 245, 255, 0.95); color: #123; }
+#nav-dash-panel .nav-panel-body { flex: 1; min-width: 0; }
+#nav-dash-text { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#nav-dash-sub { font-size: 11px; opacity: 0.7; font-variant-numeric: tabular-nums; }
+#btn-nav-stop-dash {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255, 80, 80, 0.2); color: #ff6b6b;
+  border: 1px solid rgba(255, 80, 80, 0.4); font-size: 14px; cursor: pointer;
+}
 .nav-dest-row { margin: 10px 0; display: flex; flex-direction: column; gap: 6px; }
 .nav-dest-row label { font-size: 12px; opacity: 0.7; font-weight: 600; }
 .nav-dest-row input, .nav-dest-row select {
