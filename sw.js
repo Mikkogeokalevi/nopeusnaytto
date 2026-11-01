@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.62 nav
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.63 speech-packs
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.62-nav'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.63-speech-packs'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

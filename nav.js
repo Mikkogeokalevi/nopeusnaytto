@@ -130,7 +130,9 @@ function fetchOsrmRoute(origLat, origLng, destLat, destLng) {
                         instruction: navInstructionText(st.maneuver),
                         name: st.name || '',
                         distM: st.distance || 0,
-                        type: st.maneuver.type || ''
+                        type: st.maneuver.type || '',
+                        speechKey: navSpeechKey(st.maneuver),
+                        exit: st.maneuver.exit || 0
                     });
                 });
             });
@@ -213,7 +215,7 @@ function requestRoute() {
             navState.nearRouteIdx = 0;
             navState.spokenMask = {};
             drawNavPolyline(r.coords);
-            navSpeak('Navigaatio aloitettu. Matkaa ' + formatNavDist(r.distM) + '.');
+            navSpeak(navT('depart', { dist: formatNavDist(r.distM) }));
         })
         .catch(() => {
             navState.mode = 'direct';
@@ -261,7 +263,7 @@ window.onNavGpsTick = function(pos) {
         if (navState.offRouteStrikes >= 3 && (Date.now() - navState.lastRerouteTs) > 20000) {
             navState.lastRerouteTs = Date.now();
             navState.offRouteStrikes = 0;
-            navSpeak('Lasketaan reitti uudelleen');
+            navSpeak(navT('reroute', {}));
             requestRoute();
         }
     } else {
@@ -283,7 +285,7 @@ window.onNavGpsTick = function(pos) {
         const dDest = navDistM(lat, lng, navState.destLat, navState.destLng);
         if (dDest < 45) {
             navUpdatePanel('🏁', 'Perillä', navState.destLabel);
-            navSpeak('Saavuit perille');
+            navSpeak(navT('arrived', {}));
             window.stopNavigation();
             return;
         }
@@ -298,13 +300,13 @@ window.onNavGpsTick = function(pos) {
     const mask = navState.spokenMask[nextIdx] || (navState.spokenMask[nextIdx] = {});
     if (distToStep < 40 && !mask.at) {
         mask.at = true;
-        navSpeak(instr);
+        navSpeak(navStepSpeech(next));
     } else if (distToStep < 130 && !mask.mid) {
         mask.mid = true;
-        navSpeak('Sadan metrin päästä ' + instr.toLowerCase());
+        navSpeak(navT('announce_mid', { instr: navStepSpeech(next).toLowerCase() }));
     } else if (distToStep < 350 && !mask.near) {
         mask.near = true;
-        navSpeak('Kolmensadan metrin päästä ' + instr.toLowerCase());
+        navSpeak(navT('announce_far', { instr: navStepSpeech(next).toLowerCase() }));
     }
 
     // ETA + matka
@@ -320,16 +322,15 @@ function tickDirect(lat, lng) {
     const brg = navBearingDeg(lat, lng, navState.destLat, navState.destLng);
     if (d < 40) {
         navUpdatePanel('🏁', 'Perillä', navState.destLabel);
-        navSpeak('Saavuit perille');
+        navSpeak(navT('arrived', {}));
         window.stopNavigation();
         return;
     }
-    const relBrg = (typeof pos !== 'undefined') ? brg : brg;
     navUpdatePanel('🧭', `${navBearingWord(brg)} · ${formatNavDist(d)}`, `${navState.destLabel} · suunnasta ${Math.round(brg)}°`);
     const now = Date.now();
     if (now - navState.lastDirectSpeakTs > 45000) {
         navState.lastDirectSpeakTs = now;
-        navSpeak(`Määränpää ${formatNavDist(d)} suunnassa ${navBearingWord(brg)}`);
+        navSpeak(navT('direct_info', { dist: formatNavDist(d), dir: navBearingWord(brg) }));
     }
 }
 
@@ -428,4 +429,256 @@ window.navPickFromMap = function() {
     if (goPoi) goPoi.addEventListener('click', window.navUsePoi);
     const goMap = document.getElementById('btn-nav-pick-map');
     if (goMap) goMap.addEventListener('click', window.navPickFromMap);
+})();
+
+// =========================================================
+// PUHEPAKETIT v6.63 - navigaation puheohjeiden tekstipaketit
+// Oletuspaketti on lukittu; omia paketteja voi luoda,
+// muokata, poistaa, vieda ja tuoda tekstitiedostona.
+// =========================================================
+
+var NAV_SPEECH_DEFS = [
+    ['depart', 'Navigaation alku', 'Navigaatio aloitettu. Matkaa {dist}.'],
+    ['announce_far', 'Varoitus kaukaa (300 m)', 'Kolmensadan metrin päästä {instr}'],
+    ['announce_mid', 'Varoitus läheltä (100 m)', 'Sadan metrin päästä {instr}'],
+    ['turn_left', 'Käänny vasemmalle', 'Käänny vasemmalle'],
+    ['turn_slight_left', 'Käänny loivasti vasemmalle', 'Käänny loivasti vasemmalle'],
+    ['turn_sharp_left', 'Käänny jyrkästi vasemmalle', 'Käänny jyrkästi vasemmalle'],
+    ['turn_right', 'Käänny oikealle', 'Käänny oikealle'],
+    ['turn_slight_right', 'Käänny loivasti oikealle', 'Käänny loivasti oikealle'],
+    ['turn_sharp_right', 'Käänny jyrkästi oikealle', 'Käänny jyrkästi oikealle'],
+    ['uturn', 'U-käännös', 'Käänny ympäri'],
+    ['continue', 'Jatka suoraan', 'Jatka suoraan'],
+    ['fork', 'Pysy kaarteessa', 'Pysy kaarteessa'],
+    ['on_ramp', 'Aja rampille', 'Aja rampille'],
+    ['off_ramp', 'Poistu rampilta', 'Poistu rampilta'],
+    ['roundabout', 'Liikenneympyrä', 'Aja liikenneympyrästä {exit}. poistuma'],
+    ['arrived', 'Perillä', 'Saavuit perille'],
+    ['reroute', 'Uudelleenreititys', 'Lasketaan reitti uudelleen'],
+    ['direct_info', 'Suoran linjan opastus', 'Määränpää {dist} suunnassa {dir}']
+];
+const NAV_DEFAULT_TEXTS = {};
+NAV_SPEECH_DEFS.forEach(function(def) { NAV_DEFAULT_TEXTS[def[0]] = def[2]; });
+
+var navEditingPackId = null;
+
+function navSpeechKey(maneuver) {
+    const t = String(maneuver && maneuver.type || '').toLowerCase();
+    const m = String(maneuver && maneuver.modifier || '').toLowerCase();
+    if (t === 'arrive') return 'arrived';
+    if (t === 'roundabout' || t === 'rotary') return 'roundabout';
+    if (t === 'off ramp') return 'off_ramp';
+    if (t === 'on ramp') return 'on_ramp';
+    if (t === 'fork') return 'fork';
+    if (m === 'uturn') return 'uturn';
+    if (m.indexOf('left') !== -1) {
+        if (m.indexOf('sharp') !== -1) return 'turn_sharp_left';
+        if (m.indexOf('slight') !== -1) return 'turn_slight_left';
+        return 'turn_left';
+    }
+    if (m.indexOf('right') !== -1) {
+        if (m.indexOf('sharp') !== -1) return 'turn_sharp_right';
+        if (m.indexOf('slight') !== -1) return 'turn_slight_right';
+        return 'turn_right';
+    }
+    return 'continue';
+}
+
+function navLoadPacks() {
+    try { return JSON.parse(localStorage.getItem('navSpeechPacks') || '[]'); }
+    catch (e) { return []; }
+}
+function navSavePacks(packs) {
+    localStorage.setItem('navSpeechPacks', JSON.stringify(packs));
+}
+function navActivePack() {
+    const id = localStorage.getItem('navSpeechActive') || 'default';
+    if (id === 'default') return { id: 'default', name: 'Oletusohjeet', texts: NAV_DEFAULT_TEXTS };
+    const p = navLoadPacks().find(function(x) { return x.id === id; });
+    return p || { id: 'default', name: 'Oletusohjeet', texts: NAV_DEFAULT_TEXTS };
+}
+function navActiveTexts() {
+    const p = navActivePack();
+    return (p.id === 'default') ? NAV_DEFAULT_TEXTS
+        : Object.assign({}, NAV_DEFAULT_TEXTS, p.texts || {});
+}
+function navT(key, params) {
+    let t = navActiveTexts()[key] || NAV_DEFAULT_TEXTS[key] || '';
+    Object.keys(params || {}).forEach(function(k) {
+        t = t.split('{' + k + '}').join(String(params[k]));
+    });
+    return t;
+}
+function navStepSpeech(step) {
+    if (!step) return '';
+    const t = navT(step.speechKey, { exit: step.exit || 0 });
+    return t || step.instruction || '';
+}
+
+function navRefreshPackSelect() {
+    const sel = document.getElementById('nav-speech-pack-select');
+    if (!sel) return;
+    const active = localStorage.getItem('navSpeechActive') || 'default';
+    sel.innerHTML = '';
+    const d = document.createElement('option');
+    d.value = 'default'; d.textContent = 'Oletusohjeet (lukittu)';
+    sel.appendChild(d);
+    navLoadPacks().forEach(function(p) {
+        const o = document.createElement('option');
+        o.value = p.id; o.textContent = p.name;
+        sel.appendChild(o);
+    });
+    sel.value = navLoadPacks().some(function(p) { return p.id === active; }) ? active : 'default';
+}
+
+window.navPackEdit = function() {
+    const active = navActivePack();
+    if (active.id === 'default') {
+        if (typeof showToast === 'function') showToast('Oletusta ei voi muokata - luo ensin oma paketti');
+        return;
+    }
+    navEditingPackId = active.id;
+    const nameEl = document.getElementById('nav-pack-name');
+    const rows = document.getElementById('nav-pack-rows');
+    if (!rows) return;
+    if (nameEl) nameEl.value = active.name || '';
+    rows.innerHTML = '';
+    NAV_SPEECH_DEFS.forEach(function(def) {
+        const key = def[0], label = def[1];
+        const row = document.createElement('div');
+        row.style.cssText = 'margin-bottom:8px;';
+        const lab = document.createElement('label');
+        lab.style.cssText = 'display:block;font-size:12px;opacity:0.75;margin-bottom:3px;';
+        lab.textContent = label + ' ';
+        const code = document.createElement('code');
+        code.style.opacity = '0.5'; code.textContent = key;
+        lab.appendChild(code);
+        const inp = document.createElement('input');
+        inp.className = 'subject-input nav-pack-field';
+        inp.dataset.key = key;
+        inp.style.width = '100%';
+        inp.maxLength = 120;
+        inp.value = (active.texts && active.texts[key]) || NAV_DEFAULT_TEXTS[key] || '';
+        row.appendChild(lab);
+        row.appendChild(inp);
+        rows.appendChild(row);
+    });
+    const m = document.getElementById('nav-pack-modal');
+    if (m) m.style.display = 'flex';
+};
+
+window.navPackSaveEdit = function() {
+    if (!navEditingPackId) return;
+    const packs = navLoadPacks();
+    const p = packs.find(function(x) { return x.id === navEditingPackId; });
+    if (!p) return;
+    const nameEl = document.getElementById('nav-pack-name');
+    if (nameEl && nameEl.value.trim()) p.name = nameEl.value.trim();
+    const texts = {};
+    document.querySelectorAll('.nav-pack-field').forEach(function(inp) {
+        const v = inp.value.trim();
+        const key = inp.dataset.key;
+        if (v && v !== NAV_DEFAULT_TEXTS[key]) texts[key] = v;
+    });
+    p.texts = texts;
+    navSavePacks(packs);
+    navEditingPackId = null;
+    const m = document.getElementById('nav-pack-modal');
+    if (m) m.style.display = 'none';
+    navRefreshPackSelect();
+    if (typeof showToast === 'function') showToast('Puhepaketti tallennettu');
+};
+
+window.navPackNew = function() {
+    const packs = navLoadPacks();
+    const p = { id: 'pack_' + Date.now(), name: 'Oma paketti ' + (packs.length + 1), texts: {} };
+    packs.push(p);
+    navSavePacks(packs);
+    localStorage.setItem('navSpeechActive', p.id);
+    navRefreshPackSelect();
+    window.navPackEdit();
+};
+
+window.navPackDelete = function() {
+    const active = navActivePack();
+    if (active.id === 'default') {
+        if (typeof showToast === 'function') showToast('Oletuspakettia ei voi poistaa');
+        return;
+    }
+    navSavePacks(navLoadPacks().filter(function(x) { return x.id !== active.id; }));
+    localStorage.setItem('navSpeechActive', 'default');
+    navRefreshPackSelect();
+    if (typeof showToast === 'function') showToast('Paketti poistettu');
+};
+
+window.navPackExport = function() {
+    const active = navActivePack();
+    const texts = active.texts || NAV_DEFAULT_TEXTS;
+    let out = '# Ajopaivakirja - navigaation puhepaketti\n';
+    out += '# Muokkaa riveja: avain=teksti. Merkit {instr} {dist} {dir} {exit} korvautuvat ajon aikana.\n';
+    out += '# Tyhja arvo = kaytetaan oletusta.\n';
+    out += 'name=' + (active.id === 'default' ? 'Oma paketti' : active.name) + '\n';
+    NAV_SPEECH_DEFS.forEach(function(def) {
+        out += def[0] + '=' + (texts[def[0]] || def[2]) + '\n';
+    });
+    const blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'puhepaketti.txt';
+    a.click();
+    setTimeout(function() { URL.revokeObjectURL(a.href); }, 2000);
+};
+
+window.navPackImport = function(ev) {
+    const file = ev.target && ev.target.files && ev.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function() {
+        const texts = {};
+        let name = 'Tuotu paketti';
+        String(reader.result || '').split(/\r?\n/).forEach(function(line) {
+            const l = line.trim();
+            if (!l || l.charAt(0) === '#') return;
+            const eq = l.indexOf('=');
+            if (eq === -1) return;
+            const k = l.slice(0, eq).trim(), v = l.slice(eq + 1).trim();
+            if (k === 'name') { if (v) name = v; return; }
+            if (NAV_DEFAULT_TEXTS.hasOwnProperty(k) && v) texts[k] = v;
+        });
+        const packs = navLoadPacks();
+        const p = { id: 'pack_' + Date.now(), name, texts };
+        packs.push(p);
+        navSavePacks(packs);
+        localStorage.setItem('navSpeechActive', p.id);
+        navRefreshPackSelect();
+        if (typeof showToast === 'function') showToast('Paketti "' + name + '" tuotu (' + Object.keys(texts).length + ' tekstia)');
+    };
+    reader.readAsText(file);
+    ev.target.value = '';
+};
+
+(function initNavPacks() {
+    const sel = document.getElementById('nav-speech-pack-select');
+    if (sel) sel.addEventListener('change', function() {
+        localStorage.setItem('navSpeechActive', sel.value);
+        if (typeof showToast === 'function') showToast('Puhepaketti: ' + sel.options[sel.selectedIndex].text);
+    });
+    function b(id, fn) { const e = document.getElementById(id); if (e) e.addEventListener('click', fn); }
+    b('btn-nav-pack-new', window.navPackNew);
+    b('btn-nav-pack-edit', window.navPackEdit);
+    b('btn-nav-pack-delete', window.navPackDelete);
+    b('btn-nav-pack-export', window.navPackExport);
+    b('btn-nav-pack-save', window.navPackSaveEdit);
+    b('btn-nav-pack-close', function() {
+        navEditingPackId = null;
+        const m = document.getElementById('nav-pack-modal');
+        if (m) m.style.display = 'none';
+    });
+    const imp = document.getElementById('nav-pack-import-file');
+    if (imp) {
+        imp.addEventListener('change', window.navPackImport);
+        const ib = document.getElementById('btn-nav-pack-import');
+        if (ib) ib.addEventListener('click', function() { imp.click(); });
+    }
+    navRefreshPackSelect();
 })();
