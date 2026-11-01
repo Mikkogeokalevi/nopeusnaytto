@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.61 (LOPETA-napin korjaus: peakG-jarjestys)
-const APP_VERSION = "6.61";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.62 (Navigaatio: OSRM + TTS + suora linja)
+const APP_VERSION = "6.62";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

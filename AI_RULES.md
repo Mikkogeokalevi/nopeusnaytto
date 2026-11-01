@@ -60,6 +60,7 @@ nopeusnaytto-main/
 ├── ui.js               # Käyttöliittymälogiikka
 ├── auth.js             # Käyttäjäautentikointi
 ├── gps.js              # GPS-seuranta ja tallennus
+├── nav.js             # UUSI v6.62: Navigaatio (OSRM + TTS)
 ├── map.js              # Karttatoiminnot
 ├── garage.js           # Ajoneuvotietokanta
 ├── history.js          # Ajohistoria ja raportit
@@ -71,7 +72,7 @@ nopeusnaytto-main/
 └── vie_githubiin.bat   # GitHub-vientiskripti
 ```
 
-### **Nykyinen tilanne (v6.59):**
+### **Nykyinen tilanne (v6.62):**
 - Äänet: yhdistetty "Äänet ja varoitukset" -osio; POI-puheilmoitukset per tyyppi (`poiVoiceText_*`), muokattava ylitysteksti (`voiceOverspeedText`), master-voimakkuus koskee myös puhetta
 - Ajo-ominaisuudet: ajon yhteenveto save-modaalissa, päivän ajot -palkki, pit-näyttö (👁️-kierto), aurinkotila, äänivaroitus ylityksestä, G-telemetria + peakG, POI-ETA, tuleva nopeusalue (zone-ahead), GPS-tarkkuuspulssi
 - Suorituskyky: Velocity-elementit transform-pohjaisia (GPU), piilossa olevien näkymien DOM-kirjoitukset skipataan, crash-varmuuskopio throttlettu 10 s, WakeLock-cooldown, ylinopeuden haptiikka

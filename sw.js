@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.61 stop-fix
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.62 nav
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.61-stop-fix'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.62-nav'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
@@ -14,7 +14,7 @@ const urlsToCache = [
     './visuals.js', // UUSI v6.14
     './ui.js',
     './auth.js',
-    './map.js',
+    './map.js','./nav.js',
     './gps.js',
     './garage.js',
     './history.js',

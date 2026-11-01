@@ -1510,3 +1510,33 @@ body.sunlight-mode .huge-unit, body.sunlight-mode .stat-label, body.sunlight-mod
 @media (prefers-reduced-motion: reduce) {
     .speed-confidence-badge.gps-poor { animation: none; }
 }
+
+
+/* ===== NAVIGAATIO v6.62 ===== */
+#nav-panel {
+  position: absolute; top: calc(env(safe-area-inset-top, 0px) + 10px);
+  left: 10px; right: 10px; z-index: 500;
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(10, 16, 30, 0.92); border: 1px solid rgba(41, 121, 255, 0.5);
+  border-radius: 14px; padding: 10px 12px; color: #fff;
+  backdrop-filter: blur(6px); pointer-events: auto;
+}
+#nav-panel-icon { font-size: 22px; flex-shrink: 0; }
+.nav-panel-body { flex: 1; min-width: 0; }
+#nav-panel-text { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#nav-panel-sub { font-size: 11px; opacity: 0.7; margin-top: 2px; font-variant-numeric: tabular-nums; }
+#btn-nav-stop {
+  flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255, 80, 80, 0.2); color: #ff6b6b;
+  border: 1px solid rgba(255, 80, 80, 0.4); font-size: 16px; cursor: pointer;
+}
+.nav-open-btn { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 64px) !important; }
+.nav-dest-row { margin: 10px 0; display: flex; flex-direction: column; gap: 6px; }
+.nav-dest-row label { font-size: 12px; opacity: 0.7; font-weight: 600; }
+.nav-dest-row input, .nav-dest-row select {
+  padding: 10px 12px; border-radius: 10px; font-size: 15px;
+  background: rgba(255,255,255,0.08); color: var(--text-color, #fff);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.nav-modal-actions { flex-direction: row; justify-content: space-between; margin-top: 14px; }
+.nav-modal-actions .btn { flex: 1; margin: 0 4px; }

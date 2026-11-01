@@ -1633,6 +1633,7 @@ function updatePosition(position) {
 
     if(typeof updateDashboardUI === 'function') {
         updateDashboardUI(speedKmh, maxSpeed, totalDistance, null, alt, currentAvg);
+        if (typeof window.onNavGpsTick === 'function') window.onNavGpsTick({lat, lng, heading: headingFiltered, speedKmh});
     }
     if (typeof window.updateDashboardSpeedLimit === 'function') {
         window.updateDashboardSpeedLimit(getRoadSpeedLimitSnapshot());
