@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.64 mute
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.65 live-speed
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.64-mute'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.65-live-speed'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

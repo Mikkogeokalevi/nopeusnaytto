@@ -1563,6 +1563,11 @@ function updatePosition(position) {
 
     if (currentDriveWeather === "") fetchWeather(lat, lng);
 
+    // Nopeusmittari päivittyy aina kun GPS on päällä - myös ilman tallennusta (v6.65)
+    if (typeof updateSpeedometer === 'function') {
+        updateSpeedometer(speedKmh, alt);
+    }
+
     if (isRecording && !isPaused) {
         if (speedKmh > maxSpeed) maxSpeed = speedKmh;
         if (lastLatLng) {
@@ -1587,11 +1592,6 @@ function updatePosition(position) {
 
         saveCrashData();
 
-        // UUSI V6.14: Päivitä visuaaliset elementit
-        if (typeof updateSpeedometer === 'function') {
-            updateSpeedometer(speedKmh, alt);
-        }
-        
         if (typeof updateGraphs === 'function') {
             // G-voiman laskenta (jos anturit saatavilla)
             let gx = 0, gy = 0;

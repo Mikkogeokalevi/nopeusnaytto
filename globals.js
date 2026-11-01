@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.64 (Nav-palkki kaikkialle + mykistysnappi + overlap-korjaus)
-const APP_VERSION = "6.64";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.65 (Nopeusnaytto ilman tallennusta)
+const APP_VERSION = "6.65";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
