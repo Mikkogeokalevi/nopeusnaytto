@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.66 free-pan
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.67 pack-sync
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.66-free-pan'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.67-pack-sync'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

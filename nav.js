@@ -515,7 +515,49 @@ function navLoadPacks() {
 }
 function navSavePacks(packs) {
     localStorage.setItem('navSpeechPacks', JSON.stringify(packs));
+    navPushPacksToFirebase();
 }
+
+// Firebase-synkronointi (v6.67): paketit ja aktiivinen valinta jaetaan
+// kayttajan kaikkien laitteiden kesken samaan tapaan kuin autot/historia.
+function navPushPacksToFirebase() {
+    try {
+        if (typeof db === 'undefined' || typeof currentUser === 'undefined' || !currentUser) return;
+        db.ref('users/' + currentUser.uid + '/navSpeechPacks').set({
+            packs: navLoadPacks(),
+            active: localStorage.getItem('navSpeechActive') || 'default'
+        }).catch(function() {});
+    } catch (e) {}
+}
+
+var navPacksSyncStarted = false;
+function navSyncPacksFromFirebase() {
+    try {
+        if (typeof db === 'undefined' || typeof currentUser === 'undefined' || !currentUser) return;
+        if (navPacksSyncStarted) return;
+        navPacksSyncStarted = true;
+        db.ref('users/' + currentUser.uid + '/navSpeechPacks').on('value', function(snapshot) {
+            const val = snapshot.val();
+            if (val && Array.isArray(val.packs)) {
+                localStorage.setItem('navSpeechPacks', JSON.stringify(val.packs));
+                if (val.active) localStorage.setItem('navSpeechActive', val.active);
+            } else {
+                // Pilvessa ei dataa viela: lahetetaan paikalliset paketit ylos
+                navPushPacksToFirebase();
+            }
+            navRefreshPackSelect();
+        });
+    } catch (e) {}
+}
+
+// Odotetaan auth-valmiutta (currentUser asettuu vasta kirjautumisen jalkeen)
+(function navWaitAuthForPackSync() {
+    if (typeof currentUser !== 'undefined' && currentUser) {
+        navSyncPacksFromFirebase();
+    } else {
+        setTimeout(navWaitAuthForPackSync, 1500);
+    }
+})();
 function navActivePack() {
     const id = localStorage.getItem('navSpeechActive') || 'default';
     if (id === 'default') return { id: 'default', name: 'Oletusohjeet', texts: NAV_DEFAULT_TEXTS };
@@ -620,6 +662,7 @@ window.navPackNew = function() {
     packs.push(p);
     navSavePacks(packs);
     localStorage.setItem('navSpeechActive', p.id);
+    navPushPacksToFirebase();
     navRefreshPackSelect();
     window.navPackEdit();
 };
@@ -632,6 +675,7 @@ window.navPackDelete = function() {
     }
     navSavePacks(navLoadPacks().filter(function(x) { return x.id !== active.id; }));
     localStorage.setItem('navSpeechActive', 'default');
+    navPushPacksToFirebase();
     navRefreshPackSelect();
     if (typeof showToast === 'function') showToast('Paketti poistettu');
 };
@@ -675,6 +719,7 @@ window.navPackImport = function(ev) {
         packs.push(p);
         navSavePacks(packs);
         localStorage.setItem('navSpeechActive', p.id);
+        navPushPacksToFirebase();
         navRefreshPackSelect();
         if (typeof showToast === 'function') showToast('Paketti "' + name + '" tuotu (' + Object.keys(texts).length + ' tekstia)');
     };
@@ -686,6 +731,7 @@ window.navPackImport = function(ev) {
     const sel = document.getElementById('nav-speech-pack-select');
     if (sel) sel.addEventListener('change', function() {
         localStorage.setItem('navSpeechActive', sel.value);
+        navPushPacksToFirebase();
         if (typeof showToast === 'function') showToast('Puhepaketti: ' + sel.options[sel.selectedIndex].text);
     });
     function b(id, fn) { const e = document.getElementById(id); if (e) e.addEventListener('click', fn); }
