@@ -582,6 +582,15 @@ function navStepSpeech(step) {
     return t || step.instruction || '';
 }
 
+// Testisoitto: korvataan paikkamerkit esimerkkiarvoilla kuuntelua varten (v6.68)
+function navSampleText(text) {
+    return String(text || '')
+        .split('{instr}').join('käänny vasemmalle')
+        .split('{dist}').join('3,2 kilometriä')
+        .split('{dir}').join('luode')
+        .split('{exit}').join('2');
+}
+
 function navRefreshPackSelect() {
     const sel = document.getElementById('nav-speech-pack-select');
     if (!sel) return;
@@ -623,11 +632,24 @@ window.navPackEdit = function() {
         const inp = document.createElement('input');
         inp.className = 'subject-input nav-pack-field';
         inp.dataset.key = key;
-        inp.style.width = '100%';
+        inp.style.flex = '1';
         inp.maxLength = 120;
         inp.value = (active.texts && active.texts[key]) || NAV_DEFAULT_TEXTS[key] || '';
+        const testBtn = document.createElement('button');
+        testBtn.className = 'icon-btn';
+        testBtn.type = 'button';
+        testBtn.style.cssText = 'width:38px; flex-shrink:0; font-size:15px;';
+        testBtn.textContent = '🔊';
+        testBtn.setAttribute('aria-label', 'Kuuntele: ' + label);
+        testBtn.addEventListener('click', function() {
+            navSpeak(navSampleText(inp.value));
+        });
+        const rowInner = document.createElement('div');
+        rowInner.style.cssText = 'display:flex; gap:6px; align-items:center;';
+        rowInner.appendChild(inp);
+        rowInner.appendChild(testBtn);
         row.appendChild(lab);
-        row.appendChild(inp);
+        row.appendChild(rowInner);
         rows.appendChild(row);
     });
     const m = document.getElementById('nav-pack-modal');
