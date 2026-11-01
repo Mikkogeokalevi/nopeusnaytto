@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.68 pack-preview
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.69 pack-access
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.68-pack-preview'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.69-pack-access'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

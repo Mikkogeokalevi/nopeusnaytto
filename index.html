@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.68</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.69</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.68">
+    <link rel="stylesheet" href="style.css?v=6.69">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -68,7 +68,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.68...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.69...</p>
             <div class="splash-spinner" aria-hidden="true"></div>
         </div>
     </div>
@@ -633,6 +633,24 @@
                     </div>
 
                     <div style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
+                        <div style="font-size:13px; font-weight:600; margin-bottom:8px;">Navigaation puheohjeet</div>
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                            <select id="nav-speech-pack-select" class="subject-input" style="flex:1; min-width:160px;"></select>
+                        </div>
+                        <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+                            <button id="btn-nav-pack-new" class="action-btn secondary-btn" style="width:auto;">Uusi</button>
+                            <button id="btn-nav-pack-edit" class="action-btn secondary-btn" style="width:auto;">Muokkaa</button>
+                            <button id="btn-nav-pack-delete" class="action-btn secondary-btn" style="width:auto;">Poista</button>
+                            <button id="btn-nav-pack-export" class="action-btn secondary-btn" style="width:auto;">Vie</button>
+                            <button id="btn-nav-pack-import" class="action-btn secondary-btn" style="width:auto;">Tuo</button>
+                            <input id="nav-pack-import-file" type="file" accept=".txt" style="display:none;">
+                        </div>
+                        <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
+                            Paketti muuttaa navigaation puhetekstejä (näytöllä näkyvät ohjeet pysyvät normaaleina). "Vie" lataa pohjan jota kaveri voi muokata tekstitiedostona, "Tuo" lataa sen takaisin. Oletuspaketti on aina valittavissa eikä sitä voi poistaa.
+                        </div>
+                    </div>
+
+                    <div style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
                         <div style="font-size:13px; font-weight:600; margin-bottom:8px;">Rajoituksen ylitys</div>
                         <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
                             <span>Äänivaroitus</span>
@@ -752,24 +770,6 @@
                                 </select>
                                 <button id="btn-test-poi-sound-other" class="action-btn secondary-btn" style="width:auto;">Testaa</button>
                             </div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
-                        <div style="font-size:13px; font-weight:600; margin-bottom:8px;">Navigaation puheohjeet</div>
-                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                            <select id="nav-speech-pack-select" class="subject-input" style="flex:1; min-width:160px;"></select>
-                        </div>
-                        <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
-                            <button id="btn-nav-pack-new" class="action-btn secondary-btn" style="width:auto;">Uusi</button>
-                            <button id="btn-nav-pack-edit" class="action-btn secondary-btn" style="width:auto;">Muokkaa</button>
-                            <button id="btn-nav-pack-delete" class="action-btn secondary-btn" style="width:auto;">Poista</button>
-                            <button id="btn-nav-pack-export" class="action-btn secondary-btn" style="width:auto;">Vie</button>
-                            <button id="btn-nav-pack-import" class="action-btn secondary-btn" style="width:auto;">Tuo</button>
-                            <input id="nav-pack-import-file" type="file" accept=".txt" style="display:none;">
-                        </div>
-                        <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
-                            Paketti muuttaa navigaation puhetekstejä (näytöllä näkyvät ohjeet pysyvät normaaleina). "Vie" lataa pohjan jota kaveri voi muokata tekstitiedostona, "Tuo" lataa sen takaisin. Oletuspaketti on aina valittavissa eikä sitä voi poistaa.
                         </div>
                     </div>
                 </div>
@@ -1165,6 +1165,10 @@
                     <option value="direct">Suora linja (kätkö)</option>
                 </select>
             </div>
+            <div class="nav-dest-row">
+                <label for="nav-dest-pack-select">Puheohjeiden paketti</label>
+                <select id="nav-dest-pack-select" class="subject-input"></select>
+            </div>
             <div class="nav-dest-row nav-modal-actions">
                 <button id="btn-nav-pick-map" class="btn btn-secondary">Valitse kartalta</button>
                 <button id="btn-nav-close" class="btn btn-secondary">Sulje</button>
@@ -1177,17 +1181,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.68"></script>
-    <script src="visuals.js?v=6.68"></script>
-    <script src="ui.js?v=6.68"></script>
-    <script src="auth.js?v=6.68"></script>
-    <script src="map.js?v=6.68"></script>
-    <script src="gps.js?v=6.68"></script>
-    <script src="garage.js?v=6.68"></script>
-    <script src="history.js?v=6.68"></script>
-    <script src="help.js?v=6.68"></script>
+    <script src="globals.js?v=6.69"></script>
+    <script src="visuals.js?v=6.69"></script>
+    <script src="ui.js?v=6.69"></script>
+    <script src="auth.js?v=6.69"></script>
+    <script src="map.js?v=6.69"></script>
+    <script src="gps.js?v=6.69"></script>
+    <script src="garage.js?v=6.69"></script>
+    <script src="history.js?v=6.69"></script>
+    <script src="help.js?v=6.69"></script>
     
-    <script src="nav.js?v=6.68"></script>
-    <script src="app.js?v=6.68"></script>
+    <script src="nav.js?v=6.69"></script>
+    <script src="app.js?v=6.69"></script>
 </body>
 </html>

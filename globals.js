@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.68 (Lausekohtainen kuuntelu pakettieditorissa)
-const APP_VERSION = "6.68";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.69 (Pakettivalitsin nav-modaaliin + asetusjärjestys)
+const APP_VERSION = "6.69";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

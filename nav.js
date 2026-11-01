@@ -592,19 +592,21 @@ function navSampleText(text) {
 }
 
 function navRefreshPackSelect() {
-    const sel = document.getElementById('nav-speech-pack-select');
-    if (!sel) return;
     const active = localStorage.getItem('navSpeechActive') || 'default';
-    sel.innerHTML = '';
-    const d = document.createElement('option');
-    d.value = 'default'; d.textContent = 'Oletusohjeet (lukittu)';
-    sel.appendChild(d);
-    navLoadPacks().forEach(function(p) {
-        const o = document.createElement('option');
-        o.value = p.id; o.textContent = p.name;
-        sel.appendChild(o);
+    ['nav-speech-pack-select', 'nav-dest-pack-select'].forEach(function(selId) {
+        const sel = document.getElementById(selId);
+        if (!sel) return;
+        sel.innerHTML = '';
+        const d = document.createElement('option');
+        d.value = 'default'; d.textContent = 'Oletusohjeet (lukittu)';
+        sel.appendChild(d);
+        navLoadPacks().forEach(function(p) {
+            const o = document.createElement('option');
+            o.value = p.id; o.textContent = p.name;
+            sel.appendChild(o);
+        });
+        sel.value = navLoadPacks().some(function(p) { return p.id === active; }) ? active : 'default';
     });
-    sel.value = navLoadPacks().some(function(p) { return p.id === active; }) ? active : 'default';
 }
 
 window.navPackEdit = function() {
@@ -750,11 +752,14 @@ window.navPackImport = function(ev) {
 };
 
 (function initNavPacks() {
-    const sel = document.getElementById('nav-speech-pack-select');
-    if (sel) sel.addEventListener('change', function() {
-        localStorage.setItem('navSpeechActive', sel.value);
-        navPushPacksToFirebase();
-        if (typeof showToast === 'function') showToast('Puhepaketti: ' + sel.options[sel.selectedIndex].text);
+    ['nav-speech-pack-select', 'nav-dest-pack-select'].forEach(function(selId) {
+        const sel = document.getElementById(selId);
+        if (sel) sel.addEventListener('change', function() {
+            localStorage.setItem('navSpeechActive', sel.value);
+            navPushPacksToFirebase();
+            navRefreshPackSelect();
+            if (typeof showToast === 'function') showToast('Puhepaketti: ' + sel.options[sel.selectedIndex].text);
+        });
     });
     function b(id, fn) { const e = document.getElementById(id); if (e) e.addEventListener('click', fn); }
     b('btn-nav-pack-new', window.navPackNew);
