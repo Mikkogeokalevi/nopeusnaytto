@@ -115,9 +115,22 @@ function navSpeak(text) {
 }
 
 // --- REITITYS (OSRM) ---
+const NAV_ROUTE_ENDPOINTS = [
+    'https://router.project-osrm.org/route/v1/driving',
+    'https://routing.openstreetmap.de/routed-car/route/v1/driving'
+];
+
 function fetchOsrmRoute(origLat, origLng, destLat, destLng) {
-    const url = `https://router.project-osrm.org/route/v1/driving/${origLng},${origLat};${destLng},${destLat}` +
-        `?steps=true&overview=full&geometries=geojson&voice=false`;
+    const path = `/${origLng},${origLat};${destLng},${destLat}?steps=true&overview=full&geometries=geojson&voice=false`;
+    // Kokeillaan ensisijaista OSRM:ää ja sen jalkeen FOSSGIS-peili (v6.66)
+    let chain = Promise.reject(new Error('start'));
+    NAV_ROUTE_ENDPOINTS.forEach((base) => {
+        chain = chain.catch(() => fetchOsrmEndpoint(base + path));
+    });
+    return chain;
+}
+
+function fetchOsrmEndpoint(url) {
     return fetch(url)
         .then((res) => { if (!res.ok) throw new Error('osrm ' + res.status); return res.json(); })
         .then((data) => {
@@ -161,6 +174,15 @@ window.startNavigation = function(dest) {
     navState.active = true;
     navShowPanel(true);
     navUpdatePanel('🧭', 'Haetaan reittiä...', navState.destLabel);
+    // Kaynnistetaan GPS automaattisesti jos se ei ole paalla (v6.66)
+    if (typeof isGPSActive !== 'undefined' && !isGPSActive && typeof startGPS === 'function') {
+        try {
+            startGPS();
+            const btnActivate = document.getElementById('btn-activate-gps');
+            if (btnActivate) btnActivate.style.display = 'none';
+            if (typeof showToast === 'function') showToast('GPS kaynnistetty opastusta varten');
+        } catch (e) {}
+    }
     if (navState.mode === 'direct') {
         if (typeof showToast === 'function') showToast('Suoran linjan opastus: ' + navState.destLabel);
         drawDirectLine();

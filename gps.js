@@ -1612,7 +1612,8 @@ function updatePosition(position) {
         const newLatLng = new L.LatLng(lat, lng);
         if(marker) marker.setLatLng(newLatLng);
         
-        if (views.map && views.map.style.display !== 'none' && !isViewingHistory && map) {
+        if (views.map && views.map.style.display !== 'none' && !isViewingHistory && map
+            && Date.now() > (window.mapFreePanUntil || 0)) {
             let targetZoom = 18; 
             if (currentCarType === 'bike' || currentCarType === 'walking') {
                 if (speedKmh > 15) targetZoom = 17; else targetZoom = 19; 

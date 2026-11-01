@@ -114,6 +114,17 @@ if (document.getElementById('map')) {
         position: 'topleft'
     }).addTo(map);
 
+    // Vapaa karttakatselu (v6.66): kayttajan raahaus/zoomaus taukoittaa
+    // GPS-seurannan 30 sekunniksi, jotta reittia voi katsoa vapaasti.
+    map.on('dragstart zoomstart', () => {
+        window.mapFreePanUntil = Date.now() + 30000;
+        if (typeof showToast === 'function' && !window._freePanToastTs) {
+            window._freePanToastTs = Date.now();
+            showToast('Vapaa karttakatselu - seuranta jatkuu 30 s kuluttua');
+            setTimeout(() => { window._freePanToastTs = 0; }, 31000);
+        }
+    });
+
     map.on('baselayerchange', () => {
         const active = getActiveMainLayerKey();
         if (active && currentCarType !== 'bike') lastNonBikeMainLayer = active;

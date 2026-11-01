@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.65 (Nopeusnaytto ilman tallennusta)
-const APP_VERSION = "6.65";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.66 (OSRM-fallback + GPS-autostart + vapaa karttakatselu)
+const APP_VERSION = "6.66";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
