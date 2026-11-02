@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - BILINGUAL MASTER GUIDE (v6.69 PACK ACCESS)
+// HELP.JS - BILINGUAL MASTER GUIDE (v6.70 ROUTE FIX)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS ---
@@ -9,9 +9,15 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.69, v6.68, v6.67, v6.66, v6.65, v6.64, v6.63, v6.62, v6.61, v6.60, v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.70, v6.69, v6.68, v6.67, v6.66, v6.65, v6.64, v6.63, v6.62, v6.61, v6.60, v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🛠️ UUTTA v6.70: Tierenavigaation korjaus:</strong>
+                        <ul>
+                            <li>Kriittinen korjaus: OSRM-kyselyn virheellinen parametri aiheutti 400-virheen joka kerta - reititys kaatui aina suoran linjan varamoodiin.</li>
+                            <li>Nyt tierenavigaatio toimii: reitit, ohjeet ja aeniohjeet kuten suunniteltu.</li>
+                            <li>Reititysvirheet nakyvat nyt toastissa tarkalla syylla (helpttaa tulevien ongelmien diagnosointia).</li>
+                        </ul>
                         <strong>📍 UUTTA v6.69: Puhepaketin valinta helpommin:</strong>
                         <ul>
                             <li>Pakettivalitsin nakyi nyt myos suoraan navigaatiomodaalissa - voit vaihtaa aania juuri ennen lahdolla.</li>
@@ -682,6 +688,12 @@ const helpData = {
                 title: "🚀 1. New (v6.60, v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🛠️ NEW in v6.70: Road navigation fix:</strong>
+                        <ul>
+                            <li>Critical fix: an invalid OSRM query parameter caused a 400 error every time - routing always fell back to direct-line mode.</li>
+                            <li>Road navigation now works: routes, instructions and voice guidance as designed.</li>
+                            <li>Routing errors now show in a toast with the exact reason (makes future diagnosis easier).</li>
+                        </ul>
                         <strong>📍 NEW in v6.69: Easier speech pack access:</strong>
                         <ul>
                             <li>The pack selector is now also directly in the navigation modal - switch voices right before departure.</li>

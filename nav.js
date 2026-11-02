@@ -121,7 +121,7 @@ const NAV_ROUTE_ENDPOINTS = [
 ];
 
 function fetchOsrmRoute(origLat, origLng, destLat, destLng) {
-    const path = `/${origLng},${origLat};${destLng},${destLat}?steps=true&overview=full&geometries=geojson&voice=false`;
+    const path = `/${origLng},${origLat};${destLng},${destLat}?steps=true&overview=full&geometries=geojson`;
     // Kokeillaan ensisijaista OSRM:ää ja sen jalkeen FOSSGIS-peili (v6.66)
     let chain = Promise.reject(new Error('start'));
     NAV_ROUTE_ENDPOINTS.forEach((base) => {
@@ -240,10 +240,12 @@ function requestRoute() {
             drawNavPolyline(r.coords);
             navSpeak(navT('depart', { dist: formatNavDist(r.distM) }));
         })
-        .catch(() => {
+        .catch((err) => {
             navState.mode = 'direct';
             navUpdatePanel('⚠️', 'Reittiä ei löytynyt', 'Suoran linjan opastus käytössä');
-            if (typeof showToast === 'function') showToast('Reititys epäonnistui - suora linja käytössä');
+            const msg = (err && err.message) ? err.message : String(err || 'tuntematon');
+            if (typeof showToast === 'function') showToast('Reititysvirhe: ' + msg + ' - suora linja käytössä');
+            console.warn('[nav] route fetch failed:', err);
             drawDirectLine();
         })
         .finally(() => { navState.inFlight = false; });
