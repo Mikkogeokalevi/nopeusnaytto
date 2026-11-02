@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.77 (Kompakti: napinakyvyys korjattu flex-koolla)
-const APP_VERSION = "6.77";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.78 (Liita-pakettimodaali: copy/paste-tuonti)
+const APP_VERSION = "6.78";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

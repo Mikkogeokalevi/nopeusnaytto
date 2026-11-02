@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.77</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.78</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.77">
+    <link rel="stylesheet" href="style.css?v=6.78">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -68,7 +68,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.77...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.78...</p>
             <div class="splash-spinner" aria-hidden="true"></div>
         </div>
     </div>
@@ -241,7 +241,7 @@
                     <button id="btn-nav-repeat-dash" class="nav-repeat-btn" aria-label="Toista ohje">🔂</button>
                     <button id="btn-nav-stop-dash" aria-label="Lopeta navigaatio">✕</button>
                 </div>
-                <!-- side-tap-zone poistettu v6.77: karttaan paasee alanavigaatiosta -->
+                <!-- side-tap-zone poistettu v6.78: karttaan paasee alanavigaatiosta -->
 
                 <div id="live-status-bar" class="status-bar" style="opacity: 0;">
                     <span id="live-style-indicator" class="style-badge style-green">Taloudellinen</span>
@@ -307,7 +307,7 @@
                         </div>
                     </div>
 
-                    <!-- UUSI v6.77: Kompakti - iso numero ilman palloa + ohut progress-palkki -->
+                    <!-- UUSI v6.78: Kompakti - iso numero ilman palloa + ohut progress-palkki -->
                     <div class="compact-speed-container" id="compact-speed-container" style="display:none;">
                         <div class="compact-speed-row">
                             <span id="compact-speed" class="compact-speed">0.0</span>
@@ -673,6 +673,7 @@
                             <button id="btn-nav-pack-delete" class="action-btn secondary-btn" style="width:auto;">Poista</button>
                             <button id="btn-nav-pack-export" class="action-btn secondary-btn" style="width:auto;">Vie</button>
                             <button id="btn-nav-pack-import" class="action-btn secondary-btn" style="width:auto;">Tuo</button>
+                            <button id="btn-nav-pack-paste" class="action-btn secondary-btn" style="width:auto;">Liitä</button>
                             <input id="nav-pack-import-file" type="file" accept=".txt" style="display:none;">
                         </div>
                         <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
@@ -1157,6 +1158,22 @@
 
     <div id="toast-notification" class="toast"></div>
 
+    <div id="nav-pack-paste-modal" class="modal-overlay" style="display:none">
+        <div class="modal-content" style="max-height:80vh;">
+            <div class="modal-title">Liitä puhepaketti</div>
+            <div style="font-size:12px;opacity:0.7;margin-bottom:8px;">
+                Liitä teksti muodossa avain=arvo (kuten viedystä tiedostosta). Paketin nimi luetaan name=-riviltä.
+            </div>
+            <textarea id="nav-pack-paste-input" class="subject-input" rows="14"
+                style="width:100%; font-family:monospace; font-size:12px; white-space:pre;"
+                placeholder="name=Oma paketti&#10;depart=Navigaatio aloitettu. Matkaa {dist}.&#10;turn_left=Käänny vasemmalle&#10;..."></textarea>
+            <div style="display:flex; gap:8px; margin-top:12px;">
+                <button id="btn-nav-pack-paste-import" class="btn btn-primary" style="flex:1;">Tuo paketti</button>
+                <button id="btn-nav-pack-paste-close" class="btn btn-secondary" style="flex:1;">Peruuta</button>
+            </div>
+        </div>
+    </div>
+
     <div id="nav-pack-modal" class="modal-overlay" style="display:none">
         <div class="modal-content" style="max-height:80vh; overflow-y:auto;">
             <div class="modal-title">Puhepaketin muokkaus</div>
@@ -1218,17 +1235,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.77"></script>
-    <script src="visuals.js?v=6.77"></script>
-    <script src="ui.js?v=6.77"></script>
-    <script src="auth.js?v=6.77"></script>
-    <script src="map.js?v=6.77"></script>
-    <script src="gps.js?v=6.77"></script>
-    <script src="garage.js?v=6.77"></script>
-    <script src="history.js?v=6.77"></script>
-    <script src="help.js?v=6.77"></script>
+    <script src="globals.js?v=6.78"></script>
+    <script src="visuals.js?v=6.78"></script>
+    <script src="ui.js?v=6.78"></script>
+    <script src="auth.js?v=6.78"></script>
+    <script src="map.js?v=6.78"></script>
+    <script src="gps.js?v=6.78"></script>
+    <script src="garage.js?v=6.78"></script>
+    <script src="history.js?v=6.78"></script>
+    <script src="help.js?v=6.78"></script>
     
-    <script src="nav.js?v=6.77"></script>
-    <script src="app.js?v=6.77"></script>
+    <script src="nav.js?v=6.78"></script>
+    <script src="app.js?v=6.78"></script>
 </body>
 </html>

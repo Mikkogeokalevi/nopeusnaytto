@@ -842,33 +842,57 @@ window.navPackExport = function() {
     setTimeout(function() { URL.revokeObjectURL(a.href); }, 2000);
 };
 
+// Jaettu pakettien parsinta tekstista (v6.78): kaytetaan seka tiedosto-etta liita-importissa
+function navImportPackText(raw, defaultName) {
+    const texts = {};
+    let name = defaultName || 'Tuotu paketti';
+    String(raw || '').split(/\r?\n/).forEach(function(line) {
+        const l = line.trim();
+        if (!l || l.charAt(0) === '#') return;
+        const eq = l.indexOf('=');
+        if (eq === -1) return;
+        const k = l.slice(0, eq).trim(), v = l.slice(eq + 1).trim();
+        if (k === 'name') { if (v) name = v; return; }
+        if (NAV_DEFAULT_TEXTS.hasOwnProperty(k) && v) texts[k] = v;
+    });
+    if (!Object.keys(texts).length) return null;
+    const packs = navLoadPacks();
+    const p = { id: 'pack_' + Date.now(), name, texts };
+    packs.push(p);
+    navSavePacks(packs);
+    localStorage.setItem('navSpeechActive', p.id);
+    navPushPacksToFirebase();
+    navRefreshPackSelect();
+    return p;
+}
+
 window.navPackImport = function(ev) {
     const file = ev.target && ev.target.files && ev.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = function() {
-        const texts = {};
-        let name = 'Tuotu paketti';
-        String(reader.result || '').split(/\r?\n/).forEach(function(line) {
-            const l = line.trim();
-            if (!l || l.charAt(0) === '#') return;
-            const eq = l.indexOf('=');
-            if (eq === -1) return;
-            const k = l.slice(0, eq).trim(), v = l.slice(eq + 1).trim();
-            if (k === 'name') { if (v) name = v; return; }
-            if (NAV_DEFAULT_TEXTS.hasOwnProperty(k) && v) texts[k] = v;
-        });
-        const packs = navLoadPacks();
-        const p = { id: 'pack_' + Date.now(), name, texts };
-        packs.push(p);
-        navSavePacks(packs);
-        localStorage.setItem('navSpeechActive', p.id);
-        navPushPacksToFirebase();
-        navRefreshPackSelect();
-        if (typeof showToast === 'function') showToast('Paketti "' + name + '" tuotu (' + Object.keys(texts).length + ' tekstia)');
+        const p = navImportPackText(String(reader.result || ''), 'Tuotu paketti');
+        if (typeof showToast === 'function') {
+            showToast(p ? ('Paketti "' + p.name + '" tuotu (' + Object.keys(p.texts).length + ' tekstia)')
+                        : 'Tiedostossa ei ollut tunnistettuja teksteja');
+        }
     };
     reader.readAsText(file);
     ev.target.value = '';
+};
+
+window.navPackPasteImport = function() {
+    const ta = document.getElementById('nav-pack-paste-input');
+    const raw = ta ? ta.value : '';
+    const p = navImportPackText(raw, 'Liitetty paketti');
+    if (p) {
+        const m = document.getElementById('nav-pack-paste-modal');
+        if (m) m.style.display = 'none';
+        if (ta) ta.value = '';
+        if (typeof showToast === 'function') showToast('Paketti "' + p.name + '" tuotu (' + Object.keys(p.texts).length + ' tekstia)');
+    } else if (typeof showToast === 'function') {
+        showToast('Ei tunnistettuja riveja - tarkista muoto avain=arvo');
+    }
 };
 
 (function initNavPacks() {
@@ -898,5 +922,14 @@ window.navPackImport = function(ev) {
         const ib = document.getElementById('btn-nav-pack-import');
         if (ib) ib.addEventListener('click', function() { imp.click(); });
     }
+    b('btn-nav-pack-paste', function() {
+        const m = document.getElementById('nav-pack-paste-modal');
+        if (m) m.style.display = 'flex';
+    });
+    b('btn-nav-pack-paste-import', window.navPackPasteImport);
+    b('btn-nav-pack-paste-close', function() {
+        const m = document.getElementById('nav-pack-paste-modal');
+        if (m) m.style.display = 'none';
+    });
     navRefreshPackSelect();
 })();
