@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - BILINGUAL MASTER GUIDE (v6.72 NAV VISUAL)
+// HELP.JS - BILINGUAL MASTER GUIDE (v6.74 NAV+)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS ---
@@ -9,9 +9,23 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.72, v6.71, v6.70, v6.69, v6.68, v6.67, v6.66, v6.65, v6.64, v6.63, v6.62, v6.61, v6.60, v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.74, v6.73, v6.72, v6.71, v6.70, v6.69, v6.68, v6.67, v6.66, v6.65, v6.64, v6.63, v6.62, v6.61, v6.60, v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🚀 UUTTA v6.74: Navigaation parannukset:</strong>
+                        <ul>
+                            <li>Viimeisimmat maaranpaat (5 kpl) navigaatiomodaalissa - yhdella napautuksella uusi reitti.</li>
+                            <li>Kotiin-pikanappi: tallenna koti minka tahansa maaranpaan vieresta.</li>
+                            <li>Toista ohje -nappi (toistaa viimeisimman aeniohjeen) nav-paneeleissa.</li>
+                            <li>Saapumiskellonaika ETA:n rinnalle.</li>
+                            <li>Nopeusmukautetut puhekynnykset: moottoritiella ohjeet aikaisemmin (700/250/60 m).</li>
+                            <li>Offline-reittivalimuisti: jos verkko katkeaa, opastus jatkuu tallennetulla reitilla.</li>
+                            <li>Talviolosuhdevaroitus: toasti kun lampotila tai lumisade vaatii erityista varovaisuutta.</li>
+                        </ul>
+                        <strong>🔍 UUTTA v6.73: Katselmointikorjaukset:</strong>
+                        <ul>
+                            <li>Korjaus: TTS-aanivalikon alustus ylikirjotti aanien esilatauksen - nyt molemmat toimivat.</li>
+                        </ul>
                         <strong>🗺️ UUTTA v6.72: Kartan seuranta + punainen reitti:</strong>
                         <ul>
                             <li>Korjaus: ohjelmallinen zoomaus (reitin esitys, seuranta) ei enaa laukaise vapaan katselun tilaa - kartta seuraa luotettavasti navigoidessa.</li>
@@ -700,6 +714,20 @@ const helpData = {
                 title: "🚀 1. New (v6.60, v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
+                        <strong>🚀 NEW in v6.74: Navigation improvements:</strong>
+                        <ul>
+                            <li>Recent destinations (5) in the nav modal - one tap starts a new route.</li>
+                            <li>Home quick button: save home next to any destination.</li>
+                            <li>Repeat instruction button in nav panels.</li>
+                            <li>Arrival clock time next to the ETA.</li>
+                            <li>Speed-adaptive voice thresholds: earlier instructions on motorways (700/250/60 m).</li>
+                            <li>Offline route cache: guidance continues on the stored route if the network drops.</li>
+                            <li>Winter conditions warning: toast when temperature or snow calls for extra caution.</li>
+                        </ul>
+                        <strong>🔍 NEW in v6.73: Review fixes:</strong>
+                        <ul>
+                            <li>Fix: TTS voice menu init overwrote voice preloading - now both work.</li>
+                        </ul>
                         <strong>🗺️ NEW in v6.72: Map follow fix + red route:</strong>
                         <ul>
                             <li>Fix: programmatic zooms (route display, follow) no longer trigger free-pan mode - the map follows reliably while navigating.</li>

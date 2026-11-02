@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.72 (Kartan seuranta-korjaus + punainen reittiviiva)
-const APP_VERSION = "6.72";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.74 (Nav-parannukset: viimeisimmat, koti, toista, kello, adaptiiviset kynnykset, offline-cache, talvibanneri)
+const APP_VERSION = "6.74";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

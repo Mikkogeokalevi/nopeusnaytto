@@ -2379,7 +2379,11 @@ function ttsPopulateVoices() {
     if (!localStorage.getItem('ttsStyle')) ttsApplyStyle('normal');
     ttsPopulateVoices();
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.onvoiceschanged = ttsPopulateVoices;
+        // Ketjutetaan: aanien esilataus (speakFi) + valikon populaatio samassa handlerissa (v6.73)
+        window.speechSynthesis.onvoiceschanged = () => {
+            try { window.speechSynthesis.getVoices(); } catch (e) {}
+            ttsPopulateVoices();
+        };
     }
     if (ssel) {
         ssel.value = localStorage.getItem('ttsStyle') || 'normal';

@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.72 nav-visual
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.74 nav-plus
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.72-nav-visual'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.74-nav-plus'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

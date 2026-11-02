@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.72</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.74</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.72">
+    <link rel="stylesheet" href="style.css?v=6.74">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -68,7 +68,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.72...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.74...</p>
             <div class="splash-spinner" aria-hidden="true"></div>
         </div>
     </div>
@@ -238,6 +238,7 @@
                         <div id="nav-dash-text"></div>
                         <div id="nav-dash-sub"></div>
                     </div>
+                    <button id="btn-nav-repeat-dash" class="nav-repeat-btn" aria-label="Toista ohje">🔂</button>
                     <button id="btn-nav-stop-dash" aria-label="Lopeta navigaatio">✕</button>
                 </div>
                 <div id="side-tap-left" class="side-tap-zone" role="button" tabindex="0" aria-label="Avaa karttanäkymä" title="Avaa kartta">‹ KARTTA</div>
@@ -430,6 +431,7 @@
                         <div id="nav-panel-text"></div>
                         <div id="nav-panel-sub"></div>
                     </div>
+                    <button id="btn-nav-repeat" class="nav-repeat-btn" aria-label="Toista ohje">🔂</button>
                     <button id="btn-nav-stop" aria-label="Lopeta navigaatio">✕</button>
                 </div>
                 <button id="map-return-btn" class="map-return-btn"><svg class="svg-icon" aria-hidden="true"><use href="#i-gauge"/></svg> MITTARISTO</button>
@@ -1162,6 +1164,13 @@
         <div class="modal-content">
             <div class="modal-title">🧭 Navigaatio</div>
             <div class="nav-dest-row">
+                <button id="btn-nav-home" class="btn btn-primary" style="width:100%;">🏠 Kotiin</button>
+            </div>
+            <div class="nav-dest-row">
+                <label>Viimeisimmät</label>
+                <div id="nav-recent-list"></div>
+            </div>
+            <div class="nav-dest-row">
                 <label for="nav-address-input">Osoite</label>
                 <input id="nav-address-input" type="text" placeholder="Esim. Mannerheimintie 10, Helsinki">
                 <button id="btn-nav-go-address" class="btn btn-primary">Reititä</button>
@@ -1199,17 +1208,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.72"></script>
-    <script src="visuals.js?v=6.72"></script>
-    <script src="ui.js?v=6.72"></script>
-    <script src="auth.js?v=6.72"></script>
-    <script src="map.js?v=6.72"></script>
-    <script src="gps.js?v=6.72"></script>
-    <script src="garage.js?v=6.72"></script>
-    <script src="history.js?v=6.72"></script>
-    <script src="help.js?v=6.72"></script>
+    <script src="globals.js?v=6.74"></script>
+    <script src="visuals.js?v=6.74"></script>
+    <script src="ui.js?v=6.74"></script>
+    <script src="auth.js?v=6.74"></script>
+    <script src="map.js?v=6.74"></script>
+    <script src="gps.js?v=6.74"></script>
+    <script src="garage.js?v=6.74"></script>
+    <script src="history.js?v=6.74"></script>
+    <script src="help.js?v=6.74"></script>
     
-    <script src="nav.js?v=6.72"></script>
-    <script src="app.js?v=6.72"></script>
+    <script src="nav.js?v=6.74"></script>
+    <script src="app.js?v=6.74"></script>
 </body>
 </html>

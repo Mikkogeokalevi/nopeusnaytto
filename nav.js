@@ -114,6 +114,77 @@ function navSpeak(text) {
     if (typeof window.speakFi === 'function') window.speakFi(text);
 }
 
+// Tallentaa viimeisimmän ohjeen "toista"-napille (v6.74)
+function navSpeakGuided(text) {
+    navState.lastSpokenText = text;
+    navSpeak(text);
+}
+
+window.navRepeatLast = function() {
+    if (navState.lastSpokenText) navSpeak(navState.lastSpokenText);
+    else if (typeof showToast === 'function') showToast('Ei ohjetta toistettavaksi');
+};
+
+// --- VIIMEISIMMAT MAARANPAAT + KOTI (v6.74) ---
+function navSaveRecent(dest) {
+    try {
+        let r = JSON.parse(localStorage.getItem('navRecent') || '[]');
+        r = r.filter((x) => x && x.label !== dest.label);
+        r.unshift({ lat: dest.lat, lng: dest.lng, label: dest.label });
+        localStorage.setItem('navRecent', JSON.stringify(r.slice(0, 5)));
+    } catch (e) {}
+}
+
+function navRenderRecent() {
+    const box = document.getElementById('nav-recent-list');
+    if (!box) return;
+    let r = [];
+    try { r = JSON.parse(localStorage.getItem('navRecent') || '[]'); } catch (e) {}
+    box.innerHTML = '';
+    if (!r.length) {
+        box.innerHTML = '<div style="font-size:12px;opacity:0.6;">Ei aiempia määränpäitä</div>';
+        return;
+    }
+    r.forEach((item) => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:6px;';
+        const btn = document.createElement('button');
+        btn.className = 'action-btn secondary-btn';
+        btn.style.cssText = 'flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+        btn.textContent = '🕘 ' + item.label;
+        btn.addEventListener('click', () => {
+            window.closeNavDestModal();
+            const mode = document.getElementById('nav-mode-select');
+            window.startNavigation({ lat: item.lat, lng: item.lng, label: item.label, mode: (mode && mode.value === 'direct') ? 'direct' : 'road' });
+        });
+        const homeBtn = document.createElement('button');
+        homeBtn.className = 'icon-btn';
+        homeBtn.style.cssText = 'width:34px;flex-shrink:0;';
+        homeBtn.textContent = '🏠';
+        homeBtn.title = 'Aseta kodiksi';
+        homeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            localStorage.setItem('navHome', JSON.stringify({ lat: item.lat, lng: item.lng, label: item.label }));
+            if (typeof showToast === 'function') showToast('Koti tallennettu: ' + item.label);
+        });
+        row.appendChild(btn);
+        row.appendChild(homeBtn);
+        box.appendChild(row);
+    });
+}
+
+window.navGoHome = function() {
+    let home = null;
+    try { home = JSON.parse(localStorage.getItem('navHome') || 'null'); } catch (e) {}
+    if (!home) {
+        if (typeof showToast === 'function') showToast('Ei kotia - tallenna määränpää kodiksi 🏠-napilla listassa');
+        return;
+    }
+    window.closeNavDestModal();
+    const mode = document.getElementById('nav-mode-select');
+    window.startNavigation({ lat: home.lat, lng: home.lng, label: 'Koti: ' + home.label, mode: (mode && mode.value === 'direct') ? 'direct' : 'road' });
+};
+
 // --- REITITYS (OSRM) ---
 const NAV_ROUTE_ENDPOINTS = [
     'https://router.project-osrm.org/route/v1/driving',
@@ -174,6 +245,7 @@ window.startNavigation = function(dest) {
     navState.active = true;
     navShowPanel(true);
     navUpdatePanel('🧭', 'Haetaan reittiä...', navState.destLabel);
+    navSaveRecent(dest);
     // Kaynnistetaan GPS automaattisesti jos se ei ole paalla (v6.66)
     if (typeof isGPSActive !== 'undefined' && !isGPSActive && typeof startGPS === 'function') {
         try {
@@ -246,9 +318,34 @@ function requestRoute() {
             navState.nearRouteIdx = 0;
             navState.spokenMask = {};
             drawNavPolyline(r.coords);
+            // Offline-reittivalimuisti (v6.74): toimiva reitti talteen
+            try {
+                localStorage.setItem('navRouteCache', JSON.stringify({
+                    steps: r.steps.slice(0, 80), coords: r.coords.slice(0, 500),
+                    destLat: navState.destLat, destLng: navState.destLng,
+                    distM: r.distM, durS: r.durS, ts: Date.now()
+                }));
+            } catch (e) {}
             navSpeak(navT('depart', { dist: formatNavDist(r.distM) }));
         })
         .catch((err) => {
+            // Ensisijaisesti yritetaan valimuistissa olevaa reittia samaan maaranpaahan (v6.74)
+            let cached = null;
+            try { cached = JSON.parse(localStorage.getItem('navRouteCache') || 'null'); } catch (e) {}
+            if (cached && navDistM(cached.destLat, cached.destLng, navState.destLat, navState.destLng) < 500
+                && Array.isArray(cached.steps) && cached.steps.length) {
+                navState.steps = cached.steps;
+                navState.routeCoords = cached.coords;
+                navState.routeDistM = cached.distM;
+                navState.routeDurS = cached.durS;
+                navState.stepIdx = 0;
+                navState.nearRouteIdx = 0;
+                navState.spokenMask = {};
+                drawNavPolyline(cached.coords);
+                navUpdatePanel('📴', 'Valimuistissa oleva reitti', navState.destLabel + ' · ' + formatNavDist(cached.distM));
+                if (typeof showToast === 'function') showToast('Ei verkkoa - kaytetaan valimuistissa olevaa reittia');
+                return;
+            }
             navState.mode = 'direct';
             navUpdatePanel('⚠️', 'Reittiä ei löytynyt', 'Suoran linjan opastus käytössä');
             const msg = (err && err.message) ? err.message : String(err || 'tuntematon');
@@ -329,25 +426,31 @@ window.onNavGpsTick = function(pos) {
     const distToStep = navDistM(lat, lng, next.loc[1], next.loc[0]);
     const instr = next.instruction;
 
-    // Puhekynnykset
+    // Nopeusmukautetut puhekynnykset (v6.74): moottoritiella ohjeet aikaisemmin
+    const spd = pos.speedKmh || 0;
+    const farD = spd > 90 ? 700 : spd > 60 ? 400 : 250;
+    const midD = spd > 90 ? 250 : spd > 60 ? 150 : 100;
+    const atD = spd > 90 ? 60 : 40;
     const mask = navState.spokenMask[nextIdx] || (navState.spokenMask[nextIdx] = {});
-    if (distToStep < 40 && !mask.at) {
+    if (distToStep < atD && !mask.at) {
         mask.at = true;
-        navSpeak(navStepSpeech(next));
-    } else if (distToStep < 130 && !mask.mid) {
+        navSpeakGuided(navStepSpeech(next));
+    } else if (distToStep < midD && !mask.mid) {
         mask.mid = true;
-        navSpeak(navT('announce_mid', { instr: navStepSpeech(next).toLowerCase() }));
-    } else if (distToStep < 350 && !mask.near) {
+        navSpeakGuided(navT('announce_mid', { instr: navStepSpeech(next).toLowerCase() }));
+    } else if (distToStep < farD && !mask.near) {
         mask.near = true;
-        navSpeak(navT('announce_far', { instr: navStepSpeech(next).toLowerCase() }));
+        navSpeakGuided(navT('announce_far', { instr: navStepSpeech(next).toLowerCase() }));
     }
 
-    // ETA + matka
+    // ETA + matka + saapumiskello (v6.74)
     let remM = distToStep;
     for (let i = nextIdx + 1; i < navState.steps.length; i++) remM += navState.steps[i].distM;
     const etaS = (pos.speedKmh > 3) ? (remM / (pos.speedKmh / 3.6)) : navState.routeDurS;
+    const arrDate = new Date(Date.now() + etaS * 1000);
+    const arrClock = arrDate.getHours() + '.' + String(arrDate.getMinutes()).padStart(2, '0');
     const icon = instr.indexOf('vasemm') !== -1 ? '⬅️' : (instr.indexOf('oikeall') !== -1 || instr.indexOf('oikea') !== -1) ? '➡️' : (instr.indexOf('Saavut') !== -1 ? '🏁' : '⬆️');
-    navUpdatePanel(icon, `${formatNavDist(distToStep)} · ${instr}`, `${navState.destLabel} · ${formatNavDist(remM)} · ~${formatNavDur(etaS)}`);
+    navUpdatePanel(icon, `${formatNavDist(distToStep)} · ${instr}`, `${navState.destLabel} · ${formatNavDist(remM)} · ~${formatNavDur(etaS)} · klo ${arrClock}`);
 };
 
 function tickDirect(lat, lng) {
@@ -363,7 +466,7 @@ function tickDirect(lat, lng) {
     const now = Date.now();
     if (now - navState.lastDirectSpeakTs > 45000) {
         navState.lastDirectSpeakTs = now;
-        navSpeak(navT('direct_info', { dist: formatNavDist(d), dir: navBearingWord(brg) }));
+        navSpeakGuided(navT('direct_info', { dist: formatNavDist(d), dir: navBearingWord(brg) }));
     }
 }
 
@@ -371,6 +474,7 @@ function tickDirect(lat, lng) {
 window.openNavDestModal = function() {
     const m = document.getElementById('nav-dest-modal');
     if (m) m.style.display = 'flex';
+    navRenderRecent();
     const sel = document.getElementById('nav-poi-select');
     if (sel) {
         sel.innerHTML = '<option value="">— valitse POI —</option>';
@@ -456,6 +560,12 @@ window.navPickFromMap = function() {
     if (stop) stop.addEventListener('click', window.stopNavigation);
     const stopDash = document.getElementById('btn-nav-stop-dash');
     if (stopDash) stopDash.addEventListener('click', window.stopNavigation);
+    const rep = document.getElementById('btn-nav-repeat');
+    if (rep) rep.addEventListener('click', window.navRepeatLast);
+    const repDash = document.getElementById('btn-nav-repeat-dash');
+    if (repDash) repDash.addEventListener('click', window.navRepeatLast);
+    const homeBtn = document.getElementById('btn-nav-home');
+    if (homeBtn) homeBtn.addEventListener('click', window.navGoHome);
     const goAddr = document.getElementById('btn-nav-go-address');
     if (goAddr) goAddr.addEventListener('click', window.navUseAddress);
     const goCoords = document.getElementById('btn-nav-go-coords');

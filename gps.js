@@ -2318,6 +2318,13 @@ function fetchWeather(lat, lon) {
                 
                 currentDriveWeather = `${emoji} ${temp}°C`;
                 if(dashWeatherEl) dashWeatherEl.innerText = currentDriveWeather;
+                // Talviolosuhdevaroitus kerran per istunto (v6.74)
+                if (!window._winterWarned && (temp <= 2 || (code >= 71 && code <= 77) || code === 85 || code === 86)) {
+                    window._winterWarned = true;
+                    if (typeof showToast === 'function') {
+                        showToast(`⚠️ Talviolosuhteet: ${emoji} ${temp}°C - tarkista liukkaus ja talvirajoitukset`);
+                    }
+                }
             }
         })
         .catch(e => console.error(e));
