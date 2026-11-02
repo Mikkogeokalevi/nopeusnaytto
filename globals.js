@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.71 (TTS-aanen valinta + aanityylit)
-const APP_VERSION = "6.71";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.72 (Kartan seuranta-korjaus + punainen reittiviiva)
+const APP_VERSION = "6.72";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

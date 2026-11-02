@@ -208,11 +208,19 @@ function clearNavPolyline() {
 }
 
 function drawNavPolyline(coords) {
+    const hadRoute = !!navState.polyline;
     clearNavPolyline();
     if (typeof map === 'undefined' || !map || !Array.isArray(coords) || coords.length < 2) return;
     try {
-        navState.polyline = L.polyline(coords, { color: '#2979ff', weight: 6, opacity: 0.85 }).addTo(map);
-        map.fitBounds(navState.polyline.getBounds(), { padding: [60, 60] });
+        // Punainen reittiviiva valkoisella reunuksella - erottuu sinisesta ajo-kayrasta (v6.72)
+        const casing = L.polyline(coords, { color: '#ffffff', weight: 9, opacity: 0.9 }).addTo(map);
+        const line = L.polyline(coords, { color: '#ff3b30', weight: 5, opacity: 0.95 }).addTo(map);
+        navState.polyline = L.layerGroup([casing, line]);
+        if (!hadRoute) {
+            window.mapProgrammaticMove = true;
+            map.fitBounds(navState.polyline.getBounds(), { padding: [60, 60] });
+            setTimeout(() => { window.mapProgrammaticMove = false; }, 300);
+        }
     } catch (e) {}
 }
 

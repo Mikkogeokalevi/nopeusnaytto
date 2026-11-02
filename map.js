@@ -116,7 +116,9 @@ if (document.getElementById('map')) {
 
     // Vapaa karttakatselu (v6.66): kayttajan raahaus/zoomaus taukoittaa
     // GPS-seurannan 30 sekunniksi, jotta reittia voi katsoa vapaasti.
+    // Ohjelmalliset liikkeet (setView/panTo/fitBounds) eivat laukaise - ne merkitaan flagilla (v6.72)
     map.on('dragstart zoomstart', () => {
+        if (window.mapProgrammaticMove) return;
         window.mapFreePanUntil = Date.now() + 30000;
         if (typeof showToast === 'function' && !window._freePanToastTs) {
             window._freePanToastTs = Date.now();

@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.71 tts-voice
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.72 nav-visual
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.71-tts-voice'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.72-nav-visual'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

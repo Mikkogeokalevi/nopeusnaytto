@@ -1623,8 +1623,15 @@ function updatePosition(position) {
                 else if (speedKmh > 40) targetZoom = 17;
                 else targetZoom = 18;
             }
-            if (map.getZoom() !== targetZoom) map.setView(newLatLng, targetZoom);
-            else map.panTo(newLatLng);
+            if (map.getZoom() !== targetZoom) {
+                window.mapProgrammaticMove = true;
+                map.setView(newLatLng, targetZoom);
+                setTimeout(() => { window.mapProgrammaticMove = false; }, 150);
+            } else {
+                window.mapProgrammaticMove = true;
+                map.panTo(newLatLng);
+                setTimeout(() => { window.mapProgrammaticMove = false; }, 150);
+            }
         }
         if(mapSpeedEl) mapSpeedEl.innerText = speedKmh.toFixed(1);
         if(mapCoordsEl) mapCoordsEl.innerText = `${toGeocacheFormat(lat, true)} ${toGeocacheFormat(lng, false)}`;
