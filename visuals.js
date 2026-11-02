@@ -281,6 +281,13 @@ function updateSpeedometer(speed, altitude) {
         updateVelocityStage(speed, altitude);
         if (speedometerStyle === 'clean') updateCleanDigital(speed);
     }
+    if (speedometerStyle === 'compact') {
+        const fill = document.getElementById('compact-progress');
+        if (fill) {
+            const p = Math.min(Math.max(speed / 200, 0), 1);
+            if (fill._lastP !== p) { fill._lastP = p; fill.style.transform = `scaleX(${p})`; }
+        }
+    }
 }
 
 function updateGraphs(speed, altitude, gforce) {
@@ -335,12 +342,15 @@ function updateGIndicator(gx, gy) {
 // =========================================================
 
 function updateSpeedometerStyle(style) {
-    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'clean') ? style : 'digital';
+    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'clean' || style === 'compact') ? style : 'digital';
 
     const digitalContainer = document.getElementById('digital-speed-container');
     const velocityStageContainer = document.getElementById('velocity-stage-container');
     const cleanDigitalContainer = document.getElementById('clean-digital-container');
+    const compactContainer = document.getElementById('compact-speed-container');
     const graphsContainer = document.getElementById('live-graphs-container');
+
+    document.body.classList.toggle('speedo-compact', speedometerStyle === 'compact');
 
     // Näytä/piilota elementit
     switch(speedometerStyle) {
@@ -348,24 +358,35 @@ function updateSpeedometerStyle(style) {
             if (digitalContainer) digitalContainer.style.display = 'none';
             if (velocityStageContainer) velocityStageContainer.style.display = 'block';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
+            if (compactContainer) compactContainer.style.display = 'none';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'clean':
             if (digitalContainer) digitalContainer.style.display = 'none';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'block';
+            if (compactContainer) compactContainer.style.display = 'none';
+            if (graphsContainer) graphsContainer.style.display = 'none';
+            break;
+        case 'compact':
+            if (digitalContainer) digitalContainer.style.display = 'none';
+            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
+            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
+            if (compactContainer) compactContainer.style.display = 'block';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'both':
             if (digitalContainer) digitalContainer.style.display = 'block';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
+            if (compactContainer) compactContainer.style.display = 'none';
             if (graphsContainer) graphsContainer.style.display = 'block';
             break;
         default:
             if (digitalContainer) digitalContainer.style.display = 'block';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
+            if (compactContainer) compactContainer.style.display = 'none';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
     }

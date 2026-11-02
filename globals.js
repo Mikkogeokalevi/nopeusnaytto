@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.74 (Nav-parannukset: viimeisimmat, koti, toista, kello, adaptiiviset kynnykset, offline-cache, talvibanneri)
-const APP_VERSION = "6.74";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.75 (Kompakti-nopeustyyli: iso numero ilman palloa)
+const APP_VERSION = "6.75";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

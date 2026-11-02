@@ -1561,3 +1561,38 @@ body.light-mode #nav-dash-panel { background: rgba(240, 245, 255, 0.95); color: 
 }
 .nav-modal-actions { flex-direction: row; justify-content: space-between; margin-top: 14px; }
 .nav-modal-actions .btn { flex: 1; margin: 0 4px; }
+
+/* ===== KOMPAKTI-TYYLI v6.75 ===== */
+.compact-speed-container { text-align: center; margin: 2px 0 4px; }
+.compact-speed-row { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+.compact-speed {
+  font-size: clamp(64px, 21vw, 118px);
+  font-weight: 800; font-variant-numeric: tabular-nums;
+  line-height: 1; color: var(--accent-color, #2979ff);
+  text-shadow: 0 0 24px rgba(41,121,255,0.35);
+}
+body.light-mode .compact-speed { text-shadow: none; }
+.compact-unit { font-size: 15px; font-weight: 600; opacity: 0.6; text-transform: uppercase; }
+.compact-progress-shell {
+  margin: 8px 8% 0; height: 5px; border-radius: 3px;
+  background: rgba(255,255,255,0.12); overflow: hidden;
+}
+.compact-progress {
+  height: 100%; width: 100%;
+  background: linear-gradient(90deg, var(--accent-color, #2979ff), #64b5f6);
+  border-radius: 3px; transform-origin: left center;
+  transform: scaleX(0); transition: transform 0.25s linear;
+}
+
+/* Layoutin tiivistys kun Kompakti-tyyli valittuna */
+body.speedo-compact .top-bar-container { padding-top: 4px; padding-bottom: 4px; }
+body.speedo-compact .bottom-branding { display: none; }
+body.speedo-compact .huge-speed-container { margin: 0; }
+body.speedo-compact .center-limit-wrap { margin: 4px 0; }
+body.speedo-compact .stat-card { padding: 7px 4px; }
+body.speedo-compact .stats-grid { gap: 6px; margin: 6px 0; }
+body.speedo-compact .today-summary { margin: 4px 0; padding: 5px 8px; }
+body.speedo-compact .controls-container { padding: 6px 0; gap: 4px; }
+body.speedo-compact #status { font-size: 12px; margin: 2px 0; }
+body.speedo-compact .dash-info-row, body.speedo-compact .dash-bottom-row { margin: 2px 0; }
+body.speedo-compact .action-btn { padding-top: 11px; padding-bottom: 11px; }

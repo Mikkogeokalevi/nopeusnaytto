@@ -1072,6 +1072,17 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         if (spd >= 120 || (lim > 0 && spd > lim)) dashSpeedEl.style.color = '#ff1744';
         else dashSpeedEl.style.color = '';
     }
+    // Kompakti-tyylin numero (v6.75)
+    const compactSpeedEl = document.getElementById('compact-speed');
+    if (compactSpeedEl) {
+        const ctx = spd.toFixed(1);
+        if (compactSpeedEl._lastTxt !== ctx) {
+            compactSpeedEl._lastTxt = ctx;
+            compactSpeedEl.textContent = ctx;
+        }
+        if (spd >= 120 || (lim > 0 && spd > lim)) compactSpeedEl.style.color = '#ff1744';
+        else compactSpeedEl.style.color = '';
+    }
 
     // Ylinopeuden haptiikka + äänivaroitus: tärähdys/puhe kerran kun rajoitus ylittyy
     if (lim > 0 && spd > lim) {
