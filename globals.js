@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.75 (Kompakti-nopeustyyli: iso numero ilman palloa)
-const APP_VERSION = "6.75";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.76 (Kompakti-korjaukset: 2 desimaalia, scroll, sivuvyohyke pois)
+const APP_VERSION = "6.76";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

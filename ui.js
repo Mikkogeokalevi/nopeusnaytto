@@ -1075,7 +1075,7 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     // Kompakti-tyylin numero (v6.75)
     const compactSpeedEl = document.getElementById('compact-speed');
     if (compactSpeedEl) {
-        const ctx = spd.toFixed(1);
+        const ctx = spd.toFixed(2);
         if (compactSpeedEl._lastTxt !== ctx) {
             compactSpeedEl._lastTxt = ctx;
             compactSpeedEl.textContent = ctx;
