@@ -1586,7 +1586,8 @@ body.light-mode .compact-speed { text-shadow: none; }
 
 /* Layoutin tiivistys kun Kompakti-tyyli valittuna */
 /* space-evenly leikkaa ylivuotavan sisallon - flex-start + scroll korjaa (v6.76) */
-body.speedo-compact #dashboard-view { justify-content: flex-start; overflow-y: auto; padding-top: 4px; }
+/* .view-section{height:100%} tyontaa controls-containerin nayton alle - flex-koko oikein (v6.77) */
+body.speedo-compact #dashboard-view { justify-content: flex-start; overflow-y: auto; padding-top: 4px; height: auto; flex: 1 1 auto; min-height: 0; }
 body.speedo-compact .top-bar-container { padding-top: 4px; padding-bottom: 4px; }
 body.speedo-compact .bottom-branding { display: none; }
 body.speedo-compact .huge-speed-container { margin: 0; }
