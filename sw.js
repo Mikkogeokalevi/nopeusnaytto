@@ -1,8 +1,8 @@
 // =========================================================
-// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.70 route-fix
+// SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.71 tts-voice
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.70-route-fix'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.71-tts-voice'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

@@ -1805,6 +1805,18 @@ window.speakFi = function(text) {
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'fi-FI';
         u.rate = 1.15;
+        // v6.71: aanityyli (pitch/rate) + aanen valinta
+        try {
+            const pitch = parseFloat(localStorage.getItem('ttsPitch'));
+            if (isFinite(pitch)) u.pitch = pitch;
+            const rate = parseFloat(localStorage.getItem('ttsRate'));
+            if (isFinite(rate)) u.rate = rate;
+            const voiceName = localStorage.getItem('ttsVoiceName');
+            if (voiceName) {
+                const v = synth.getVoices().find((x) => x.name === voiceName);
+                if (v) { u.voice = v; u.lang = v.lang; }
+            }
+        } catch (e) {}
         try {
             const g = parseFloat(localStorage.getItem('poiBeepMasterGain') || '0.45');
             u.volume = isFinite(g) ? Math.max(0, Math.min(1, g)) : 0.45;
@@ -2320,4 +2332,69 @@ window.setSoundMuted = function(mute) {
             window.setSoundMuted(localStorage.getItem('soundMuted') !== '1');
         });
     });
+})();
+
+// ===== TTS AANI + TYYLI v6.71 =====
+var TTS_STYLES = {
+    normal: [1.0, 1.15],
+    mies: [0.7, 1.0],
+    lapsi: [1.6, 1.2],
+    vanhus: [0.6, 0.82],
+    ankka: [1.9, 1.4]
+};
+
+function ttsApplyStyle(style) {
+    const p = TTS_STYLES[style] || TTS_STYLES.normal;
+    localStorage.setItem('ttsStyle', style);
+    localStorage.setItem('ttsPitch', String(p[0]));
+    localStorage.setItem('ttsRate', String(p[1]));
+}
+
+function ttsPopulateVoices() {
+    const sel = document.getElementById('tts-voice-select');
+    if (!sel || !('speechSynthesis' in window)) return;
+    let voices = [];
+    try { voices = window.speechSynthesis.getVoices() || []; } catch (e) {}
+    const saved = localStorage.getItem('ttsVoiceName') || '';
+    sel.innerHTML = '';
+    const auto = document.createElement('option');
+    auto.value = ''; auto.textContent = 'Automaattinen (laite)';
+    sel.appendChild(auto);
+    const fiVoices = voices.filter((v) => String(v.lang || '').toLowerCase().indexOf('fi') === 0);
+    const others = voices.filter((v) => fiVoices.indexOf(v) === -1);
+    fiVoices.concat(others).forEach((v) => {
+        const o = document.createElement('option');
+        o.value = v.name;
+        o.textContent = v.name + ' (' + v.lang + ')';
+        sel.appendChild(o);
+    });
+    sel.value = saved;
+}
+
+(function initTtsSettings() {
+    const vsel = document.getElementById('tts-voice-select');
+    const ssel = document.getElementById('tts-style-select');
+    const tbtn = document.getElementById('btn-test-tts');
+    if (!vsel && !ssel && !tbtn) return;
+    if (!localStorage.getItem('ttsStyle')) ttsApplyStyle('normal');
+    ttsPopulateVoices();
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = ttsPopulateVoices;
+    }
+    if (ssel) {
+        ssel.value = localStorage.getItem('ttsStyle') || 'normal';
+        ssel.addEventListener('change', () => ttsApplyStyle(ssel.value));
+    }
+    if (vsel) {
+        vsel.addEventListener('change', () => {
+            localStorage.setItem('ttsVoiceName', vsel.value);
+        });
+    }
+    if (tbtn) {
+        tbtn.addEventListener('click', () => {
+            if (typeof window.speakFi === 'function') {
+                window.speakFi('Tämä on valittu puheääni. Käänny vasemmalle sadan metrin päästä.');
+            }
+        });
+    }
 })();

@@ -24,8 +24,8 @@ const auth = firebase.auth();
 // 2. SOVELLUKSEN TILA (GLOBAL VARIABLES)
 // =========================================================
 
-// TÄMÄ ON PÄÄVERSIONUMERO - v6.70 (Kriittinen reitityskorjaus: OSRM voice-param poistettu)
-const APP_VERSION = "6.70";
+// TÄMÄ ON PÄÄVERSIONUMERO - v6.71 (TTS-aanen valinta + aanityylit)
+const APP_VERSION = "6.71";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

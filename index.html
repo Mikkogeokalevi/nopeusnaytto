@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.70</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.71</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.01">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.70">
+    <link rel="stylesheet" href="style.css?v=6.71">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -68,7 +68,7 @@
         <div class="splash-content">
             <img src="ajopaivakirja_logo_mu.png?v=6.01" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.70...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.71...</p>
             <div class="splash-spinner" aria-hidden="true"></div>
         </div>
     </div>
@@ -633,6 +633,24 @@
                     </div>
 
                     <div style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
+                        <div style="font-size:13px; font-weight:600; margin-bottom:8px;">Puheääni ja tyyli</div>
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                            <select id="tts-voice-select" class="subject-input" style="flex:2; min-width:160px;"></select>
+                            <select id="tts-style-select" class="subject-input" style="flex:1; min-width:120px;">
+                                <option value="normal">Normaali</option>
+                                <option value="mies">Matala (mies)</option>
+                                <option value="lapsi">Korkea (lapsi)</option>
+                                <option value="vanhus">Vanhus</option>
+                                <option value="ankka">Ankka</option>
+                            </select>
+                            <button id="btn-test-tts" class="icon-btn" style="width:38px; font-size:15px;" aria-label="Kuuntele ääni">🔊</button>
+                        </div>
+                        <div style="font-size:12px; color:var(--subtext-color); margin-top:6px;">
+                            Laitteella saatavilla olevat äänet + tyyli (sävelkorkeus/nopeus). "Ankka" = korkea ja vauhdikas likiarvo. Tyyli vaikuttaa kaikkiin puheilmoituksiin.
+                        </div>
+                    </div>
+
+                    <div style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
                         <div style="font-size:13px; font-weight:600; margin-bottom:8px;">Navigaation puheohjeet</div>
                         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                             <select id="nav-speech-pack-select" class="subject-input" style="flex:1; min-width:160px;"></select>
@@ -1181,17 +1199,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.70"></script>
-    <script src="visuals.js?v=6.70"></script>
-    <script src="ui.js?v=6.70"></script>
-    <script src="auth.js?v=6.70"></script>
-    <script src="map.js?v=6.70"></script>
-    <script src="gps.js?v=6.70"></script>
-    <script src="garage.js?v=6.70"></script>
-    <script src="history.js?v=6.70"></script>
-    <script src="help.js?v=6.70"></script>
+    <script src="globals.js?v=6.71"></script>
+    <script src="visuals.js?v=6.71"></script>
+    <script src="ui.js?v=6.71"></script>
+    <script src="auth.js?v=6.71"></script>
+    <script src="map.js?v=6.71"></script>
+    <script src="gps.js?v=6.71"></script>
+    <script src="garage.js?v=6.71"></script>
+    <script src="history.js?v=6.71"></script>
+    <script src="help.js?v=6.71"></script>
     
-    <script src="nav.js?v=6.70"></script>
-    <script src="app.js?v=6.70"></script>
+    <script src="nav.js?v=6.71"></script>
+    <script src="app.js?v=6.71"></script>
 </body>
 </html>
