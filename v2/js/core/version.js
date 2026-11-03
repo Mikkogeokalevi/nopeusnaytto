@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.16.0";
+const V2_VERSION = "0.17.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.17.0", date: "2026-11-02",
+        items: ["FeatureFlags nyt oikeasti voimassa: admin piilottaa Kartta/Historia-tabin + nav- ja tallennusnapit", "Esto nakyi UI:ssa (napit harmaana, tabit piilossa)"]
+    },
     {
         v: "0.16.0", date: "2026-11-02",
         items: ["Tilastoyhteenveto Historia-valilehteen: ajoja, yhteensa km, huippu, 7 vrk"]

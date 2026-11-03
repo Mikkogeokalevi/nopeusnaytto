@@ -10,11 +10,23 @@ var v2AdminData = { usersIndex: {}, userRoles: {} };
 
 function v2IsAdmin() { return v2Perms.isSuperAdmin || v2Perms.role === 'admin'; }
 
-// Tabin nakyvyys adminin mukaan
+// Tabin nakyvyys adminin mukaan + featureFlags -> tabit (v0.17)
 v2Perms.onChange(function() {
     const tab = document.getElementById('v2-tab-admin');
     if (tab) tab.style.display = v2IsAdmin() ? '' : 'none';
     if (v2IsAdmin()) v2LoadAdmin();
+    // Ominaisuuksien kayttooikeudet -> nakyvyys
+    const gates = { 'v2-view-map': 'map', 'v2-view-hist': 'history' };
+    document.querySelectorAll('.v2-tab').forEach((t) => {
+        const f = gates[t.dataset.view];
+        if (f) t.style.display = v2Can(f) ? '' : 'none';
+    });
+    // Tallennusnapin kielto jos gps/speedo estetty
+    const rb = document.getElementById('v2-btn-rec');
+    if (rb) { rb.disabled = !(v2Can('speedo') && v2Can('gps')); rb.style.opacity = rb.disabled ? '0.4' : '1'; }
+    // Navigaationappi
+    const nb = document.querySelector('#v2-view-map .v2-btn-primary');
+    if (nb) { nb.disabled = !v2Can('nav'); nb.style.opacity = nb.disabled ? '0.4' : '1'; }
 });
 
 // ---- KIRJAUTUJAN INDEKSI (usersIndex) ----
