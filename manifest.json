@@ -5,6 +5,7 @@
   "lang": "fi",
   "dir": "ltr",
   "start_url": "./index.html",
+  "scope": "./index.html",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#121212",
