@@ -44,6 +44,7 @@ v2Perms.onChange = function(fn) { v2Perms._listeners.push(fn); };
 v2Perms._emit = function() {
     v2Perms._ready = true;
     v2Perms._listeners.forEach((f) => f(v2Perms));
+    if (typeof v2CheckBootstrapButton === 'function') v2CheckBootstrapButton();
 };
 
 // Ominaisuustarkistus: superadmin saa aina, muuten featureFlags
@@ -57,6 +58,31 @@ window.v2Can = function(featureKey) {
     if (Array.isArray(f.roles) && f.roles.length) return f.roles.indexOf(v2Perms.role) !== -1;
     return true;
 };
+
+// SUPERADMIN-bootstrap: sallittu vain kun admins on tyhja (saaannot suojaavat)
+window.v2BootstrapAdmin = function() {
+    if (!v2Perms.user) return;
+    const uid = v2Perms.user.uid;
+    window.v2db.ref('admins').once('value').then((snap) => {
+        if (snap.exists()) {
+            alert('Yllapitajia on jo olemassa - pyydä nykyistä ylläpitäjää lisäämään sinut.');
+            return;
+        }
+        return window.v2db.ref('admins/' + uid).set(true).then(() => {
+            if (typeof v2Audit === 'function') v2Audit('bootstrap_admin', uid);
+            alert('Superadmin aktivoitu! Lataa sivu uudelleen.');
+        });
+    }).catch((e) => alert('Bootstrap epaonnistui: ' + e.message));
+};
+
+// Naytetaan bootstrap-nappi jos admins on tyhja
+function v2CheckBootstrapButton() {
+    if (!v2Perms.user) return;
+    window.v2db.ref('admins').once('value').then((snap) => {
+        const btn = document.getElementById('v2-btn-bootstrap');
+        if (btn) btn.style.display = snap.exists() ? 'none' : 'block';
+    }).catch(() => {});
+}
 
 // Audit-loki yllapitotoiminnoille
 window.v2Audit = function(action, target, meta) {

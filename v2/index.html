@@ -70,8 +70,11 @@
                         <div class="s">UID: <span id="v2-uid" style="font-family:monospace;">—</span></div>
                     </div>
                 </div>
-                <div class="v2-muted" style="font-size:12px; margin-top:8px;">
-                    Ylläpito-oikeuksien aktivointi: lisää UID-si Firebase-konsolissa polulle <code>admins/{uid}</code> arvolla <code>true</code>.
+                <div id="v2-btn-bootstrap" style="display:none; margin-top:12px;">
+                    <button class="v2-btn v2-btn-primary" onclick="v2BootstrapAdmin()">Ota ylläpito-oikeus (ensimmäinen admin)</button>
+                    <div class="v2-muted" style="font-size:12px; margin-top:6px;">
+                        Näkyy vain kun ylläpitäjiä ei ole vielä luotu. Luo sinusta superadminin — myöhemmin vain ylläpitäjät voivat lisätä uusia.
+                    </div>
                 </div>
             </div>
 
