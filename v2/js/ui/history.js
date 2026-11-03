@@ -12,6 +12,24 @@
                 const items = [];
                 snap.forEach((c) => items.unshift({ id: c.key, ...c.val() }));
                 if (!items.length) { box.innerHTML = '<div class="v2-muted">Ei ajoja viela</div>'; return; }
+                // Tilastoyhteenveto (v0.16)
+                let totKm = 0, topSpd = 0, weekKm = 0;
+                const wk = Date.now() - 7 * 86400000;
+                items.forEach((d) => {
+                    totKm += (d.distance || 0) / 1000;
+                    if ((d.maxSpeed || 0) > topSpd) topSpd = d.maxSpeed;
+                    if ((d.startTime || 0) > wk) weekKm += (d.distance || 0) / 1000;
+                });
+                const stats = el('v2-hist-stats');
+                if (stats) {
+                    stats.innerHTML =
+                        '<div class="v2-statgrid" style="grid-template-columns:repeat(2,1fr);">' +
+                        '<div class="v2-stat"><div class="s">AJOJA</div><div class="t">' + items.length + '</div></div>' +
+                        '<div class="v2-stat"><div class="s">YHTEENSA</div><div class="t">' + totKm.toFixed(0) + '</div><div class="s">km</div></div>' +
+                        '<div class="v2-stat"><div class="s">HUIPPU</div><div class="t">' + topSpd.toFixed(0) + '</div><div class="s">km/h</div></div>' +
+                        '<div class="v2-stat"><div class="s">7 VRK</div><div class="t">' + weekKm.toFixed(1) + '</div><div class="s">km</div></div>' +
+                        '</div>';
+                }
                 box.innerHTML = items.map((d) => {
                     const t = new Date(d.startTime || 0);
                     return '<div class="v2-listrow"><div class="grow">' +

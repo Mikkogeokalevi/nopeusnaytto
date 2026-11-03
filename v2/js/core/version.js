@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.15.2";
+const V2_VERSION = "0.16.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.16.0", date: "2026-11-02",
+        items: ["Tilastoyhteenveto Historia-valilehteen: ajoja, yhteensa km, huippu, 7 vrk"]
+    },
     {
         v: "0.15.2", date: "2026-11-02",
         items: ["Kartta: Carto->OSM tilet (Carto vaatii API-avaimen)", "Tumma ilme sailyi CSS-tumennusfilterilla"]
