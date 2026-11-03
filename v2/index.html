@@ -54,15 +54,34 @@
         <div class="v2-main">
             <div id="v2-view-dash" class="v2-view active">
                 <div class="v2-speed-hero">
-                    <div class="v2-speed-num">0.0</div>
+                    <div class="v2-speed-num" id="v2-speed-num">0.0</div>
                     <div class="v2-speed-unit">KM/H</div>
-                    <div style="margin-top:14px;"><span class="v2-badge warn">GPS ODOTTAA</span></div>
+                    <div style="margin-top:12px; display:flex; gap:8px; justify-content:center;">
+                        <span class="v2-badge warn" id="v2-gps-badge">GPS —</span>
+                    </div>
                 </div>
-                <div class="v2-notice">
-                    <strong>V2-pohja rakennettu.</strong> Tämä on VAIHE 2:n turvallinen runko.
-                    Ajotoiminnot (GPS, mittaristo, historia) yhdistetään VAIHEESSA 7.
-                    V1 toimii edelleen täysin osoitteessa <a href="../index.html" style="color:var(--v2-accent);">/nopeusnaytto/</a>.
+
+                <div class="v2-listrow" style="justify-content:center;">
+                    <div class="grow" style="text-align:center;">
+                        <div class="s">RAJOITUS</div>
+                        <div class="t" style="font-size:22px;">--</div>
+                        <div class="s">Ei dataa (VAIHE 7)</div>
+                    </div>
                 </div>
+
+                <div class="v2-statgrid">
+                    <div class="v2-stat"><div class="s">HUITU</div><div class="t" id="v2-rec-max">0.0</div><div class="s">km/h</div></div>
+                    <div class="v2-stat"><div class="s">MATKA</div><div class="t" id="v2-rec-dist">0.00</div><div class="s">km</div></div>
+                    <div class="v2-stat"><div class="s">AIKA</div><div class="t" id="v2-rec-time">00:00</div></div>
+                    <div class="v2-stat"><div class="s">Ø NOPEUS</div><div class="t" id="v2-rec-avg">0.0</div><div class="s">km/h</div></div>
+                    <div class="v2-stat"><div class="s">SUUNTA</div><div class="t" id="v2-heading">--</div></div>
+                    <div class="v2-stat"><div class="s">KORKEUS</div><div class="t" id="v2-alt">--</div></div>
+                </div>
+
+                <div class="v2-muted" id="v2-coords" style="text-align:center; font-size:12px; margin:10px 0;">--</div>
+                <div class="v2-muted" id="v2-rec-state" style="text-align:center; font-size:12px; letter-spacing:1px; font-weight:700;">VALMIS</div>
+                <button class="v2-btn v2-btn-primary" id="v2-btn-rec" onclick="v2ToggleRec()" style="margin-top:8px;">● ALOITA</button>
+
                 <div class="v2-section-title">Tili</div>
                 <div class="v2-listrow">
                     <div class="grow">
@@ -123,6 +142,7 @@
     <script src="js/core/perms.js"></script>
     <script src="js/core/auth.js"></script>
     <script src="js/admin/admin.js"></script>
+    <script src="js/ui/dashboard.js"></script>
     <script>
         // Versiomerkki + changelog
         const vb = document.getElementById('v2-version-badge');
