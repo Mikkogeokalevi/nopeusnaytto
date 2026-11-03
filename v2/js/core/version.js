@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.4.0";
+const V2_VERSION = "0.5.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.5.0", date: "2026-11-02",
+        items: ["Kartta: Leaflet + tumma Carto-teema, seuranta + reittiviiva","Ajon tallennus ajopaivakirja/{uid}-polkuun (sama kuin V1)","Matka/huippu/keskiarvo/reitti tallentuu"]
+    },
     {
         v: "0.4.0", date: "2026-11-02",
         items: ["V2-mittaristo: live GPS-nopeus premium-naytolle (toFixed 1, GPS A/B/C-merkki)","Sessioseuranta: huippu/matka/aika/keskinopeus + suunta + korkeus","ALOITA/LOPETA-tallennus lokaalisti (historia VAIHEESSA 7)","WakeLock + paivitystiheys jaetaan GPS-watchilla"]

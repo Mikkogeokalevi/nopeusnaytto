@@ -167,3 +167,4 @@ body {
 .v2-stat .t { font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .v2-stat .s { font-size: 10px; color: var(--v2-text-2); font-weight: 600; letter-spacing: 0.4px; }
 .v2-btn-danger { background: var(--v2-red); color: #fff; }
+#v2-view-map { height: calc(100dvh - 200px); }

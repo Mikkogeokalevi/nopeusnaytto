@@ -35,6 +35,8 @@
         if (typeof acc === 'number') {
             setBadge(acc <= 20 ? 'GPS A' : acc <= 45 ? 'GPS B' : 'GPS C', acc <= 20 ? 'ok' : acc <= 45 ? 'warn' : 'err');
         }
+        window.v2Pos = { lat: c.latitude, lng: c.longitude };
+        if (typeof window.v2MapUpdate === 'function') window.v2MapUpdate(c.latitude, c.longitude);
         const co = el('v2-coords');
         if (co) co.textContent = toGC(c.latitude, true) + '  ' + toGC(c.longitude, false);
         const hd = el('v2-heading');
@@ -51,6 +53,7 @@
             }
             if (!last || pos.timestamp - last.ts > 3000) rec.pts.push({ lat: c.latitude, lng: c.longitude, ts: pos.timestamp });
             if (rec.pts.length > 3000) rec.pts.splice(0, rec.pts.length - 3000);
+            if (typeof window.v2MapTrack === 'function') window.v2MapTrack(rec.pts);
         }
         v2RefreshRec();
     }
@@ -67,13 +70,35 @@
     }
     setInterval(v2RefreshRec, 1000);
 
+    function saveDrive() {
+        if (rec.dist < 50 || !v2Perms.user) return null;
+        const dur = Date.now() - rec.t0;
+        return {
+            startTime: rec.t0,
+            endTime: Date.now(),
+            distance: Math.round(rec.dist),
+            maxSpeed: Math.round(rec.max * 10) / 10,
+            avgSpeed: Math.round((rec.dist / (dur / 1000)) * 3.6 * 10) / 10,
+            duration: Math.round(dur / 1000),
+            path: rec.pts.map((p) => [p.lat, p.lng]),
+            source: 'v2'
+        };
+    }
+
     window.v2ToggleRec = function() {
         rec.on = !rec.on;
         if (rec.on) { rec.t0 = Date.now(); rec.dist = 0; rec.max = 0; rec.pts = []; }
         const b = el('v2-btn-rec'), st = el('v2-rec-state');
         if (b) { b.textContent = rec.on ? '⏹ LOPETA' : '● ALOITA'; b.className = 'v2-btn ' + (rec.on ? 'v2-btn-danger' : 'v2-btn-primary'); }
         if (st) st.textContent = rec.on ? 'TALLENNETAAN' : 'VALMIS';
-        if (!rec.on) alert('Ajo tallennettu lokaaliin muistiin - historia tulee VAIHEESSA 7. Matka: ' + (rec.dist / 1000).toFixed(2) + ' km');
+        if (!rec.on) {
+            const drive = saveDrive();
+            if (drive) {
+                window.v2db.ref('ajopaivakirja/' + v2Perms.user.uid).push(drive)
+                    .then(() => alert('Ajo tallennettu: ' + (drive.distance / 1000).toFixed(2) + ' km'))
+                    .catch((e) => alert('Tallennusvirhe: ' + e.message));
+            }
+        }
     };
 
     window.v2StartDashboard = function() {
