@@ -37,6 +37,7 @@
         }
         window.v2Pos = { lat: c.latitude, lng: c.longitude };
         if (typeof window.v2MapUpdate === 'function') window.v2MapUpdate(c.latitude, c.longitude);
+        if (typeof window.v2LimitUpdate === 'function') window.v2LimitUpdate(c.latitude, c.longitude, kmh);
         const co = el('v2-coords');
         if (co) co.textContent = toGC(c.latitude, true) + '  ' + toGC(c.longitude, false);
         const hd = el('v2-heading');

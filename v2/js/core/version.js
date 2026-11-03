@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.5.0";
+const V2_VERSION = "0.6.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.6.0", date: "2026-11-02",
+        items: ["Nopeusrajoitus: Overpass/OSM maxspeed (15 s throttle), punainen ylitys","Historia-lista: ajopaivakirja/{uid} viimeisimmat ajot"]
+    },
     {
         v: "0.5.0", date: "2026-11-02",
         items: ["Kartta: Leaflet + tumma Carto-teema, seuranta + reittiviiva","Ajon tallennus ajopaivakirja/{uid}-polkuun (sama kuin V1)","Matka/huippu/keskiarvo/reitti tallentuu"]
