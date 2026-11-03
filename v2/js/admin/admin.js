@@ -52,7 +52,9 @@ function v2LoadAdmin() {
         v2AdminData.userRoles = s.val() || {}; v2RenderUsers(); v2RenderOverview();
     }).catch((e) => setErr('v2-admin-users', e));
     window.v2db.ref('featureFlags').once('value').then((s) => {
-        v2RenderFeatures(s.val() || {});
+        v2AdminData.flags = s.val() || {};
+        v2RenderFeatures(v2AdminData.flags);
+        v2RenderUsers(); // kayttajakohtaiset oikeudet tarvitsevat lippuja
     }).catch((e) => setErr('v2-admin-features', e));
     window.v2db.ref('appConfig/registration').once('value').then((s) => {
         v2RenderRegSettings(s.val() || {});
@@ -95,6 +97,35 @@ function v2RenderUsers() {
             });
         });
         box.appendChild(row);
+
+        // Kayttajakohtaiset ominaisuusoikeudet (v0.19): avautuva lista
+        const det = document.createElement('div');
+        det.style.cssText = 'margin:0 0 10px 14px; display:none;';
+        v2FEATURES.forEach(([key, label]) => {
+            const f = (v2AdminData.flags && v2AdminData.flags[key]) || {};
+            const roles = Array.isArray(f.roles) ? f.roles : ['user', 'tester', 'admin'];
+            const roleOk = f.enabled === false ? false : roles.indexOf(role) !== -1;
+            const ov = f.userOverrides && f.userOverrides[uid];
+            const eff = ov !== undefined ? !!ov : roleOk;
+            const lab = document.createElement('label');
+            lab.style.cssText = 'display:flex;gap:8px;font-size:13px;padding:4px 0;align-items:center;';
+            lab.innerHTML = '<input type="checkbox" ' + (eff ? 'checked' : '') + '>' +
+                '<span>' + label + '</span>' +
+                (ov !== undefined ? '<span class="v2-badge" style="font-size:9px;">eri</span>' : '<span class="v2-muted" style="font-size:10px;">rooli</span>');
+            lab.querySelector('input').addEventListener('change', function() {
+                window.v2db.ref('featureFlags/' + key + '/userOverrides/' + uid).set(this.checked).then(() => {
+                    v2Audit('user_override', uid + '/' + key, { val: this.checked });
+                });
+            });
+            det.appendChild(lab);
+        });
+        const tog = document.createElement('button');
+        tog.className = 'v2-iconbtn';
+        tog.style.cssText = 'width:auto;padding:4px 10px;font-size:11px;margin:0 0 8px 0;';
+        tog.textContent = 'Ominaisuudet ▾';
+        tog.addEventListener('click', () => { det.style.display = det.style.display === 'none' ? 'block' : 'none'; });
+        box.appendChild(tog);
+        box.appendChild(det);
     });
 }
 

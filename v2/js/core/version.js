@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.18.1";
+const V2_VERSION = "0.19.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.19.0", date: "2026-11-02",
+        items: ["Kayttajakohtaiset ominaisuusoikeudet: jokaisen kayttajan rivilla Ominaisuudet-nappi -> rastita mita han saa", "userOverrides Firebaseen (voittaa roolivakiot)"]
+    },
     {
         v: "0.18.1", date: "2026-11-02",
         items: ["Admin-paneeli korjattu: luvut erikseen, virheet nakyvat (usersIndex-saanto puuttuu -> osittainen)"]
