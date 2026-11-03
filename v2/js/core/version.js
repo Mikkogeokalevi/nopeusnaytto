@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.10.0";
+const V2_VERSION = "0.11.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.11.0", date: "2026-11-02",
+        items: ["Nopeusvarjatty reittiviiva kartalla (vihrea->punainen)","Segmentit piirtyvat inkrementaalisesti"]
+    },
     {
         v: "0.10.0", date: "2026-11-02",
         items: ["Puheohjeet: suomenkielinen TTS navigaatio-ohjeille","Asetukset Tietoa-nakymaan: puhe päälle/pois + kuuntelunappi"]

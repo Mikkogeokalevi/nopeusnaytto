@@ -52,7 +52,7 @@
                 const d = hav(last.lat, last.lng, c.latitude, c.longitude);
                 if (d < 500) rec.dist += d;
             }
-            if (!last || pos.timestamp - last.ts > 3000) rec.pts.push({ lat: c.latitude, lng: c.longitude, ts: pos.timestamp });
+            if (!last || pos.timestamp - last.ts > 3000) rec.pts.push({ lat: c.latitude, lng: c.longitude, ts: pos.timestamp, spd: kmh });
             if (rec.pts.length > 3000) rec.pts.splice(0, rec.pts.length - 3000);
             if (typeof window.v2MapTrack === 'function') window.v2MapTrack(rec.pts);
         }
