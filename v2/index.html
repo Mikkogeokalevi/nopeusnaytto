@@ -44,7 +44,7 @@
         <div class="v2-topbar">
             <div class="v2-topbar-brand">
                 <img src="assets/ajopaivakirja_logo.png" alt="">
-                <span>Ajopäiväkirja <span class="v2-badge">V2</span></span>
+                <span>Ajopäiväkirja <span class="v2-badge" id="v2-topbar-version">V2</span></span>
             </div>
             <div class="v2-topbar-actions">
                 <button class="v2-iconbtn" onclick="v2Logout()" title="Kirjaudu ulos">⏻</button>
@@ -127,6 +127,8 @@
         // Versiomerkki + changelog
         const vb = document.getElementById('v2-version-badge');
         if (vb) vb.textContent = 'V' + V2_VERSION;
+        const tv = document.getElementById('v2-topbar-version');
+        if (tv) tv.textContent = 'V' + V2_VERSION;
         v2RenderChangelog(document.getElementById('v2-changelog'));
 
         // Välilehdet

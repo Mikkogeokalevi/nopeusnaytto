@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.3.0";
+const V2_VERSION = "0.3.1";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.3.1", date: "2026-11-02",
+        items: ["Versionumero ylapalkkiin V2-merkin viereen"]
+    },
     {
         v: "0.3.0", date: "2026-11-02",
         items: [
