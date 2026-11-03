@@ -102,7 +102,18 @@
                 </div>
             </div>
 
-            <div id="v2-view-map" class="v2-view"><div id="v2-map" style="height:100%;border-radius:14px;overflow:hidden;"></div></div>
+            <div id="v2-view-map" class="v2-view">
+                <div style="display:flex; gap:6px; margin-bottom:8px;">
+                    <input id="v2-nav-input" class="v2-input" style="flex:1;" placeholder="Maaranpaan osoite...">
+                    <button class="v2-btn v2-btn-primary" style="width:auto;padding:10px 14px;" onclick="v2NavGo()">NAVIGOI</button>
+                </div>
+                <div class="v2-muted" id="v2-nav-status" style="font-size:12px; margin-bottom:6px;"></div>
+                <div id="v2-nav-panel" class="v2-listrow" style="display:none; border-color:var(--v2-red);">
+                    <div class="grow"><div class="t" id="v2-nav-instr">—</div><div class="s" id="v2-nav-info"></div></div>
+                    <button class="v2-iconbtn" onclick="v2NavStop()" style="color:var(--v2-red);">✕</button>
+                </div>
+                <div id="v2-map" style="flex:1;border-radius:14px;overflow:hidden;min-height:0;"></div>
+            </div>
             <div id="v2-view-hist" class="v2-view"><div class="v2-section-title">Historia</div><div id="v2-history-list"></div></div>
             <div id="v2-view-about" class="v2-view">
                 <div class="v2-section-title">Tietoa</div>
@@ -152,6 +163,7 @@
     <script src="js/ui/map.js"></script>
     <script src="js/ui/history.js"></script>
     <script src="js/ui/cars.js"></script>
+    <script src="js/ui/nav.js"></script>
     <script>
         // Versiomerkki + changelog
         const vb = document.getElementById('v2-version-badge');

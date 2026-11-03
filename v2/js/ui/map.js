@@ -6,6 +6,7 @@
         if (inited || !window.L) return;
         inited = true;
         map = L.map('v2-map', { zoomControl: false, attributionControl: false }).setView([61.5, 23.8], 6);
+        window.v2map = map;
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             maxZoom: 19, subdomains: 'abcd'
         }).addTo(map);
