@@ -80,14 +80,25 @@
 
             <div id="v2-view-map" class="v2-view"><div class="v2-section-title">Kartta</div><div class="v2-muted">VAIHE 7</div></div>
             <div id="v2-view-hist" class="v2-view"><div class="v2-section-title">Historia</div><div class="v2-muted">VAIHE 7</div></div>
-            <div id="v2-view-admin" class="v2-view"><div class="v2-section-title">Ylläpito</div><div class="v2-muted">VAIHE 6</div></div>
+            <div id="v2-view-admin" class="v2-view">
+                <div class="v2-section-title">Yleiskatsaus</div>
+                <div id="v2-admin-overview"></div>
+                <div class="v2-section-title">Kayttajat</div>
+                <div id="v2-admin-users"></div>
+                <div class="v2-section-title">Ominaisuudet</div>
+                <div id="v2-admin-features"></div>
+                <div class="v2-section-title">Rekisteroityminen</div>
+                <div id="v2-admin-reg"></div>
+                <div class="v2-section-title">Tapahtumaloki</div>
+                <div id="v2-admin-audit"></div>
+            </div>
         </div>
 
         <div class="v2-tabbar">
             <button class="v2-tab active" data-view="v2-view-dash"><span class="tab-icon">⚡</span>Mittari</button>
             <button class="v2-tab" data-view="v2-view-map"><span class="tab-icon">🗺️</span>Kartta</button>
             <button class="v2-tab" data-view="v2-view-hist"><span class="tab-icon">📋</span>Historia</button>
-            <button class="v2-tab" data-view="v2-view-admin"><span class="tab-icon">🛡️</span>Ylläpito</button>
+            <button class="v2-tab" id="v2-tab-admin" data-view="v2-view-admin" style="display:none;"><span class="tab-icon">🛡️</span>Ylläpito</button>
         </div>
     </div>
 
@@ -97,6 +108,7 @@
     <script src="js/core/firebase.js"></script>
     <script src="js/core/perms.js"></script>
     <script src="js/core/auth.js"></script>
+    <script src="js/admin/admin.js"></script>
     <script>
         // Välilehdet
         document.querySelectorAll('.v2-tab').forEach((t) => {

@@ -60,6 +60,7 @@
             if (login) login.style.display = 'none';
             if (app) app.classList.add('active');
             if (typeof v2InitPerms === 'function') v2InitPerms(user);
+            if (typeof v2WriteUserIndex === 'function') v2WriteUserIndex(user);
             const uidEl = el('v2-uid');
             if (uidEl) uidEl.textContent = user.uid;
             const nameEl = el('v2-user-name');
