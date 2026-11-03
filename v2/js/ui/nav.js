@@ -47,6 +47,8 @@
     window.v2NavStop = function() {
         active = false; route = null;
         el('v2-nav-panel').style.display = 'none';
+        const dp = el('v2-dash-nav');
+        if (dp) dp.style.display = 'none';
         if (window.v2RouteLayer) { window.v2RouteLayer.remove(); window.v2RouteLayer = null; }
     };
 
@@ -68,6 +70,14 @@
         }
         el('v2-nav-instr').textContent = instr;
         el('v2-nav-info').textContent = dest.name + ' · ' + (d / 1000).toFixed(1) + ' km (' + (rem / 1000).toFixed(1) + ' km reittia)';
+        // Mittariston nav-palkki (v0.13)
+        const dp = el('v2-dash-nav');
+        if (dp) {
+            dp.style.display = 'flex';
+            const di = el('v2-dash-nav-instr'), dn = el('v2-dash-nav-info');
+            if (di) di.textContent = instr;
+            if (dn) dn.textContent = dest.name + ' · ' + (d / 1000).toFixed(1) + ' km';
+        }
         if (d < 40) { v2NavStop(); el('v2-nav-status').textContent = 'Perilla!'; }
     };
 
