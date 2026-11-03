@@ -25,6 +25,9 @@ Rinnakkaisversio — V1 (`/index.html`) toimii muuttumattomana.
 2. Firebase Console → Realtime Database → luo `admins/{uid}` = `true`
 3. Sovellus näyttää ylläpito-näkymän automaattisesti
 
+## Versiohallinta
+`js/core/version.js` — nosta `V2_VERSION` aina päivityksissä ja lisää rivi `V2_CHANGELOG`-taulukkoon (uusin ensin). Historia näkyy "Tietoa"-välilehdellä.
+
 ## Vaiheet
 - [x] VAIHE 2: pohja + login + perms-runko
 - [ ] VAIHE 3–4: mittaristo + näkymät uuteen UI:hun

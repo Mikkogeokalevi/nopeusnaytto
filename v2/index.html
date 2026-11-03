@@ -80,6 +80,18 @@
 
             <div id="v2-view-map" class="v2-view"><div class="v2-section-title">Kartta</div><div class="v2-muted">VAIHE 7</div></div>
             <div id="v2-view-hist" class="v2-view"><div class="v2-section-title">Historia</div><div class="v2-muted">VAIHE 7</div></div>
+            <div id="v2-view-about" class="v2-view">
+                <div class="v2-section-title">Tietoa</div>
+                <div class="v2-listrow">
+                    <div class="grow">
+                        <div class="t">Mikkokalevin Ajopäiväkirja <span class="v2-badge" id="v2-version-badge"></span></div>
+                        <div class="s">V1-versio toimii osoitteessa <a href="../index.html" style="color:var(--v2-accent);">/nopeusnaytto/</a></div>
+                    </div>
+                </div>
+                <div class="v2-section-title">Versiohistoria</div>
+                <div id="v2-changelog"></div>
+            </div>
+
             <div id="v2-view-admin" class="v2-view">
                 <div class="v2-section-title">Yleiskatsaus</div>
                 <div id="v2-admin-overview"></div>
@@ -98,6 +110,7 @@
             <button class="v2-tab active" data-view="v2-view-dash"><span class="tab-icon">⚡</span>Mittari</button>
             <button class="v2-tab" data-view="v2-view-map"><span class="tab-icon">🗺️</span>Kartta</button>
             <button class="v2-tab" data-view="v2-view-hist"><span class="tab-icon">📋</span>Historia</button>
+            <button class="v2-tab" data-view="v2-view-about"><span class="tab-icon">ℹ️</span>Tietoa</button>
             <button class="v2-tab" id="v2-tab-admin" data-view="v2-view-admin" style="display:none;"><span class="tab-icon">🛡️</span>Ylläpito</button>
         </div>
     </div>
@@ -106,10 +119,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="js/core/firebase.js"></script>
+    <script src="js/core/version.js"></script>
     <script src="js/core/perms.js"></script>
     <script src="js/core/auth.js"></script>
     <script src="js/admin/admin.js"></script>
     <script>
+        // Versiomerkki + changelog
+        const vb = document.getElementById('v2-version-badge');
+        if (vb) vb.textContent = 'V' + V2_VERSION;
+        v2RenderChangelog(document.getElementById('v2-changelog'));
+
         // Välilehdet
         document.querySelectorAll('.v2-tab').forEach((t) => {
             t.addEventListener('click', () => {
