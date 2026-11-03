@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.15.1";
+const V2_VERSION = "0.15.2";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.15.2", date: "2026-11-02",
+        items: ["Kartta: Carto->OSM tilet (Carto vaatii API-avaimen)", "Tumma ilme sailyi CSS-tumennusfilterilla"]
+    },
     {
         v: "0.15.1", date: "2026-11-02",
         items: ["Kartta-korjaus: flex-korkeus v2-view-map:lle (kartta ei renderoitynyt)"]

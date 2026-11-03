@@ -172,3 +172,6 @@ body {
 /* Kartta-nakyman korkeus (v0.15.1): flex-sarakkeessa */
 #v2-view-map.active { display: flex; flex-direction: column; }
 #v2-view-map { height: calc(100dvh - 220px); }
+
+/* Tumma kartta ilman API-avainta: OSM + CSS-filter (v0.15.2) */
+#v2-map .leaflet-tile { filter: invert(0.92) hue-rotate(190deg) brightness(0.9) saturate(0.4); }

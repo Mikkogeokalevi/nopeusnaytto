@@ -7,8 +7,8 @@
         inited = true;
         map = L.map('v2-map', { zoomControl: false, attributionControl: false }).setView([61.5, 23.8], 6);
         window.v2map = map;
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19, subdomains: 'abcd'
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
         }).addTo(map);
         marker = L.circleMarker([0, 0], { radius: 8, color: '#fff', weight: 2, fillColor: '#2979ff', fillOpacity: 1 }).addTo(map);
         track = L.polyline([], { color: '#2979ff', weight: 4, opacity: 0.85 }).addTo(map);
