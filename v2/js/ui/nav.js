@@ -57,6 +57,10 @@
         const instr = (route.legs && route.legs[0] && route.legs[0].steps[0])
             ? (route.legs[0].steps[0].maneuver.instruction || 'Jatka')
             : 'Jatka';
+        if (instr !== (window._v2LastInstr || '')) {
+            window._v2LastInstr = instr;
+            if (typeof window.v2Speak === 'function') window.v2Speak(instr);
+        }
         el('v2-nav-instr').textContent = instr;
         el('v2-nav-info').textContent = dest.name + ' · ' + (d / 1000).toFixed(1) + ' km (' + (rem / 1000).toFixed(1) + ' km reittia)';
         if (d < 40) { v2NavStop(); el('v2-nav-status').textContent = 'Perilla!'; }
