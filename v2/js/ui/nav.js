@@ -97,9 +97,7 @@
         const instr = (route.legs && route.legs[0] && route.legs[0].steps[0])
             ? (route.legs[0].steps[0].maneuver.instruction || 'Jatka')
             : 'Jatka';
-        if (instr !== (window._v2LastInstr || '')) {
-            window._v2LastInstr = instr;
-            const st = route.legs && route.legs[0] && route.legs[0].steps[0];
+        const st = route.legs && route.legs[0] && route.legs[0].steps[0];
         // Etaisyysohjeet (v0.22): 300 m / 100 m
         if (st && st.maneuver && typeof window.v2InstrText === 'function') {
             const distToStep = st.distance || 0;
