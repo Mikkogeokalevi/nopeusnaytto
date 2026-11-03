@@ -100,6 +100,23 @@
         if (instr !== (window._v2LastInstr || '')) {
             window._v2LastInstr = instr;
             const st = route.legs && route.legs[0] && route.legs[0].steps[0];
+        // Etaisyysohjeet (v0.22): 300 m / 100 m
+        if (st && st.maneuver && typeof window.v2InstrText === 'function') {
+            const distToStep = st.distance || 0;
+            const key0 = (typeof window.v2SpeechKey === 'function') ? window.v2SpeechKey(st) : 'continue';
+            if (!window._v2Ann) window._v2Ann = {};
+            const ann = window._v2Ann;
+            if (distToStep < 310 && distToStep > 140 && !ann.far) {
+                ann.far = true;
+                window.v2Speak && window.v2Speak(window.v2InstrText('announce_far', [['instr', window.v2InstrText(key0, [])]]));
+            } else if (distToStep < 110 && distToStep > 30 && !ann.mid) {
+                ann.mid = true;
+                window.v2Speak && window.v2Speak(window.v2InstrText('announce_mid', [['instr', window.v2InstrText(key0, [])]]));
+            }
+        }
+        if (instr !== (window._v2LastInstr || '')) {
+            window._v2LastInstr = instr;
+            window._v2Ann = {}; // nollaa kynnysmerkit uudella ohjeella
             const key = (typeof window.v2SpeechKey === 'function' && st) ? window.v2SpeechKey(st) : null;
             const text = (typeof window.v2InstrText === 'function' && key)
                 ? window.v2InstrText(key, [['exit', (st.maneuver && st.maneuver.exit) || '1']])

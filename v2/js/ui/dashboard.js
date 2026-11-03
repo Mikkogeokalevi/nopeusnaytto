@@ -2,7 +2,7 @@
 // Sessioseuranta (huippu/matka/aika/keskiarvo) lokaalisti; historia kytketaan VAIHEESSA 7.
 (function() {
     let watchId = null, started = false;
-    let rec = { on: false, dist: 0, max: 0, t0: 0, pts: [] };
+    let rec = { on: false, paused: false, dist: 0, max: 0, t0: 0, pauseMs: 0, pauseT0: 0, pts: [] };
     const el = (id) => document.getElementById(id);
 
     function fmtDur(ms) {
@@ -45,7 +45,7 @@
         const al = el('v2-alt');
         if (al) al.textContent = (typeof c.altitude === 'number' && c.altitude !== null) ? Math.round(c.altitude) + ' m' : '--';
 
-        if (rec.on) {
+        if (rec.on && !rec.paused) {
             const last = rec.pts[rec.pts.length - 1];
             if (kmh > rec.max) rec.max = kmh;
             if (last && kmh > 2) {
@@ -62,7 +62,7 @@
     function v2RefreshRec() {
         const t = el('v2-rec-time');
         if (!t) return;
-        const dur = rec.on ? Date.now() - rec.t0 : 0;
+        const dur = rec.on ? Date.now() - rec.t0 - rec.pauseMs - (rec.paused ? Date.now() - rec.pauseT0 : 0) : 0;
         t.textContent = fmtDur(dur);
         const m = el('v2-rec-max'); if (m) m.textContent = rec.max.toFixed(1);
         const d = el('v2-rec-dist'); if (d) d.textContent = (rec.dist / 1000).toFixed(2);
@@ -87,11 +87,33 @@
         };
     }
 
+    window.v2TogglePause = function() {
+        if (!rec.on) return;
+        rec.paused = !rec.paused;
+        const b = el('v2-btn-pause'), st = el('v2-rec-state');
+        if (rec.paused) {
+            rec.pauseT0 = Date.now();
+            if (b) { b.textContent = '▶ JATKA'; b.className = 'v2-btn v2-btn-ghost'; }
+            if (st) st.textContent = 'TAUKO';
+        } else {
+            rec.pauseMs += Date.now() - rec.pauseT0;
+            if (b) { b.textContent = '⏸ TAUKO'; b.className = 'v2-btn v2-btn-ghost'; }
+            if (st) st.textContent = 'TALLENNETAAN';
+        }
+    };
+
     window.v2ToggleRec = function() {
         rec.on = !rec.on;
-        if (rec.on) { rec.t0 = Date.now(); rec.dist = 0; rec.max = 0; rec.pts = []; }
+        if (rec.on) {
+            rec.t0 = Date.now(); rec.dist = 0; rec.max = 0; rec.pts = [];
+            rec.paused = false; rec.pauseMs = 0;
+            const pb = el('v2-btn-pause');
+            if (pb) { pb.style.display = 'block'; pb.textContent = '⏸ TAUKO'; }
+        }
         const b = el('v2-btn-rec'), st = el('v2-rec-state');
         if (b) { b.textContent = rec.on ? '⏹ LOPETA' : '● ALOITA'; b.className = 'v2-btn ' + (rec.on ? 'v2-btn-danger' : 'v2-btn-primary'); }
+        const pb2 = el('v2-btn-pause');
+        if (pb2 && !rec.on) pb2.style.display = 'none';
         if (st) st.textContent = rec.on ? 'TALLENNETAAN' : 'VALMIS';
         if (!rec.on) {
             const drive = saveDrive();
