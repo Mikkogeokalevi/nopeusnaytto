@@ -194,3 +194,21 @@ body.v2-pit .v2-speed-hero { padding: 40px 0; }
 body.v2-pit .v2-pit-exit { display: block !important; }
 .v2-pit-exit { display: none; position: fixed; bottom: 20px; right: 20px; z-index: 5000;
   width: 56px; height: 56px; border-radius: 50%; font-size: 22px; }
+
+/* HERO-UUDISTUS (v0.28): nopeus + aito EU-rajoitusmerkki */
+.v2-hero-row { display: flex; align-items: center; justify-content: center; gap: 30px; }
+.v2-hero-left { text-align: center; }
+.v2-hero-right { display: flex; flex-direction: column; align-items: center; }
+.v2-limitsign {
+    width: 92px; height: 92px; border-radius: 50%;
+    background: #fff; border: 9px solid #d00;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(0,0,0,0.06);
+    font-size: 34px; font-weight: 800; color: #111;
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.3s;
+}
+.v2-limitsign.nodata { border-color: #555; color: #888; font-size: 26px; }
+.v2-limitsign.winter { border-color: #1565c0; }
+.v2-limitsign-sub { margin-top: 8px; font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--v2-text-2); text-transform: uppercase; }
+@media (max-width: 380px) { .v2-limitsign { width: 78px; height: 78px; font-size: 28px; border-width: 8px; } }

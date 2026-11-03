@@ -88,14 +88,20 @@
                     if (wc && wc < (v || 999)) { winter = wc; src = 'TALVI'; }
                 }
                 if (winter) v = winter;
-                const lim = document.querySelector('#v2-view-dash .v2-listrow .t');
+                const num = document.getElementById('v2-limit-num');
+                const sign = document.getElementById('v2-limitsign');
+                const srcEl = document.getElementById('v2-limit-src');
                 if (v) {
-                    if (lim) { lim.textContent = v; lim.nextElementSibling.textContent = src; }
+                    if (num) num.textContent = v;
+                    if (sign) { sign.classList.remove('nodata'); sign.classList.toggle('winter', !!winter); }
+                    if (srcEl) srcEl.textContent = src === 'TALVI' ? 'TALVIRAJOITUS' : 'RAJOITUS';
                     window.v2Limit = v;
                     const n = el('v2-speed-num');
                     if (n) n.style.color = kmh > v ? '#ff3b30' : '';
                 } else {
-                    if (lim) { lim.textContent = '--'; lim.nextElementSibling.textContent = 'Ei dataa'; }
+                    if (num) num.textContent = '--';
+                    if (sign) { sign.classList.add('nodata'); sign.classList.remove('winter'); }
+                    if (srcEl) srcEl.textContent = 'EI DATAA';
                     window.v2Limit = null;
                 }
             }).catch(() => {});

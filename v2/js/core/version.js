@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.27.0";
+const V2_VERSION = "0.28.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.28.0", date: "2026-11-03",
+        items: ["MITTARISTON UUDISTUS: aito EU-rajoitusmerkki (pyorea, punareuna)","Hero-layout: nopeus vasemmalle, rajoitusmerkki oikealle","TALVIRAJOITUS sinisena merkkina"]
+    },
     {
         v: "0.27.0", date: "2026-11-03",
         items: ["Taman paivan ajot -yhteenveto mittaristoon (ajojen lkm + km)"]

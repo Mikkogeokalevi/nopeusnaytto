@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0a0e14">
     <title>Mikkokalevin Ajopäiväkirja V2</title>
-    <link rel="manifest" href="manifest.json?v=0.27.0">
+    <link rel="manifest" href="manifest.json?v=0.28.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="css/app.css?v=0.27.0">
+    <link rel="stylesheet" href="css/app.css?v=0.28.0">
     <link rel="icon" href="assets/ajopaivakirja_logo.png">
 </head>
 <body>
@@ -92,20 +92,20 @@
                     <button class="v2-iconbtn" onclick="v2NavStop()" style="color:var(--v2-red);">✕</button>
                 </div>
                 <div class="v2-speed-hero">
-                    <div class="v2-speed-num" id="v2-speed-num">0.0</div>
-                    <div class="v2-speed-unit">KM/H</div>
-                    <div style="margin-top:12px; display:flex; gap:8px; justify-content:center;">
-                        <span class="v2-badge warn" id="v2-gps-badge">GPS —</span>
+                    <div class="v2-hero-row">
+                        <div class="v2-hero-left">
+                            <div class="v2-speed-num" id="v2-speed-num">0.0</div>
+                            <div class="v2-speed-unit">KM/H</div>
+                            <div style="margin-top:10px;"><span class="v2-badge warn" id="v2-gps-badge">GPS —</span></div>
+                        </div>
+                        <div class="v2-hero-right">
+                            <div class="v2-limitsign" id="v2-limitsign"><span id="v2-limit-num">--</span></div>
+                            <div class="v2-limitsign-sub" id="v2-limit-src">ei dataa</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="v2-listrow" style="justify-content:center;">
-                    <div class="grow" style="text-align:center;">
-                        <div class="s">RAJOITUS</div>
-                        <div class="t" style="font-size:22px;">--</div>
-                        <div class="s">Ei dataa (VAIHE 7)</div>
-                    </div>
-                </div>
+                <div class="v2-listrow" style="display:none;"></div>
 
                 <div class="v2-statgrid">
                     <div class="v2-stat"><div class="s">HUITU</div><div class="t" id="v2-rec-max">0.0</div><div class="s">km/h</div></div>
@@ -197,20 +197,20 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="js/core/firebase.js?v=0.27.0"></script>
-    <script src="js/core/version.js?v=0.27.0"></script>
-    <script src="js/core/perms.js?v=0.27.0"></script>
-    <script src="js/core/auth.js?v=0.27.0"></script>
-    <script src="js/admin/admin.js?v=0.27.0"></script>
+    <script src="js/core/firebase.js?v=0.28.0"></script>
+    <script src="js/core/version.js?v=0.28.0"></script>
+    <script src="js/core/perms.js?v=0.28.0"></script>
+    <script src="js/core/auth.js?v=0.28.0"></script>
+    <script src="js/admin/admin.js?v=0.28.0"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="js/ui/dashboard.js?v=0.27.0"></script>
-    <script src="js/ui/map.js?v=0.27.0"></script>
-    <script src="js/ui/history.js?v=0.27.0"></script>
-    <script src="js/ui/cars.js?v=0.27.0"></script>
-    <script src="js/ui/nav.js?v=0.27.0"></script>
-    <script src="js/ui/speech.js?v=0.27.0"></script>
-    <script src="js/ui/speechpacks.js?v=0.27.0"></script>
-    <script src="js/ui/poi.js?v=0.27.0"></script>
+    <script src="js/ui/dashboard.js?v=0.28.0"></script>
+    <script src="js/ui/map.js?v=0.28.0"></script>
+    <script src="js/ui/history.js?v=0.28.0"></script>
+    <script src="js/ui/cars.js?v=0.28.0"></script>
+    <script src="js/ui/nav.js?v=0.28.0"></script>
+    <script src="js/ui/speech.js?v=0.28.0"></script>
+    <script src="js/ui/speechpacks.js?v=0.28.0"></script>
+    <script src="js/ui/poi.js?v=0.28.0"></script>
     <script>
         // Versiomerkki + changelog
         const vb = document.getElementById('v2-version-badge');
@@ -221,7 +221,7 @@
 
         // Service Worker (V2 PWA)
         if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
-            navigator.serviceWorker.register('sw.js?v=0.27.0', { updateViaCache: 'none' }).catch(() => {});
+            navigator.serviceWorker.register('sw.js?v=0.28.0', { updateViaCache: 'none' }).catch(() => {});
         }
 
         // Hyvaksyntaodota-nakyma (v0.21)
