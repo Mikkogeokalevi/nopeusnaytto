@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0e14">
+    <title>Mikkokalevin Ajopäiväkirja V2</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="icon" href="assets/ajopaivakirja_logo.png">
+</head>
+<body>
+
+    <!-- KIRJAUTUMINEN -->
+    <div id="v2-login" class="v2-login-wrap">
+        <img class="v2-login-logo" src="assets/ajopaivakirja_logo.png" alt="Ajopäiväkirja">
+        <div class="v2-login-title">Mikkokalevin Ajopäiväkirja</div>
+        <div class="v2-login-sub">V2 · Ammattimainen ajopäiväkirja</div>
+        <div class="v2-card">
+            <button class="v2-btn v2-btn-google" onclick="v2LoginGoogle()">
+                <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6C12.3 13.5 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17.5z"/><path fill="#FBBC05" d="M10.4 28.7A14.4 14.4 0 0 1 9.6 24c0-1.6.3-3.2.8-4.7l-7.8-6C1 16.9 0 20.3 0 24s1 7.1 2.6 10.2l7.8-5.5z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.7-4.2-13.6-9.8l-7.9 6C6.5 42.6 14.6 48 24 48z"/></svg>
+                Jatka Google-tilillä
+            </button>
+            <div class="v2-divider">tai sähköpostilla</div>
+            <div class="v2-field">
+                <label for="v2-email">Sähköposti</label>
+                <input id="v2-email" class="v2-input" type="email" autocomplete="email">
+            </div>
+            <div class="v2-field">
+                <label for="v2-pass">Salasana</label>
+                <input id="v2-pass" class="v2-input" type="password" autocomplete="current-password">
+            </div>
+            <button class="v2-btn v2-btn-primary" onclick="v2LoginEmail()">Kirjaudu</button>
+            <a class="v2-link" onclick="v2RegisterEmail()">Luo uusi tili</a>
+            <a class="v2-link" onclick="v2ResetPassword()">Unohtuiko salasana?</a>
+            <div id="v2-login-error" class="v2-error"></div>
+            <div id="v2-login-ok" class="v2-ok"></div>
+        </div>
+        <div class="v2-muted" style="margin-top:20px; font-size:12px;">V1-versio: <a href="../index.html" style="color:var(--v2-accent);">ajopaivakirja/index.html</a></div>
+    </div>
+
+    <!-- SOVELLUSRUNKO -->
+    <div id="v2-app" class="v2-app">
+        <div class="v2-topbar">
+            <div class="v2-topbar-brand">
+                <img src="assets/ajopaivakirja_logo.png" alt="">
+                <span>Ajopäiväkirja <span class="v2-badge">V2</span></span>
+            </div>
+            <div class="v2-topbar-actions">
+                <button class="v2-iconbtn" onclick="v2Logout()" title="Kirjaudu ulos">⏻</button>
+            </div>
+        </div>
+
+        <div class="v2-main">
+            <div id="v2-view-dash" class="v2-view active">
+                <div class="v2-speed-hero">
+                    <div class="v2-speed-num">0.0</div>
+                    <div class="v2-speed-unit">KM/H</div>
+                    <div style="margin-top:14px;"><span class="v2-badge warn">GPS ODOTTAA</span></div>
+                </div>
+                <div class="v2-notice">
+                    <strong>V2-pohja rakennettu.</strong> Tämä on VAIHE 2:n turvallinen runko.
+                    Ajotoiminnot (GPS, mittaristo, historia) yhdistetään VAIHEESSA 7.
+                    V1 toimii edelleen täysin osoitteessa <a href="../index.html" style="color:var(--v2-accent);">/nopeusnaytto/</a>.
+                </div>
+                <div class="v2-section-title">Tili</div>
+                <div class="v2-listrow">
+                    <div class="grow">
+                        <div class="t" id="v2-user-name">—</div>
+                        <div class="s">UID: <span id="v2-uid" style="font-family:monospace;">—</span></div>
+                    </div>
+                </div>
+                <div class="v2-muted" style="font-size:12px; margin-top:8px;">
+                    Ylläpito-oikeuksien aktivointi: lisää UID-si Firebase-konsolissa polulle <code>admins/{uid}</code> arvolla <code>true</code>.
+                </div>
+            </div>
+
+            <div id="v2-view-map" class="v2-view"><div class="v2-section-title">Kartta</div><div class="v2-muted">VAIHE 7</div></div>
+            <div id="v2-view-hist" class="v2-view"><div class="v2-section-title">Historia</div><div class="v2-muted">VAIHE 7</div></div>
+            <div id="v2-view-admin" class="v2-view"><div class="v2-section-title">Ylläpito</div><div class="v2-muted">VAIHE 6</div></div>
+        </div>
+
+        <div class="v2-tabbar">
+            <button class="v2-tab active" data-view="v2-view-dash"><span class="tab-icon">⚡</span>Mittari</button>
+            <button class="v2-tab" data-view="v2-view-map"><span class="tab-icon">🗺️</span>Kartta</button>
+            <button class="v2-tab" data-view="v2-view-hist"><span class="tab-icon">📋</span>Historia</button>
+            <button class="v2-tab" data-view="v2-view-admin"><span class="tab-icon">🛡️</span>Ylläpito</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="js/core/firebase.js"></script>
+    <script src="js/core/perms.js"></script>
+    <script src="js/core/auth.js"></script>
+    <script>
+        // Välilehdet
+        document.querySelectorAll('.v2-tab').forEach((t) => {
+            t.addEventListener('click', () => {
+                document.querySelectorAll('.v2-tab').forEach((x) => x.classList.remove('active'));
+                document.querySelectorAll('.v2-view').forEach((x) => x.classList.remove('active'));
+                t.classList.add('active');
+                document.getElementById(t.dataset.view).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

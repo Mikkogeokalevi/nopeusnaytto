@@ -1,0 +1,12 @@
+{
+    "name": "Mikkokalevin Ajopäiväkirja V2",
+    "short_name": "Ajopäiväkirja V2",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#0a0e14",
+    "theme_color": "#2979ff",
+    "lang": "fi",
+    "icons": [
+        { "src": "assets/ajopaivakirja_logo.png", "sizes": "512x512", "type": "image/png" }
+    ]
+}
