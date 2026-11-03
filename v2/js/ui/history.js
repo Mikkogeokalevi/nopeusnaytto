@@ -62,10 +62,20 @@
             .then((r) => r.json())
             .then((j) => {
                 const ways = (j.elements || []).filter((w) => w.tags && w.tags.maxspeed);
-                const v = ways.length ? parseInt(ways[0].tags.maxspeed, 10) : null;
+                let v = ways.length ? parseInt(ways[0].tags.maxspeed, 10) : null;
+                // Talvirajoitus (v0.25): 15.10-15.4 valitse winter/conditional jos saatavilla
+                let winter = null, src = 'OSM';
+                const now = new Date(), m = now.getMonth() + 1, dd = now.getDate();
+                const isWinter = (m > 10 || (m === 10 && dd >= 15)) || (m < 4 || (m === 4 && dd <= 15));
+                if (isWinter && ways.length) {
+                    const w0 = ways[0].tags;
+                    const wc = parseInt(w0['maxspeed:winter'] || (w0['maxspeed:conditional'] || '').match(/\d+/), 10);
+                    if (wc && wc < (v || 999)) { winter = wc; src = 'TALVI'; }
+                }
+                if (winter) v = winter;
                 const lim = document.querySelector('#v2-view-dash .v2-listrow .t');
                 if (v) {
-                    if (lim) { lim.textContent = v; lim.nextElementSibling.textContent = 'OSM'; }
+                    if (lim) { lim.textContent = v; lim.nextElementSibling.textContent = src; }
                     window.v2Limit = v;
                     const n = el('v2-speed-num');
                     if (n) n.style.color = kmh > v ? '#ff3b30' : '';
