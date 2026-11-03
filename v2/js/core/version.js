@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.7.0";
+const V2_VERSION = "0.8.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.8.0", date: "2026-11-02",
+        items: ["PWA: oma service worker (cache-first staattiset, network-first HTML)","Asennettavuus puhelimelle (manifest + icons)","Offline-toiminta ilman verkkoa (PWA-cache)"]
+    },
     {
         v: "0.7.0", date: "2026-11-02",
         items: ["Ajoneuvovalitsin: lukee users/{uid}/cars (V1:n autot), valinta tallentuu","Tallennettu ajo linkittyy aktiiviseen autoon (carId)"]
