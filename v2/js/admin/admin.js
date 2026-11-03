@@ -40,24 +40,26 @@ window.v2WriteUserIndex = function(user) {
 };
 
 function v2LoadAdmin() {
-    Promise.all([
-        window.v2db.ref('usersIndex').once('value'),
-        window.v2db.ref('userRoles').once('value'),
-        window.v2db.ref('featureFlags').once('value'),
-        window.v2db.ref('appConfig/registration').once('value'),
-        window.v2db.ref('auditLog').orderByChild('ts').limitToLast(15).once('value')
-    ]).then(([ui, ur, ff, reg, log]) => {
-        v2AdminData.usersIndex = ui.val() || {};
-        v2AdminData.userRoles = ur.val() || {};
-        v2RenderUsers();
-        v2RenderFeatures(ff.val() || {});
-        v2RenderRegSettings(reg.val() || {});
-        v2RenderAudit(log.val() || {});
-        v2RenderOverview();
-    }).catch((e) => {
-        const box = document.getElementById('v2-admin-body');
-        if (box) box.innerHTML = '<div class="v2-notice">Latausvirhe: ' + e.message + ' (tarkista usersIndex-saannot)</div>';
-    });
+    // Jokainen luku erikseen - yksi vika ei tyhjenna kaikkea (v0.18.1)
+    const setErr = (id, e) => {
+        const b = document.getElementById(id);
+        if (b) b.innerHTML = '<div class="v2-notice">' + (e && e.message) + ' - tarkista Firebase-saannot</div>';
+    };
+    window.v2db.ref('usersIndex').once('value').then((s) => {
+        v2AdminData.usersIndex = s.val() || {}; v2RenderUsers(); v2RenderOverview();
+    }).catch((e) => setErr('v2-admin-users', e));
+    window.v2db.ref('userRoles').once('value').then((s) => {
+        v2AdminData.userRoles = s.val() || {}; v2RenderUsers(); v2RenderOverview();
+    }).catch((e) => setErr('v2-admin-users', e));
+    window.v2db.ref('featureFlags').once('value').then((s) => {
+        v2RenderFeatures(s.val() || {});
+    }).catch((e) => setErr('v2-admin-features', e));
+    window.v2db.ref('appConfig/registration').once('value').then((s) => {
+        v2RenderRegSettings(s.val() || {});
+    }).catch((e) => setErr('v2-admin-reg', e));
+    window.v2db.ref('auditLog').orderByChild('ts').limitToLast(15).once('value').then((s) => {
+        v2RenderAudit(s.val() || {});
+    }).catch((e) => setErr('v2-admin-audit', e));
 }
 
 function v2RenderOverview() {
