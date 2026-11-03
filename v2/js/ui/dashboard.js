@@ -82,6 +82,7 @@
             avgSpeed: Math.round((rec.dist / (dur / 1000)) * 3.6 * 10) / 10,
             duration: Math.round(dur / 1000),
             path: rec.pts.map((p) => [p.lat, p.lng]),
+            carId: window.v2ActiveCar || null,
             source: 'v2'
         };
     }

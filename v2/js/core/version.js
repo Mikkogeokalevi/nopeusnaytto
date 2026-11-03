@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.6.0";
+const V2_VERSION = "0.7.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.7.0", date: "2026-11-02",
+        items: ["Ajoneuvovalitsin: lukee users/{uid}/cars (V1:n autot), valinta tallentuu","Tallennettu ajo linkittyy aktiiviseen autoon (carId)"]
+    },
     {
         v: "0.6.0", date: "2026-11-02",
         items: ["Nopeusrajoitus: Overpass/OSM maxspeed (15 s throttle), punainen ylitys","Historia-lista: ajopaivakirja/{uid} viimeisimmat ajot"]
