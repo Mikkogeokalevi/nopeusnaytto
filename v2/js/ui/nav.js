@@ -59,7 +59,12 @@
             : 'Jatka';
         if (instr !== (window._v2LastInstr || '')) {
             window._v2LastInstr = instr;
-            if (typeof window.v2Speak === 'function') window.v2Speak(instr);
+            const st = route.legs && route.legs[0] && route.legs[0].steps[0];
+            const key = (typeof window.v2SpeechKey === 'function' && st) ? window.v2SpeechKey(st) : null;
+            const text = (typeof window.v2InstrText === 'function' && key)
+                ? window.v2InstrText(key, [['exit', (st.maneuver && st.maneuver.exit) || '1']])
+                : instr;
+            if (typeof window.v2Speak === 'function') window.v2Speak(text);
         }
         el('v2-nav-instr').textContent = instr;
         el('v2-nav-info').textContent = dest.name + ' · ' + (d / 1000).toFixed(1) + ' km (' + (rem / 1000).toFixed(1) + ' km reittia)';

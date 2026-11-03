@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.11.0";
+const V2_VERSION = "0.12.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.12.0", date: "2026-11-02",
+        items: ["Puhepaketit V2:een (sama navSpeechPacks-polku kuin V1)", "18 avainta, import/export/liita, muokkaus ja aktivointi", "OSRM-ohjetyyppi -> puheavain kartoitus"]
+    },
     {
         v: "0.11.0", date: "2026-11-02",
         items: ["Nopeusvarjatty reittiviiva kartalla (vihrea->punainen)","Segmentit piirtyvat inkrementaalisesti"]
