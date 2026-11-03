@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.13.0";
+const V2_VERSION = "0.14.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.14.0", date: "2026-11-02",
+        items: ["Offline-reittivalimuisti: onnistunut reitti tallentuu (15 maaranpaata, 7 vrk)", "OSRM/verkkokatko -> sama maaranpaa ohjataan valimuistin reitilla"]
+    },
     {
         v: "0.13.0", date: "2026-11-02",
         items: ["Nav-palkki myos mittaristoon (ohje + ETA nakyy ajonaytolle)", "Sama ohje jaetaan kartta- ja mittaristonakymiin"]

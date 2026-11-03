@@ -10,6 +10,24 @@
     }
     const el = (id) => document.getElementById(id);
 
+    // Offline-reittivalimuisti (v0.14): viimeisin onnistunut reitti per maaranpaa
+    function v2CacheRoute(name, destObj, r) {
+        try {
+            const c = JSON.parse(localStorage.getItem('v2RouteCache') || '{}');
+            c[name.toLowerCase()] = { dest: destObj, route: r, ts: Date.now() };
+            const keys = Object.keys(c);
+            if (keys.length > 15) delete c[keys[0]]; // vanhin pois
+            localStorage.setItem('v2RouteCache', JSON.stringify(c));
+        } catch (e) {}
+    }
+    function v2CachedRoute(name) {
+        try {
+            const c = JSON.parse(localStorage.getItem('v2RouteCache') || '{}');
+            const e = c[name.toLowerCase()];
+            return (e && Date.now() - e.ts < 7 * 86400000) ? e : null; // 7 vrk
+        } catch (e) { return null; }
+    }
+
     window.v2NavGo = function() {
         const q = el('v2-nav-input').value.trim();
         if (!q || !window.v2Pos) { alert('Syota maaranpaan osoite ja odota GPS'); return; }
@@ -41,7 +59,27 @@
                 el('v2-nav-status').textContent = '';
                 v2NavTick();
             })
-            .catch((e) => { el('v2-nav-status').textContent = e.message; });
+            .then(() => { if (route && dest) v2CacheRoute(q, dest, route); })
+            .catch((e) => {
+                // Offline-fallback: kayta valimuistin reittia samalle maaranpaalle
+                const cached = v2CachedRoute(q);
+                if (cached) {
+                    dest = cached.dest; route = cached.route; active = true;
+                    if (window.L && route.geometry) {
+                        if (window.v2RouteLayer) window.v2RouteLayer.remove();
+                        window.v2RouteLayer = L.polyline(
+                            route.geometry.coordinates.map((c2) => [c2[1], c2[0]]),
+                            { color: '#ff3b30', weight: 5, opacity: 0.9 }
+                        ).addTo(window.v2map || {});
+                        if (window.v2map) window.v2map.fitBounds(window.v2RouteLayer.getBounds());
+                    }
+                    el('v2-nav-panel').style.display = 'block';
+                    el('v2-nav-status').textContent = 'Offline-reitti (valimuisti)';
+                    v2NavTick();
+                } else {
+                    el('v2-nav-status').textContent = e.message;
+                }
+            });
     };
 
     window.v2NavStop = function() {
