@@ -51,6 +51,9 @@ function v2LoadAdmin() {
     window.v2db.ref('userRoles').once('value').then((s) => {
         v2AdminData.userRoles = s.val() || {}; v2RenderUsers(); v2RenderOverview();
     }).catch((e) => setErr('v2-admin-users', e));
+    window.v2db.ref('userTiers').once('value').then((s) => {
+        v2AdminData.userTiers = s.val() || {}; v2RenderUsers();
+    }).catch(() => {});
     window.v2db.ref('featureFlags').once('value').then((s) => {
         v2AdminData.flags = s.val() || {};
         v2RenderFeatures(v2AdminData.flags);
@@ -97,6 +100,19 @@ function v2RenderUsers() {
             });
         });
         box.appendChild(row);
+
+        // Tila: free/premium (v0.20 kaupallistamispohja)
+        const tier = (v2AdminData.userTiers || {})[uid] || 'free';
+        const trow = document.createElement('div');
+        trow.style.cssText = 'margin:-4px 0 10px 0;font-size:11px;color:var(--v2-text-2);';
+        trow.innerHTML = 'Taso: <select class="v2-input" style="width:90px;padding:4px;display:inline-block;">' +
+            ['free', 'premium'].map((t) => '<option ' + (t === tier ? 'selected' : '') + '>' + t + '</option>').join('') + '</select>';
+        trow.querySelector('select').addEventListener('change', function() {
+            window.v2db.ref('userTiers/' + uid).set(this.value).then(() => {
+                v2Audit('set_tier', uid, { tier: this.value });
+            });
+        });
+        box.appendChild(trow);
 
         // Kayttajakohtaiset ominaisuusoikeudet (v0.19): avautuva lista
         const det = document.createElement('div');

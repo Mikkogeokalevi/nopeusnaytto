@@ -1,11 +1,11 @@
 // V2 Service Worker — cache-first staattiset, network-first HTML
-const V2_CACHE = 'ajopro-v2-0.19.0';
+const V2_CACHE = 'ajopro-v2-0.20.0';
 const V2_ASSETS = [
     './', './index.html', './manifest.json',
-    './css/app.css?v=0.19.0',
-    './js/core/firebase.js?v=0.19.0', './js/core/perms.js?v=0.19.0', './js/core/auth.js?v=0.19.0', './js/core/version.js?v=0.19.0',
-    './js/ui/dashboard.js?v=0.19.0', './js/ui/map.js?v=0.19.0', './js/ui/history.js?v=0.19.0', './js/ui/cars.js?v=0.19.0',
-    './js/admin/admin.js?v=0.19.0',
+    './css/app.css?v=0.20.0',
+    './js/core/firebase.js?v=0.20.0', './js/core/perms.js?v=0.20.0', './js/core/auth.js?v=0.20.0', './js/core/version.js?v=0.20.0',
+    './js/ui/dashboard.js?v=0.20.0', './js/ui/map.js?v=0.20.0', './js/ui/history.js?v=0.20.0', './js/ui/cars.js?v=0.20.0',
+    './js/admin/admin.js?v=0.20.0',
     './assets/ajopaivakirja_logo.png'
 ];
 

@@ -33,6 +33,12 @@ function v2InitPerms(user) {
         v2Perms._emit();
     });
 
+    // Taso: userTiers/{uid} = 'free'|'premium' (kaupallistamispohja, v0.20)
+    window.v2db.ref('userTiers/' + uid).on('value', (snap) => {
+        v2Perms.tier = snap.val() || 'free';
+        v2Perms._emit();
+    });
+
     // Ominaisuusliput
     window.v2db.ref('featureFlags').on('value', (snap) => {
         v2Perms.flags = snap.val() || {};
