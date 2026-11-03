@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0a0e14">
     <title>Mikkokalevin Ajopäiväkirja V2</title>
-    <link rel="manifest" href="manifest.json?v=0.23.0">
+    <link rel="manifest" href="manifest.json?v=0.24.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="css/app.css?v=0.23.0">
+    <link rel="stylesheet" href="css/app.css?v=0.24.0">
     <link rel="icon" href="assets/ajopaivakirja_logo.png">
 </head>
 <body>
@@ -38,6 +38,29 @@
             <div id="v2-login-ok" class="v2-ok"></div>
         </div>
         <div class="v2-muted" style="margin-top:20px; font-size:12px;">V1-versio: <a href="../index.html" style="color:var(--v2-accent);">ajopaivakirja/index.html</a></div>
+    </div>
+
+    <!-- POI-LUONTIMODAALI (v0.24) -->
+    <div id="v2-poi-modal" class="v2-login-wrap" style="display:none; background:rgba(0,0,0,0.6); position:fixed; inset:0; z-index:9999;">
+        <div class="v2-card" style="max-width:340px;">
+            <div class="v2-login-title" style="font-size:17px;">Uusi paikkamerkinta</div>
+            <div class="v2-field" style="margin-top:12px;">
+                <label>Nimi</label>
+                <input id="v2-poi-name" class="v2-input" placeholder="Esim. kamera, varoitus...">
+            </div>
+            <div class="v2-field">
+                <label>Tyyppi</label>
+                <select id="v2-poi-type" class="v2-input">
+                    <option value="other">📍 Muu</option>
+                    <option value="speedcamera">📷 Nopeuskamera</option>
+                    <option value="danger">⚠️ Vaara</option>
+                    <option value="customer">🏠 Asiakas</option>
+                    <option value="reminder">🔔 Muistutus</option>
+                </select>
+            </div>
+            <button class="v2-btn v2-btn-primary" onclick="v2PoiSave()">Tallenna</button>
+            <button class="v2-btn v2-btn-ghost" style="margin-top:8px;" onclick="v2PoiCancel()">Peruuta</button>
+        </div>
     </div>
 
     <!-- ODOTTAA HYVAKSYNTAA (v0.21) -->
@@ -171,20 +194,20 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="js/core/firebase.js?v=0.23.0"></script>
-    <script src="js/core/version.js?v=0.23.0"></script>
-    <script src="js/core/perms.js?v=0.23.0"></script>
-    <script src="js/core/auth.js?v=0.23.0"></script>
-    <script src="js/admin/admin.js?v=0.23.0"></script>
+    <script src="js/core/firebase.js?v=0.24.0"></script>
+    <script src="js/core/version.js?v=0.24.0"></script>
+    <script src="js/core/perms.js?v=0.24.0"></script>
+    <script src="js/core/auth.js?v=0.24.0"></script>
+    <script src="js/admin/admin.js?v=0.24.0"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="js/ui/dashboard.js?v=0.23.0"></script>
-    <script src="js/ui/map.js?v=0.23.0"></script>
-    <script src="js/ui/history.js?v=0.23.0"></script>
-    <script src="js/ui/cars.js?v=0.23.0"></script>
-    <script src="js/ui/nav.js?v=0.23.0"></script>
-    <script src="js/ui/speech.js?v=0.23.0"></script>
-    <script src="js/ui/speechpacks.js?v=0.23.0"></script>
-    <script src="js/ui/poi.js?v=0.23.0"></script>
+    <script src="js/ui/dashboard.js?v=0.24.0"></script>
+    <script src="js/ui/map.js?v=0.24.0"></script>
+    <script src="js/ui/history.js?v=0.24.0"></script>
+    <script src="js/ui/cars.js?v=0.24.0"></script>
+    <script src="js/ui/nav.js?v=0.24.0"></script>
+    <script src="js/ui/speech.js?v=0.24.0"></script>
+    <script src="js/ui/speechpacks.js?v=0.24.0"></script>
+    <script src="js/ui/poi.js?v=0.24.0"></script>
     <script>
         // Versiomerkki + changelog
         const vb = document.getElementById('v2-version-badge');
@@ -195,7 +218,7 @@
 
         // Service Worker (V2 PWA)
         if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
-            navigator.serviceWorker.register('sw.js?v=0.23.0', { updateViaCache: 'none' }).catch(() => {});
+            navigator.serviceWorker.register('sw.js?v=0.24.0', { updateViaCache: 'none' }).catch(() => {});
         }
 
         // Hyvaksyntaodota-nakyma (v0.21)

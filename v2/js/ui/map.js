@@ -15,6 +15,11 @@
         window.v2SpeedSegs = []; // segmenttivarin nopeuksilla
         if (window.v2Pos) map.setView([window.v2Pos.lat, window.v2Pos.lng], 15);
         setTimeout(() => map.invalidateSize(), 200);
+        // Napautus -> POI-luonti (v0.24)
+        map.on('click', (e) => {
+            const m = document.getElementById('v2-poi-modal');
+            if (m && typeof v2PoiDraft === 'function') v2PoiDraft(e.latlng.lat, e.latlng.lng);
+        });
     };
 
     window.v2MapUpdate = function(lat, lng) {

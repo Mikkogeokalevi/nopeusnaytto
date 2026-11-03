@@ -54,6 +54,31 @@
         }
     };
 
+    // POI-luonti karttapainalluksella (v0.24)
+    let draftLat = null, draftLng = null;
+    window.v2PoiDraft = function(lat, lng) {
+        draftLat = lat; draftLng = lng;
+        const m = document.getElementById('v2-poi-modal');
+        if (m) m.style.display = 'flex';
+    };
+    window.v2PoiCancel = function() {
+        const m = document.getElementById('v2-poi-modal');
+        if (m) m.style.display = 'none';
+    };
+    window.v2PoiSave = function() {
+        const name = (document.getElementById('v2-poi-name') || {}).value || '';
+        const type = (document.getElementById('v2-poi-type') || {}).value || 'other';
+        if (draftLat == null || !v2Perms.user) { v2PoiCancel(); return; }
+        const p = { lat: draftLat, lng: draftLng, name: name.trim(), type, ts: firebase.database.ServerValue.TIMESTAMP };
+        window.v2db.ref('poi/' + v2Perms.user.uid).push(p).then(() => {
+            p.lat = draftLat; p.lng = draftLng; p.id = 'tmp_' + Date.now();
+            pois.push({ id: p.id, lat: p.lat, lng: p.lng, name: p.name, type });
+            armed[p.id] = true;
+            renderMarkers();
+        }).catch(() => {});
+        v2PoiCancel();
+    };
+
     // Kytkenta GPS-tikkiin (dashboard paivittaa window.v2Pos -> mapUpdate)
     const orig = window.v2MapUpdate;
     window.v2MapUpdate = function(lat, lng) {
