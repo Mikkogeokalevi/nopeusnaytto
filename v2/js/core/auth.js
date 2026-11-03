@@ -34,7 +34,10 @@
             return window.v2auth.createUserWithEmailAndPassword(email, pass);
         }).then(() => {
             const u = window.v2auth.currentUser;
-            if (u) u.sendEmailVerification().catch(() => {});
+            if (u) {
+                u.sendEmailVerification().catch(() => {});
+                if (typeof v2WriteUserIndex === 'function') v2WriteUserIndex(u);
+            }
         }).catch((e) => showErr(mapErr(e)));
     };
 

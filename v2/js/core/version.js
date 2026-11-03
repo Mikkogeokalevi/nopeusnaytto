@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.20.0";
+const V2_VERSION = "0.21.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.21.0", date: "2026-11-02",
+        items: ["Rekisteroitymisen hyvaksynta: requireApproval=true -> uudet nakevat Odottaa-nayton","Hyvaksynta = admin asettaa roolin (ei uusia saantoja)"]
+    },
     {
         v: "0.20.0", date: "2026-11-02",
         items: ["Premium-tasorunko: userTiers/{uid} free|premium, admin voi vaihtaa", "v2Perms.tier kaytossa -> maksullisten ominaisuuksien pohja valmiina"]

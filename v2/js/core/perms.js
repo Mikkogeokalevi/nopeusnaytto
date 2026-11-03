@@ -27,9 +27,17 @@ function v2InitPerms(user) {
         v2Perms._emit();
     });
 
-    // Rooli: userRoles/{uid}
+    // Rekisteroitymisen asetukset (hyvaksyntavaatimus)
+    window.v2db.ref('appConfig/registration').on('value', (snap) => {
+        v2Perms.regCfg = snap.val() || {};
+        v2Perms._emit();
+    });
+
+    // Rooli: userRoles/{uid} — puuttuva rooli + requireApproval = odottaa hyvaksyntaa (v0.21)
     window.v2db.ref('userRoles/' + uid).on('value', (snap) => {
+        const hasRole = snap.exists();
         v2Perms.role = snap.val() || (v2Perms.isSuperAdmin ? 'superadmin' : 'user');
+        v2Perms.pending = !!(v2Perms.regCfg && v2Perms.regCfg.requireApproval && !hasRole && !v2Perms.isSuperAdmin);
         v2Perms._emit();
     });
 
