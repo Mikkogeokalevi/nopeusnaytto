@@ -183,3 +183,14 @@ body.v2-sun { --v2-bg-0:#fff; --v2-bg-1:#f5f5f5; --v2-bg-2:#eaeaea; --v2-bg-3:#d
   --v2-accent:#0057c2; --v2-accent-hi:#003d8f; --v2-accent-dim:rgba(0,87,194,0.1); }
 body.v2-sun .v2-speed-num { color:#000; text-shadow:none; font-size:110px; }
 body.v2-sun .v2-speed-unit { color:#333; }
+
+/* PIT-TILA (v0.26): minimoitu ajonakyma */
+body.v2-pit .v2-topbar, body.v2-pit .v2-tabbar, body.v2-pit .v2-statgrid,
+body.v2-pit .v2-listrow, body.v2-pit #v2-btn-rec, body.v2-pit #v2-btn-pause,
+body.v2-pit .v2-section-title, body.v2-pit #v2-coords, body.v2-pit #v2-rec-state,
+body.v2-pit #v2-dash-nav { display: none !important; }
+body.v2-pit .v2-speed-num { font-size: 150px; }
+body.v2-pit .v2-speed-hero { padding: 40px 0; }
+body.v2-pit .v2-pit-exit { display: block !important; }
+.v2-pit-exit { display: none; position: fixed; bottom: 20px; right: 20px; z-index: 5000;
+  width: 56px; height: 56px; border-radius: 50%; font-size: 22px; }

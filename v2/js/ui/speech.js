@@ -22,6 +22,10 @@
     };
     if (localStorage.getItem('v2Sun')) document.body.classList.add('v2-sun');
 
+    window.v2TogglePit = function() {
+        document.body.classList.toggle('v2-pit');
+    };
+
     window.v2ToggleSpeech = function() {
         settings.speech = !settings.speech;
         saveSettings();
