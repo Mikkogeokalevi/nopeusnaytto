@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.15.0";
+const V2_VERSION = "0.15.1";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.15.1", date: "2026-11-02",
+        items: ["Kartta-korjaus: flex-korkeus v2-view-map:lle (kartta ei renderoitynyt)"]
+    },
     {
         v: "0.15.0", date: "2026-11-02",
         items: ["PWA-korjaukset: manifest-ikonit (192+512+maskable), id/scope", "Kaikki resurssit ?v=-versionoitu - cache ei jaada jumiin", "SW updateViaCache:none"]
