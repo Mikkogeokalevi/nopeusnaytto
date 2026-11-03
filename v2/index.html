@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0a0e14">
     <title>Mikkokalevin Ajopäiväkirja V2</title>
-    <link rel="manifest" href="manifest.json?v=0.22.0">
+    <link rel="manifest" href="manifest.json?v=0.23.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="css/app.css?v=0.22.0">
+    <link rel="stylesheet" href="css/app.css?v=0.23.0">
     <link rel="icon" href="assets/ajopaivakirja_logo.png">
 </head>
 <body>
@@ -126,6 +126,7 @@
                     <div class="grow"><div class="t" id="v2-nav-instr">—</div><div class="s" id="v2-nav-info"></div></div>
                     <button class="v2-iconbtn" onclick="v2NavStop()" style="color:var(--v2-red);">✕</button>
                 </div>
+                <div class="v2-muted" id="v2-poi-count" style="font-size:11px;margin:0 0 4px;"></div>
                 <div id="v2-map" style="flex:1;border-radius:14px;overflow:hidden;min-height:0;"></div>
             </div>
             <div id="v2-view-hist" class="v2-view"><div class="v2-section-title">Tilastot</div><div id="v2-hist-stats"></div><div class="v2-section-title">Historia</div><div id="v2-history-list"></div></div>
@@ -170,19 +171,19 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="js/core/firebase.js?v=0.22.0"></script>
-    <script src="js/core/version.js?v=0.22.0"></script>
-    <script src="js/core/perms.js?v=0.22.0"></script>
-    <script src="js/core/auth.js?v=0.22.0"></script>
-    <script src="js/admin/admin.js?v=0.22.0"></script>
+    <script src="js/core/firebase.js?v=0.23.0"></script>
+    <script src="js/core/version.js?v=0.23.0"></script>
+    <script src="js/core/perms.js?v=0.23.0"></script>
+    <script src="js/core/auth.js?v=0.23.0"></script>
+    <script src="js/admin/admin.js?v=0.23.0"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="js/ui/dashboard.js?v=0.22.0"></script>
-    <script src="js/ui/map.js?v=0.22.0"></script>
-    <script src="js/ui/history.js?v=0.22.0"></script>
-    <script src="js/ui/cars.js?v=0.22.0"></script>
-    <script src="js/ui/nav.js?v=0.22.0"></script>
-    <script src="js/ui/speech.js?v=0.22.0"></script>
-    <script src="js/ui/speechpacks.js?v=0.22.0"></script>
+    <script src="js/ui/dashboard.js?v=0.23.0"></script>
+    <script src="js/ui/map.js?v=0.23.0"></script>
+    <script src="js/ui/history.js?v=0.23.0"></script>
+    <script src="js/ui/cars.js?v=0.23.0"></script>
+    <script src="js/ui/nav.js?v=0.23.0"></script>
+    <script src="js/ui/speech.js?v=0.23.0"></script>
+    <script src="js/ui/speechpacks.js?v=0.23.0"></script>
     <script>
         // Versiomerkki + changelog
         const vb = document.getElementById('v2-version-badge');
@@ -193,7 +194,7 @@
 
         // Service Worker (V2 PWA)
         if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
-            navigator.serviceWorker.register('sw.js?v=0.22.0', { updateViaCache: 'none' }).catch(() => {});
+            navigator.serviceWorker.register('sw.js?v=0.23.0', { updateViaCache: 'none' }).catch(() => {});
         }
 
         // Hyvaksyntaodota-nakyma (v0.21)
