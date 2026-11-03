@@ -1,7 +1,11 @@
 // V2 VERSIOHALLINTA — nosta aina kun V2 muuttuu (majaali.minor.patch)
-const V2_VERSION = "0.26.0";
+const V2_VERSION = "0.27.0";
 
 const V2_CHANGELOG = [
+    {
+        v: "0.27.0", date: "2026-11-03",
+        items: ["Taman paivan ajot -yhteenveto mittaristoon (ajojen lkm + km)"]
+    },
     {
         v: "0.26.0", date: "2026-11-03",
         items: ["Pit-tila: minimoitu ajonakyma (pelkka iso nopeus, 🏁-nappi)","✕-nappi poistuu tilasta"]

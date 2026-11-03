@@ -44,11 +44,26 @@
             });
     };
 
+    // Taman paivan ajot -yhteenveto mittaristoon (v0.27)
+    window.v2LoadToday = function() {
+        if (!v2Perms.user) return;
+        const day = new Date(); day.setHours(0, 0, 0, 0);
+        const t0 = day.getTime();
+        window.v2db.ref('ajopaivakirja/' + v2Perms.user.uid)
+            .orderByChild('startTime').startAt(t0).once('value').then((snap) => {
+                let n = 0, km = 0;
+                snap.forEach((c) => { const d = c.val(); n++; km += (d.distance || 0) / 1000; });
+                const box = document.getElementById('v2-today');
+                if (box && n) box.innerHTML = '<div class="v2-badge" style="font-size:10px;">TANAN: ' + n + ' ajoa · ' + km.toFixed(1) + ' km</div>';
+            }).catch(() => {});
+    };
+
     document.querySelectorAll('.v2-tab').forEach((t) => {
         t.addEventListener('click', () => {
             if (t.dataset.view === 'v2-view-hist') v2LoadHistory();
         });
     });
+    window.v2auth && window.v2auth.onAuthStateChanged((u) => { if (u) setTimeout(v2LoadToday, 1200); });
 
     // --- NOPEUSRAJOITUS Overpass:lla (throttled) ---
     let lastLimitQ = 0, lastLimitPos = null;
