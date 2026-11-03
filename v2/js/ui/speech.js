@@ -16,6 +16,12 @@
         } catch (e) {}
     };
 
+    window.v2ToggleSun = function() {
+        const on = document.body.classList.toggle('v2-sun');
+        localStorage.setItem('v2Sun', on ? '1' : '');
+    };
+    if (localStorage.getItem('v2Sun')) document.body.classList.add('v2-sun');
+
     window.v2ToggleSpeech = function() {
         settings.speech = !settings.speech;
         saveSettings();

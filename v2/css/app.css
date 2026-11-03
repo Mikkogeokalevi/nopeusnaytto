@@ -175,3 +175,11 @@ body {
 
 /* Tumma kartta ilman API-avainta: OSM + CSS-filter (v0.15.2) */
 #v2-map .leaflet-tile { filter: invert(0.92) hue-rotate(190deg) brightness(0.9) saturate(0.4); }
+
+/* AURINKOTILA (v0.18): korkea kontrasti paivavaloon */
+body.v2-sun { --v2-bg-0:#fff; --v2-bg-1:#f5f5f5; --v2-bg-2:#eaeaea; --v2-bg-3:#ddd;
+  --v2-surface:#fff; --v2-border:#c5c5c5; --v2-border-strong:#999;
+  --v2-text-0:#000; --v2-text-1:#333; --v2-text-2:#555;
+  --v2-accent:#0057c2; --v2-accent-hi:#003d8f; --v2-accent-dim:rgba(0,87,194,0.1); }
+body.v2-sun .v2-speed-num { color:#000; text-shadow:none; font-size:110px; }
+body.v2-sun .v2-speed-unit { color:#333; }
