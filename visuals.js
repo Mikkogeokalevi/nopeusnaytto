@@ -474,7 +474,7 @@ function initVisuals() {
             premLabels.insertAdjacentHTML('beforeend',
                 `<span class="tick" style="left:${pos}"></span><span class="lbl" data-lim="${v}" style="left:${pos}">${v}</span>`);
         });
-        premLabels.insertAdjacentHTML('beforeend', '<span class="lmax">150 km/h</span>');
+        premLabels.insertAdjacentHTML('beforeend', '<span class="lmax">150</span>');
     }
 
     // Aseta tapahtumankuuntelijat

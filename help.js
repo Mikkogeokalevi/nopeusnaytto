@@ -1,5 +1,5 @@
 // =========================================================
-// HELP.JS - BILINGUAL MASTER GUIDE (v6.80 PREMIUM)
+// HELP.JS - BILINGUAL MASTER GUIDE (v6.81 PREMIUM)
 // =========================================================
 
 // --- KÄÄNNÖKSET / TRANSLATIONS ---
@@ -9,10 +9,10 @@ const helpData = {
         version: "Versio",
         sections: [
             {
-                title: "🚀 1. Uutta (v6.80, v6.79, v6.78, v6.77, v6.76, v6.75, v6.74, v6.73, v6.72, v6.71, v6.70, v6.69, v6.68, v6.67, v6.66, v6.65, v6.64, v6.63, v6.62, v6.61, v6.60, v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
+                title: "🚀 1. Uutta (v6.81, v6.80, v6.79, v6.78, v6.77, v6.76, v6.75, v6.74, v6.73, v6.72, v6.71, v6.70, v6.69, v6.68, v6.67, v6.66, v6.65, v6.64, v6.63, v6.62, v6.61, v6.60, v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
-                        <strong>✨ UUTTA v6.80:</strong>
+                        <strong>✨ UUTTA v6.81:</strong>
                         <ul><li>Uusi nopeusmittarin tyyli <b>Premium</b>: iso numero (2 des.), rajoituspilli, 0–150 nopeuspalkki Suomen raja-arvoilla (30–120), iso käännösnuoli numeron vieressä kun ohje lähestyy, navi-ohjepalkki.</li></ul>
                         <strong>🔢 UUTTA v6.79:</strong>
                         <ul><li>Digitaalinen nopeusnäyttö näyttää nyt 2 desimaalia (esim. 12.34).</li></ul>
@@ -741,7 +741,7 @@ const helpData = {
                 title: "🚀 1. New (v6.60, v6.59, v6.58, v6.57, v6.56, v6.55, v6.54, v6.53, v6.52, v6.51, v6.50, v6.49, v6.48, v6.47, v6.46, v6.44, v6.43, v6.42, v6.41, v6.40, v6.39, v6.38, v6.37, v6.36, v6.35, v6.34, v6.33, v6.32, v6.31, v6.30, v6.29, v6.28, v6.27, v6.23, v6.22, v6.21, v6.20, v6.19, v6.18, v6.17, v6.16, v6.14, v6.13 & v6.12)",
                 content: `
                     <div class="help-step" style="border-left: 4px solid #00e676; padding-left: 10px; margin-bottom: 15px;">
-                        <strong>✨ NEW in v6.80:</strong>
+                        <strong>✨ NEW in v6.81:</strong>
                         <ul><li>New speedometer style <b>Premium</b>: large number (2 dec.), limit pill, 0–150 speed bar with Finnish limit ticks (30–120), large turn arrow beside the number, nav instruction bar.</li></ul>
                         <strong>🔢 NEW in v6.79:</strong>
                         <ul><li>Digital speed display now shows 2 decimals (e.g. 12.34).</li></ul>
