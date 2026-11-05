@@ -1586,7 +1586,7 @@ body.light-mode .compact-speed { text-shadow: none; }
 
 /* ---------- Premium-tyyli (v6.80) ---------- */
 /* kontti tayttaa koko vapaan pystytilan - elementit levittyvat tasaisesti (v6.88) */
-body.speedo-premium .huge-speed-container { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+body.speedo-premium .huge-speed-container { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; width: 100%; }
 .premium-speed-container { margin: 0 0 4px; flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-evenly; }
 .prem-alertzone { min-height: 52px; display: flex; flex-direction: column; gap: 6px; }
 .prem-navline {
