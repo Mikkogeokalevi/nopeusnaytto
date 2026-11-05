@@ -1585,9 +1585,9 @@ body.light-mode .compact-speed { text-shadow: none; }
 }
 
 /* ---------- Premium-tyyli (v6.80) ---------- */
-.premium-speed-container { margin: 0 0 4px; }
-/* alertzone jätää tilaa GPS-badge + G-mittari -palstalle oikeassa reunassa (v6.83) */
-.prem-alertzone { min-height: 52px; display: flex; flex-direction: column; gap: 6px; margin-top: 32px; padding-right: 64px; }
+/* kontti jakautuu nayttokorkeudelle - sama levitys navilla ja ilman (v6.86) */
+.premium-speed-container { margin: 0 0 4px; display: flex; flex-direction: column; justify-content: space-evenly; min-height: 54dvh; }
+.prem-alertzone { min-height: 52px; display: flex; flex-direction: column; gap: 6px; }
 .prem-navline {
   display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px;
   background: linear-gradient(90deg, rgba(41,121,255,0.22), rgba(41,121,255,0.06));
@@ -1644,7 +1644,8 @@ body.speedo-premium .center-limit-wrap,
 body.speedo-premium #nav-dash-panel,
 body.speedo-premium .stats-grid,
 body.speedo-premium .today-summary,
-body.speedo-premium .g-force-wrapper { display: none !important; }
+body.speedo-premium .g-force-wrapper,
+body.speedo-premium .speed-confidence-badge { display: none !important; }
 body.speedo-premium #dashboard-view { justify-content: flex-start; }
 
 /* Layoutin tiivistys kun Kompakti-tyyli valittuna */

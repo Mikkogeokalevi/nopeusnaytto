@@ -1114,6 +1114,15 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         const txt = (document.getElementById('dash-heading')?.textContent || '--').trim();
         if (premHeadEl._lastTxt !== txt) { premHeadEl._lastTxt = txt; premHeadEl.textContent = txt; }
     }
+    const premGpsEl = document.getElementById('prem-stat-gps');
+    if (premGpsEl) {
+        const txt = (document.getElementById('speed-confidence-badge')?.textContent || 'GPS').trim();
+        if (premGpsEl._lastTxt !== txt) {
+            premGpsEl._lastTxt = txt;
+            premGpsEl.textContent = txt;
+            premGpsEl.style.color = txt.includes('A') ? '#2fe08a' : (txt.includes('C') ? '#ff5a5a' : '#ffb300');
+        }
+    }
     const premFillEl = document.getElementById('prem-fill');
     if (premFillEl) {
         const pct = Math.max(0, Math.min(100, spd / 150 * 100));
