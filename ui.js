@@ -1061,7 +1061,7 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     const lim = Number(window.lastShownSpeedLimitKmh) || 0;
 
     if(dashSpeedEl) {
-        const txt = spd.toFixed(1);
+        const txt = spd.toFixed(2);
         if (dashSpeedEl._lastTxt !== txt) {
             dashSpeedEl._lastTxt = txt;
             dashSpeedEl.textContent = txt;

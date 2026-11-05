@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V2 Design Preview — Kojelauta</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#06090f; color:#eaf1fb; font-family:-apple-system,Segoe UI,Roboto,sans-serif;
+         min-height:100dvh; display:flex; flex-direction:column; align-items:center;
+         font-variant-numeric:tabular-nums; overflow:hidden; }
+  .top { width:100%; max-width:480px; display:flex; justify-content:space-between;
+         padding:calc(env(safe-area-inset-top,0px) + 12px) 18px 0; font-size:13px; color:#9fb0c8; }
+  .top .brand { font-weight:700; color:#eaf1fb; display:flex; gap:8px; align-items:center; }
+  .top .brand img { width:26px; height:26px; border-radius:7px; }
+  .badge { background:rgba(0,200,120,.15); color:#2fe08a; padding:3px 9px; border-radius:12px;
+           font-size:11px; font-weight:700; }
+  .cluster { position:relative; width:min(94vw,430px); margin-top:6px; }
+  .corner { position:absolute; font-size:13px; color:#9fb0c8; }
+  .corner.l { left:14px; top:26px; text-align:left; }
+  .corner.r { right:14px; top:26px; text-align:right; }
+  .corner .big { font-size:16px; font-weight:800; color:#eaf1fb; }
+  .corner .unit { font-size:10px; letter-spacing:1px; color:#5f6f88; }
+  .bottomrow { width:min(94vw,430px); display:flex; justify-content:space-between;
+               padding:0 18px; margin-top:-34px; font-size:12px; color:#9fb0c8; }
+  .bottomrow .big { color:#eaf1fb; font-weight:700; font-size:15px; }
+  .limit { position:absolute; right:10px; top:52%; transform:translateY(-50%);
+           width:74px; height:74px; border-radius:50%; background:#fff;
+           border:8px solid #e00; color:#111; display:flex; align-items:center;
+           justify-content:center; font-size:26px; font-weight:800;
+           box-shadow:0 6px 20px rgba(0,0,0,.5); }
+  .limit-sub { position:absolute; right:22px; top:calc(52% + 46px); font-size:9px;
+               letter-spacing:1px; color:#5f6f88; font-weight:700; }
+  .carline { width:min(94vw,430px); margin-top:10px; opacity:.9; }
+  .hint { margin-top:10px; font-size:12px; color:#5f6f88; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="brand"><img src="assets/ajopaivakirja_logo.png" alt="">Ajopäiväkirja <span class="badge" style="background:rgba(41,121,255,.15);color:#4d94ff;">V2</span></div>
+    <div><span class="badge">GPS A</span></div>
+  </div>
+
+  <div class="cluster">
+    <svg viewBox="0 0 360 260" style="width:100%;display:block;">
+      <defs>
+        <linearGradient id="arcg" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stop-color="#1e4fd8"/><stop offset="55%" stop-color="#2979ff"/><stop offset="100%" stop-color="#6fd3ff"/>
+        </linearGradient>
+        <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- kaari 0-240 km/h, keula -220° -> 40° -->
+      <circle cx="180" cy="185" r="140" fill="none" stroke="#14243d" stroke-width="9" stroke-linecap="round"
+              stroke-dasharray="754" stroke-dashoffset="75" transform="rotate(140 180 185)"/>
+      <circle id="arc" cx="180" cy="185" r="140" fill="none" stroke="url(#arcg)" stroke-width="9"
+              stroke-linecap="round" stroke-dasharray="754" stroke-dashoffset="754"
+              transform="rotate(140 180 185)" filter="url(#glow)"/>
+      <g id="ticks"></g>
+      <line id="needle" x1="180" y1="185" x2="180" y2="62" stroke="#bfe0ff" stroke-width="3"
+            stroke-linecap="round" filter="url(#glow)"/>
+      <circle cx="180" cy="185" r="7" fill="#0a1626" stroke="#4d94ff" stroke-width="2"/>
+      <text id="speed" x="180" y="150" text-anchor="middle" font-size="72" font-weight="800"
+            fill="none" stroke="#7ab8ff" stroke-width="2" filter="url(#glow)">0.0</text>
+      <text x="180" y="172" text-anchor="middle" font-size="13" letter-spacing="3" fill="#5f6f88">KM/H</text>
+    </svg>
+    <div class="corner l"><div class="big">D</div><div class="unit">20.54</div></div>
+    <div class="corner r"><div class="big" id="ctemp">5°C</div><div class="unit">SUUNTA 256°</div></div>
+    <div class="limit" id="lim">--</div>
+    <div class="limit-sub">RAJOITUS</div>
+  </div>
+
+  <div class="bottomrow">
+    <div>TRIP<br><span class="big">0.00 km</span></div>
+    <div style="text-align:center">TÄNÄÄN<br><span class="big">2 ajoa</span></div>
+    <div style="text-align:right">HUIPPU<br><span class="big">0.0 km/h</span></div>
+  </div>
+
+  <div class="hint">Design-preview — ei toiminnallisuutta, arvioi ilme</div>
+
+<script>
+  // Kaari + ticks + neula (staattinen esikatselu)
+  const R=140, CX=180, CY=185, A0=-140, A1=40; // kulmat
+  const pt=(a,r)=>[CX+r*Math.cos(a*Math.PI/180), CY+r*Math.sin(a*Math.PI/180)];
+  const tg=document.getElementById('ticks');
+  for(let v=0; v<=240; v+=10){
+    const a=A0+(A1-A0)*v/240, major=v%20===0;
+    const [x1,y1]=pt(a,R-14), [x2,y2]=pt(a,R-(major?30:22));
+    tg.innerHTML+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${major?'#4d94ff':'#2b3f5f'}" stroke-width="${major?2.5:1.5}"/>`;
+    if(major){
+      const [tx,ty]=pt(a,R-48);
+      tg.innerHTML+=`<text x="${tx}" y="${ty+5}" text-anchor="middle" font-size="14" fill="#9fb0c8" font-weight="600">${v}</text>`;
+    }
+  }
+  function setSpeed(s){
+    const p=Math.min(s/240,1);
+    const circ=754; // 2*PI*140*~0.86 kaaren osuus
+    document.getElementById('arc').setAttribute('stroke-dashoffset', circ*(1-p));
+    const a=A0+(A1-A0)*p;
+    const [nx,ny]=pt(a,R-38);
+    document.getElementById('needle').setAttribute('x2',nx);
+    document.getElementById('needle').setAttribute('y2',ny);
+    document.getElementById('speed').textContent=s.toFixed(1);
+  }
+  // Demo-animaatio: 0 -> 87 -> 42 -> pysyy
+  let t=0; const seq=[0,30,60,87,60,42,55,80,110,80,42];
+  const iv=setInterval(()=>{ setSpeed(seq[t++%seq.length]); if(t>=seq.length) clearInterval(iv); },600);
+  setSpeed(42);
+</script>
+</body>
+</html>
