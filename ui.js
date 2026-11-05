@@ -1094,6 +1094,25 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         const overNow = (spd >= 120 || (lim > 0 && spd > lim));
         premSpeedEl.style.color = overNow ? '#ff1744' : '';
         premSpeedEl.style.textShadow = overNow ? '0 0 26px rgba(255,60,60,0.4)' : '';
+        if (Math.abs(spd) >= 100) premSpeedEl.classList.add('three-digits');
+        else premSpeedEl.classList.remove('three-digits');
+    }
+    // Premium-tilastot: peilaa olemassa olevien elementtien arvoja (v6.83)
+    const premDistEl = document.getElementById('prem-stat-dist');
+    if (premDistEl) {
+        const dv = (document.getElementById('dash-dist')?.textContent || '0.00').trim();
+        const txt = dv + ' km';
+        if (premDistEl._lastTxt !== txt) { premDistEl._lastTxt = txt; premDistEl.textContent = txt; }
+    }
+    const premMaxEl = document.getElementById('prem-stat-max');
+    if (premMaxEl) {
+        const txt = (document.getElementById('dash-max-speed')?.textContent || '0.0').trim();
+        if (premMaxEl._lastTxt !== txt) { premMaxEl._lastTxt = txt; premMaxEl.textContent = txt; }
+    }
+    const premHeadEl = document.getElementById('prem-stat-head');
+    if (premHeadEl) {
+        const txt = (document.getElementById('dash-heading')?.textContent || '--').trim();
+        if (premHeadEl._lastTxt !== txt) { premHeadEl._lastTxt = txt; premHeadEl.textContent = txt; }
     }
     const premFillEl = document.getElementById('prem-fill');
     if (premFillEl) {
@@ -1353,9 +1372,11 @@ window.updateTodaySummary = function() {
             km += parseFloat(d.distanceKm) || 0;
         }
     });
-    if (count === 0) { el.style.display = 'none'; return; }
+    const premToday = document.getElementById('prem-stat-today');
+    if (count === 0) { el.style.display = 'none'; if (premToday) premToday.textContent = '—'; return; }
     el.style.display = 'flex';
     el.textContent = `Tänään: ${count} ${count === 1 ? 'ajo' : 'ajoa'} · ${km.toFixed(1)} km`;
+    if (premToday) premToday.textContent = `${count} ${count === 1 ? 'ajo' : 'ajoa'} · ${km.toFixed(1)} km`;
 };
 
 window.updateSpeedConfidenceIndicator = function(level, source) {

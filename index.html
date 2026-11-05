@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mikkokalevin Ajopäiväkirja Pro v6.82</title>
+    <title>Mikkokalevin Ajopäiväkirja Pro v6.83</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,11 +11,11 @@
     <meta name="theme-color" content="#1e1e1e">
     
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="ajopaivakirja_logo.png?v=6.82">
-    <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.82">
+    <link rel="icon" type="image/png" href="ajopaivakirja_logo.png?v=6.83">
+    <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=6.83">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=6.82">
+    <link rel="stylesheet" href="style.css?v=6.83">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -66,9 +66,9 @@
 
     <div id="splash-screen">
         <div class="splash-content">
-            <img src="ajopaivakirja_logo_mu.png?v=6.82" alt="Logo" class="splash-logo">
+            <img src="ajopaivakirja_logo_mu.png?v=6.83" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
-            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.82...</p>
+            <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.83...</p>
             <div class="splash-spinner" aria-hidden="true"></div>
         </div>
     </div>
@@ -163,7 +163,7 @@
 
     <div id="login-view" style="display:none;">
         <div class="login-content">
-            <img src="ajopaivakirja_logo.png?v=6.82" alt="Logo" class="login-logo">
+            <img src="ajopaivakirja_logo.png?v=6.83" alt="Logo" class="login-logo">
             <h2>Tervetuloa</h2>
             <p>Kirjaudu sisään tallentaaksesi ajot.</p>
             
@@ -193,7 +193,7 @@
         
         <div class="top-bar-container">
             <div style="display:flex; align-items:center; gap:10px;">
-                <img src="ajopaivakirja_logo.png?v=6.82" class="header-logo" id="app-logo" alt="App Logo" title="Palaa mittaristoon">
+                <img src="ajopaivakirja_logo.png?v=6.83" class="header-logo" id="app-logo" alt="App Logo" title="Palaa mittaristoon">
                 <select id="car-select" class="top-car-select" aria-label="Valitse ajoneuvo">
                     <option value="all">Kaikki ajoneuvot</option>
                 </select>
@@ -211,7 +211,7 @@
 
         <div id="main-menu" class="menu-dropdown" style="display: none;">
             <div class="menu-header">
-                <img id="user-photo" class="menu-user-avatar" src="ajopaivakirja_logo.png?v=6.82" alt="User">
+                <img id="user-photo" class="menu-user-avatar" src="ajopaivakirja_logo.png?v=6.83" alt="User">
                 <div>
                     <span id="user-name" class="menu-user-name">Käyttäjä</span>
                     <div id="menu-version-el" style="font-size:10px; opacity:0.7;">Mikkokalevin Ajopäiväkirja Pro</div>
@@ -241,7 +241,7 @@
                     <button id="btn-nav-repeat-dash" class="nav-repeat-btn" aria-label="Toista ohje">🔂</button>
                     <button id="btn-nav-stop-dash" aria-label="Lopeta navigaatio">✕</button>
                 </div>
-                <!-- side-tap-zone poistettu v6.82: karttaan paasee alanavigaatiosta -->
+                <!-- side-tap-zone poistettu v6.83: karttaan paasee alanavigaatiosta -->
 
                 <div id="live-status-bar" class="status-bar" style="opacity: 0;">
                     <span id="live-style-indicator" class="style-badge style-green">Taloudellinen</span>
@@ -307,7 +307,7 @@
                         </div>
                     </div>
 
-                    <!-- UUSI v6.82: Kompakti - iso numero ilman palloa + ohut progress-palkki -->
+                    <!-- UUSI v6.83: Kompakti - iso numero ilman palloa + ohut progress-palkki -->
                     <div class="compact-speed-container" id="compact-speed-container" style="display:none;">
                         <div class="compact-speed-row">
                             <span id="compact-speed" class="compact-speed">0.0</span>
@@ -316,7 +316,7 @@
                         <div class="compact-progress-shell"><div class="compact-progress" id="compact-progress"></div></div>
                     </div>
 
-                    <!-- UUSI v6.82: Premium - iso numero + navi-ohje + rajoituspilli + 0-150 nopeuspalkki -->
+                    <!-- UUSI v6.83: Premium - iso numero + navi-ohje + rajoituspilli + 0-150 nopeuspalkki -->
                     <div class="premium-speed-container" id="premium-speed-container" style="display:none;">
                         <div class="prem-alertzone">
                             <div class="prem-navline" id="prem-nav-panel" style="display:none;">
@@ -332,14 +332,22 @@
                                 <div id="prem-speed" class="prem-speed">0.00</div>
                                 <div class="prem-unit">KM/H</div>
                             </div>
-                            <div class="prem-turnbox" id="prem-turnbox" style="display:none;">
-                                <div class="prem-turn-icon" id="prem-nav-bigicon">⬆️</div>
-                                <div class="prem-turn-text" id="prem-nav-bigtext"></div>
+                            <div class="prem-rightcol">
+                                <div class="prem-turnbox" id="prem-turnbox" style="display:none;">
+                                    <div class="prem-turn-icon" id="prem-nav-bigicon">⬆️</div>
+                                    <div class="prem-turn-text" id="prem-nav-bigtext"></div>
+                                </div>
+                                <div class="prem-limpill" id="prem-limpill"><span id="prem-limit-num">--</span><span class="prem-lim-lbl">RAJOITUS</span></div>
                             </div>
-                            <div class="prem-limpill" id="prem-limpill"><span id="prem-limit-num">--</span><span class="prem-lim-lbl">RAJOITUS</span></div>
                         </div>
                         <div class="prem-bar"><div class="prem-fill" id="prem-fill"></div><div class="prem-limmark" id="prem-limmark" style="display:none;"></div></div>
                         <div class="prem-barlabels" id="prem-barlabels"></div>
+                        <div class="prem-stats">
+                            <div class="prem-stat"><span class="prem-stat-lbl">TRIP</span><span class="prem-stat-val" id="prem-stat-dist">0.00 km</span></div>
+                            <div class="prem-stat"><span class="prem-stat-lbl">TÄNÄÄN</span><span class="prem-stat-val" id="prem-stat-today">—</span></div>
+                            <div class="prem-stat"><span class="prem-stat-lbl">HUIPPU</span><span class="prem-stat-val" id="prem-stat-max">0.0</span></div>
+                            <div class="prem-stat"><span class="prem-stat-lbl">SUUNTA</span><span class="prem-stat-val" id="prem-stat-head">--</span></div>
+                        </div>
                     </div>
 
                     <span id="speed-confidence-badge" class="speed-confidence-badge conf-b" title="Nopeuden luotettavuus">GPS B</span>
@@ -445,8 +453,8 @@
                  </div>
 
                  <div class="bottom-branding">
-                     <img src="alareunakuva_mu.png?v=6.82" class="footer-img dark-mode-img" alt="Footer Dark">
-                     <img src="alareunakuva.png?v=6.82" class="footer-img light-mode-img" alt="Footer Light">
+                     <img src="alareunakuva_mu.png?v=6.83" class="footer-img dark-mode-img" alt="Footer Dark">
+                     <img src="alareunakuva.png?v=6.83" class="footer-img light-mode-img" alt="Footer Light">
                  </div>
             </div>
 
@@ -1262,17 +1270,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=6.82"></script>
-    <script src="visuals.js?v=6.82"></script>
-    <script src="ui.js?v=6.82"></script>
-    <script src="auth.js?v=6.82"></script>
-    <script src="map.js?v=6.82"></script>
-    <script src="gps.js?v=6.82"></script>
-    <script src="garage.js?v=6.82"></script>
-    <script src="history.js?v=6.82"></script>
-    <script src="help.js?v=6.82"></script>
+    <script src="globals.js?v=6.83"></script>
+    <script src="visuals.js?v=6.83"></script>
+    <script src="ui.js?v=6.83"></script>
+    <script src="auth.js?v=6.83"></script>
+    <script src="map.js?v=6.83"></script>
+    <script src="gps.js?v=6.83"></script>
+    <script src="garage.js?v=6.83"></script>
+    <script src="history.js?v=6.83"></script>
+    <script src="help.js?v=6.83"></script>
     
-    <script src="nav.js?v=6.82"></script>
-    <script src="app.js?v=6.82"></script>
+    <script src="nav.js?v=6.83"></script>
+    <script src="app.js?v=6.83"></script>
 </body>
 </html>
