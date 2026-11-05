@@ -1585,8 +1585,9 @@ body.light-mode .compact-speed { text-shadow: none; }
 }
 
 /* ---------- Premium-tyyli (v6.80) ---------- */
-/* kontti jakautuu nayttokorkeudelle - sama levitys navilla ja ilman (v6.86) */
-.premium-speed-container { margin: 0 0 4px; display: flex; flex-direction: column; justify-content: space-evenly; min-height: 44dvh; }
+/* kontti tayttaa koko vapaan pystytilan - elementit levittyvat tasaisesti (v6.88) */
+body.speedo-premium .huge-speed-container { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+.premium-speed-container { margin: 0 0 4px; flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-evenly; }
 .prem-alertzone { min-height: 52px; display: flex; flex-direction: column; gap: 6px; }
 .prem-navline {
   display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px;
