@@ -1586,7 +1586,7 @@ body.light-mode .compact-speed { text-shadow: none; }
 
 /* ---------- Premium-tyyli (v6.80) ---------- */
 /* kontti jakautuu nayttokorkeudelle - sama levitys navilla ja ilman (v6.86) */
-.premium-speed-container { margin: 0 0 4px; display: flex; flex-direction: column; justify-content: space-evenly; min-height: 54dvh; }
+.premium-speed-container { margin: 0 0 4px; display: flex; flex-direction: column; justify-content: space-evenly; min-height: 44dvh; }
 .prem-alertzone { min-height: 52px; display: flex; flex-direction: column; gap: 6px; }
 .prem-navline {
   display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px;
@@ -1634,10 +1634,10 @@ body.light-mode .prem-barlabels .tick { background: rgba(0,0,0,0.25); }
 body.light-mode .prem-limpill { background: rgba(255,255,255,0.9); }
 body.light-mode .prem-bar { background: rgba(0,0,0,0.10); }
 /* Premiumin tilastorivi (v6.83) - TRIP/TANAA/HUIPPU/SUUNTA */
-.prem-stats { display: flex; justify-content: space-between; margin-top: 28px; }
-.prem-stat { flex: 1; text-align: center; }
+.prem-stats { display: flex; justify-content: space-between; margin-top: 28px; gap: 4px; }
+.prem-stat { flex: 1; text-align: center; min-width: 0; }
 .prem-stat-lbl { display: block; font-size: 10px; letter-spacing: 1px; color: var(--subtext-color, #5f6f88); }
-.prem-stat-val { display: block; font-size: 15px; font-weight: 700; color: var(--text-color, #eaf1fb); margin-top: 2px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.prem-stat-val { display: block; font-size: 13px; font-weight: 700; color: var(--text-color, #eaf1fb); margin-top: 2px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* Rajoituskortti + vanha navi-palkki + stats-laatikot + today-palkki piiloon Premiumissa */
 /* (prem-navline + pilli + nopeuspalkki korvaavat ne - vain speedo-premium scoped, muut tyylit ehjia) */
 body.speedo-premium .center-limit-wrap,

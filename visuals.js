@@ -383,7 +383,7 @@ function updateSpeedometerStyle(style) {
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
             if (compactContainer) compactContainer.style.display = 'none';
-            if (premiumContainer) premiumContainer.style.display = 'block';
+            if (premiumContainer) premiumContainer.style.display = 'flex';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'both':

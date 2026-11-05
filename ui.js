@@ -1109,10 +1109,10 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         const txt = (document.getElementById('dash-max-speed')?.textContent || '0.0').trim();
         if (premMaxEl._lastTxt !== txt) { premMaxEl._lastTxt = txt; premMaxEl.textContent = txt; }
     }
-    const premHeadEl = document.getElementById('prem-stat-head');
-    if (premHeadEl) {
-        const txt = (document.getElementById('dash-heading')?.textContent || '--').trim();
-        if (premHeadEl._lastTxt !== txt) { premHeadEl._lastTxt = txt; premHeadEl.textContent = txt; }
+    const premTimeEl = document.getElementById('prem-stat-time');
+    if (premTimeEl) {
+        const txt = (document.getElementById('dash-time')?.textContent || '00:00').trim();
+        if (premTimeEl._lastTxt !== txt) { premTimeEl._lastTxt = txt; premTimeEl.textContent = txt; }
     }
     const premGpsEl = document.getElementById('prem-stat-gps');
     if (premGpsEl) {
