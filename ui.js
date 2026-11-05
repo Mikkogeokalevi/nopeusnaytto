@@ -1103,16 +1103,18 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
     // Premium-tyylin elementit (v6.80): numero, palkki, rajoitusmerkki, pilli
     const premSpeedEl = document.getElementById('prem-speed');
     if (premSpeedEl) {
+        // Etunollat himmeana eteen (001.23 / 010.40) - leveys vakio, ei hyppyja (v6.92)
         const ptxt = spd.toFixed(2);
         if (premSpeedEl._lastTxt !== ptxt) {
             premSpeedEl._lastTxt = ptxt;
-            premSpeedEl.textContent = ptxt;
+            const ip = ptxt.split('.')[0];
+            const lead = '0'.repeat(Math.max(0, 3 - ip.length));
+            premSpeedEl.innerHTML = (lead ? `<span class="prem-lead">${lead}</span>` : '')
+                + `${ip}<span class="prem-dec">.${ptxt.split('.')[1]}</span>`;
         }
         const overNow = (spd >= 120 || (lim > 0 && spd > lim));
         premSpeedEl.style.color = overNow ? '#ff1744' : '';
         premSpeedEl.style.textShadow = overNow ? '0 0 26px rgba(255,60,60,0.4)' : '';
-        if (Math.abs(spd) >= 100) premSpeedEl.classList.add('three-digits');
-        else premSpeedEl.classList.remove('three-digits');
     }
     // Premium-tilastot: peilaa olemassa olevien elementtien arvoja (v6.83)
     const premDistEl = document.getElementById('prem-stat-dist');

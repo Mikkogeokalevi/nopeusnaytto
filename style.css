@@ -1608,11 +1608,13 @@ body.speedo-premium .huge-speed-container { flex: 1 1 auto; display: flex; flex-
 .prem-navline #prem-nav-sub { font-size: 11px; color: var(--subtext-color, #8fa5c4); }
 .prem-hero { display: flex; align-items: flex-end; margin-top: 26px; }
 .prem-speed {
-  font-size: clamp(76px, 28vw, 112px); font-weight: 800; line-height: .95; letter-spacing: -3px;
+  font-size: clamp(72px, 25vw, 100px); font-weight: 800; line-height: .95; letter-spacing: -3px;
   color: var(--text-color, #eaf1fb); font-variant-numeric: tabular-nums;
   text-shadow: 0 0 26px rgba(77,148,255,0.45); display: inline-block;
 }
-.prem-speed.three-digits { font-size: clamp(60px, 22vw, 88px); }
+.prem-speed .prem-dec { font-size: .55em; font-weight: 700; }
+.prem-speed .prem-lead { color: rgba(255,255,255,0.15); text-shadow: none; }
+body.light-mode .prem-speed .prem-lead { color: rgba(0,0,0,0.15); }
 body.light-mode .prem-speed { text-shadow: none; }
 .prem-unit { font-size: 13px; letter-spacing: 4px; color: var(--subtext-color, #5f6f88); margin-top: 6px; }
 /* kiintea oikea sarake: iso ohjenuoli ylaossa, rajoituspilli alhaalla - ei koskaan numeron paalla */

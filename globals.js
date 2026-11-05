@@ -25,7 +25,7 @@ const auth = firebase.auth();
 // =========================================================
 
 // TÄMÄ ON PÄÄVERSIONUMERO - v6.78 (Liita-pakettimodaali: copy/paste-tuonti)
-const APP_VERSION = "6.91";
+const APP_VERSION = "6.92";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 
