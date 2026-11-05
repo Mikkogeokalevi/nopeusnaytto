@@ -2,7 +2,7 @@
 // SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.78 paste
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.90-premium-10'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.91-premium-11'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
