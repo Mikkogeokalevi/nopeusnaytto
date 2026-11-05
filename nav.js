@@ -101,8 +101,7 @@ function navShowPanel(show) {
 function navUpdatePanel(icon, text, sub) {
     [['nav-panel-icon', 'nav-panel-text', 'nav-panel-sub'],
      ['nav-dash-icon', 'nav-dash-text', 'nav-dash-sub'],
-     ['prem-nav-icon', 'prem-nav-text', 'prem-nav-sub'],
-     ['prem-nav-bigicon', 'prem-nav-bigtext', 'prem-nav-bigsub']].forEach((ids) => {
+     ['prem-nav-icon', 'prem-nav-text', 'prem-nav-sub']].forEach((ids) => {
         const i = document.getElementById(ids[0]);
         const t = document.getElementById(ids[1]);
         const s = document.getElementById(ids[2]);
@@ -110,6 +109,11 @@ function navUpdatePanel(icon, text, sub) {
         if (t) t.innerText = text;
         if (s) s.innerText = sub;
     });
+    // Premium-tyylin iso laatikko: pelkka nuoli + etaisyys (ei pitkaa ohjetta)
+    const bigI = document.getElementById('prem-nav-bigicon');
+    const bigT = document.getElementById('prem-nav-bigtext');
+    if (bigI) bigI.innerText = icon;
+    if (bigT) bigT.innerText = String(text).split('·')[0].trim();
 }
 
 function navSpeak(text) {

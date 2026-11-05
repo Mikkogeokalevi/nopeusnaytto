@@ -1611,10 +1611,10 @@ body.light-mode .prem-speed { text-shadow: none; }
 .prem-limpill .prem-lim-lbl { font-size: 8px; letter-spacing: 1px; color: var(--subtext-color, #8fa5c4); margin-top: 2px; font-weight: 700; }
 .prem-turnbox {
   position: absolute; left: 55%; top: 0; display: none; flex-direction: column; align-items: center;
-  color: #6fb0ff; pointer-events: none;
+  color: #6fb0ff; pointer-events: none; max-width: 45%;
 }
 .prem-turnbox .prem-turn-icon { font-size: 40px; line-height: 1; text-shadow: 0 0 18px rgba(77,148,255,0.7); }
-.prem-turnbox .prem-turn-text { font-size: 15px; font-weight: 800; color: var(--text-color, #eaf1fb); letter-spacing: .5px; white-space: nowrap; }
+.prem-turnbox .prem-turn-text { font-size: 18px; font-weight: 800; color: var(--text-color, #eaf1fb); letter-spacing: .5px; white-space: nowrap; }
 .prem-bar { height: 6px; border-radius: 4px; background: rgba(255,255,255,0.10); position: relative; margin-top: 12px; }
 .prem-bar .prem-fill {
   position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px;
@@ -1631,8 +1631,12 @@ body.light-mode .prem-speed { text-shadow: none; }
 body.light-mode .prem-barlabels .tick { background: rgba(0,0,0,0.25); }
 body.light-mode .prem-limpill { background: rgba(255,255,255,0.9); }
 body.light-mode .prem-bar { background: rgba(0,0,0,0.10); }
-/* Rajoituskortti piiloon kun Premium valittuna - pilli nayttaa rajan */
-body.speedo-premium .center-limit-wrap { display: none; }
+/* Rajoituskortti + vanha navi-palkki + stats-laatikot + today-palkki piiloon Premiumissa */
+/* (prem-navline + pilli + nopeuspalkki korvaavat ne - vain speedo-premium scoped, muut tyylit ehjia) */
+body.speedo-premium .center-limit-wrap,
+body.speedo-premium #nav-dash-panel,
+body.speedo-premium .stats-grid,
+body.speedo-premium .today-summary { display: none !important; }
 body.speedo-premium #dashboard-view { justify-content: flex-start; }
 
 /* Layoutin tiivistys kun Kompakti-tyyli valittuna */
