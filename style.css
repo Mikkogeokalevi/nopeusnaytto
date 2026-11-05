@@ -1589,6 +1589,15 @@ body.light-mode .compact-speed { text-shadow: none; }
 body.speedo-premium .huge-speed-container { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; width: 100%; }
 .premium-speed-container { margin: 0 0 4px; flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-evenly; }
 .prem-alertzone { min-height: 52px; display: flex; flex-direction: column; gap: 6px; }
+/* POI/kameravaroitus premiumin alertzonessa (v6.90) */
+.prem-camera {
+  display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 14px;
+  background: linear-gradient(90deg, rgba(255,45,45,0.22), rgba(255,120,45,0.12));
+  border: 1px solid rgba(255,80,60,0.45); font-weight: 700; font-size: 15px;
+  color: var(--text-color, #eaf1fb);
+}
+.prem-camera .prem-cam-ico { font-size: 22px; }
+.prem-camera .prem-cam-dist { margin-left: auto; color: #ffb199; font-size: 13px; font-weight: 800; }
 .prem-navline {
   display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px;
   background: linear-gradient(90deg, rgba(41,121,255,0.22), rgba(41,121,255,0.06));

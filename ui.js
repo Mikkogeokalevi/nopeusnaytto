@@ -394,6 +394,21 @@ if (poiModalCoordsEl) {
 }
 
 window.showPersistentToast = (msg) => {
+    // Premium-tyyli: kamera/POI-varoitus omaan punaiseen banneriin toastin sijaan (v6.90)
+    const pc = document.getElementById('prem-cam');
+    if (document.body.classList.contains('speedo-premium') && pc) {
+        const m = String(msg).match(/^[^ ]*\s*(.+?):\s*([\d.,]+\s*m.*)$/);
+        const label = m ? m[1].trim() : String(msg);
+        const dist = m ? m[2].trim() : '';
+        const ico = document.getElementById('prem-cam-ico');
+        const txt = document.getElementById('prem-cam-text');
+        const dst = document.getElementById('prem-cam-dist');
+        if (ico) ico.textContent = /kamera/i.test(label) ? '📷' : '📍';
+        if (txt) txt.textContent = label.toUpperCase();
+        if (dst) dst.textContent = dist;
+        pc.style.display = 'flex';
+        return;
+    }
     const toast = document.getElementById('toast-notification');
     if (!toast) return;
     toast.innerText = msg;
@@ -402,6 +417,8 @@ window.showPersistentToast = (msg) => {
 }
 
 window.hidePersistentToast = () => {
+    const pc = document.getElementById('prem-cam');
+    if (pc) pc.style.display = 'none';
     const toast = document.getElementById('toast-notification');
     if (!toast) return;
     toast.classList.remove('visible');
