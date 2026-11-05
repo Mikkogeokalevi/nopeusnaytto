@@ -575,6 +575,10 @@ window.navPickFromMap = function() {
     if (rep) rep.addEventListener('click', window.navRepeatLast);
     const repDash = document.getElementById('btn-nav-repeat-dash');
     if (repDash) repDash.addEventListener('click', window.navRepeatLast);
+    const stopPrem = document.getElementById('btn-nav-stop-prem');
+    if (stopPrem) stopPrem.addEventListener('click', window.stopNavigation);
+    const repPrem = document.getElementById('btn-nav-repeat-prem');
+    if (repPrem) repPrem.addEventListener('click', window.navRepeatLast);
     const homeBtn = document.getElementById('btn-nav-home');
     if (homeBtn) homeBtn.addEventListener('click', window.navGoHome);
     const goAddr = document.getElementById('btn-nav-go-address');

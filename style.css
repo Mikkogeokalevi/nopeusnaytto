@@ -1589,13 +1589,14 @@ body.light-mode .compact-speed { text-shadow: none; }
 /* alertzone jätää tilaa GPS-badge + G-mittari -palstalle oikeassa reunassa (v6.83) */
 .prem-alertzone { min-height: 52px; display: flex; flex-direction: column; gap: 6px; margin-top: 32px; padding-right: 64px; }
 .prem-navline {
-  display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-radius: 14px;
-  background: rgba(41,121,255,0.12); border: 1px solid rgba(77,148,255,0.35);
+  display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px;
+  background: linear-gradient(90deg, rgba(41,121,255,0.22), rgba(41,121,255,0.06));
+  border: 1px solid rgba(77,148,255,0.4); border-left: 4px solid #4d94ff;
 }
 .prem-navline .prem-nav-icon { font-size: 22px; }
 .prem-navline #prem-nav-text { font-size: 16px; font-weight: 800; color: var(--text-color, #eaf1fb); }
 .prem-navline #prem-nav-sub { font-size: 11px; color: var(--subtext-color, #8fa5c4); }
-.prem-hero { display: flex; align-items: flex-end; margin-top: 14px; }
+.prem-hero { display: flex; align-items: flex-end; margin-top: 26px; }
 .prem-speed {
   font-size: clamp(64px, 24vw, 96px); font-weight: 800; line-height: .95; letter-spacing: -3px;
   color: var(--text-color, #eaf1fb); font-variant-numeric: tabular-nums;
@@ -1616,7 +1617,7 @@ body.light-mode .prem-speed { text-shadow: none; }
 }
 .prem-limpill span { font-size: 20px; font-weight: 800; color: var(--text-color, #fff); line-height: 1; }
 .prem-limpill .prem-lim-lbl { font-size: 8px; letter-spacing: 1px; color: var(--subtext-color, #8fa5c4); margin-top: 2px; font-weight: 700; }
-.prem-bar { height: 6px; border-radius: 4px; background: rgba(255,255,255,0.10); position: relative; margin-top: 22px; }
+.prem-bar { height: 6px; border-radius: 4px; background: rgba(255,255,255,0.10); position: relative; margin-top: 34px; }
 .prem-bar .prem-fill {
   position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px;
   background: linear-gradient(90deg, #1e4fd8, #2979ff, #6fd3ff);
@@ -1633,7 +1634,7 @@ body.light-mode .prem-barlabels .tick { background: rgba(0,0,0,0.25); }
 body.light-mode .prem-limpill { background: rgba(255,255,255,0.9); }
 body.light-mode .prem-bar { background: rgba(0,0,0,0.10); }
 /* Premiumin tilastorivi (v6.83) - TRIP/TANAA/HUIPPU/SUUNTA */
-.prem-stats { display: flex; justify-content: space-between; margin-top: 18px; }
+.prem-stats { display: flex; justify-content: space-between; margin-top: 28px; }
 .prem-stat { flex: 1; text-align: center; }
 .prem-stat-lbl { display: block; font-size: 10px; letter-spacing: 1px; color: var(--subtext-color, #5f6f88); }
 .prem-stat-val { display: block; font-size: 15px; font-weight: 700; color: var(--text-color, #eaf1fb); margin-top: 2px; font-variant-numeric: tabular-nums; white-space: nowrap; }
