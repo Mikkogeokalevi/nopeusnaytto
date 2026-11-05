@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>V2 Design Preview — Kojelauta</title>
+<title>V2 Design Preview — Kompakti Premium</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:#06090f; color:#eaf1fb; font-family:-apple-system,Segoe UI,Roboto,sans-serif;
@@ -15,24 +15,64 @@
   .top .brand img { width:26px; height:26px; border-radius:7px; }
   .badge { background:rgba(0,200,120,.15); color:#2fe08a; padding:3px 9px; border-radius:12px;
            font-size:11px; font-weight:700; }
-  .cluster { position:relative; width:min(94vw,430px); margin-top:6px; }
-  .corner { position:absolute; font-size:13px; color:#9fb0c8; }
-  .corner.l { left:14px; top:26px; text-align:left; }
-  .corner.r { right:14px; top:26px; text-align:right; }
-  .corner .big { font-size:16px; font-weight:800; color:#eaf1fb; }
-  .corner .unit { font-size:10px; letter-spacing:1px; color:#5f6f88; }
+
+  /* ---------- ZONE 1: navi + hälytys (varattu tila) ---------- */
+  .alertzone { width:min(94vw,430px); min-height:58px; margin-top:8px; display:flex; flex-direction:column; gap:6px; }
+  .camera { display:none; align-items:center; gap:10px; padding:9px 14px; border-radius:14px;
+            background:linear-gradient(90deg,rgba(255,45,45,.22),rgba(255,120,45,.12));
+            border:1px solid rgba(255,80,60,.45); font-weight:700; font-size:15px; }
+  .camera .ico { font-size:22px; }
+  .camera .dist { margin-left:auto; color:#ffb199; font-size:13px; }
+  .navline { display:flex; align-items:center; gap:12px; padding:9px 14px; border-radius:14px;
+             background:rgba(41,121,255,.12); border:1px solid rgba(77,148,255,.35); }
+  .navline .arrow { font-size:22px; color:#6fb0ff; font-weight:800; }
+  .navline .dist { font-size:17px; font-weight:800; color:#eaf1fb; }
+  .navline .street { font-size:11px; color:#8fa5c4; }
+
+  /* ---------- ZONE 2: hero ---------- */
+  .hero { width:min(94vw,430px); margin-top:4px; display:flex; align-items:flex-end; position:relative; }
+  .speed { font-size:112px; font-weight:800; line-height:.95; letter-spacing:-3px;
+           color:#eaf1fb; text-shadow:0 0 26px rgba(77,148,255,.45); }
+  .speed.over { color:#ff5a5a; text-shadow:0 0 26px rgba(255,60,60,.4); }
+  .hero .unit { font-size:13px; letter-spacing:4px; color:#5f6f88; margin-top:6px; }
+  .limpill { margin-left:auto; margin-bottom:14px; display:flex; flex-direction:column; align-items:center;
+             width:56px; height:56px; border-radius:50%; background:#0d1626;
+             border:3px solid #e02424; justify-content:center;
+             font-size:21px; font-weight:800; color:#fff; }
+  .limpill span.lbl { font-size:8px; letter-spacing:1px; color:#8fa5c4; margin-top:-2px; }
+
+  /* ISO lähestyvän ohjeen nuoli + etäisyys numeron vieressä */
+  .turnbox { position:absolute; left:52%; top:6px; display:none; flex-direction:column; align-items:center;
+             color:#6fb0ff; }
+  .turnbox .big-arrow { font-size:44px; font-weight:800; line-height:1;
+                        text-shadow:0 0 18px rgba(77,148,255,.7); }
+  .turnbox .big-dist { font-size:20px; font-weight:800; color:#eaf1fb; letter-spacing:1px; }
+
+  /* nopeuspalkki + selitteet */
+  .speedbar { width:min(94vw,430px); height:6px; border-radius:4px; background:#122036;
+              position:relative; margin-top:12px; }
+  .speedbar .fill { position:absolute; left:0; top:0; bottom:0; border-radius:4px;
+                    background:linear-gradient(90deg,#1e4fd8,#2979ff,#6fd3ff);
+                    box-shadow:0 0 12px rgba(77,148,255,.5); width:20%; transition:width .4s; }
+  .speedbar .limmark { position:absolute; top:-4px; bottom:-4px; width:3px; border-radius:2px;
+                       background:#e02424; left:33.3%; }
+  .speedbar .limmark.over { box-shadow:0 0 10px rgba(255,60,60,.8); }
+  .barlabels { width:min(94vw,430px); position:relative; height:16px; margin-top:3px;
+               font-size:10px; color:#5f6f88; }
+  .barlabels .tick { position:absolute; top:-5px; width:1px; height:4px; background:#2b3f5f;
+                     transform:translateX(-50%); }
+  .barlabels .lbl { position:absolute; top:2px; transform:translateX(-50%); font-weight:600; }
+  .barlabels .lbl.lim { color:#ff7a7a; }
+  .barlabels .lmax { position:absolute; right:0; top:2px; }
+
+  /* ---------- ZONE 3: tilastorivi ---------- */
   .bottomrow { width:min(94vw,430px); display:flex; justify-content:space-between;
-               padding:0 18px; margin-top:-34px; font-size:12px; color:#9fb0c8; }
-  .bottomrow .big { color:#eaf1fb; font-weight:700; font-size:15px; }
-  .limit { position:absolute; right:10px; top:52%; transform:translateY(-50%);
-           width:74px; height:74px; border-radius:50%; background:#fff;
-           border:8px solid #e00; color:#111; display:flex; align-items:center;
-           justify-content:center; font-size:26px; font-weight:800;
-           box-shadow:0 6px 20px rgba(0,0,0,.5); }
-  .limit-sub { position:absolute; right:22px; top:calc(52% + 46px); font-size:9px;
-               letter-spacing:1px; color:#5f6f88; font-weight:700; }
-  .carline { width:min(94vw,430px); margin-top:10px; opacity:.9; }
-  .hint { margin-top:10px; font-size:12px; color:#5f6f88; }
+               padding:0 6px; margin-top:14px; font-size:11px; color:#9fb0c8; }
+  .bottomrow .big { color:#eaf1fb; font-weight:700; font-size:16px; display:block; margin-top:2px; }
+  .bottomrow > div { text-align:center; flex:1; }
+
+  .hint { margin-top:14px; font-size:12px; color:#5f6f88; }
+  .demo { margin-top:6px; font-size:11px; color:#3f4d63; }
 </style>
 </head>
 <body>
@@ -41,72 +81,79 @@
     <div><span class="badge">GPS A</span></div>
   </div>
 
-  <div class="cluster">
-    <svg viewBox="0 0 360 260" style="width:100%;display:block;">
-      <defs>
-        <linearGradient id="arcg" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0%" stop-color="#1e4fd8"/><stop offset="55%" stop-color="#2979ff"/><stop offset="100%" stop-color="#6fd3ff"/>
-        </linearGradient>
-        <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <!-- kaari 0-240 km/h, keula -220° -> 40° -->
-      <circle cx="180" cy="185" r="140" fill="none" stroke="#14243d" stroke-width="9" stroke-linecap="round"
-              stroke-dasharray="754" stroke-dashoffset="75" transform="rotate(140 180 185)"/>
-      <circle id="arc" cx="180" cy="185" r="140" fill="none" stroke="url(#arcg)" stroke-width="9"
-              stroke-linecap="round" stroke-dasharray="754" stroke-dashoffset="754"
-              transform="rotate(140 180 185)" filter="url(#glow)"/>
-      <g id="ticks"></g>
-      <line id="needle" x1="180" y1="185" x2="180" y2="62" stroke="#bfe0ff" stroke-width="3"
-            stroke-linecap="round" filter="url(#glow)"/>
-      <circle cx="180" cy="185" r="7" fill="#0a1626" stroke="#4d94ff" stroke-width="2"/>
-      <text id="speed" x="180" y="150" text-anchor="middle" font-size="72" font-weight="800"
-            fill="none" stroke="#7ab8ff" stroke-width="2" filter="url(#glow)">0.0</text>
-      <text x="180" y="172" text-anchor="middle" font-size="13" letter-spacing="3" fill="#5f6f88">KM/H</text>
-    </svg>
-    <div class="corner l"><div class="big">D</div><div class="unit">20.54</div></div>
-    <div class="corner r"><div class="big" id="ctemp">5°C</div><div class="unit">SUUNTA 256°</div></div>
-    <div class="limit" id="lim">--</div>
-    <div class="limit-sub">RAJOITUS</div>
+  <!-- ZONE 1: navi-palkki (aina näkyvissä naviessa) tai kamerahälytys -->
+  <div class="alertzone">
+    <div class="camera" id="cam"><span class="ico">📷</span> NOPEUSKAMERA <span class="dist">450 m</span></div>
+    <div class="navline" id="nav">
+      <span class="arrow">↰</span>
+      <span class="dist" id="navdist">300 m</span>
+      <span class="street">Kaartie · valtatie 3</span>
+    </div>
   </div>
 
+  <!-- ZONE 2: hero -->
+  <div class="hero">
+    <div>
+      <div class="speed" id="speed">58.00</div>
+      <div class="unit">KM/H</div>
+    </div>
+    <!-- ISO nuoli ilmestyy numeron viereen kun ohje lähestyy -->
+    <div class="turnbox" id="turnbox">
+      <div class="big-arrow" id="tarrow">↰</div>
+      <div class="big-dist" id="tdist">300 m</div>
+    </div>
+    <div class="limpill" id="lim">80<span class="lbl">RAJOITUS</span></div>
+  </div>
+  <div class="speedbar"><div class="fill" id="fill"></div><div class="limmark" id="limmark"></div></div>
+  <div class="barlabels" id="barlabels">
+    <span class="lmax">150 km/h</span>
+  </div>
+
+  <!-- ZONE 3: tilastot -->
   <div class="bottomrow">
-    <div>TRIP<br><span class="big">0.00 km</span></div>
-    <div style="text-align:center">TÄNÄÄN<br><span class="big">2 ajoa</span></div>
-    <div style="text-align:right">HUIPPU<br><span class="big">0.0 km/h</span></div>
+    <div>TRIP<span class="big">0.00 km</span></div>
+    <div>TÄNÄÄN<span class="big">2 ajoa</span></div>
+    <div>HUIPPU<span class="big">87.0</span></div>
+    <div>SUUNTA<span class="big">256°</span></div>
   </div>
 
-  <div class="hint">Design-preview — ei toiminnallisuutta, arvioi ilme</div>
+  <div class="hint">Design-preview — arvioi ilme</div>
+  <div class="demo">Demo: navi päällä → ohje lähestyy (iso nuoli) → kamera → ylinopeus</div>
 
 <script>
-  // Kaari + ticks + neula (staattinen esikatselu)
-  const R=140, CX=180, CY=185, A0=-140, A1=40; // kulmat
-  const pt=(a,r)=>[CX+r*Math.cos(a*Math.PI/180), CY+r*Math.sin(a*Math.PI/180)];
-  const tg=document.getElementById('ticks');
-  for(let v=0; v<=240; v+=10){
-    const a=A0+(A1-A0)*v/240, major=v%20===0;
-    const [x1,y1]=pt(a,R-14), [x2,y2]=pt(a,R-(major?30:22));
-    tg.innerHTML+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${major?'#4d94ff':'#2b3f5f'}" stroke-width="${major?2.5:1.5}"/>`;
-    if(major){
-      const [tx,ty]=pt(a,R-48);
-      tg.innerHTML+=`<text x="${tx}" y="${ty+5}" text-anchor="middle" font-size="14" fill="#9fb0c8" font-weight="600">${v}</text>`;
-    }
-  }
+  const speed=document.getElementById('speed'), fill=document.getElementById('fill'),
+        mark=document.getElementById('limmark'), cam=document.getElementById('cam'),
+        nav=document.getElementById('nav'), tb=document.getElementById('turnbox'),
+        llim=document.getElementById('llim');
+  const LIM=80, SCALE=150;
+  mark.style.left=(LIM/SCALE*100)+'%';
+  // Suomen tienvarsiset raja-arvot tikkeinä + numeroina palkin alle
+  const LIMITS=[30,40,50,60,70,80,100,120];
+  const bl=document.getElementById('barlabels');
+  LIMITS.forEach(v=>{
+    const pos=(v/SCALE*100)+'%';
+    bl.innerHTML+=`<span class="tick" style="left:${pos}"></span>`;
+    bl.innerHTML+=`<span class="lbl${v===LIM?' lim':''}" style="left:${pos}">${v}</span>`;
+  });
   function setSpeed(s){
-    const p=Math.min(s/240,1);
-    const circ=754; // 2*PI*140*~0.86 kaaren osuus
-    document.getElementById('arc').setAttribute('stroke-dashoffset', circ*(1-p));
-    const a=A0+(A1-A0)*p;
-    const [nx,ny]=pt(a,R-38);
-    document.getElementById('needle').setAttribute('x2',nx);
-    document.getElementById('needle').setAttribute('y2',ny);
-    document.getElementById('speed').textContent=s.toFixed(1);
+    speed.textContent=s.toFixed(2);
+    fill.style.width=(s/SCALE*100)+'%';
+    const over=s>LIM;
+    speed.classList.toggle('over',over);
+    mark.classList.toggle('over',over);
   }
-  // Demo-animaatio: 0 -> 87 -> 42 -> pysyy
-  let t=0; const seq=[0,30,60,87,60,42,55,80,110,80,42];
-  const iv=setInterval(()=>{ setSpeed(seq[t++%seq.length]); if(t>=seq.length) clearInterval(iv); },600);
-  setSpeed(42);
+  // tilakierto: 0 navi kaukana, 1 navi lähestyy (iso nuoli), 2 kamera, 3 ylinopeus
+  let st=0;
+  setInterval(()=>{
+    st=(st+1)%4;
+    cam.style.display=(st===2||st===3)?'flex':'none';
+    nav.style.display=(st===2)?'none':'flex';
+    tb.style.display=(st===1||st===3)?'flex':'none';
+    document.getElementById('tdist').textContent=(st===1?'300 m':'150 m');
+    document.getElementById('navdist').textContent=(st===1?'300 m':'150 m');
+    setSpeed([58,64,72,95][st]);
+  },2600);
+  setSpeed(58);
 </script>
 </body>
 </html>

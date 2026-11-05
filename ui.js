@@ -1083,6 +1083,52 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         if (spd >= 120 || (lim > 0 && spd > lim)) compactSpeedEl.style.color = '#ff1744';
         else compactSpeedEl.style.color = '';
     }
+    // Premium-tyylin elementit (v6.80): numero, palkki, rajoitusmerkki, pilli
+    const premSpeedEl = document.getElementById('prem-speed');
+    if (premSpeedEl) {
+        const ptxt = spd.toFixed(2);
+        if (premSpeedEl._lastTxt !== ptxt) {
+            premSpeedEl._lastTxt = ptxt;
+            premSpeedEl.textContent = ptxt;
+        }
+        const overNow = (spd >= 120 || (lim > 0 && spd > lim));
+        premSpeedEl.style.color = overNow ? '#ff1744' : '';
+        premSpeedEl.style.textShadow = overNow ? '0 0 26px rgba(255,60,60,0.4)' : '';
+    }
+    const premFillEl = document.getElementById('prem-fill');
+    if (premFillEl) {
+        const pct = Math.max(0, Math.min(100, spd / 150 * 100));
+        if (premFillEl._lastPct !== pct) {
+            premFillEl._lastPct = pct;
+            premFillEl.style.width = pct + '%';
+        }
+    }
+    const premMarkEl = document.getElementById('prem-limmark');
+    if (premMarkEl) {
+        if (lim > 0) {
+            premMarkEl.style.display = '';
+            premMarkEl.style.left = Math.min(100, lim / 150 * 100) + '%';
+            premMarkEl.classList.toggle('over', spd > lim);
+        } else {
+            premMarkEl.style.display = 'none';
+        }
+    }
+    const premLimEl = document.getElementById('prem-limit-num');
+    if (premLimEl) {
+        const limTxt = (document.getElementById('dash-speed-limit')?.textContent || '--').trim();
+        if (premLimEl._lastTxt !== limTxt) {
+            premLimEl._lastTxt = limTxt;
+            premLimEl.textContent = limTxt;
+        }
+        // korosta palkin tikki joka vastaa nykyista rajaa
+        const bl = document.getElementById('prem-barlabels');
+        if (bl && bl._lastLim !== lim) {
+            bl._lastLim = lim;
+            bl.querySelectorAll('.lbl').forEach((el) => {
+                el.classList.toggle('lim', Number(el.dataset.lim) === lim);
+            });
+        }
+    }
 
     // Ylinopeuden haptiikka + äänivaroitus: tärähdys/puhe kerran kun rajoitus ylittyy
     if (lim > 0 && spd > lim) {

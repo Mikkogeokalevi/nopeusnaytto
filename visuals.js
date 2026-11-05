@@ -342,17 +342,20 @@ function updateGIndicator(gx, gy) {
 // =========================================================
 
 function updateSpeedometerStyle(style) {
-    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'clean' || style === 'compact') ? style : 'digital';
+    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'clean' || style === 'compact' || style === 'premium') ? style : 'digital';
 
     const digitalContainer = document.getElementById('digital-speed-container');
     const velocityStageContainer = document.getElementById('velocity-stage-container');
     const cleanDigitalContainer = document.getElementById('clean-digital-container');
     const compactContainer = document.getElementById('compact-speed-container');
+    const premiumContainer = document.getElementById('premium-speed-container');
     const graphsContainer = document.getElementById('live-graphs-container');
 
     document.body.classList.toggle('speedo-compact', speedometerStyle === 'compact');
+    document.body.classList.toggle('speedo-premium', speedometerStyle === 'premium');
 
     // Näytä/piilota elementit
+    if (premiumContainer) premiumContainer.style.display = 'none';
     switch(speedometerStyle) {
         case 'cinema':
             if (digitalContainer) digitalContainer.style.display = 'none';
@@ -373,6 +376,14 @@ function updateSpeedometerStyle(style) {
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
             if (compactContainer) compactContainer.style.display = 'block';
+            if (graphsContainer) graphsContainer.style.display = 'none';
+            break;
+        case 'premium':
+            if (digitalContainer) digitalContainer.style.display = 'none';
+            if (velocityStageContainer) velocityStageContainer.style.display = 'none';
+            if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
+            if (compactContainer) compactContainer.style.display = 'none';
+            if (premiumContainer) premiumContainer.style.display = 'block';
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'both':
@@ -454,6 +465,18 @@ function initVisuals() {
         console.warn('Visuals init draw failed:', e);
     }
     
+    // Premium-tyylin nopeuspalkin tikit (Suomen raja-arvot, asteikko 0-150)
+    const premLabels = document.getElementById('prem-barlabels');
+    if (premLabels && !premLabels.dataset.built) {
+        premLabels.dataset.built = '1';
+        [30, 40, 50, 60, 70, 80, 100, 120].forEach((v) => {
+            const pos = (v / 150 * 100) + '%';
+            premLabels.insertAdjacentHTML('beforeend',
+                `<span class="tick" style="left:${pos}"></span><span class="lbl" data-lim="${v}" style="left:${pos}">${v}</span>`);
+        });
+        premLabels.insertAdjacentHTML('beforeend', '<span class="lmax">150 km/h</span>');
+    }
+
     // Aseta tapahtumankuuntelijat
     const styleSelect = document.getElementById('speedometer-style');
     if (styleSelect) {

@@ -92,7 +92,7 @@ function navBearingDeg(lat1, lng1, lat2, lng2) {
 
 // --- UI ---
 function navShowPanel(show) {
-    ['nav-panel', 'nav-dash-panel'].forEach((id) => {
+    ['nav-panel', 'nav-dash-panel', 'prem-nav-panel', 'prem-turnbox'].forEach((id) => {
         const p = document.getElementById(id);
         if (p) p.style.display = show ? 'flex' : 'none';
     });
@@ -100,7 +100,9 @@ function navShowPanel(show) {
 
 function navUpdatePanel(icon, text, sub) {
     [['nav-panel-icon', 'nav-panel-text', 'nav-panel-sub'],
-     ['nav-dash-icon', 'nav-dash-text', 'nav-dash-sub']].forEach((ids) => {
+     ['nav-dash-icon', 'nav-dash-text', 'nav-dash-sub'],
+     ['prem-nav-icon', 'prem-nav-text', 'prem-nav-sub'],
+     ['prem-nav-bigicon', 'prem-nav-bigtext', 'prem-nav-bigsub']].forEach((ids) => {
         const i = document.getElementById(ids[0]);
         const t = document.getElementById(ids[1]);
         const s = document.getElementById(ids[2]);
@@ -451,6 +453,9 @@ window.onNavGpsTick = function(pos) {
     const arrClock = arrDate.getHours() + '.' + String(arrDate.getMinutes()).padStart(2, '0');
     const icon = instr.indexOf('vasemm') !== -1 ? '⬅️' : (instr.indexOf('oikeall') !== -1 || instr.indexOf('oikea') !== -1) ? '➡️' : (instr.indexOf('Saavut') !== -1 ? '🏁' : '⬆️');
     navUpdatePanel(icon, `${formatNavDist(distToStep)} · ${instr}`, `${navState.destLabel} · ${formatNavDist(remM)} · ~${formatNavDur(etaS)} · klo ${arrClock}`);
+    // Premium-tyylin iso nuoli numeron vieressa vasta kun ohje lahestyy (v6.80)
+    const ptb = document.getElementById('prem-turnbox');
+    if (ptb && navState.active) ptb.style.display = (distToStep < farD) ? 'flex' : 'none';
 };
 
 function tickDirect(lat, lng) {
@@ -463,6 +468,8 @@ function tickDirect(lat, lng) {
         return;
     }
     navUpdatePanel('🧭', `${navBearingWord(brg)} · ${formatNavDist(d)}`, `${navState.destLabel} · suunnasta ${Math.round(brg)}°`);
+    const ptbD = document.getElementById('prem-turnbox');
+    if (ptbD) ptbD.style.display = 'flex'; // suora navi: iso nuoli aina nakyvissa
     const now = Date.now();
     if (now - navState.lastDirectSpeakTs > 45000) {
         navState.lastDirectSpeakTs = now;

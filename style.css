@@ -1584,6 +1584,57 @@ body.light-mode .compact-speed { text-shadow: none; }
   transform: scaleX(0); transition: transform 0.25s linear;
 }
 
+/* ---------- Premium-tyyli (v6.80) ---------- */
+.premium-speed-container { margin: 0 0 4px; }
+.prem-alertzone { min-height: 52px; display: flex; flex-direction: column; gap: 6px; }
+.prem-navline {
+  display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-radius: 14px;
+  background: rgba(41,121,255,0.12); border: 1px solid rgba(77,148,255,0.35);
+}
+.prem-navline .prem-nav-icon { font-size: 22px; }
+.prem-navline #prem-nav-text { font-size: 16px; font-weight: 800; color: var(--text-color, #eaf1fb); }
+.prem-navline #prem-nav-sub { font-size: 11px; color: var(--subtext-color, #8fa5c4); }
+.prem-hero { position: relative; display: flex; align-items: flex-end; margin-top: 4px; }
+.prem-speed {
+  font-size: clamp(76px, 27vw, 112px); font-weight: 800; line-height: .95; letter-spacing: -3px;
+  color: var(--text-color, #eaf1fb); font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 26px rgba(77,148,255,0.45); display: inline-block;
+}
+body.light-mode .prem-speed { text-shadow: none; }
+.prem-unit { font-size: 13px; letter-spacing: 4px; color: var(--subtext-color, #5f6f88); margin-top: 6px; }
+.prem-limpill {
+  margin-left: auto; margin-bottom: 12px; display: flex; flex-direction: column; align-items: center;
+  width: 56px; height: 56px; border-radius: 50%; background: rgba(13,22,38,0.9);
+  border: 3px solid #e02424; justify-content: center; flex-shrink: 0;
+}
+.prem-limpill span { font-size: 20px; font-weight: 800; color: var(--text-color, #fff); line-height: 1; }
+.prem-limpill .prem-lim-lbl { font-size: 8px; letter-spacing: 1px; color: var(--subtext-color, #8fa5c4); margin-top: 2px; font-weight: 700; }
+.prem-turnbox {
+  position: absolute; left: 55%; top: 0; display: none; flex-direction: column; align-items: center;
+  color: #6fb0ff; pointer-events: none;
+}
+.prem-turnbox .prem-turn-icon { font-size: 40px; line-height: 1; text-shadow: 0 0 18px rgba(77,148,255,0.7); }
+.prem-turnbox .prem-turn-text { font-size: 15px; font-weight: 800; color: var(--text-color, #eaf1fb); letter-spacing: .5px; white-space: nowrap; }
+.prem-bar { height: 6px; border-radius: 4px; background: rgba(255,255,255,0.10); position: relative; margin-top: 12px; }
+.prem-bar .prem-fill {
+  position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px;
+  background: linear-gradient(90deg, #1e4fd8, #2979ff, #6fd3ff);
+  box-shadow: 0 0 12px rgba(77,148,255,0.5); width: 0%;
+}
+.prem-bar .prem-limmark { position: absolute; top: -4px; bottom: -4px; width: 3px; border-radius: 2px; background: #e02424; }
+.prem-bar .prem-limmark.over { box-shadow: 0 0 10px rgba(255,60,60,0.8); }
+.prem-barlabels { position: relative; height: 16px; margin-top: 3px; font-size: 10px; color: var(--subtext-color, #5f6f88); }
+.prem-barlabels .tick { position: absolute; top: -5px; width: 1px; height: 4px; background: #2b3f5f; transform: translateX(-50%); }
+.prem-barlabels .lbl { position: absolute; top: 2px; transform: translateX(-50%); font-weight: 600; }
+.prem-barlabels .lbl.lim { color: #ff7a7a; }
+.prem-barlabels .lmax { position: absolute; right: 0; top: 2px; }
+body.light-mode .prem-barlabels .tick { background: rgba(0,0,0,0.25); }
+body.light-mode .prem-limpill { background: rgba(255,255,255,0.9); }
+body.light-mode .prem-bar { background: rgba(0,0,0,0.10); }
+/* Rajoituskortti piiloon kun Premium valittuna - pilli nayttaa rajan */
+body.speedo-premium .center-limit-wrap { display: none; }
+body.speedo-premium #dashboard-view { justify-content: flex-start; }
+
 /* Layoutin tiivistys kun Kompakti-tyyli valittuna */
 /* space-evenly leikkaa ylivuotavan sisallon - flex-start + scroll korjaa (v6.76) */
 /* .view-section{height:100%} tyontaa controls-containerin nayton alle - flex-koko oikein (v6.77) */
