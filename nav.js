@@ -19,6 +19,7 @@ var navState = {
     nearRouteIdx: 0,
     spokenMask: {},          // {stepIdx: {near, mid, at}}
     offRouteStrikes: 0,
+    departSpoken: false,
     lastRerouteTs: 0,
     lastDirectSpeakTs: 0,
     polyline: null,
@@ -248,6 +249,7 @@ window.startNavigation = function(dest) {
     navState.nearRouteIdx = 0;
     navState.spokenMask = {};
     navState.offRouteStrikes = 0;
+    navState.departSpoken = false;
     navState.active = true;
     navShowPanel(true);
     navUpdatePanel('🧭', 'Haetaan reittiä...', navState.destLabel);
@@ -334,7 +336,10 @@ function requestRoute() {
                     distM: r.distM, durS: r.durS, ts: Date.now()
                 }));
             } catch (e) {}
-            navSpeak(navT('depart', { dist: formatNavDist(r.distM) }));
+            if (!navState.departSpoken) {
+                navState.departSpoken = true;
+                navSpeak(navT('depart', { dist: formatNavDist(r.distM) }));
+            }
         })
         .catch((err) => {
             // Ensisijaisesti yritetaan valimuistissa olevaa reittia samaan maaranpaahan (v6.74)
@@ -394,6 +399,15 @@ window.onNavGpsTick = function(pos) {
         if (d < bestD) { bestD = d; bestIdx = i; }
     }
     navState.nearRouteIdx = bestIdx;
+
+    // Reittiviiva lyhenee kuljetun matkan verran (v6.96): naytetaan vain autosta eteenpain
+    if (navState.polyline && navState.routeCoords.length > 1) {
+        try {
+            const rest = [[lat, lng]].concat(navState.routeCoords.slice(bestIdx + 1));
+            navState.polyline.eachLayer((l) => { if (l.setLatLngs) l.setLatLngs(rest); });
+            if (typeof window.setDashboardMiniNavRoute === 'function') window.setDashboardMiniNavRoute(rest);
+        } catch (e) {}
+    }
 
     // Off-route?
     if (bestD > 50) {
