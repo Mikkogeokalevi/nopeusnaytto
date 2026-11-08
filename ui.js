@@ -1148,6 +1148,8 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         if (premFillEl._lastPct !== pct) {
             premFillEl._lastPct = pct;
             premFillEl.style.width = pct + '%';
+            const premPuckEl = document.getElementById('prem-puck');
+            if (premPuckEl) premPuckEl.style.left = pct + '%';
         }
     }
     const premMarkEl = document.getElementById('prem-limmark');

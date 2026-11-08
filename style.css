@@ -1807,3 +1807,48 @@ body.light-mode.speedo-premium3d .prem-bar {
     background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.08));
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.3), inset 0 -1px 1px rgba(255,255,255,0.6);
 }
+
+/* --- Premium 3D v7.00: vauhtipallo + kiiltopinta + kerrokset --- */
+body.speedo-premium3d .prem-puck {
+    position: absolute; top: 50%; left: 0;
+    width: 18px; height: 18px; border-radius: 50%;
+    transform: translate(-50%, -50%) translateZ(60px);
+    background: radial-gradient(circle at 35% 30%, #dff4ff 0%, #6fc4ff 35%, #1a6ad0 80%, #0a3a70 100%);
+    box-shadow:
+        0 6px 14px rgba(0,0,0,0.65),
+        0 0 16px rgba(90,190,255,0.7),
+        inset 0 -2px 4px rgba(0,20,60,0.6),
+        inset 0 2px 3px rgba(255,255,255,0.5);
+    z-index: 3;
+    pointer-events: none;
+}
+body.speedo-premium3d .prem-bar { z-index: 2; transform: translateZ(10px); }
+body.speedo-premium3d .prem-barlabels { transform: translateZ(-10px); position: relative; z-index: 1; }
+
+/* Numeron hengittava glow = elava pinta */
+@keyframes p3dGlow {
+    0%, 100% { filter: brightness(1) drop-shadow(0 0 6px rgba(80,190,255,0.25)); }
+    50%      { filter: brightness(1.07) drop-shadow(0 0 14px rgba(80,190,255,0.45)); }
+}
+body.speedo-premium3d .prem-speed { animation: p3dGlow 4.5s ease-in-out infinite; }
+
+/* Ylinopeus: numero "ponnahtaa" katsojaa kohti */
+@keyframes p3dOver { 0% { transform: scaleX(1.07) translateZ(0); } 40% { transform: scaleX(1.12) translateZ(45px); } 100% { transform: scaleX(1.07) translateZ(25px); } }
+body.speedo-premium3d .prem-speed.over { animation: p3dOver .45s ease-out; transform: scaleX(1.07) translateZ(25px); }
+
+/* Rajoituspilli: pyoristetty 3D-merkki, eri korkeus kuin numero */
+body.speedo-premium3d .prem-limpill { transform: translateZ(45px); }
+body.speedo-premium3d .prem-turnbox { transform: translateZ(35px); }
+body.speedo-premium3d .prem-speed-unit { transform: translateZ(15px); position: relative; }
+
+/* Stat-sirut: pieni parallaksi-korkeus + nappimainen kohous */
+body.speedo-premium3d .prem-stat { transform: translateZ(12px); transition: transform .15s ease; }
+
+/* Navi-palkin nuoli kelluu */
+body.speedo-premium3d .prem-nav-icon { transform: translateZ(20px); text-shadow: 0 4px 10px rgba(0,0,0,0.7); }
+body.speedo-premium3d .prem-camera .prem-cam-ico { transform: translateZ(20px); text-shadow: 0 4px 10px rgba(0,0,0,0.7); }
+
+body.light-mode.speedo-premium3d .prem-puck {
+    background: radial-gradient(circle at 35% 30%, #fff 0%, #8cc8ff 35%, #2a7ae0 80%, #14488a 100%);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4), 0 0 12px rgba(60,140,255,0.5), inset 0 2px 3px rgba(255,255,255,0.7);
+}
