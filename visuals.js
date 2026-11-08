@@ -341,8 +341,21 @@ function updateGIndicator(gx, gy) {
 // 4. ASETUSTEN HALLINTA
 // =========================================================
 
+// 3D-parallaksi Premium 3D -naytolle: kallistus puhelimen orientaation mukaan (v6.97)
+let p3dParallaxInit = false;
+function initP3dParallax() {
+    if (p3dParallaxInit) return;
+    p3dParallaxInit = true;
+    window.addEventListener('deviceorientation', (e) => {
+        const rx = Math.max(-5, Math.min(5, ((e.beta || 45) - 45) * 0.18));
+        const ry = Math.max(-5, Math.min(5, (e.gamma || 0) * 0.14));
+        document.documentElement.style.setProperty('--p3d-rx', rx.toFixed(2) + 'deg');
+        document.documentElement.style.setProperty('--p3d-ry', ry.toFixed(2) + 'deg');
+    }, { passive: true });
+}
+
 function updateSpeedometerStyle(style) {
-    speedometerStyle = (style === 'cinema' || style === 'both' || style === 'clean' || style === 'compact' || style === 'premium') ? style : 'digital';
+    speedometerStyle = ['cinema', 'both', 'clean', 'compact', 'premium', 'premium3d'].includes(style) ? style : 'digital';
 
     const digitalContainer = document.getElementById('digital-speed-container');
     const velocityStageContainer = document.getElementById('velocity-stage-container');
@@ -352,7 +365,8 @@ function updateSpeedometerStyle(style) {
     const graphsContainer = document.getElementById('live-graphs-container');
 
     document.body.classList.toggle('speedo-compact', speedometerStyle === 'compact');
-    document.body.classList.toggle('speedo-premium', speedometerStyle === 'premium');
+    document.body.classList.toggle('speedo-premium', speedometerStyle === 'premium' || speedometerStyle === 'premium3d');
+    document.body.classList.toggle('speedo-premium3d', speedometerStyle === 'premium3d');
 
     // Näytä/piilota elementit
     if (premiumContainer) premiumContainer.style.display = 'none';
@@ -379,12 +393,14 @@ function updateSpeedometerStyle(style) {
             if (graphsContainer) graphsContainer.style.display = 'none';
             break;
         case 'premium':
+        case 'premium3d':
             if (digitalContainer) digitalContainer.style.display = 'none';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
             if (compactContainer) compactContainer.style.display = 'none';
             if (premiumContainer) premiumContainer.style.display = 'flex';
             if (graphsContainer) graphsContainer.style.display = 'none';
+            if (speedometerStyle === 'premium3d') initP3dParallax();
             break;
         case 'both':
             if (digitalContainer) digitalContainer.style.display = 'block';
