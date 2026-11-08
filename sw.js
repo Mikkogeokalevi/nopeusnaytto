@@ -2,7 +2,7 @@
 // SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.78 paste
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v6.98-p3d-fix'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v6.99-modalcar'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

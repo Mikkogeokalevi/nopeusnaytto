@@ -1408,8 +1408,21 @@ if (btnStopRec) {
         if(modalDistEl) modalDistEl.innerText = totalDistance.toFixed(2) + " km";
         if(modalTimeEl) modalTimeEl.innerText = mins + " min";
         
-        if(modalSubjectEl) modalSubjectEl.value = ""; 
-        if(modalCarNameEl) modalCarNameEl.innerText = selectedCarName; 
+        if(modalSubjectEl) modalSubjectEl.value = "";
+        if(modalCarNameEl) modalCarNameEl.innerText = selectedCarName;
+
+        // Ajoneuvon voi vaihtaa vielä tallennusvaiheessa (v6.99)
+        const modalCarSelect = document.getElementById('modal-car-select');
+        if (modalCarSelect) {
+            modalCarSelect.innerHTML = '';
+            (userCars || []).filter(c => !c.isArchived).forEach(c => {
+                const o = document.createElement('option');
+                o.value = c.id;
+                o.textContent = (c.icon || '') + ' ' + c.name;
+                modalCarSelect.appendChild(o);
+            });
+            modalCarSelect.value = currentCarId;
+        }
 
         if(saveModal) saveModal.style.display = 'flex';
         if(liveStatusBar) liveStatusBar.style.opacity = '0';
@@ -1432,6 +1445,18 @@ if (btnModalSave) {
                 }
             }
             tempDriveData.driveType = selectedType;
+
+            // Ajoneuvo valittavana tallennusvaiheessa (v6.99)
+            const modalCarSelect = document.getElementById('modal-car-select');
+            if (modalCarSelect && modalCarSelect.value && modalCarSelect.value !== tempDriveData.carId) {
+                const c = (userCars || []).find(x => x.id === modalCarSelect.value);
+                if (c) {
+                    tempDriveData.carId = c.id;
+                    tempDriveData.carName = c.name;
+                    tempDriveData.carType = c.type;
+                    tempDriveData.carIcon = c.icon || '🚗';
+                }
+            }
 
             saveToFirebase(tempDriveData);
         }
