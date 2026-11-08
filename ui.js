@@ -1183,6 +1183,21 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
         }
     }
 
+    // 3D v2: tien katkoviivan nopeus seuraa ajonopeutta (v7.02); alle 2 km/h pysaytys
+    const p3dLaneEl = document.getElementById('p3d-lane');
+    if (p3dLaneEl) {
+        if (spd < 2) {
+            if (!p3dLaneEl.classList.contains('stopped')) p3dLaneEl.classList.add('stopped');
+        } else {
+            if (p3dLaneEl.classList.contains('stopped')) p3dLaneEl.classList.remove('stopped');
+            const dur = Math.max(0.22, 40 / spd);
+            if (p3dLaneEl._lastDur !== dur) {
+                p3dLaneEl._lastDur = dur;
+                p3dLaneEl.style.animationDuration = dur.toFixed(2) + 's';
+            }
+        }
+    }
+
     // 3D v2: G-voimakuplan sijainti (p3dG tulee devicemotionista, v7.01)
     const p3dGDot = document.getElementById('p3d-gball-dot');
     if (p3dGDot) {
