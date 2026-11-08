@@ -1149,7 +1149,11 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
             premFillEl._lastPct = pct;
             premFillEl.style.width = pct + '%';
             const premPuckEl = document.getElementById('prem-puck');
-            if (premPuckEl) premPuckEl.style.left = pct + '%';
+            if (premPuckEl) {
+                premPuckEl.style.left = pct + '%';
+                premPuckEl.classList.toggle('near', lim > 0 && spd > lim * 0.85 && spd <= lim);
+                premPuckEl.classList.toggle('over', lim > 0 && spd > lim);
+            }
         }
     }
     const premMarkEl = document.getElementById('prem-limmark');
@@ -1176,6 +1180,21 @@ function updateDashboardUI(spd, max, dist, time, alt, avg) {
             bl.querySelectorAll('.lbl').forEach((el) => {
                 el.classList.toggle('lim', Number(el.dataset.lim) === lim);
             });
+        }
+    }
+
+    // 3D v2: G-voimakuplan sijainti (p3dG tulee devicemotionista, v7.01)
+    const p3dGDot = document.getElementById('p3d-gball-dot');
+    if (p3dGDot) {
+        const g = window.p3dG || { x: 0, y: 0 };
+        const gx = Math.max(-1, Math.min(1, g.x || 0));
+        const gy = Math.max(-1, Math.min(1, g.y || 0));
+        const nx = 50 + gx * 32;
+        const ny = 50 + gy * 32;
+        if (p3dGDot._lastX !== nx || p3dGDot._lastY !== ny) {
+            p3dGDot._lastX = nx; p3dGDot._lastY = ny;
+            p3dGDot.style.left = nx + '%';
+            p3dGDot.style.top = ny + '%';
         }
     }
 

@@ -2231,6 +2231,9 @@ function handleMotion(event) {
         gBubbleEl.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
     }
 
+    // Premium 3D v2: jaa G-arvo dashboardille (v7.01)
+    if (acc) window.p3dG = { x: -acc.x / 9.81, y: acc.z / 9.81 };
+
     if (currentCarType === 'bike' || currentCarType === 'walking') return;
     
     // Telemetria: live G-lukema + ajon huippu-G (v6.58)

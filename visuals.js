@@ -351,6 +351,11 @@ function initP3dParallax() {
         const ry = Math.max(-9, Math.min(9, (gamma || 0) * 0.26));
         document.documentElement.style.setProperty('--p3d-rx', rx.toFixed(2) + 'deg');
         document.documentElement.style.setProperty('--p3d-ry', ry.toFixed(2) + 'deg');
+        // Varjo (sama suunta) + tausta (vastakkaiseen suuntaan) - v2-syvyys
+        document.documentElement.style.setProperty('--p3d-shx', (ry * 2.2).toFixed(1) + 'px');
+        document.documentElement.style.setProperty('--p3d-shy', (rx * 1.6).toFixed(1) + 'px');
+        document.documentElement.style.setProperty('--p3d-bgx', (-ry * 1.4).toFixed(1) + 'px');
+        document.documentElement.style.setProperty('--p3d-bgy', (-rx * 1.0).toFixed(1) + 'px');
     };
     ['deviceorientation', 'deviceorientationabsolute'].forEach((ev) => {
         window.addEventListener(ev, (e) => apply(e.beta, e.gamma), { passive: true });
@@ -362,7 +367,7 @@ function initP3dParallax() {
 }
 
 function updateSpeedometerStyle(style) {
-    speedometerStyle = ['cinema', 'both', 'clean', 'compact', 'premium', 'premium3d'].includes(style) ? style : 'digital';
+    speedometerStyle = ['cinema', 'both', 'clean', 'compact', 'premium', 'premium3d', 'premium3dv2'].includes(style) ? style : 'digital';
 
     const digitalContainer = document.getElementById('digital-speed-container');
     const velocityStageContainer = document.getElementById('velocity-stage-container');
@@ -372,8 +377,10 @@ function updateSpeedometerStyle(style) {
     const graphsContainer = document.getElementById('live-graphs-container');
 
     document.body.classList.toggle('speedo-compact', speedometerStyle === 'compact');
-    document.body.classList.toggle('speedo-premium', speedometerStyle === 'premium' || speedometerStyle === 'premium3d');
-    document.body.classList.toggle('speedo-premium3d', speedometerStyle === 'premium3d');
+    const isPremium = ['premium', 'premium3d', 'premium3dv2'].includes(speedometerStyle);
+    document.body.classList.toggle('speedo-premium', isPremium);
+    document.body.classList.toggle('speedo-premium3d', ['premium3d', 'premium3dv2'].includes(speedometerStyle));
+    document.body.classList.toggle('speedo-premium3dv2', speedometerStyle === 'premium3dv2');
 
     // Näytä/piilota elementit
     if (premiumContainer) premiumContainer.style.display = 'none';
@@ -401,13 +408,14 @@ function updateSpeedometerStyle(style) {
             break;
         case 'premium':
         case 'premium3d':
+        case 'premium3dv2':
             if (digitalContainer) digitalContainer.style.display = 'none';
             if (velocityStageContainer) velocityStageContainer.style.display = 'none';
             if (cleanDigitalContainer) cleanDigitalContainer.style.display = 'none';
             if (compactContainer) compactContainer.style.display = 'none';
             if (premiumContainer) premiumContainer.style.display = 'flex';
             if (graphsContainer) graphsContainer.style.display = 'none';
-            if (speedometerStyle === 'premium3d') initP3dParallax();
+            if (speedometerStyle === 'premium3d' || speedometerStyle === 'premium3dv2') initP3dParallax();
             break;
         case 'both':
             if (digitalContainer) digitalContainer.style.display = 'block';

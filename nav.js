@@ -223,6 +223,7 @@ function fetchOsrmEndpoint(url) {
                         name: st.name || '',
                         distM: st.distance || 0,
                         type: st.maneuver.type || '',
+                        mod: String(st.maneuver.modifier || ''),
                         speechKey: navSpeechKey(st.maneuver),
                         exit: st.maneuver.exit || 0
                     });
@@ -286,6 +287,7 @@ function clearNavPolyline() {
     } catch (e) {}
     navState.polyline = null;
     if (typeof window.setDashboardMiniNavRoute === 'function') window.setDashboardMiniNavRoute(null);
+    try { document.documentElement.style.setProperty('--p3d-curve', '0'); } catch (e) {}
 }
 
 function drawNavPolyline(coords) {
@@ -447,6 +449,14 @@ window.onNavGpsTick = function(pos) {
 
     const distToStep = navDistM(lat, lng, next.loc[1], next.loc[0]);
     const instr = next.instruction;
+
+    // 3D v2: tien kaarevuus seuraavan ohjeen mukaan (v7.01)
+    try {
+        const m = (next.mod || '').toLowerCase();
+        const dir = m.indexOf('left') >= 0 ? -1 : m.indexOf('right') >= 0 ? 1 : 0;
+        const mag = Math.max(0, Math.min(1, 1 - distToStep / 700));
+        document.documentElement.style.setProperty('--p3d-curve', (dir * mag).toFixed(2));
+    } catch (e) {}
 
     // Nopeusmukautetut puhekynnykset (v6.74): moottoritiella ohjeet aikaisemmin
     const spd = pos.speedKmh || 0;

@@ -1852,3 +1852,108 @@ body.light-mode.speedo-premium3d .prem-puck {
     background: radial-gradient(circle at 35% 30%, #fff 0%, #8cc8ff 35%, #2a7ae0 80%, #14488a 100%);
     box-shadow: 0 4px 10px rgba(0,0,0,0.4), 0 0 12px rgba(60,140,255,0.5), inset 0 2px 3px rgba(255,255,255,0.7);
 }
+
+/* ============================================================
+   Premium 3D v2 (v7.01) - scoped body.speedo-premium3dv2
+   Tie-nakyma, G-pallo, dynaamiset varjot ja vaarin varoitus
+   ============================================================ */
+.p3d-scene, .p3d-gball { display: none; }
+
+/* Tausta: horisontti + fake-3D tie (kaartuu nav-ohjeen mukaan --p3d-curve) */
+body.speedo-premium3dv2 .premium-speed-container { position: relative; }
+body.speedo-premium3dv2 .p3d-scene {
+    display: block;
+    position: absolute; left: 0; right: 0; top: -8px; height: 62%;
+    perspective: 420px; overflow: hidden; pointer-events: none; z-index: 0;
+    transform: translate(var(--p3d-bgx, 0px), var(--p3d-bgy, 0px));
+    transition: transform .15s linear;
+    -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 97%);
+    mask-image: linear-gradient(180deg, #000 55%, transparent 97%);
+}
+body.speedo-premium3dv2 .p3d-sky {
+    position: absolute; left: 0; right: 0; top: 0; height: 36%;
+    background: linear-gradient(180deg, rgba(20,45,80,0.5) 0%, rgba(10,25,50,0.2) 70%, transparent 100%);
+}
+body.speedo-premium3dv2 .p3d-road {
+    position: absolute; left: 50%; top: 24%; width: 60%; height: 200%;
+    transform: translateX(-50%) rotateX(58deg) skewX(calc(var(--p3d-curve, 0) * 14deg));
+    transform-origin: 50% 0%;
+    background: linear-gradient(180deg, rgba(30,42,60,0) 0%, rgba(24,34,50,0.8) 20%, rgba(14,22,36,0.92) 60%);
+    border-left: 3px solid rgba(120,190,255,0.35);
+    border-right: 3px solid rgba(120,190,255,0.35);
+    box-shadow: inset 0 24px 40px rgba(0,0,0,0.55);
+}
+@keyframes p3dRoadMove { from { background-position-y: 0; } to { background-position-y: 60px; } }
+body.speedo-premium3dv2 .p3d-lane {
+    position: absolute; left: 50%; top: 0; bottom: 0; width: 8px; margin-left: -4px;
+    background-image: linear-gradient(180deg, rgba(255,235,120,0.9) 0 26px, transparent 26px 60px);
+    background-size: 8px 60px;
+    animation: p3dRoadMove 1.1s linear infinite;
+    opacity: 0.8;
+    filter: drop-shadow(0 0 6px rgba(255,220,80,0.4));
+}
+
+/* Sisalto skenen paalle */
+body.speedo-premium3dv2 .prem-alertzone,
+body.speedo-premium3dv2 .prem-hero,
+body.speedo-premium3dv2 .prem-bar,
+body.speedo-premium3dv2 .prem-barlabels,
+body.speedo-premium3dv2 .prem-stats { position: relative; z-index: 2; }
+
+/* Dynaaminen varjo: liikkuu kallistuksen mukana */
+body.speedo-premium3dv2 .prem-hero::after {
+    transform: translateZ(-40px) translateX(var(--p3d-shx, 0px)) translateY(var(--p3d-shy, 0px));
+    transition: transform .15s linear;
+}
+
+/* Vauhtipallo muuttaa varia lahestyttaessa rajaa */
+body.speedo-premium3dv2 .prem-puck.near {
+    background: radial-gradient(circle at 35% 30%, #fff2cc 0%, #ffb347 40%, #d07a10 85%, #7a4a05 100%);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.65), 0 0 16px rgba(255,180,60,0.8), inset 0 2px 3px rgba(255,255,255,0.6);
+}
+body.speedo-premium3dv2 .prem-puck.over {
+    background: radial-gradient(circle at 35% 30%, #ffd6d6 0%, #ff6b6b 40%, #c01818 85%, #5e0a0a 100%);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.7), 0 0 20px rgba(255,80,80,0.9), inset 0 2px 3px rgba(255,255,255,0.5);
+    animation: p3dPuckPulse .8s ease-in-out infinite;
+}
+@keyframes p3dPuckPulse { 0%,100% { transform: translate(-50%,-50%) translateZ(60px) scale(1); } 50% { transform: translate(-50%,-50%) translateZ(80px) scale(1.25); } }
+
+/* G-voimakupla oikeassa sarakkeessa */
+body.speedo-premium3dv2 .p3d-gball {
+    display: block; position: relative; width: 46px; height: 46px; border-radius: 50%;
+    margin-top: 12px;
+    background: radial-gradient(circle at 35% 30%, rgba(60,90,130,0.85), rgba(12,22,38,0.95) 75%);
+    box-shadow: inset 0 3px 8px rgba(0,0,0,0.8), inset 0 -1px 2px rgba(255,255,255,0.15), 0 8px 16px rgba(0,0,0,0.5);
+    transform: translateZ(35px);
+}
+body.speedo-premium3dv2 .p3d-gball-dot {
+    position: absolute; width: 14px; height: 14px; border-radius: 50%;
+    left: 50%; top: 50%; transform: translate(-50%,-50%);
+    background: radial-gradient(circle at 35% 30%, #dff4ff, #4da8ff 60%, #14488a);
+    box-shadow: 0 0 10px rgba(90,190,255,0.8), 0 3px 6px rgba(0,0,0,0.6);
+    transition: left .12s ease, top .12s ease;
+}
+body.speedo-premium3dv2 .p3d-gball-lbl {
+    position: absolute; bottom: -13px; left: 0; right: 0; text-align: center;
+    font-size: 8px; color: var(--subtext-color, #8fa5c4); letter-spacing: 1px; font-weight: 700;
+}
+
+/* Kaannosboksi zoomaa kohti katsojaa */
+@keyframes p3dZoom { from { transform: translateZ(0) scale(.6); opacity: .4; } to { transform: translateZ(70px) scale(1); opacity: 1; } }
+body.speedo-premium3dv2 .prem-turnbox { animation: p3dZoom .5s ease-out; transform: translateZ(70px); }
+
+/* Kamera-halytys: 3D-pulssi */
+@keyframes p3dCamPulse {
+    0%, 100% { transform: translateZ(30px); }
+    50% { transform: translateZ(55px); box-shadow: 0 16px 32px rgba(0,0,0,0.6), 0 0 20px rgba(255,60,60,0.5); }
+}
+body.speedo-premium3dv2 .prem-camera { animation: p3dCamPulse 1.1s ease-in-out infinite; }
+
+body.light-mode.speedo-premium3dv2 .p3d-sky {
+    background: linear-gradient(180deg, rgba(120,180,240,0.35) 0%, rgba(180,220,250,0.15) 70%, transparent 100%);
+}
+body.light-mode.speedo-premium3dv2 .p3d-road {
+    background: linear-gradient(180deg, rgba(180,190,200,0) 0%, rgba(140,150,165,0.5) 20%, rgba(110,120,135,0.6) 60%);
+    border-left-color: rgba(90,120,160,0.4);
+    border-right-color: rgba(90,120,160,0.4);
+}
