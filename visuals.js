@@ -341,17 +341,24 @@ function updateGIndicator(gx, gy) {
 // 4. ASETUSTEN HALLINTA
 // =========================================================
 
-// 3D-parallaksi Premium 3D -naytolle: kallistus puhelimen orientaation mukaan (v6.97)
+// 3D-parallaksi Premium 3D -naytolle: kallistus puhelimen orientaation mukaan (v6.98)
 let p3dParallaxInit = false;
 function initP3dParallax() {
     if (p3dParallaxInit) return;
     p3dParallaxInit = true;
-    window.addEventListener('deviceorientation', (e) => {
-        const rx = Math.max(-5, Math.min(5, ((e.beta || 45) - 45) * 0.18));
-        const ry = Math.max(-5, Math.min(5, (e.gamma || 0) * 0.14));
+    const apply = (beta, gamma) => {
+        const rx = Math.max(-9, Math.min(9, ((beta === null ? 45 : beta) - 45) * 0.30));
+        const ry = Math.max(-9, Math.min(9, (gamma || 0) * 0.26));
         document.documentElement.style.setProperty('--p3d-rx', rx.toFixed(2) + 'deg');
         document.documentElement.style.setProperty('--p3d-ry', ry.toFixed(2) + 'deg');
-    }, { passive: true });
+    };
+    ['deviceorientation', 'deviceorientationabsolute'].forEach((ev) => {
+        window.addEventListener(ev, (e) => apply(e.beta, e.gamma), { passive: true });
+    });
+    // Varmistus: jos gyro-eventteja ei tule, annetaan alkuarvo jotta efekti nakyisi
+    setTimeout(() => {
+        if (!document.documentElement.style.getPropertyValue('--p3d-rx')) apply(45, 0);
+    }, 1500);
 }
 
 function updateSpeedometerStyle(style) {

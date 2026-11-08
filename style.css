@@ -1782,13 +1782,13 @@ body.speedo-premium3d .prem-stat {
 body.speedo-premium3d .prem-stats { gap: 6px; }
 
 /* Alertzone + navipalkki: kohotetut lasipaneelit */
-body.speedo-premium3d .prem-alertzone,
+body.speedo-premium3d .prem-camera,
 body.speedo-premium3d .prem-navline {
     box-shadow: 0 10px 22px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.18);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
 }
-body.speedo-premium3d .prem-alertzone {
+body.speedo-premium3d .prem-camera {
     background: linear-gradient(160deg, rgba(150,20,20,0.85), rgba(90,10,10,0.9));
 }
 body.speedo-premium3d .prem-navline {
