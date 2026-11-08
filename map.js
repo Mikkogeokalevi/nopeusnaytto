@@ -21,6 +21,7 @@ const terrainMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png
 let dashboardMiniMap = null;
 let dashboardMiniMarker = null;
 let dashboardMiniPolyline = null;
+let dashboardMiniNavLine = null;
 let dashboardMiniStreetLayer = null;
 let dashboardMiniTerrainLayer = null;
 let dashboardMiniBaseMode = 'street';
@@ -242,6 +243,16 @@ window.ensureDashboardMiniMap = function() {
         opacity: 0.65
     }).addTo(dashboardMiniMap);
 
+    // Navigaatioreittiviiva pikkukartalla (v6.95)
+    dashboardMiniNavLine = L.polyline([], {
+        color: '#ff3b30',
+        weight: 4,
+        opacity: 0.95
+    }).addTo(dashboardMiniMap);
+    if (Array.isArray(lastMiniNavCoords) && lastMiniNavCoords.length > 1) {
+        dashboardMiniNavLine.setLatLngs(lastMiniNavCoords);
+    }
+
     if (Array.isArray(routePath) && routePath.length > 0) {
         dashboardMiniPolyline.setLatLngs(routePath.map((p) => [p.lat, p.lng]));
     }
@@ -251,6 +262,20 @@ window.ensureDashboardMiniMap = function() {
     scheduleDashboardMiniMapResize([50, 180, 360]);
 
     return dashboardMiniMap;
+};
+
+// Aseta/poista navigaatioreitti pikkukartalle - coords = [[lat,lng],...] tai null (v6.95)
+let lastMiniNavCoords = null;
+window.setDashboardMiniNavRoute = function(coords) {
+    lastMiniNavCoords = (Array.isArray(coords) && coords.length > 1) ? coords : null;
+    if (!dashboardMiniNavLine) return;
+    try {
+        if (Array.isArray(coords) && coords.length > 1) {
+            dashboardMiniNavLine.setLatLngs(coords);
+        } else {
+            dashboardMiniNavLine.setLatLngs([]);
+        }
+    } catch (e) {}
 };
 
 window.refreshDashboardMiniMapSize = function() {

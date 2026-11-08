@@ -283,6 +283,7 @@ function clearNavPolyline() {
         }
     } catch (e) {}
     navState.polyline = null;
+    if (typeof window.setDashboardMiniNavRoute === 'function') window.setDashboardMiniNavRoute(null);
 }
 
 function drawNavPolyline(coords) {
@@ -294,6 +295,7 @@ function drawNavPolyline(coords) {
         const casing = L.polyline(coords, { color: '#ffffff', weight: 9, opacity: 0.9 }).addTo(map);
         const line = L.polyline(coords, { color: '#ff3b30', weight: 5, opacity: 0.95 }).addTo(map);
         navState.polyline = L.layerGroup([casing, line]);
+        if (typeof window.setDashboardMiniNavRoute === 'function') window.setDashboardMiniNavRoute(coords);
         if (!hadRoute) {
             window.mapProgrammaticMove = true;
             map.fitBounds(navState.polyline.getBounds(), { padding: [60, 60] });
