@@ -2347,14 +2347,10 @@ function fetchWeather(lat, lon) {
                 currentDriveWeather = `${emoji} ${temp}°C`;
                 if(dashWeatherEl) dashWeatherEl.innerText = currentDriveWeather;
 
-                // 3D v2: tien ilme saan mukaan (v7.03)
-                const p3dScene = document.getElementById('p3d-scene');
-                if (p3dScene) {
-                    p3dScene.classList.remove('wx-wet', 'wx-snow', 'wx-fog', 'wx-storm');
-                    if (code >= 95) p3dScene.classList.add('wx-storm');
-                    else if ((code >= 71 && code <= 77) || code === 85 || code === 86) p3dScene.classList.add('wx-snow');
-                    else if (code === 45 || code === 48) p3dScene.classList.add('wx-fog');
-                    else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) p3dScene.classList.add('wx-wet');
+                // 3D v2: tien ilme saan mukaan (v7.03); testiohjaus v7.05
+                if (typeof window.applyP3dSceneWx === 'function') {
+                    const cls = window._p3dWxOverride || (typeof window.p3dWxFromCode === 'function' ? window.p3dWxFromCode(code) : null);
+                    window.applyP3dSceneWx(cls);
                 }
                 // Talviolosuhdevaroitus kerran per istunto (v6.74)
                 if (!window._winterWarned && (temp <= 2 || (code >= 71 && code <= 77) || code === 85 || code === 86)) {

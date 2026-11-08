@@ -1075,6 +1075,7 @@ var dashUiLastMode = null;
 var overLimitHapticArmed = true;
 
 function updateDashboardUI(spd, max, dist, time, alt, avg) {
+    if (typeof window._demoSpd === 'number') spd = window._demoSpd;
     const lim = Number(window.lastShownSpeedLimitKmh) || 0;
 
     if(dashSpeedEl) {
@@ -2543,4 +2544,79 @@ function ttsPopulateVoices() {
             }
         });
     }
+})();
+
+// 3D v2: tien saatilan apufunktiot + pitka painallus saakuvakkeesta kiertaa testitilat (v7.05)
+(function() {
+    window.applyP3dSceneWx = function(cls) {
+        const s = document.getElementById('p3d-scene');
+        if (!s) return;
+        s.classList.remove('wx-wet', 'wx-snow', 'wx-fog', 'wx-storm');
+        if (cls) s.classList.add(cls);
+    };
+    window.p3dWxFromCode = function(code) {
+        if (code >= 95) return 'wx-storm';
+        if ((code >= 71 && code <= 77) || code === 85 || code === 86) return 'wx-snow';
+        if (code === 45 || code === 48) return 'wx-fog';
+        if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return 'wx-wet';
+        return null;
+    };
+
+    const dashWeatherEl = document.getElementById('dash-weather');
+    if (!dashWeatherEl) return;
+    const cycle = [null, 'wx-wet', 'wx-snow', 'wx-fog', 'wx-storm'];
+    const names = { 'wx-wet': 'Sade', 'wx-snow': 'Lumi', 'wx-fog': 'Sumu', 'wx-storm': 'Myrsky' };
+    let idx = 0, timer = null;
+    const run = () => {
+        idx = (idx + 1) % cycle.length;
+        window._p3dWxOverride = cycle[idx];
+        window.applyP3dSceneWx(cycle[idx]);
+        if (typeof showToast === 'function') {
+            showToast(cycle[idx] ? '3D-tie saatesti: ' + names[cycle[idx]] : '3D-tie saa: automaattinen');
+        }
+    };
+    const start = () => { timer = setTimeout(run, 600); };
+    const stop = () => { if (timer) { clearTimeout(timer); timer = null; } };
+    dashWeatherEl.addEventListener('touchstart', start, { passive: true });
+    dashWeatherEl.addEventListener('touchend', stop);
+    dashWeatherEl.addEventListener('touchcancel', stop);
+    dashWeatherEl.addEventListener('mousedown', start);
+    dashWeatherEl.addEventListener('mouseup', stop);
+    dashWeatherEl.addEventListener('mouseleave', stop);
+})();
+
+// 3D v2: nopeusdemo - pitka painallus nopeusluvusta kiihdyttaa 0->100->0 (v7.06)
+(function() {
+    const el = document.querySelector('.prem-speed-wrap');
+    if (!el) return;
+    let pressTimer = null, raf = null;
+    const stopDemo = (silent) => {
+        if (raf) cancelAnimationFrame(raf);
+        raf = null;
+        window._demoSpd = undefined;
+        if (!silent && typeof showToast === 'function') showToast('Nopeusdemo: pois');
+    };
+    const startDemo = () => {
+        let v = 0, dir = 1, last = performance.now();
+        const step = (t) => {
+            const dt = (t - last) / 1000;
+            last = t;
+            v += dir * dt * 22;
+            if (v >= 100) { v = 100; dir = -1; }
+            if (v <= 0 && dir < 0) { v = 0; window._demoSpd = 0; stopDemo(true); return; }
+            window._demoSpd = v;
+            raf = requestAnimationFrame(step);
+        };
+        raf = requestAnimationFrame(step);
+        if (typeof showToast === 'function') showToast('Nopeusdemo: 0 → 100 → 0');
+    };
+    const toggle = () => { if (raf) stopDemo(); else startDemo(); };
+    const start = () => { pressTimer = setTimeout(toggle, 600); };
+    const stop = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
+    el.addEventListener('touchstart', start, { passive: true });
+    el.addEventListener('touchend', stop);
+    el.addEventListener('touchcancel', stop);
+    el.addEventListener('mousedown', start);
+    el.addEventListener('mouseup', stop);
+    el.addEventListener('mouseleave', stop);
 })();
