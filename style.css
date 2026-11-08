@@ -1958,3 +1958,60 @@ body.light-mode.speedo-premium3dv2 .p3d-road {
     border-left-color: rgba(90,120,160,0.4);
     border-right-color: rgba(90,120,160,0.4);
 }
+
+/* --- Tie saan mukaan (v7.03): wx-* luokat tulevat weather_codesta --- */
+body.speedo-premium3dv2 .p3d-scene::after {
+    content: '';
+    position: absolute; inset: 0;
+    opacity: 0; transition: opacity .6s ease;
+    pointer-events: none;
+}
+
+/* MARKA: tumma kiiltava tie + vino sadepinta */
+body.speedo-premium3dv2 .p3d-scene.wx-wet .p3d-road {
+    background: linear-gradient(180deg, rgba(20,30,45,0) 0%, rgba(16,26,44,0.9) 20%, rgba(8,14,26,0.97) 60%);
+    box-shadow: inset 0 24px 40px rgba(0,0,0,0.7), inset 0 -12px 30px rgba(80,150,220,0.16);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-wet::after {
+    opacity: 1;
+    background-image: repeating-linear-gradient(105deg, rgba(160,200,255,0.16) 0 2px, transparent 2px 34px);
+    animation: p3dRain .5s linear infinite;
+}
+@keyframes p3dRain { from { transform: translateY(-34px); } to { transform: translateY(0); } }
+
+/* LUMINEN: tie peittyy + lumisade */
+body.speedo-premium3dv2 .p3d-scene.wx-snow .p3d-road {
+    background: linear-gradient(180deg, rgba(220,228,240,0) 0%, rgba(205,215,230,0.75) 20%, rgba(235,240,248,0.9) 60%);
+    border-left-color: rgba(200,215,235,0.55);
+    border-right-color: rgba(200,215,235,0.55);
+    box-shadow: inset 0 24px 40px rgba(120,140,170,0.4);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-snow .p3d-lane { opacity: 0.25; }
+body.speedo-premium3dv2 .p3d-scene.wx-snow::after {
+    opacity: 1;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,0.9) 1.6px, transparent 1.7px),
+        radial-gradient(circle, rgba(255,255,255,0.55) 1.1px, transparent 1.2px);
+    background-size: 26px 26px, 17px 17px;
+    background-position: 0 0, 8px 12px;
+    animation: p3dSnow 2.8s linear infinite;
+}
+@keyframes p3dSnow { from { transform: translateY(-26px); } to { transform: translateY(0); } }
+
+/* SUMU: hamartynyt vaimea nakyma */
+body.speedo-premium3dv2 .p3d-scene.wx-fog .p3d-road { opacity: 0.4; }
+body.speedo-premium3dv2 .p3d-scene.wx-fog { filter: blur(1.5px) brightness(1.25); }
+
+/* MYRSKY: syva pimeys + voimakas sade */
+body.speedo-premium3dv2 .p3d-scene.wx-storm .p3d-sky {
+    background: linear-gradient(180deg, rgba(5,10,22,0.85) 0%, rgba(8,16,34,0.55) 70%, transparent 100%);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-storm .p3d-road {
+    background: linear-gradient(180deg, rgba(15,25,40,0) 0%, rgba(10,18,32,0.95) 20%, rgba(4,8,18,0.98) 60%);
+    box-shadow: inset 0 24px 40px rgba(0,0,0,0.85), inset 0 -12px 30px rgba(60,120,200,0.15);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-storm::after {
+    opacity: 1;
+    background-image: repeating-linear-gradient(100deg, rgba(140,180,240,0.22) 0 2px, transparent 2px 24px);
+    animation: p3dRain .35s linear infinite;
+}
