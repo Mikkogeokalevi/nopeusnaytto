@@ -10,7 +10,7 @@ Jos tarvitset koko sovelluksen virran yhdellä sivulla, lue `APP_FLOW_MAP.md`.
 ## 1) Nykytila (snapshot)
 
 - **Projekti:** Mikkokalevin Ajopäiväkirja Pro
-- **Nykyversio:** `v7.06`
+- **Nykyversio:** `v7.10`
 - **Pääpaino juuri nyt:**
   - Ammattimainen, siisti ulkoasu ajokäyttöön: Clean Digital päänäkymänä, SVG-ikonit, yhtenäinen typografia
   - POI-varoitusten luotettavuus ajossa
@@ -505,3 +505,32 @@ Päivitä `PROJECT_STATUS.md` aina kun:
 - arkkitehtuuriin tulee uusi tärkeä osa (esim. uusi moduuli/feature-flow)
 
 Päivitä `AI_RULES.md` vähintään 1) pääversiopäivityksissä ja 2) kun työnkulku muuttuu.
+
+---
+
+## 8) Ideavarasto (ei toteutettu vielä — varattu tulevaisuuteen)
+
+Premium 3D v2 -näytön jatkokehitysideat (käyttäjän hyväksymät ajankohtana v7.06):
+
+**Tien parannukset:**
+- AR-navigointinuoli tien pintaan lähestyvää käännettä varten
+- Nopeuskamera maamerkkinä tien varteen hälytyksen ajaksi
+- Auton siluetti joka kallistuu kaarteissa G-voimien mukaan
+- Yö/päivähorisontti kellonajan mukaan (+ tähdet / revontulet)
+- Etäisyyskyltti tien varressa (matkaa jäljellä / seuraava kamera)
+
+**Pelillistäminen:**
+- ECO-pisteet/"kolikot" tien varrelta tasaisesta ajosta
+- "Silkki-ajo"-merkki jos G pysyy alle 0.4 koko ajon
+
+**Käytännön:**
+- Pysähdyksiin siirtyminen → tie rullaa ja "taukopaikka"-kyltti
+- Liukkausvaroitus: <=2°C + märkä → jäännä tie
+
+Muut 7.0-ehdokkaat joita pohdittiin mutta ei valittu vielä:
+- Automaattinen ajon tunnistus (aloita/lopeta ilman nappia)
+- Kuukausiraportti CSV/PDF ajopäiväkirjasta
+- Kulutusseuranta L/100km refuelings-datasta
+- Huoltomuistutukset (katsastus/vakuutus/huolto)
+- Sadekartta / tieolosuhteet (Fintraffic)
+- Äänikomennot ajossa

@@ -2239,6 +2239,8 @@ function handleMotion(event) {
     // Telemetria: live G-lukema + ajon huippu-G (v6.58)
     const gNow = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z) / 9.81;
     if (gNow > peakGForce) peakGForce = gNow;
+    // Dashcam: automaattinen klipin suojaus G-piikista (v7.10)
+    if (gNow > 3.5 && typeof window.dashcamProtect === 'function') window.dashcamProtect('gspike');
     const gReadoutEl = document.getElementById('g-readout');
     if (gReadoutEl && (Date.now() - (gReadoutEl._lastUpd || 0)) > 250) {
         gReadoutEl._lastUpd = Date.now();

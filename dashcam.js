@@ -1,0 +1,375 @@
+// =========================================================
+// DASHCAM (v7.10) - rengaspuskuri + GPS-leima + IndexedDB
+// Kokonaisuus on feature-flagin 'dashcamEnabled' takana.
+// =========================================================
+(function() {
+    'use strict';
+
+    // ---------- Feature flag + asetukset ----------
+    const FLAG = 'dashcamEnabled';
+    const SET_KEY = 'dashcamSettings';
+
+    window.isDashcamEnabled = function() {
+        return localStorage.getItem(FLAG) === '1';
+    };
+
+    function getSettings() {
+        const def = { clips: 5, clipSec: 60, res: '720p', audio: false };
+        try {
+            const s = JSON.parse(localStorage.getItem(SET_KEY) || '{}');
+            return Object.assign(def, s);
+        } catch (e) { return def; }
+    }
+    function saveSettings(s) { try { localStorage.setItem(SET_KEY, JSON.stringify(s)); } catch (e) {} }
+
+    // ---------- Tila ----------
+    const dc = {
+        running: false,
+        stream: null,
+        video: null,
+        canvas: null,
+        ctx: null,
+        drawRaf: null,
+        recorder: null,
+        chunks: [],
+        ring: [],           // {id, ts, blob, durMs}
+        clipIdx: 0,
+        stopped: false
+    };
+
+    // ---------- IndexedDB ----------
+    const DB_NAME = 'dashcam-db';
+    const STORE = 'dashcam-kept';
+
+    function idbOpen() {
+        return new Promise((res, rej) => {
+            const r = indexedDB.open(DB_NAME, 1);
+            r.onupgradeneeded = () => r.result.createObjectStore(STORE, { keyPath: 'id' });
+            r.onsuccess = () => res(r.result);
+            r.onerror = () => rej(r.error);
+        });
+    }
+    async function idbPut(item) {
+        const db = await idbOpen();
+        return new Promise((res, rej) => {
+            const tx = db.transaction(STORE, 'readwrite');
+            tx.objectStore(STORE).put(item);
+            tx.oncomplete = () => res();
+            tx.onerror = () => rej(tx.error);
+        });
+    }
+    async function idbAll() {
+        const db = await idbOpen();
+        return new Promise((res, rej) => {
+            const tx = db.transaction(STORE, 'readonly');
+            const r = tx.objectStore(STORE).getAll();
+            r.onsuccess = () => res(r.result || []);
+            r.onerror = () => rej(r.error);
+        });
+    }
+    async function idbDel(id) {
+        const db = await idbOpen();
+        return new Promise((res, rej) => {
+            const tx = db.transaction(STORE, 'readwrite');
+            const r = tx.objectStore(STORE).delete(id);
+            r.onsuccess = () => res();
+            r.onerror = () => rej(r.error);
+        });
+    }
+
+    // ---------- Valinnat ----------
+    function pickMime(audio) {
+        const opts = audio
+            ? ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm']
+            : ['video/mp4;codecs=avc1.42E01E', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+        for (const m of opts) {
+            if (window.MediaRecorder && MediaRecorder.isTypeSupported(m)) return m;
+        }
+        return '';
+    }
+    function extForMime(m) { return m && m.indexOf('mp4') >= 0 ? 'mp4' : 'webm'; }
+
+    // ---------- Canvas-overlay ----------
+    function overlayText() {
+        const spd = (document.getElementById('prem-speed')?.textContent
+                  || document.getElementById('dash-speed')?.textContent
+                  || '0.00').trim();
+        const now = new Date();
+        const pad = (n) => (n < 10 ? '0' : '' + n);
+        const t = pad(now.getDate()) + '.' + pad(now.getMonth() + 1) + '.' + now.getFullYear()
+                + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+        let loc = '';
+        if (typeof lastLatLng !== 'undefined' && lastLatLng) {
+            const la = Math.abs(lastLatLng.lat), lo = Math.abs(lastLatLng.lng);
+            loc = ' ' + (lastLatLng.lat >= 0 ? 'N' : 'S') + ' ' + la.toFixed(5)
+                + ' ' + (lastLatLng.lng >= 0 ? 'E' : 'W') + ' ' + lo.toFixed(5);
+        }
+        return { spd, line: t + loc };
+    }
+
+    function drawLoop() {
+        if (!dc.video || !dc.ctx) return;
+        const w = dc.canvas.width, h = dc.canvas.height;
+        try {
+            if (dc.video.readyState >= 2) {
+                dc.ctx.drawImage(dc.video, 0, 0, w, h);
+            } else {
+                dc.ctx.fillStyle = '#000';
+                dc.ctx.fillRect(0, 0, w, h);
+            }
+            const o = overlayText();
+            const barH = Math.round(h * 0.09);
+            dc.ctx.fillStyle = 'rgba(0,0,0,0.55)';
+            dc.ctx.fillRect(0, h - barH, w, barH);
+            dc.ctx.fillStyle = '#fff';
+            dc.ctx.font = 'bold ' + Math.round(barH * 0.52) + 'px monospace';
+            dc.ctx.textBaseline = 'middle';
+            dc.ctx.fillText(o.spd + ' km/h', 14, h - barH / 2);
+            dc.ctx.font = Math.round(barH * 0.40) + 'px monospace';
+            dc.ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            dc.ctx.textAlign = 'right';
+            dc.ctx.fillText(o.line, w - 14, h - barH / 2);
+            dc.ctx.textAlign = 'left';
+        } catch (e) {}
+        dc.drawRaf = requestAnimationFrame(drawLoop);
+    }
+
+    // ---------- Clip-loop ----------
+    async function startClip() {
+        const s = getSettings();
+        if (dc.stopped || !dc.stream) return;
+        dc.chunks = [];
+        const mime = pickMime(s.audio);
+        try {
+            dc.recorder = new MediaRecorder(dc.recStream, {
+                mimeType: mime || undefined,
+                videoBitsPerSecond: s.res === '1080p' ? 5000000 : 2500000
+            });
+        } catch (e) {
+            try { dc.recorder = new MediaRecorder(dc.recStream); } catch (e2) { stopAll(); return; }
+        }
+        dc.recorder.ondataavailable = (ev) => { if (ev.data && ev.data.size) dc.chunks.push(ev.data); };
+        dc.recorder.onstop = () => {
+            const blob = new Blob(dc.chunks, { type: dc.recorder.mimeType || 'video/webm' });
+            if (blob.size > 1000) {
+                dc.ring.push({ id: 'r' + Date.now() + '_' + dc.clipIdx, ts: Date.now(), blob, durMs: s.clipSec * 1000 });
+                dc.clipIdx++;
+                while (dc.ring.length > s.clips) dc.ring.shift();
+            }
+            if (!dc.stopped) startClip();
+        };
+        try { dc.recorder.start(); } catch (e) { return; }
+        dc._clipTimer = setTimeout(() => { try { dc.recorder.stop(); } catch (e) {} }, s.clipSec * 1000);
+    }
+
+    // ---------- Start / Stop ----------
+    async function dashcamStart() {
+        if (dc.running) return true;
+        if (!window.isDashcamEnabled()) { toast('Dashcam ei ole kaytossa - ota kayttoon asetuksissa'); return false; }
+        const s = getSettings();
+        try {
+            const size = s.res === '1080p' ? { width: 1920, height: 1080 } : { width: 1280, height: 720 };
+            dc.stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment', width: size.width, height: size.height },
+                audio: !!s.audio
+            });
+        } catch (e) {
+            toast('Kameraa ei saada kayttoon - tarkista lupa');
+            return false;
+        }
+        dc.video = document.createElement('video');
+        dc.video.muted = true;
+        dc.video.playsInline = true;
+        dc.video.srcObject = dc.stream;
+        try { await dc.video.play(); } catch (e) {}
+
+        dc.canvas = document.createElement('canvas');
+        dc.canvas.width = s.res === '1080p' ? 1920 : 1280;
+        dc.canvas.height = s.res === '1080p' ? 1080 : 720;
+        dc.ctx = dc.canvas.getContext('2d');
+        dc.recStream = dc.canvas.captureStream(30);
+        if (s.audio) {
+            try {
+                const audioTracks = dc.stream.getAudioTracks();
+                if (audioTracks.length) dc.recStream.addTrack(audioTracks[0]);
+            } catch (e) {}
+        }
+        dc.stopped = false;
+        dc.running = true;
+        drawLoop();
+        startClip();
+        updateRecUI(true);
+        toast('Dashcam: tallennus kaynnissa');
+        return true;
+    }
+
+    function stopAll() {
+        dc.stopped = true;
+        if (dc._clipTimer) { clearTimeout(dc._clipTimer); dc._clipTimer = null; }
+        if (dc.drawRaf) { cancelAnimationFrame(dc.drawRaf); dc.drawRaf = null; }
+        if (dc.recorder && dc.recorder.state !== 'inactive') { try { dc.recorder.stop(); } catch (e) {} }
+        if (dc.stream) { dc.stream.getTracks().forEach(t => t.stop()); dc.stream = null; }
+        dc.video = null;
+        dc.recorder = null;
+        dc.running = false;
+    }
+
+    window.dashcamStop = function() {
+        stopAll();
+        updateRecUI(false);
+        toast('Dashcam: tallennus pysaytetty');
+    };
+    window.dashcamStart = dashcamStart;
+    window.dashcamIsRunning = function() { return dc.running; };
+
+    // ---------- Suojaus ----------
+    window.dashcamProtect = async function(reason) {
+        if (!dc.ring.length) { toast('Ei klippeja viela'); return; }
+        const items = dc.ring.slice(-2); // nykyinen + edellinen
+        let n = 0;
+        for (const clip of items) {
+            try {
+                await idbPut({
+                    id: clip.id,
+                    ts: clip.ts,
+                    durationMs: clip.durMs,
+                    sizeBytes: clip.blob.size,
+                    reason: reason || 'manual',
+                    mime: clip.blob.type,
+                    blob: clip.blob
+                });
+                n++;
+            } catch (e) {}
+        }
+        toast(n ? 'Klippi' + (n > 1 ? 't' : '') + ' suojattu' + (reason === 'gspike' ? ' (G-piikki)' : '') : 'Suojaus epaonnistui');
+        refreshClipCount();
+    };
+
+    // ---------- UI ----------
+    function toast(msg) { if (typeof showToast === 'function') showToast(msg); }
+
+    function updateRecUI(rec) {
+        const t = document.getElementById('btn-dashcam-toggle');
+        const p = document.getElementById('btn-dashcam-protect');
+        if (t) {
+            t.innerHTML = rec ? '🔴 REC' : '📹 DASHCAM';
+            t.classList.toggle('red-btn', !!rec);
+            t.classList.toggle('secondary-btn', !rec);
+        }
+        if (p) p.style.display = rec ? '' : 'none';
+        document.body.classList.toggle('dashcam-rec', !!rec);
+    }
+
+    function refreshClipCount() {
+        const el = document.getElementById('dashcam-count');
+        if (!el) return;
+        idbAll().then(list => { el.textContent = list.length ? '(' + list.length + ')' : ''; }).catch(() => {});
+    }
+
+    // ---------- Manageri ----------
+    function fmtSize(b) { return (b / 1048576).toFixed(1) + ' MB'; }
+    function fmtTs(ts) {
+        const d = new Date(ts), p = (n) => (n < 10 ? '0' + n : '' + n);
+        return p(d.getDate()) + '.' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+    }
+
+    window.dashcamOpenManager = async function() {
+        const modal = document.getElementById('dashcam-modal');
+        const list = document.getElementById('dashcam-clips-list');
+        if (!modal || !list) return;
+        list.innerHTML = '<div class="loading">Ladataan...</div>';
+        modal.style.display = 'flex';
+        let clips = [];
+        try { clips = await idbAll(); } catch (e) {}
+        clips.sort((a, b) => b.ts - a.ts);
+        if (!clips.length) { list.innerHTML = '<div style="color:var(--subtext-color); padding:12px;">Ei suojattuja klippeja</div>'; return; }
+        list.innerHTML = '';
+        clips.forEach((c) => {
+            const url = URL.createObjectURL(c.blob);
+            const row = document.createElement('div');
+            row.style.cssText = 'margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px;';
+            row.innerHTML =
+                '<video src="' + url + '" controls playsinline style="width:100%; border-radius:8px; background:#000; max-height:200px;"></video>' +
+                '<div style="font-size:11px; color:var(--subtext-color); margin:6px 0;">' +
+                    fmtTs(c.ts) + ' · ' + Math.round(c.durationMs / 1000) + 's · ' + fmtSize(c.sizeBytes) +
+                    (c.reason === 'gspike' ? ' · G-piikki' : '') +
+                '</div>' +
+                '<div style="display:flex; gap:8px;">' +
+                    '<button class="action-btn blue-btn dc-dl" style="flex:1; font-size:12px; padding:8px;">Lataa</button>' +
+                    '<button class="action-btn blue-btn dc-sh" style="flex:1; font-size:12px; padding:8px;">Jaa</button>' +
+                    '<button class="action-btn red-btn dc-rm" style="flex:1; font-size:12px; padding:8px;">Poista</button>' +
+                '</div>';
+            row.querySelector('.dc-dl').addEventListener('click', () => {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'dashcam_' + fmtTs(c.ts).replace(/[:. ]/g, '-') + '.' + extForMime(c.mime || '');
+                a.click();
+            });
+            row.querySelector('.dc-sh').addEventListener('click', async () => {
+                try {
+                    const f = new File([c.blob], 'dashcam_' + c.ts + '.' + extForMime(c.mime || ''), { type: c.mime || 'video/webm' });
+                    if (navigator.canShare && navigator.canShare({ files: [f] })) {
+                        await navigator.share({ files: [f] });
+                    } else {
+                        toast('Jakoa ei tueta - kayta Lataa');
+                    }
+                } catch (e) {}
+            });
+            row.querySelector('.dc-rm').addEventListener('click', async () => {
+                await idbDel(c.id);
+                row.remove();
+                refreshClipCount();
+                if (!list.children.length) list.innerHTML = '<div style="color:var(--subtext-color); padding:12px;">Ei suojattuja klippeja</div>';
+            });
+            list.appendChild(row);
+        });
+    };
+
+    // ---------- Init ----------
+    function init() {
+        const row = document.getElementById('dashcam-row');
+        const toggle = document.getElementById('btn-dashcam-toggle');
+        const protect = document.getElementById('btn-dashcam-protect');
+        const clipsBtn = document.getElementById('btn-dashcam-clips');
+        const close = document.getElementById('btn-dashcam-close');
+        const enabledToggle = document.getElementById('toggle-dashcam-enabled');
+        const sClipCount = document.getElementById('dashcam-set-clips');
+        const sClipSec = document.getElementById('dashcam-set-clipsec');
+        const sRes = document.getElementById('dashcam-set-res');
+        const sAudio = document.getElementById('dashcam-set-audio');
+
+        // Feature flag: nayta/piilota rivi
+        const applyFlag = () => {
+            const on = window.isDashcamEnabled();
+            if (row) row.style.display = on ? 'flex' : 'none';
+            document.body.classList.toggle('dashcam-on', on);
+            if (enabledToggle) enabledToggle.checked = on;
+            if (!on && dc.running) window.dashcamStop();
+        };
+        applyFlag();
+
+        if (enabledToggle) {
+            enabledToggle.addEventListener('change', () => {
+                localStorage.setItem(FLAG, enabledToggle.checked ? '1' : '0');
+                applyFlag();
+                toast(enabledToggle.checked ? 'Dashcam kaytossa' : 'Dashcam pois kaytosta');
+            });
+        }
+        // Asetukset
+        const s = getSettings();
+        if (sClipCount) { sClipCount.value = s.clips; sClipCount.addEventListener('change', () => { s.clips = Math.max(2, Math.min(10, +sClipCount.value || 5)); saveSettings(s); }); }
+        if (sClipSec) { sClipSec.value = s.clipSec; sClipSec.addEventListener('change', () => { s.clipSec = Math.max(15, Math.min(300, +sClipSec.value || 60)); saveSettings(s); }); }
+        if (sRes) { sRes.value = s.res; sRes.addEventListener('change', () => { s.res = sRes.value === '1080p' ? '1080p' : '720p'; saveSettings(s); }); }
+        if (sAudio) { sAudio.checked = !!s.audio; sAudio.addEventListener('change', () => { s.audio = !!sAudio.checked; saveSettings(s); }); }
+
+        if (toggle) toggle.addEventListener('click', () => { if (dc.running) window.dashcamStop(); else dashcamStart(); });
+        if (protect) protect.addEventListener('click', () => window.dashcamProtect('manual'));
+        if (clipsBtn) clipsBtn.addEventListener('click', () => window.dashcamOpenManager());
+        if (close) close.addEventListener('click', () => { document.getElementById('dashcam-modal').style.display = 'none'; });
+
+        refreshClipCount();
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})();
