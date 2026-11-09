@@ -2,7 +2,7 @@
 // SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.78 paste
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v7.10-dashcam'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v7.11-dc-fix'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
