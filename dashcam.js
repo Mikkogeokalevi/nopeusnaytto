@@ -166,6 +166,16 @@
         };
         try { dc.recorder.start(); } catch (e) { return; }
         dc._clipTimer = setTimeout(() => { try { dc.recorder.stop(); } catch (e) {} }, s.clipSec * 1000);
+        // REC-nappiin klipin etenemisaika (v7.12)
+        dc._clipStartTs = Date.now();
+        if (dc._recTimer) clearInterval(dc._recTimer);
+        dc._recTimer = setInterval(() => {
+            const t = document.getElementById('btn-dashcam-toggle');
+            if (t && dc.running) {
+                const el = Math.min(Math.floor((Date.now() - dc._clipStartTs) / 1000), s.clipSec);
+                t.innerHTML = '🔴 ' + el + 's/' + s.clipSec + 's';
+            }
+        }, 500);
     }
 
     // ---------- Start / Stop ----------
@@ -212,6 +222,7 @@
     function stopAll() {
         dc.stopped = true;
         if (dc._clipTimer) { clearTimeout(dc._clipTimer); dc._clipTimer = null; }
+        if (dc._recTimer) { clearInterval(dc._recTimer); dc._recTimer = null; }
         if (dc.drawRaf) { cancelAnimationFrame(dc.drawRaf); dc.drawRaf = null; }
         if (dc.recorder && dc.recorder.state !== 'inactive') { try { dc.recorder.stop(); } catch (e) {} }
         if (dc.stream) { dc.stream.getTracks().forEach(t => t.stop()); dc.stream = null; }
@@ -302,7 +313,7 @@
     function fmtSize(b) { return (b / 1048576).toFixed(1) + ' MB'; }
     function fmtTs(ts) {
         const d = new Date(ts), p = (n) => (n < 10 ? '0' + n : '' + n);
-        return p(d.getDate()) + '.' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+        return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
     }
 
     window.dashcamOpenManager = async function() {
