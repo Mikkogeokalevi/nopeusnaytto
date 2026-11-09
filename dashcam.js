@@ -429,6 +429,7 @@
         const close = document.getElementById('btn-dashcam-close');
         const prevBtn = document.getElementById('btn-dashcam-preview');
         const prevClose = document.getElementById('btn-dashcam-preview-close');
+        const prevX = document.getElementById('btn-dashcam-preview-x');
         const prevStart = document.getElementById('btn-dashcam-preview-start');
         const enabledToggle = document.getElementById('toggle-dashcam-enabled');
         const sClipCount = document.getElementById('dashcam-set-clips');
@@ -466,6 +467,7 @@
         if (close) close.addEventListener('click', () => { document.getElementById('dashcam-modal').style.display = 'none'; });
         if (prevBtn) prevBtn.addEventListener('click', () => window.dashcamOpenPreview());
         if (prevClose) prevClose.addEventListener('click', () => window.dashcamClosePreview());
+        if (prevX) prevX.addEventListener('click', () => window.dashcamClosePreview());
         if (prevStart) prevStart.addEventListener('click', () => { window.dashcamClosePreview(); dashcamStart(); });
 
         refreshClipCount();

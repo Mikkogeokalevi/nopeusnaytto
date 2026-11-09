@@ -2,7 +2,7 @@
 // SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.78 paste
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v7.12-dc-timer'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v7.13-dc-xbtn'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

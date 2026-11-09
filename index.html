@@ -11,11 +11,11 @@
     <meta name="theme-color" content="#1e1e1e">
     
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="ajopaivakirja_logo.png?v=7.12">
-    <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=7.12">
+    <link rel="icon" type="image/png" href="ajopaivakirja_logo.png?v=7.13">
+    <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=7.13">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=7.12">
+    <link rel="stylesheet" href="style.css?v=7.13">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -67,7 +67,7 @@
 
     <div id="splash-screen">
         <div class="splash-content">
-            <img src="ajopaivakirja_logo_mu.png?v=7.12" alt="Logo" class="splash-logo">
+            <img src="ajopaivakirja_logo_mu.png?v=7.13" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
             <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.98...</p>
             <div class="splash-spinner" aria-hidden="true"></div>
@@ -164,7 +164,7 @@
 
     <div id="login-view" style="display:none;">
         <div class="login-content">
-            <img src="ajopaivakirja_logo.png?v=7.12" alt="Logo" class="login-logo">
+            <img src="ajopaivakirja_logo.png?v=7.13" alt="Logo" class="login-logo">
             <h2>Tervetuloa</h2>
             <p>Kirjaudu sisään tallentaaksesi ajot.</p>
             
@@ -194,7 +194,7 @@
         
         <div class="top-bar-container">
             <div style="display:flex; align-items:center; gap:10px;">
-                <img src="ajopaivakirja_logo.png?v=7.12" class="header-logo" id="app-logo" alt="App Logo" title="Palaa mittaristoon">
+                <img src="ajopaivakirja_logo.png?v=7.13" class="header-logo" id="app-logo" alt="App Logo" title="Palaa mittaristoon">
                 <select id="car-select" class="top-car-select" aria-label="Valitse ajoneuvo">
                     <option value="all">Kaikki ajoneuvot</option>
                 </select>
@@ -212,7 +212,7 @@
 
         <div id="main-menu" class="menu-dropdown" style="display: none;">
             <div class="menu-header">
-                <img id="user-photo" class="menu-user-avatar" src="ajopaivakirja_logo.png?v=7.12" alt="User">
+                <img id="user-photo" class="menu-user-avatar" src="ajopaivakirja_logo.png?v=7.13" alt="User">
                 <div>
                     <span id="user-name" class="menu-user-name">Käyttäjä</span>
                     <div id="menu-version-el" style="font-size:10px; opacity:0.7;">Mikkokalevin Ajopäiväkirja Pro</div>
@@ -465,8 +465,8 @@
                  </div>
 
                  <div class="bottom-branding">
-                     <img src="alareunakuva_mu.png?v=7.12" class="footer-img dark-mode-img" alt="Footer Dark">
-                     <img src="alareunakuva.png?v=7.12" class="footer-img light-mode-img" alt="Footer Light">
+                     <img src="alareunakuva_mu.png?v=7.13" class="footer-img dark-mode-img" alt="Footer Dark">
+                     <img src="alareunakuva.png?v=7.13" class="footer-img light-mode-img" alt="Footer Light">
                  </div>
             </div>
 
@@ -973,7 +973,7 @@
                     <button id="btn-stop-rec" class="action-btn red-btn" style="flex:1; max-width:170px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-stop"/></svg> LOPETA</button>
                 </div>
 
-                <!-- Dashcam-rivi (nayttaa vain kun dashcamEnabled=1, v7.12) -->
+                <!-- Dashcam-rivi (nayttaa vain kun dashcamEnabled=1, v7.13) -->
                 <div id="dashcam-row" style="display:none; gap:8px; width:100%; justify-content:center; margin-top:6px; flex-wrap:wrap;">
                     <button id="btn-dashcam-toggle" class="action-btn secondary-btn" style="flex:1; min-width:105px; max-width:150px; font-size:12px; padding:8px 4px;">📹 DASHCAM</button>
                     <button id="btn-dashcam-preview" class="action-btn secondary-btn" style="flex:1; min-width:105px; max-width:150px; font-size:12px; padding:8px 4px;">👁 ESIL.</button>
@@ -1049,7 +1049,8 @@
     </div>
 
     <div id="dashcam-preview-modal" class="modal-overlay" style="display:none; z-index:1200;">
-        <div class="modal-content" style="max-width:520px;">
+        <div class="modal-content" style="max-width:520px; position:relative;">
+            <button id="btn-dashcam-preview-x" aria-label="Sulje" style="position:absolute; top:10px; right:12px; width:36px; height:36px; border-radius:50%; border:none; background:rgba(255,255,255,0.12); color:var(--text-color); font-size:18px; font-weight:bold; cursor:pointer;">✕</button>
             <h3 style="margin-top:0; color:var(--accent-color);">Kameran esikatselu</h3>
             <video id="dashcam-preview-video" autoplay playsinline muted style="width:100%; border-radius:10px; background:#000; max-height:55dvh;"></video>
             <div style="font-size:12px; color:var(--subtext-color); margin:8px 0;">Suuntaa puhelin niin, etta tie nayttaa hyvalta. Tama ei nauhoita.</div>
@@ -1339,18 +1340,18 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=7.12"></script>
-    <script src="visuals.js?v=7.12"></script>
-    <script src="ui.js?v=7.12"></script>
-    <script src="auth.js?v=7.12"></script>
-    <script src="map.js?v=7.12"></script>
-    <script src="gps.js?v=7.12"></script>
-    <script src="garage.js?v=7.12"></script>
-    <script src="history.js?v=7.12"></script>
-    <script src="help.js?v=7.12"></script>
+    <script src="globals.js?v=7.13"></script>
+    <script src="visuals.js?v=7.13"></script>
+    <script src="ui.js?v=7.13"></script>
+    <script src="auth.js?v=7.13"></script>
+    <script src="map.js?v=7.13"></script>
+    <script src="gps.js?v=7.13"></script>
+    <script src="garage.js?v=7.13"></script>
+    <script src="history.js?v=7.13"></script>
+    <script src="help.js?v=7.13"></script>
     
-    <script src="nav.js?v=7.12"></script>
-    <script src="dashcam.js?v=7.12"></script>
-    <script src="app.js?v=7.12"></script>
+    <script src="nav.js?v=7.13"></script>
+    <script src="dashcam.js?v=7.13"></script>
+    <script src="app.js?v=7.13"></script>
 </body>
 </html>
