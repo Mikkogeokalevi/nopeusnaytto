@@ -40,42 +40,50 @@
     // ---------- IndexedDB ----------
     const DB_NAME = 'dashcam-db';
     const STORE = 'dashcam-kept';
+    const RING_STORE = 'dashcam-ring';
 
     function idbOpen() {
         return new Promise((res, rej) => {
-            const r = indexedDB.open(DB_NAME, 1);
-            r.onupgradeneeded = () => r.result.createObjectStore(STORE, { keyPath: 'id' });
+            const r = indexedDB.open(DB_NAME, 2);
+            r.onupgradeneeded = () => {
+                const db = r.result;
+                if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath: 'id' });
+                if (!db.objectStoreNames.contains(RING_STORE)) db.createObjectStore(RING_STORE, { keyPath: 'id' });
+            };
             r.onsuccess = () => res(r.result);
             r.onerror = () => rej(r.error);
         });
     }
-    async function idbPut(item) {
+    async function idbPutIn(store, item) {
         const db = await idbOpen();
         return new Promise((res, rej) => {
-            const tx = db.transaction(STORE, 'readwrite');
-            tx.objectStore(STORE).put(item);
+            const tx = db.transaction(store, 'readwrite');
+            tx.objectStore(store).put(item);
             tx.oncomplete = () => res();
             tx.onerror = () => rej(tx.error);
         });
     }
-    async function idbAll() {
+    async function idbAllIn(store) {
         const db = await idbOpen();
         return new Promise((res, rej) => {
-            const tx = db.transaction(STORE, 'readonly');
-            const r = tx.objectStore(STORE).getAll();
+            const tx = db.transaction(store, 'readonly');
+            const r = tx.objectStore(store).getAll();
             r.onsuccess = () => res(r.result || []);
             r.onerror = () => rej(r.error);
         });
     }
-    async function idbDel(id) {
+    async function idbDelIn(store, id) {
         const db = await idbOpen();
         return new Promise((res, rej) => {
-            const tx = db.transaction(STORE, 'readwrite');
-            const r = tx.objectStore(STORE).delete(id);
+            const tx = db.transaction(store, 'readwrite');
+            const r = tx.objectStore(store).delete(id);
             r.onsuccess = () => res();
             r.onerror = () => rej(r.error);
         });
     }
+    const idbPut = (item) => idbPutIn(STORE, item);
+    const idbAll = () => idbAllIn(STORE);
+    const idbDel = (id) => idbDelIn(STORE, id);
 
     // ---------- Valinnat ----------
     function pickMime(audio) {
@@ -152,9 +160,15 @@
         dc.recorder.onstop = () => {
             const blob = new Blob(dc.chunks, { type: dc.recorder.mimeType || 'video/webm' });
             if (blob.size > 1000) {
-                dc.ring.push({ id: 'r' + Date.now() + '_' + dc.clipIdx, ts: Date.now(), blob, durMs: s.clipSec * 1000 });
+                const clip = { id: 'r' + Date.now() + '_' + dc.clipIdx, ts: Date.now(), blob, durMs: s.clipSec * 1000 };
+                dc.ring.push(clip);
                 dc.clipIdx++;
-                while (dc.ring.length > s.clips) dc.ring.shift();
+                // Renkaan sailytys IndexedDB:ssa - klippi selviaa reloadin (v7.15)
+                idbPutIn(RING_STORE, { id: clip.id, ts: clip.ts, durationMs: clip.durMs, mime: blob.type, blob }).catch(() => {});
+                while (dc.ring.length > s.clips) {
+                    const ev = dc.ring.shift();
+                    idbDelIn(RING_STORE, ev.id).catch(() => {});
+                }
             }
             // Suojaus odotti klipin paattymista (v7.11)
             if (dc._protectAfterStop) {
@@ -453,6 +467,17 @@
             if (!on && dc.running) window.dashcamStop();
         };
         applyFlag();
+
+        // Lataa edellisen istunnon rengasklipit IDB:sta (v7.15)
+        idbAllIn(RING_STORE).then(items => {
+            if (!items || !items.length) return;
+            items.sort((a, b) => a.ts - b.ts);
+            const s2 = getSettings();
+            dc.ring = items.slice(-s2.clips).map(i => ({ id: i.id, ts: i.ts, blob: i.blob, durMs: i.durationMs }));
+            // Poista ylimaaraiset vanhat
+            const maxId = dc.ring.length ? dc.ring[0].ts : 0;
+            items.forEach(i => { if (i.ts < maxId && !dc.ring.find(c => c.id === i.id)) idbDelIn(RING_STORE, i.id).catch(() => {}); });
+        }).catch(() => {});
 
         if (enabledToggle) {
             enabledToggle.addEventListener('change', () => {
