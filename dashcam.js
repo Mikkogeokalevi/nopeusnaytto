@@ -224,8 +224,15 @@
         if (dc._clipTimer) { clearTimeout(dc._clipTimer); dc._clipTimer = null; }
         if (dc._recTimer) { clearInterval(dc._recTimer); dc._recTimer = null; }
         if (dc.drawRaf) { cancelAnimationFrame(dc.drawRaf); dc.drawRaf = null; }
-        if (dc.recorder && dc.recorder.state !== 'inactive') { try { dc.recorder.stop(); } catch (e) {} }
-        if (dc.stream) { dc.stream.getTracks().forEach(t => t.stop()); dc.stream = null; }
+        // Menossa oleva klippi tulee pysayttaa ENNEN kameran sulkemista (v7.14)
+        // jotta sen loppuosa ehtii renkaaseen (onstop-handleri puskee sen)
+        const killStream = () => { if (dc.stream) { dc.stream.getTracks().forEach(t => t.stop()); dc.stream = null; } };
+        if (dc.recorder && dc.recorder.state !== 'inactive') {
+            try { dc.recorder.stop(); } catch (e) { killStream(); }
+            setTimeout(killStream, 400); // anna onstop-tapahtuman puskea klippi renkaaseen
+        } else {
+            killStream();
+        }
         dc.video = null;
         dc.recorder = null;
         dc.running = false;
