@@ -46,6 +46,7 @@ window.setGpsToggleState = (btn, on) => {
 const views = {
     dashboard: document.getElementById('dashboard-view'),
     map: document.getElementById('map-view'),
+    dashcam: document.getElementById('dashcam-view'),
     history: document.getElementById('history-view'),
     stats: document.getElementById('stats-view'),
     settings: document.getElementById('settings-view'),
@@ -66,6 +67,7 @@ const navBtns = {
 const botNavBtns = {
     dashboard: document.getElementById('bot-nav-dashboard'),
     map: document.getElementById('bot-nav-map'),
+    dashcam: document.getElementById('bot-nav-dashcam'),
     history: document.getElementById('bot-nav-history'),
     stats: document.getElementById('bot-nav-stats'),
     settings: document.getElementById('bot-nav-settings')
@@ -1061,6 +1063,9 @@ function switchView(viewName) {
         }
     }
     
+    if (viewName === 'dashcam' && typeof window.dashcamTabEnter === 'function') window.dashcamTabEnter();
+    else if (typeof window.dashcamTabLeave === 'function') window.dashcamTabLeave();
+
     if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
@@ -1524,6 +1529,7 @@ if (navBtns.help) navBtns.help.addEventListener('click', () => {
 // Alapalkki
 if (botNavBtns.dashboard) botNavBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
 if (botNavBtns.map) botNavBtns.map.addEventListener('click', () => switchView('map'));
+if (botNavBtns.dashcam) botNavBtns.dashcam.addEventListener('click', () => switchView('dashcam'));
 if (botNavBtns.history) botNavBtns.history.addEventListener('click', () => switchView('history'));
 if (botNavBtns.stats) botNavBtns.stats.addEventListener('click', () => switchView('stats'));
 if (botNavBtns.settings) botNavBtns.settings.addEventListener('click', () => switchView('settings'));

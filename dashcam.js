@@ -323,6 +323,15 @@
             t.classList.toggle('secondary-btn', !rec);
         }
         if (p) p.style.display = rec ? '' : 'none';
+        // Klipit-valilehden vastaavat napit (v7.17)
+        const vr = document.getElementById('btn-dc-view-rec');
+        if (vr) {
+            vr.innerHTML = rec ? '🔴 Pysäytä nauhoitus' : '📹 Aloita nauhoitus';
+            vr.classList.toggle('red-btn', !!rec);
+            vr.classList.toggle('secondary-btn', !rec);
+        }
+        const vp = document.getElementById('btn-dc-view-protect');
+        if (vp) vp.style.display = rec ? '' : 'none';
         document.body.classList.toggle('dashcam-rec', !!rec);
     }
 
@@ -340,11 +349,9 @@
     }
 
     window.dashcamOpenManager = async function() {
-        const modal = document.getElementById('dashcam-modal');
         const list = document.getElementById('dashcam-clips-list');
-        if (!modal || !list) return;
+        if (!list) return;
         list.innerHTML = '<div class="loading">Ladataan...</div>';
-        modal.style.display = 'flex';
         let clips = [];
         try { clips = await idbAll(); } catch (e) {}
         clips.sort((a, b) => b.ts - a.ts);
@@ -420,12 +427,13 @@
         });
     };
 
-    // ---------- Esikatselu (kameran suuntaus, v7.11) ----------
+    // ---------- Esikatselu (inline Klipit-valilehdella, v7.17) ----------
     let previewStream = null;
     window.dashcamOpenPreview = async function() {
-        const modal = document.getElementById('dashcam-preview-modal');
         const vid = document.getElementById('dashcam-preview-video');
-        if (!modal || !vid) return;
+        const hint = document.getElementById('dashcam-preview-hint');
+        if (!vid) return;
+        if (previewStream) { window.dashcamClosePreview(); return; } // toggle
         try {
             previewStream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: 'environment' }, audio: false
@@ -433,27 +441,35 @@
         } catch (e) { toast('Kameraa ei saada kayttoon'); return; }
         vid.srcObject = previewStream;
         try { await vid.play(); } catch (e) {}
-        modal.style.display = 'flex';
+        if (hint) hint.style.display = 'none';
+        const pb = document.getElementById('btn-dc-view-preview');
+        if (pb) pb.textContent = '👁 Sulje esikatselu';
     };
     window.dashcamClosePreview = function() {
         if (previewStream) { previewStream.getTracks().forEach(t => t.stop()); previewStream = null; }
         const vid = document.getElementById('dashcam-preview-video');
         if (vid) vid.srcObject = null;
-        const modal = document.getElementById('dashcam-preview-modal');
-        if (modal) modal.style.display = 'none';
+        const hint = document.getElementById('dashcam-preview-hint');
+        if (hint) hint.style.display = '';
+        const pb = document.getElementById('btn-dc-view-preview');
+        if (pb) pb.textContent = '👁 Esikatselu';
     };
+    // Valilehden elinkaari: esikatselu aukeaa sisään tullessa, sammuu poistuttaessa (v7.17)
+    window.dashcamTabEnter = function() {
+        if (!window.isDashcamEnabled()) return;
+        window.dashcamOpenPreview();
+        window.dashcamOpenManager();
+    };
+    window.dashcamTabLeave = function() { window.dashcamClosePreview(); };
 
     // ---------- Init ----------
     function init() {
         const row = document.getElementById('dashcam-row');
         const toggle = document.getElementById('btn-dashcam-toggle');
         const protect = document.getElementById('btn-dashcam-protect');
-        const clipsBtn = document.getElementById('btn-dashcam-clips');
-        const close = document.getElementById('btn-dashcam-close');
-        const prevBtn = document.getElementById('btn-dashcam-preview');
-        const prevClose = document.getElementById('btn-dashcam-preview-close');
-        const prevX = document.getElementById('btn-dashcam-preview-x');
-        const prevStart = document.getElementById('btn-dashcam-preview-start');
+        const viewPrev = document.getElementById('btn-dc-view-preview');
+        const viewRec = document.getElementById('btn-dc-view-rec');
+        const viewProtect = document.getElementById('btn-dc-view-protect');
         const enabledToggle = document.getElementById('toggle-dashcam-enabled');
         const sClipCount = document.getElementById('dashcam-set-clips');
         const sClipSec = document.getElementById('dashcam-set-clipsec');
@@ -466,7 +482,12 @@
             if (row) row.style.display = on ? 'flex' : 'none';
             document.body.classList.toggle('dashcam-on', on);
             if (enabledToggle) enabledToggle.checked = on;
-            if (!on && dc.running) window.dashcamStop();
+            if (!on) {
+                if (dc.running) window.dashcamStop();
+                window.dashcamClosePreview();
+                const dv = document.getElementById('dashcam-view');
+                if (dv && dv.classList.contains('active-view') && typeof switchView === 'function') switchView('dashboard');
+            }
         };
         applyFlag();
 
@@ -497,12 +518,9 @@
 
         if (toggle) toggle.addEventListener('click', () => { if (dc.running) window.dashcamStop(); else dashcamStart(); });
         if (protect) protect.addEventListener('click', () => window.dashcamProtect('manual'));
-        if (clipsBtn) clipsBtn.addEventListener('click', () => window.dashcamOpenManager());
-        if (close) close.addEventListener('click', () => { document.getElementById('dashcam-modal').style.display = 'none'; });
-        if (prevBtn) prevBtn.addEventListener('click', () => window.dashcamOpenPreview());
-        if (prevClose) prevClose.addEventListener('click', () => window.dashcamClosePreview());
-        if (prevX) prevX.addEventListener('click', () => window.dashcamClosePreview());
-        if (prevStart) prevStart.addEventListener('click', () => { window.dashcamClosePreview(); dashcamStart(); });
+        if (viewPrev) viewPrev.addEventListener('click', () => window.dashcamOpenPreview());
+        if (viewRec) viewRec.addEventListener('click', () => { if (dc.running) window.dashcamStop(); else dashcamStart(); });
+        if (viewProtect) viewProtect.addEventListener('click', () => window.dashcamProtect('manual'));
 
         refreshClipCount();
     }

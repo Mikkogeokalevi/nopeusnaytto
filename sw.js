@@ -2,7 +2,7 @@
 // SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.78 paste
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v7.16-compact-clipfix'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v7.17-clipstab'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

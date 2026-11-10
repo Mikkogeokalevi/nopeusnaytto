@@ -1194,6 +1194,10 @@ body.hud-mode .stat-card { border: 2px solid #004400; }
     color: var(--accent-color);
 }
 
+/* Klipit-välilehti näkyy vain kun dashcam käytössä (v7.17) */
+#bot-nav-dashcam { display: none !important; }
+body.dashcam-on #bot-nav-dashcam { display: flex !important; }
+
 .bottom-nav-icon {
     font-size: 20px; margin-bottom: 2px;
 }
