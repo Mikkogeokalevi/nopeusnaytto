@@ -454,10 +454,10 @@
         const pb = document.getElementById('btn-dc-view-preview');
         if (pb) pb.textContent = '👁 Esikatselu';
     };
-    // Valilehden elinkaari: esikatselu aukeaa sisään tullessa, sammuu poistuttaessa (v7.17)
+    // Valilehden elinkaari: lista paivittyy tullessa, esikatselu sammuu poistuttaessa (v7.17)
+    // Esikatselu EI kaynnisty automaattisesti - kaynnistetaan napista (v7.18)
     window.dashcamTabEnter = function() {
         if (!window.isDashcamEnabled()) return;
-        window.dashcamOpenPreview();
         window.dashcamOpenManager();
     };
     window.dashcamTabLeave = function() { window.dashcamClosePreview(); };
