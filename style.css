@@ -1537,6 +1537,7 @@ body.sunlight-mode .huge-unit, body.sunlight-mode .stat-label, body.sunlight-mod
 }
 .nav-open-btn { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 64px) !important; }
 .nav-mute-btn { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 118px) !important; }
+.map-mark-btn { top: 64px !important; display: inline-flex; align-items: center; gap: 6px; }
 #nav-dash-panel {
   display: flex; align-items: center; gap: 10px;
   margin: 8px 12px 0; padding: 8px 12px;

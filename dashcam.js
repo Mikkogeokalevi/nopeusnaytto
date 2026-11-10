@@ -156,11 +156,13 @@
         } catch (e) {
             try { dc.recorder = new MediaRecorder(dc.recStream); } catch (e2) { stopAll(); return; }
         }
-        dc.recorder.ondataavailable = (ev) => { if (ev.data && ev.data.size) dc.chunks.push(ev.data); };
-        dc.recorder.onstop = () => {
-            const blob = new Blob(dc.chunks, { type: dc.recorder.mimeType || 'video/webm' });
+        // rec lokaalisti: stopAll() nollaa dc.recorderin ennen kuin onstop ehtii (v7.16)
+        const rec = dc.recorder;
+        rec.ondataavailable = (ev) => { if (ev.data && ev.data.size) dc.chunks.push(ev.data); };
+        rec.onstop = () => {
+            const blob = new Blob(dc.chunks, { type: rec.mimeType || 'video/webm' });
             if (blob.size > 1000) {
-                const clip = { id: 'r' + Date.now() + '_' + dc.clipIdx, ts: Date.now(), blob, durMs: s.clipSec * 1000 };
+                const clip = { id: 'r' + Date.now() + '_' + dc.clipIdx, ts: Date.now(), blob, durMs: dc._clipStartTs ? (Date.now() - dc._clipStartTs) : s.clipSec * 1000 };
                 dc.ring.push(clip);
                 dc.clipIdx++;
                 // Renkaan sailytys IndexedDB:ssa - klippi selviaa reloadin (v7.15)
@@ -178,8 +180,8 @@
             }
             if (!dc.stopped) startClip();
         };
-        try { dc.recorder.start(); } catch (e) { return; }
-        dc._clipTimer = setTimeout(() => { try { dc.recorder.stop(); } catch (e) {} }, s.clipSec * 1000);
+        try { rec.start(); } catch (e) { return; }
+        dc._clipTimer = setTimeout(() => { try { rec.stop(); } catch (e) {} }, s.clipSec * 1000);
         // REC-nappiin klipin etenemisaika (v7.12)
         dc._clipStartTs = Date.now();
         if (dc._recTimer) clearInterval(dc._recTimer);

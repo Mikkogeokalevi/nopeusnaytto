@@ -2,7 +2,7 @@
 // SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.78 paste
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v7.15-ring-idb'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v7.16-compact-clipfix'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

@@ -11,11 +11,11 @@
     <meta name="theme-color" content="#1e1e1e">
     
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="ajopaivakirja_logo.png?v=7.15">
-    <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=7.15">
+    <link rel="icon" type="image/png" href="ajopaivakirja_logo.png?v=7.16">
+    <link rel="apple-touch-icon" href="ajopaivakirja_logo.png?v=7.16">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=7.15">
+    <link rel="stylesheet" href="style.css?v=7.16">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -67,7 +67,7 @@
 
     <div id="splash-screen">
         <div class="splash-content">
-            <img src="ajopaivakirja_logo_mu.png?v=7.15" alt="Logo" class="splash-logo">
+            <img src="ajopaivakirja_logo_mu.png?v=7.16" alt="Logo" class="splash-logo">
             <h1>Mikkokalevin<br>Ajopäiväkirja Pro</h1>
             <p id="splash-version-el" style="opacity:0.7; font-size:12px;">Ladataan v6.98...</p>
             <div class="splash-spinner" aria-hidden="true"></div>
@@ -164,7 +164,7 @@
 
     <div id="login-view" style="display:none;">
         <div class="login-content">
-            <img src="ajopaivakirja_logo.png?v=7.15" alt="Logo" class="login-logo">
+            <img src="ajopaivakirja_logo.png?v=7.16" alt="Logo" class="login-logo">
             <h2>Tervetuloa</h2>
             <p>Kirjaudu sisään tallentaaksesi ajot.</p>
             
@@ -194,7 +194,7 @@
         
         <div class="top-bar-container">
             <div style="display:flex; align-items:center; gap:10px;">
-                <img src="ajopaivakirja_logo.png?v=7.15" class="header-logo" id="app-logo" alt="App Logo" title="Palaa mittaristoon">
+                <img src="ajopaivakirja_logo.png?v=7.16" class="header-logo" id="app-logo" alt="App Logo" title="Palaa mittaristoon">
                 <select id="car-select" class="top-car-select" aria-label="Valitse ajoneuvo">
                     <option value="all">Kaikki ajoneuvot</option>
                 </select>
@@ -212,7 +212,7 @@
 
         <div id="main-menu" class="menu-dropdown" style="display: none;">
             <div class="menu-header">
-                <img id="user-photo" class="menu-user-avatar" src="ajopaivakirja_logo.png?v=7.15" alt="User">
+                <img id="user-photo" class="menu-user-avatar" src="ajopaivakirja_logo.png?v=7.16" alt="User">
                 <div>
                     <span id="user-name" class="menu-user-name">Käyttäjä</span>
                     <div id="menu-version-el" style="font-size:10px; opacity:0.7;">Mikkokalevin Ajopäiväkirja Pro</div>
@@ -465,8 +465,8 @@
                  </div>
 
                  <div class="bottom-branding">
-                     <img src="alareunakuva_mu.png?v=7.15" class="footer-img dark-mode-img" alt="Footer Dark">
-                     <img src="alareunakuva.png?v=7.15" class="footer-img light-mode-img" alt="Footer Light">
+                     <img src="alareunakuva_mu.png?v=7.16" class="footer-img dark-mode-img" alt="Footer Dark">
+                     <img src="alareunakuva.png?v=7.16" class="footer-img light-mode-img" alt="Footer Light">
                  </div>
             </div>
 
@@ -480,6 +480,7 @@
                 <button id="map-gps-toggle" class="map-gps-btn" aria-label="GPS-seuranta päällä/pois"><svg class="svg-icon" aria-hidden="true"><use href="#i-signal"/></svg><span class="gps-label">GPS ON</span></button>
                 <button id="btn-nav-open" class="map-gps-btn nav-open-btn" aria-label="Avaa navigaatio"><svg class="svg-icon" aria-hidden="true"><use href="#i-navigation"/></svg> NAVIGOI</button>
                 <button id="btn-map-mute" class="map-gps-btn nav-mute-btn" aria-label="Mykistä äänet"><svg class="svg-icon mute-icon" aria-hidden="true"><use href="#i-volume"/></svg></button>
+                <button id="btn-drive-mark" class="map-gps-btn map-mark-btn" aria-label="Lisää merkintä ajolle"><svg class="svg-icon" aria-hidden="true"><use href="#i-pin"/></svg> MERKKAA</button>
                 <div id="nav-panel" style="display:none">
                     <span id="nav-panel-icon">🧭</span>
                     <div class="nav-panel-body">
@@ -966,11 +967,10 @@
                     <button id="btn-goto-history" class="action-btn blue-btn" style="flex:1; white-space:nowrap;"><svg class="svg-icon" aria-hidden="true"><use href="#i-play"/></svg> JATKA</button>
                 </div>
 
-                <div id="active-rec-btns" style="display:none; width:100%; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                    <button id="btn-pause" class="action-btn yellow-btn" style="flex:1; max-width:170px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-pause"/></svg> TAUKO</button>
-                    <button id="btn-resume" class="action-btn blue-btn" style="display:none; flex:1; max-width:170px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-play"/></svg> JATKA</button>
-                    <button id="btn-drive-mark" class="action-btn secondary-btn" style="flex:1; max-width:170px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-pin"/></svg> MERKKAA</button>
-                    <button id="btn-stop-rec" class="action-btn red-btn" style="flex:1; max-width:170px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-stop"/></svg> LOPETA</button>
+                <div id="active-rec-btns" style="display:none; width:100%; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                    <button id="btn-pause" class="action-btn yellow-btn" style="flex:1; min-width:105px; max-width:150px; font-size:12px; padding:8px 4px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-pause"/></svg> TAUKO</button>
+                    <button id="btn-resume" class="action-btn blue-btn" style="display:none; flex:1; min-width:105px; max-width:150px; font-size:12px; padding:8px 4px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-play"/></svg> JATKA</button>
+                    <button id="btn-stop-rec" class="action-btn red-btn" style="flex:1; min-width:105px; max-width:150px; font-size:12px; padding:8px 4px;"><svg class="svg-icon" aria-hidden="true"><use href="#i-stop"/></svg> LOPETA</button>
                 </div>
 
                 <!-- Dashcam-rivi (nayttaa vain kun dashcamEnabled=1, v7.15) -->
@@ -1340,18 +1340,18 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <script src="globals.js?v=7.15"></script>
-    <script src="visuals.js?v=7.15"></script>
-    <script src="ui.js?v=7.15"></script>
-    <script src="auth.js?v=7.15"></script>
-    <script src="map.js?v=7.15"></script>
-    <script src="gps.js?v=7.15"></script>
-    <script src="garage.js?v=7.15"></script>
-    <script src="history.js?v=7.15"></script>
-    <script src="help.js?v=7.15"></script>
+    <script src="globals.js?v=7.16"></script>
+    <script src="visuals.js?v=7.16"></script>
+    <script src="ui.js?v=7.16"></script>
+    <script src="auth.js?v=7.16"></script>
+    <script src="map.js?v=7.16"></script>
+    <script src="gps.js?v=7.16"></script>
+    <script src="garage.js?v=7.16"></script>
+    <script src="history.js?v=7.16"></script>
+    <script src="help.js?v=7.16"></script>
     
-    <script src="nav.js?v=7.15"></script>
-    <script src="dashcam.js?v=7.15"></script>
-    <script src="app.js?v=7.15"></script>
+    <script src="nav.js?v=7.16"></script>
+    <script src="dashcam.js?v=7.16"></script>
+    <script src="app.js?v=7.16"></script>
 </body>
 </html>
