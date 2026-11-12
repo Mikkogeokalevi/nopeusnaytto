@@ -2329,7 +2329,7 @@ function updateTimer() {
 }
 
 function fetchWeather(lat, lon) {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&wind_speed_unit=ms`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day&wind_speed_unit=ms`;
     fetch(url)
         .then(res => res.json())
         .then(data => {
@@ -2349,9 +2349,9 @@ function fetchWeather(lat, lon) {
                 currentDriveWeather = `${emoji} ${temp}°C`;
                 if(dashWeatherEl) dashWeatherEl.innerText = currentDriveWeather;
 
-                // 3D v2: tien ilme saan mukaan (v7.03); testiohjaus v7.05
+                // 3D v2: tien ilme saan mukaan (v7.03); testiohjaus v7.05; yo-raja is_day:lla (v7.24)
                 if (typeof window.applyP3dSceneWx === 'function') {
-                    const cls = window._p3dWxOverride || (typeof window.p3dWxFromCode === 'function' ? window.p3dWxFromCode(code) : null);
+                    const cls = window._p3dWxOverride || (typeof window.p3dWxFromCode === 'function' ? window.p3dWxFromCode(code, data.current.is_day) : null);
                     window.applyP3dSceneWx(cls);
                 }
                 // Talviolosuhdevaroitus kerran per istunto (v6.74)

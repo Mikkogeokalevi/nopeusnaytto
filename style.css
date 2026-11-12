@@ -1991,6 +1991,34 @@ body.speedo-premium3dv2 .p3d-scene.wx-sun .p3d-road {
     box-shadow: inset 0 24px 40px rgba(0,0,0,0.4), inset 0 -12px 30px rgba(255,180,80,0.08);
 }
 
+/* KIRKAS YO: kuu + tuikkivat tahdet + pimea tie (v7.24) */
+body.speedo-premium3dv2 .p3d-scene.wx-night .p3d-sky {
+    background: linear-gradient(180deg, rgba(4,8,22,0.92) 0%, rgba(8,16,36,0.6) 60%, transparent 100%);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-night .p3d-sky::before {
+    content: '';
+    position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
+    width: 52px; height: 52px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(235,240,252,0.9) 0%, rgba(195,210,240,0.4) 55%, transparent 75%);
+    box-shadow: 0 0 34px rgba(180,200,255,0.35);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-night .p3d-sky::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,0.95) 1.1px, transparent 1.2px),
+        radial-gradient(circle, rgba(200,220,255,0.7) 0.8px, transparent 0.9px);
+    background-size: 47px 47px, 29px 29px;
+    background-position: 0 0, 11px 17px;
+    animation: p3dTwinkle 3.5s ease-in-out infinite alternate;
+}
+@keyframes p3dTwinkle { from { opacity: 0.55; } to { opacity: 1; } }
+body.speedo-premium3dv2 .p3d-scene.wx-night .p3d-road {
+    background: linear-gradient(180deg, rgba(12,18,32,0) 0%, rgba(10,16,30,0.88) 20%, rgba(5,9,20,0.96) 60%);
+    box-shadow: inset 0 24px 40px rgba(0,0,0,0.75), inset 0 -12px 28px rgba(90,130,210,0.12);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-night .p3d-lane { opacity: 0.65; }
+
 /* PILVINEN: harmaa peitto taivaalla + himmeampi tie (v7.22) */
 body.speedo-premium3dv2 .p3d-scene.wx-cloud .p3d-sky {
     background: linear-gradient(180deg, rgba(120,135,155,0.6) 0%, rgba(90,105,125,0.32) 65%, transparent 100%);
