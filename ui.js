@@ -2557,21 +2557,26 @@ function ttsPopulateVoices() {
     window.applyP3dSceneWx = function(cls) {
         const s = document.getElementById('p3d-scene');
         if (!s) return;
-        s.classList.remove('wx-wet', 'wx-snow', 'wx-fog', 'wx-storm');
+        s.classList.remove('wx-sun', 'wx-cloud', 'wx-drizzle', 'wx-wet', 'wx-sleet', 'wx-snow', 'wx-fog', 'wx-storm');
         if (cls) s.classList.add(cls);
     };
+    // Suomalainen saaluokitus (v7.22): aurinko/pilvinen/tihku/vesisade/ranta/lumi/sumu/ukkonen
     window.p3dWxFromCode = function(code) {
         if (code >= 95) return 'wx-storm';
         if ((code >= 71 && code <= 77) || code === 85 || code === 86) return 'wx-snow';
         if (code === 45 || code === 48) return 'wx-fog';
-        if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return 'wx-wet';
+        if (code === 56 || code === 57 || code === 66 || code === 67) return 'wx-sleet';
+        if (code === 51 || code === 53 || code === 55) return 'wx-drizzle';
+        if ((code >= 61 && code <= 65) || (code >= 80 && code <= 82)) return 'wx-wet';
+        if (code >= 2 && code <= 4) return 'wx-cloud';
+        if (code === 0 || code === 1) return 'wx-sun';
         return null;
     };
 
     const dashWeatherEl = document.getElementById('dash-weather');
     if (!dashWeatherEl) return;
-    const cycle = [null, 'wx-wet', 'wx-snow', 'wx-fog', 'wx-storm'];
-    const names = { 'wx-wet': 'Sade', 'wx-snow': 'Lumi', 'wx-fog': 'Sumu', 'wx-storm': 'Myrsky' };
+    const cycle = [null, 'wx-sun', 'wx-cloud', 'wx-drizzle', 'wx-wet', 'wx-sleet', 'wx-snow', 'wx-fog', 'wx-storm'];
+    const names = { 'wx-sun': 'Aurinko', 'wx-cloud': 'Pilvinen', 'wx-drizzle': 'Tihkusade', 'wx-wet': 'Vesisade', 'wx-sleet': 'Räntäsade', 'wx-snow': 'Lumisade', 'wx-fog': 'Sumu', 'wx-storm': 'Ukkonen' };
     let idx = 0, timer = null;
     const run = () => {
         idx = (idx + 1) % cycle.length;

@@ -1974,6 +1974,72 @@ body.speedo-premium3dv2 .p3d-road::after {
     pointer-events: none;
 }
 
+/* AURINKO: lammin hehku + auringonkiekko taivaalla + kirkkaampi asfaltti (v7.22) */
+body.speedo-premium3dv2 .p3d-scene.wx-sun .p3d-sky {
+    background: linear-gradient(180deg, rgba(255,190,80,0.4) 0%, rgba(255,150,50,0.14) 55%, transparent 100%);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-sun .p3d-sky::before {
+    content: '';
+    position: absolute; top: -12%; left: 50%; transform: translateX(-50%);
+    width: 70px; height: 70px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,240,190,0.95) 0%, rgba(255,200,90,0.55) 45%, transparent 72%);
+    animation: p3dSunGlow 4s ease-in-out infinite alternate;
+}
+@keyframes p3dSunGlow { from { opacity: 0.75; transform: translateX(-50%) scale(1); } to { opacity: 1; transform: translateX(-50%) scale(1.12); } }
+body.speedo-premium3dv2 .p3d-scene.wx-sun .p3d-road {
+    background: linear-gradient(180deg, rgba(50,58,72,0) 0%, rgba(42,50,64,0.8) 20%, rgba(26,32,44,0.92) 60%);
+    box-shadow: inset 0 24px 40px rgba(0,0,0,0.4), inset 0 -12px 30px rgba(255,180,80,0.08);
+}
+
+/* PILVINEN: harmaa peitto taivaalla + himmeampi tie (v7.22) */
+body.speedo-premium3dv2 .p3d-scene.wx-cloud .p3d-sky {
+    background: linear-gradient(180deg, rgba(120,135,155,0.6) 0%, rgba(90,105,125,0.32) 65%, transparent 100%);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-cloud .p3d-sky::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(ellipse 60px 18px at 30% 20%, rgba(200,210,225,0.35), transparent 70%),
+        radial-gradient(ellipse 80px 22px at 70% 12%, rgba(190,200,215,0.28), transparent 70%),
+        radial-gradient(ellipse 90px 20px at 50% 32%, rgba(180,190,205,0.22), transparent 70%);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-cloud .p3d-road {
+    filter: brightness(0.82) saturate(0.8);
+}
+
+/* TIHKU: harva hieno utu + kostea tie (v7.22) */
+body.speedo-premium3dv2 .p3d-scene.wx-drizzle .p3d-road {
+    background: linear-gradient(180deg, rgba(24,34,48,0) 0%, rgba(20,30,46,0.85) 20%, rgba(12,19,32,0.95) 60%);
+    box-shadow: inset 0 24px 40px rgba(0,0,0,0.6), inset 0 -10px 26px rgba(90,140,200,0.10);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-drizzle .p3d-road::after {
+    opacity: 1;
+    background-image:
+        radial-gradient(circle, rgba(180,210,250,0.35) 0.8px, transparent 0.9px),
+        repeating-linear-gradient(103deg, rgba(160,195,245,0.07) 0 1px, transparent 1px 52px);
+    background-size: 15px 15px, auto;
+    animation: p3dDrizzle 1.6s linear infinite;
+}
+@keyframes p3dDrizzle { from { transform: translateY(-15px); } to { transform: translateY(0); } }
+
+/* RANTA: sade + hiutaleet sekaisin, loskainen tie (v7.22) */
+body.speedo-premium3dv2 .p3d-scene.wx-sleet .p3d-road {
+    background: linear-gradient(180deg, rgba(40,50,66,0) 0%, rgba(36,46,62,0.85) 20%, rgba(22,30,44,0.95) 60%);
+    border-left-color: rgba(170,195,225,0.4);
+    border-right-color: rgba(170,195,225,0.4);
+    box-shadow: inset 0 24px 40px rgba(0,0,0,0.65), inset 0 -12px 28px rgba(160,190,230,0.12);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-sleet .p3d-lane { opacity: 0.6; }
+body.speedo-premium3dv2 .p3d-scene.wx-sleet .p3d-road::after {
+    opacity: 1;
+    background-image:
+        repeating-linear-gradient(102deg, rgba(170,205,255,0.18) 0 2px, transparent 2px 30px),
+        radial-gradient(circle, rgba(255,255,255,0.7) 1.4px, transparent 1.5px);
+    background-size: auto, 24px 24px;
+    background-position: 0 0, 6px 9px;
+    animation: p3dRain .5s linear infinite;
+}
+
 /* MARKA: tumma kiiltava tie + vino sadepinta */
 body.speedo-premium3dv2 .p3d-scene.wx-wet .p3d-road {
     background: linear-gradient(180deg, rgba(20,30,45,0) 0%, rgba(16,26,44,0.9) 20%, rgba(8,14,26,0.97) 60%);
@@ -1981,12 +2047,15 @@ body.speedo-premium3dv2 .p3d-scene.wx-wet .p3d-road {
 }
 body.speedo-premium3dv2 .p3d-scene.wx-wet .p3d-road::after {
     opacity: 1;
-    background-image: repeating-linear-gradient(105deg, rgba(160,200,255,0.16) 0 2px, transparent 2px 34px);
-    animation: p3dRain .5s linear infinite;
+    /* Kaksi eri kulmaa + eri tiheys = luonnollinen sade (v7.21) */
+    background-image:
+        repeating-linear-gradient(100deg, rgba(170,205,255,0.20) 0 2px, transparent 2px 26px),
+        repeating-linear-gradient(113deg, rgba(140,180,240,0.10) 0 1px, transparent 1px 46px);
+    animation: p3dRain .45s linear infinite;
 }
-@keyframes p3dRain { from { transform: translateY(-34px); } to { transform: translateY(0); } }
+@keyframes p3dRain { from { transform: translateY(-46px); } to { transform: translateY(0); } }
 
-/* LUMINEN: tie peittyy + lumisade */
+/* LUMINEN: tie peittyy + ajelehtiva lumisade */
 body.speedo-premium3dv2 .p3d-scene.wx-snow .p3d-road {
     background: linear-gradient(180deg, rgba(220,228,240,0) 0%, rgba(205,215,230,0.75) 20%, rgba(235,240,248,0.9) 60%);
     border-left-color: rgba(200,215,235,0.55);
@@ -1996,22 +2065,48 @@ body.speedo-premium3dv2 .p3d-scene.wx-snow .p3d-road {
 body.speedo-premium3dv2 .p3d-scene.wx-snow .p3d-lane { opacity: 0.25; }
 body.speedo-premium3dv2 .p3d-scene.wx-snow .p3d-road::after {
     opacity: 1;
+    /* Kolme hiutalekokoa: iso lahella + pieni kaukana + sivuttaisajo (v7.21) */
     background-image:
-        radial-gradient(circle, rgba(255,255,255,0.9) 1.6px, transparent 1.7px),
-        radial-gradient(circle, rgba(255,255,255,0.55) 1.1px, transparent 1.2px);
-    background-size: 26px 26px, 17px 17px;
-    background-position: 0 0, 8px 12px;
+        radial-gradient(circle, rgba(255,255,255,0.95) 2.2px, transparent 2.3px),
+        radial-gradient(circle, rgba(255,255,255,0.75) 1.5px, transparent 1.6px),
+        radial-gradient(circle, rgba(255,255,255,0.45) 1.0px, transparent 1.1px);
+    background-size: 34px 34px, 22px 22px, 14px 14px;
+    background-position: 0 0, 9px 13px, 4px 7px;
     animation: p3dSnow 2.8s linear infinite;
 }
-@keyframes p3dSnow { from { transform: translateY(-26px); } to { transform: translateY(0); } }
+@keyframes p3dSnow { from { transform: translate(0,-34px); } to { transform: translate(13px,0); } }
 
-/* SUMU: hamartynyt vaimea nakyma */
+/* SUMU: hamartynyt vaimea nakyma + ajelehtivat sumupenkerreet (v7.21) */
 body.speedo-premium3dv2 .p3d-scene.wx-fog .p3d-road { opacity: 0.4; }
 body.speedo-premium3dv2 .p3d-scene.wx-fog { filter: blur(1.5px) brightness(1.25); }
+body.speedo-premium3dv2 .p3d-scene.wx-fog .p3d-road::after {
+    opacity: 1;
+    background: linear-gradient(90deg,
+        transparent 0%, rgba(220,230,240,0.28) 25%,
+        rgba(220,230,240,0.06) 50%, rgba(220,230,240,0.32) 75%,
+        transparent 100%);
+    background-size: 180% 100%;
+    animation: p3dFogDrift 9s ease-in-out infinite alternate;
+}
+@keyframes p3dFogDrift { from { background-position: 0% 0; } to { background-position: 100% 0; } }
 
-/* MYRSKY: syva pimeys + voimakas sade */
+/* MYRSKY: syva pimeys + rankka moninkertainen sade + SALAMA (v7.21) */
 body.speedo-premium3dv2 .p3d-scene.wx-storm .p3d-sky {
     background: linear-gradient(180deg, rgba(5,10,22,0.85) 0%, rgba(8,16,34,0.55) 70%, transparent 100%);
+}
+body.speedo-premium3dv2 .p3d-scene.wx-storm .p3d-sky::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% -10%, rgba(210,228,255,0.95), rgba(160,190,255,0.4) 55%, transparent 90%);
+    opacity: 0;
+    animation: p3dLightning 7s linear infinite;
+}
+@keyframes p3dLightning {
+    0%, 84%, 100% { opacity: 0; }
+    86% { opacity: 0.8; }
+    88% { opacity: 0.12; }
+    90% { opacity: 0.6; }
+    92% { opacity: 0; }
 }
 body.speedo-premium3dv2 .p3d-scene.wx-storm .p3d-road {
     background: linear-gradient(180deg, rgba(15,25,40,0) 0%, rgba(10,18,32,0.95) 20%, rgba(4,8,18,0.98) 60%);
@@ -2019,6 +2114,9 @@ body.speedo-premium3dv2 .p3d-scene.wx-storm .p3d-road {
 }
 body.speedo-premium3dv2 .p3d-scene.wx-storm .p3d-road::after {
     opacity: 1;
-    background-image: repeating-linear-gradient(100deg, rgba(140,180,240,0.22) 0 2px, transparent 2px 24px);
-    animation: p3dRain .35s linear infinite;
+    background-image:
+        repeating-linear-gradient(95deg, rgba(185,210,255,0.30) 0 3px, transparent 3px 18px),
+        repeating-linear-gradient(108deg, rgba(150,185,245,0.18) 0 2px, transparent 2px 30px),
+        repeating-linear-gradient(82deg, rgba(120,160,230,0.12) 0 1px, transparent 1px 48px);
+    animation: p3dRain .3s linear infinite;
 }
