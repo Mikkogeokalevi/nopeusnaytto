@@ -2,7 +2,7 @@
 // SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.78 paste
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v7.19-overlay-addr'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v7.20-portrait-bar'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',

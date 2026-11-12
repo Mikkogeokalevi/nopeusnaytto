@@ -129,27 +129,45 @@
                 dc.ctx.fillRect(0, 0, w, h);
             }
             const o = overlayText();
-            const lines = o.addr ? 3 : 2;
-            const barH = Math.round(h * (lines === 3 ? 0.15 : 0.10));
+            const portrait = h > w;
             dc.ctx.fillStyle = 'rgba(0,0,0,0.55)';
-            dc.ctx.fillRect(0, h - barH, w, barH);
-            dc.ctx.fillStyle = '#fff';
-            dc.ctx.font = 'bold ' + Math.round(barH * 0.36) + 'px monospace';
-            dc.ctx.textBaseline = 'middle';
-            dc.ctx.fillText(o.spd + ' km/h' + (o.wx ? '   ' + o.wx : ''), 14, h - barH / 2);
-            const fs = Math.round(barH * (lines === 3 ? 0.26 : 0.34));
-            dc.ctx.font = fs + 'px monospace';
-            dc.ctx.fillStyle = 'rgba(255,255,255,0.85)';
-            dc.ctx.textAlign = 'right';
-            if (lines === 3) {
-                dc.ctx.fillText(o.line, w - 14, h - barH + barH * 0.18);
-                dc.ctx.fillText(o.loc, w - 14, h - barH + barH * 0.50);
-                dc.ctx.fillText(o.addr, w - 14, h - barH + barH * 0.82);
+            if (portrait) {
+                // Pystyvideo: tiedot pinottuna allekkain - ei paallekkaisyytta (v7.20)
+                const rows = [o.spd + ' km/h' + (o.wx ? '   ' + o.wx : ''), o.line];
+                if (o.loc) rows.push(o.loc.trim());
+                if (o.addr) rows.push(o.addr);
+                const lineH = Math.round(h * 0.034);
+                const barH = lineH * rows.length + Math.round(h * 0.012);
+                dc.ctx.fillRect(0, h - barH, w, barH);
+                dc.ctx.textBaseline = 'middle';
+                dc.ctx.textAlign = 'left';
+                rows.forEach((r, i) => {
+                    dc.ctx.fillStyle = i === 0 ? '#fff' : 'rgba(255,255,255,0.85)';
+                    dc.ctx.font = (i === 0 ? 'bold ' : '') + Math.round(lineH * 0.6) + 'px monospace';
+                    dc.ctx.fillText(r, 14, h - barH + lineH * (i + 0.55) + Math.round(h * 0.006));
+                });
             } else {
-                dc.ctx.fillText(o.line, w - 14, h - barH + barH * 0.28);
-                dc.ctx.fillText(o.loc, w - 14, h - barH + barH * 0.72);
+                const lines = o.addr ? 3 : 2;
+                const barH = Math.round(h * (lines === 3 ? 0.15 : 0.10));
+                dc.ctx.fillRect(0, h - barH, w, barH);
+                dc.ctx.fillStyle = '#fff';
+                dc.ctx.font = 'bold ' + Math.round(barH * 0.36) + 'px monospace';
+                dc.ctx.textBaseline = 'middle';
+                dc.ctx.fillText(o.spd + ' km/h' + (o.wx ? '   ' + o.wx : ''), 14, h - barH / 2);
+                const fs = Math.round(barH * (lines === 3 ? 0.26 : 0.34));
+                dc.ctx.font = fs + 'px monospace';
+                dc.ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                dc.ctx.textAlign = 'right';
+                if (lines === 3) {
+                    dc.ctx.fillText(o.line, w - 14, h - barH + barH * 0.18);
+                    dc.ctx.fillText(o.loc, w - 14, h - barH + barH * 0.50);
+                    dc.ctx.fillText(o.addr, w - 14, h - barH + barH * 0.82);
+                } else {
+                    dc.ctx.fillText(o.line, w - 14, h - barH + barH * 0.28);
+                    dc.ctx.fillText(o.loc, w - 14, h - barH + barH * 0.72);
+                }
+                dc.ctx.textAlign = 'left';
             }
-            dc.ctx.textAlign = 'left';
         } catch (e) {}
         dc.drawRaf = requestAnimationFrame(drawLoop);
     }
