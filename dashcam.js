@@ -112,7 +112,10 @@
             loc = ' ' + (lastLatLng.lat >= 0 ? 'N' : 'S') + ' ' + la.toFixed(5)
                 + ' ' + (lastLatLng.lng >= 0 ? 'E' : 'W') + ' ' + lo.toFixed(5);
         }
-        return { spd, line: t + loc };
+        // Saa nopeuden viereen + katuosoite koordinaattien alle (v7.19)
+        const wx = (typeof currentDriveWeather !== 'undefined' && currentDriveWeather) ? currentDriveWeather : '';
+        const addr = (typeof currentAddress !== 'undefined' && currentAddress && currentAddress.indexOf('Odottaa') !== 0) ? currentAddress : '';
+        return { spd, wx, line: t, loc, addr };
     }
 
     function drawLoop() {
@@ -126,17 +129,26 @@
                 dc.ctx.fillRect(0, 0, w, h);
             }
             const o = overlayText();
-            const barH = Math.round(h * 0.09);
+            const lines = o.addr ? 3 : 2;
+            const barH = Math.round(h * (lines === 3 ? 0.15 : 0.10));
             dc.ctx.fillStyle = 'rgba(0,0,0,0.55)';
             dc.ctx.fillRect(0, h - barH, w, barH);
             dc.ctx.fillStyle = '#fff';
-            dc.ctx.font = 'bold ' + Math.round(barH * 0.52) + 'px monospace';
+            dc.ctx.font = 'bold ' + Math.round(barH * 0.36) + 'px monospace';
             dc.ctx.textBaseline = 'middle';
-            dc.ctx.fillText(o.spd + ' km/h', 14, h - barH / 2);
-            dc.ctx.font = Math.round(barH * 0.40) + 'px monospace';
+            dc.ctx.fillText(o.spd + ' km/h' + (o.wx ? '   ' + o.wx : ''), 14, h - barH / 2);
+            const fs = Math.round(barH * (lines === 3 ? 0.26 : 0.34));
+            dc.ctx.font = fs + 'px monospace';
             dc.ctx.fillStyle = 'rgba(255,255,255,0.85)';
             dc.ctx.textAlign = 'right';
-            dc.ctx.fillText(o.line, w - 14, h - barH / 2);
+            if (lines === 3) {
+                dc.ctx.fillText(o.line, w - 14, h - barH + barH * 0.18);
+                dc.ctx.fillText(o.loc, w - 14, h - barH + barH * 0.50);
+                dc.ctx.fillText(o.addr, w - 14, h - barH + barH * 0.82);
+            } else {
+                dc.ctx.fillText(o.line, w - 14, h - barH + barH * 0.28);
+                dc.ctx.fillText(o.loc, w - 14, h - barH + barH * 0.72);
+            }
             dc.ctx.textAlign = 'left';
         } catch (e) {}
         dc.drawRaf = requestAnimationFrame(drawLoop);
@@ -214,10 +226,16 @@
         dc.video.playsInline = true;
         dc.video.srcObject = dc.stream;
         try { await dc.video.play(); } catch (e) {}
-
+        // Sovita canvas kameravirtaan: pysty puhelin -> pysty video, ei vaaristymia (v7.19)
+        try {
+            if (!dc.video.videoWidth) await new Promise(r => { dc.video.onloadedmetadata = r; setTimeout(r, 800); });
+        } catch (e) {}
+        const vw = dc.video.videoWidth || 1280, vh = dc.video.videoHeight || 720;
+        const longEdge = s.res === '1080p' ? 1920 : 1280;
+        const sc = longEdge / Math.max(vw, vh);
         dc.canvas = document.createElement('canvas');
-        dc.canvas.width = s.res === '1080p' ? 1920 : 1280;
-        dc.canvas.height = s.res === '1080p' ? 1080 : 720;
+        dc.canvas.width = Math.round(vw * sc) & ~1;
+        dc.canvas.height = Math.round(vh * sc) & ~1;
         dc.ctx = dc.canvas.getContext('2d');
         dc.recStream = dc.canvas.captureStream(30);
         if (s.audio) {
@@ -301,6 +319,14 @@
         } catch (e) { toast('Suojaus epaonnistui'); }
     };
 
+    // Poista yksittainen rengasklippi ennen automaattista korvautumista (v7.19)
+    window.dashcamDeleteRingClip = function(id) {
+        const i = dc.ring.findIndex(c => c.id === id);
+        if (i >= 0) dc.ring.splice(i, 1);
+        idbDelIn(RING_STORE, id).catch(() => {});
+        window.dashcamOpenManager();
+    };
+
     // Nappi: jos nauhoitus kaynnissa, lopeta klippi NYT ja suojaa; muuten suojaa renkaan viimeisimmat
     window.dashcamProtect = function(reason) {
         if (dc.recorder && dc.recorder.state === 'recording') {
@@ -370,11 +396,13 @@
                 row.style.cssText = 'margin-bottom:12px; border:1px solid rgba(255,255,255,0.14); border-radius:10px; padding:8px;';
                 row.innerHTML =
                     '<video src="' + url + '" controls playsinline style="width:100%; border-radius:8px; background:#000; max-height:160px;"></video>' +
-                    '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">' +
-                        '<span style="font-size:11px; color:var(--subtext-color);">' + fmtTs(c.ts) + ' · ' + fmtSize(c.blob.size) + '</span>' +
-                        '<button class="action-btn yellow-btn" style="width:auto; font-size:12px; padding:6px 12px;">Suojaa</button>' +
+                    '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; gap:8px;">' +
+                        '<span style="font-size:11px; color:var(--subtext-color); flex:1;">' + fmtTs(c.ts) + ' · ' + fmtSize(c.blob.size) + '</span>' +
+                        '<button class="action-btn yellow-btn dc-prot" style="width:auto; font-size:12px; padding:6px 12px;">Tallenna</button>' +
+                        '<button class="action-btn red-btn dc-del" style="width:auto; font-size:12px; padding:6px 12px;">Poista</button>' +
                     '</div>';
-                row.querySelector('button').addEventListener('click', () => window.dashcamProtectClip(c.id));
+                row.querySelector('.dc-prot').addEventListener('click', () => window.dashcamProtectClip(c.id));
+                row.querySelector('.dc-del').addEventListener('click', () => window.dashcamDeleteRingClip(c.id));
                 list.appendChild(row);
             });
         }
