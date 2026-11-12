@@ -3,13 +3,13 @@
 // =========================================================
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCZIupycr2puYrPK2KajAW7PcThW9Pjhb0",
-    authDomain: "perhekalenteri-projekti.firebaseapp.com",
-    databaseURL: "https://perhekalenteri-projekti-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "perhekalenteri-projekti",
-    storageBucket: "perhekalenteri-projekti.appspot.com",
-    messagingSenderId: "588536838615",
-    appId: "1:588536838615:web:148de0581bbd46c42c7392"
+    apiKey: "AIzaSyC2QG6aK_AQoCuVmtsynVBKo9hc-2iiJhI",
+    authDomain: "nopeusnaytto-55d91.firebaseapp.com",
+    databaseURL: "https://nopeusnaytto-55d91-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "nopeusnaytto-55d91",
+    storageBucket: "nopeusnaytto-55d91.firebasestorage.app",
+    messagingSenderId: "40073830207",
+    appId: "1:40073830207:web:08387835f5a77506febd8a"
 };
 
 // Alustetaan Firebase
@@ -25,7 +25,7 @@ const auth = firebase.auth();
 // =========================================================
 
 // TÄMÄ ON PÄÄVERSIONUMERO - v6.78 (Liita-pakettimodaali: copy/paste-tuonti)
-const APP_VERSION = "7.25";
+const APP_VERSION = "7.26";
 
 // Käyttäjä ja UI tila
 var currentUser = null; 

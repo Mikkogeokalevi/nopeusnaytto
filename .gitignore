@@ -16,3 +16,11 @@ Thumbs.db
 # Node.js (jos käytössä)
 node_modules/
 package-lock.json
+
+# Firebase-migraation JSON-tiedostot (sisaltavat kayttajadataa - EI repoon)
+*-export.json
+*-import.json
+firebase-export*.json
+firebase-import*.json
+ajopaivakirja-export*.json
+ajopaivakirja-import*.json

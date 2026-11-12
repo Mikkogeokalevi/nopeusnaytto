@@ -2,7 +2,7 @@
 // SW.JS - SERVICE WORKER (OFFLINE-LATAUS) v6.78 paste
 // =========================================================
 
-const CACHE_NAME = 'ajopro-v7.25-fb-quota'; // Versionosto pakottaa päivityksen
+const CACHE_NAME = 'ajopro-v7.26-new-firebase'; // Versionosto pakottaa päivityksen
 const urlsToCache = [
     './',
     './index.html',
