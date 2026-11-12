@@ -1066,7 +1066,10 @@ function switchView(viewName) {
     if (viewName === 'dashcam' && typeof window.dashcamTabEnter === 'function') window.dashcamTabEnter();
     else if (typeof window.dashcamTabLeave === 'function') window.dashcamTabLeave();
 
-    if (viewName === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
+    if (viewName === 'history') {
+        if (typeof loadHistory === 'function') loadHistory(); // throttled refresh (v7.25)
+        if (typeof renderHistoryList === 'function') renderHistoryList();
+    }
     if (viewName === 'settings' && typeof renderCarList === 'function') renderCarList();
     if (viewName === 'stats' && typeof renderStats === 'function') renderStats();
     

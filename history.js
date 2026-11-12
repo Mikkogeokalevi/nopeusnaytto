@@ -51,6 +51,7 @@ window.saveDriveSafely = function(driveData, updateKey = null) {
             return db.ref('ajopaivakirja/' + currentUser.uid + '/' + updateKey).update(driveData)
                 .then(() => {
                     if(typeof showToast === 'function') showToast("Ajo päivitetty pilveen! ☁️");
+                    loadHistory(true); // paivitetaan nakyma - ei jatkuvaa kuuntelua (v7.25)
                     return true;
                 })
                 .catch((err) => {
@@ -61,6 +62,7 @@ window.saveDriveSafely = function(driveData, updateKey = null) {
             return db.ref('ajopaivakirja/' + currentUser.uid).push().set(driveData)
                 .then(() => {
                     if(typeof showToast === 'function') showToast("Tallennettu pilveen! ☁️");
+                    loadHistory(true); // paivitetaan nakyma - ei jatkuvaa kuuntelua (v7.25)
                     return true;
                 })
                 .catch((err) => {
@@ -111,6 +113,7 @@ window.syncOfflineDrives = function() {
             pendingDrives = []; 
             localStorage.removeItem('pendingDrives');
             updateSyncButton();
+            loadHistory(true); // haetaan tuore historia kerran (v7.25)
             if(typeof renderHistoryList === 'function') renderHistoryList();
         })
         .catch(err => {
@@ -221,6 +224,7 @@ function saveMultipleDrives(driveList) {
         return Promise.all(promises)
             .then(() => {
                 if (typeof showToast === 'function') showToast(`${driveList.length} ajoa tallennettu! ☁️`);
+                loadHistory(true); // paivitetaan nakyma kerran (v7.25)
                 return true;
             })
             .catch((err) => {
@@ -275,15 +279,21 @@ window.populatePreviewTable = populatePreviewTable;
 window.updateReportPreview = updateReportPreview;
 window.generateReport = generateReport;
 
-function loadHistory() {
+var lastHistoryFetchTs = 0;
+function loadHistory(force) {
     if (!currentUser) return;
+    // Throttle: max 1 haku / 60s ilman pakotusta (v7.25 - Firebase-download-saasto)
+    const now = Date.now();
+    if (force !== true && now - lastHistoryFetchTs < 60000) return;
+    lastHistoryFetchTs = now;
 
     db.ref('ajopaivakirja/' + currentUser.uid).off();
-    
-    // Haetaan data (Viimeiset 1000)
-    const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).orderByChild('startTime').limitToLast(1000); 
 
-    historyRef.on('value', (snapshot) => {
+    // Haetaan data KERRAN (ei jatkuvaa value-kuuntelua joka lataa koko
+    // 80MB solmun jokaisen kirjoituksen jalkeen jokaiseen yhteyteen)
+    const historyRef = db.ref('ajopaivakirja/' + currentUser.uid).orderByChild('startTime').limitToLast(1000);
+
+    historyRef.once('value', (snapshot) => {
         let cloudHistory = [];
         allRefuelings = [];
         
@@ -1319,8 +1329,13 @@ window.deleteOfflineDrive = function(tempId) {
     }
 };
 
-window.updateLogSubject = (key, text) => { 
-    if(currentUser) db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text }); 
+window.updateLogSubject = (key, text) => {
+    if(currentUser) {
+        db.ref('ajopaivakirja/' + currentUser.uid + '/' + key).update({ subject: text });
+        // Paikallinen paivitys - ei koko historian uudelleenlatausta (v7.25)
+        const d = allHistoryData.find(x => x.key === key);
+        if (d) d.subject = text;
+    }
 };
 
 // Varmistusnapit
@@ -1332,11 +1347,14 @@ if(btnDeleteCancel2) btnDeleteCancel2.addEventListener('click', () => { if(docum
 
 const btnDeleteConfirm2 = document.getElementById('btn-delete-confirm');
 if(btnDeleteConfirm2) btnDeleteConfirm2.addEventListener('click', () => { 
-    if (deleteKey && currentUser) { 
-        db.ref('ajopaivakirja/' + currentUser.uid + '/' + deleteKey).remove(); 
-        if(document.getElementById('delete-modal')) document.getElementById('delete-modal').style.display = 'none'; 
-        deleteKey = null; 
-    } 
+    if (deleteKey && currentUser) {
+        db.ref('ajopaivakirja/' + currentUser.uid + '/' + deleteKey).remove();
+        // Paikallinen poisto - ei koko historian uudelleenlatausta (v7.25)
+        allHistoryData = allHistoryData.filter(d => d.key !== deleteKey);
+        if(document.getElementById('delete-modal')) document.getElementById('delete-modal').style.display = 'none';
+        deleteKey = null;
+        if(typeof renderHistoryList === 'function') renderHistoryList();
+    }
 });
 
 // WINDOW.EXPORTTOCSV Määritys lopuksi varmistamaan yhteensopivuus
